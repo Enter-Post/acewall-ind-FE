@@ -30,8 +30,8 @@ const Deshboard = () => {
             width
             mainHeading="Assignments Due"
             data={AssignmentDue}
-            bgcolor={"bg-red-200"}
-            bordercolor={"border-black"}
+            // bgcolor={"bg-white"}
+            // bordercolor={"border-black"}
           />
         </div>
       </div>

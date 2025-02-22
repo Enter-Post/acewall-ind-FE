@@ -39,7 +39,7 @@ const sideBarTabs = [
     icon: <AssignmentsIcon />,
     path: "/studentPortal/assignment",
   },
-  { name: "Classrooms", icon: <TeacherIcon />, path: "/classrooms" },
+  { name: "Classrooms", icon: <TeacherIcon />, path: "/studentPortal/classrooms" },
   {
     name: "Announcements",
     icon: <Megaphone02Icon />,

@@ -30,7 +30,7 @@ const CourseCards = () => {
       <p className="text-xl pb-10">My Courses</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Card key={course.course} className="w-full overflow-hidden cursor-pointer">
+          <Card key={course.course} className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
             <AspectRatio ratio={16 / 9}>
               <img
                 src={course.image || "/placeholder.svg"}
