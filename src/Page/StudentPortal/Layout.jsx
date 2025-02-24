@@ -22,6 +22,7 @@ import { Megaphone02Icon } from "@/assets/Icons/Announcement";
 import { TeacherIcon } from "@/assets/Icons/Classroom";
 import { Logout03Icon } from "@/assets/Icons/Logout";
 import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
+import { Target02Icon } from "@/assets/Icons/grades";
 
 const sideBarTabs = [
   {
@@ -39,7 +40,11 @@ const sideBarTabs = [
     icon: <AssignmentsIcon />,
     path: "/studentPortal/assignment",
   },
-  { name: "Classrooms", icon: <TeacherIcon />, path: "/studentPortal/classrooms" },
+  {
+    name: "Gradebook",
+    icon: <Target02Icon />,
+    path: "/studentPortal/gradebook",
+  },
   {
     name: "Announcements",
     icon: <Megaphone02Icon />,
@@ -57,7 +62,7 @@ export default function Layout() {
           <TopNavbarDropDown />
           <ArrowDown01Icon />
         </div>
-        <div className="flex h-16 items-center justify-between px-4">
+        <div className="flex h-16 items-center justify-between px-4 border">
           <Button
             variant="ghost"
             size="icon"
@@ -77,11 +82,11 @@ export default function Layout() {
         <aside
           className={`bg-gray-100 ${
             isSidebarOpen ? "block" : "hidden"
-          } w-64 flex-shrink-0 overflow-y-auto md:block`}
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
-              <Avatar>
+              <Avatar className="w-10">
                 <AvatarImage src={dummyAvatar} alt="@user" />
                 <AvatarFallback>UN</AvatarFallback>
               </Avatar>
@@ -95,6 +100,7 @@ export default function Layout() {
                 <Link
                   key={tab.name}
                   to={tab.path}
+                  onClick={() => setIsSidebarOpen(false)}
                   className="flex items-center space-x-3 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-200"
                 >
                   {tab.icon}
