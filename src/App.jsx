@@ -10,6 +10,7 @@ import Mycourses from "./Page/StudentPortal/MyCourses";
 import Assignment from "./Page/StudentPortal/Assignment";
 import Login from "./Page/Login";
 import Announcement from "./Page/StudentPortal/Announcement";
+import Account from "./Page/StudentPortal/Account";
 import Gradebook from "./Page/StudentPortal/Gradebook";
 import CoursesDetail from "./Page/CoursesDetail";
 
@@ -26,6 +27,8 @@ function App() {
           <Route path="assignment" element={<Assignment />}></Route>
           <Route path="gradebook" element={<Gradebook />}></Route>
           <Route path="announcements" element={<Announcement />}></Route>
+          <Route path="account" element={<Account />}></Route>
+
         </Route>
         <Route path="Course/:id" element={<CoursesDetail />} />
       </Routes>
