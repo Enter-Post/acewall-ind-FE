@@ -41,7 +41,7 @@ const Announcement = () => {
     }
   ];
 
-  return (
+  return  (
     <div>
       <p className="text-xl pb-4">Announcement</p>
       <div className="overflow-hidden">

@@ -25,6 +25,7 @@ import { TeacherIcon } from "@/assets/Icons/Classroom";
 import { Logout03Icon } from "@/assets/Icons/Logout";
 import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
 import { Target02Icon } from "@/assets/Icons/grades";
+import Footer from "@/CustomComponent/Footer";
 
 const sideBarTabs = [
   {
@@ -62,7 +63,6 @@ export default function Layout() {
       <header className="sticky top-0 z-10 bg-gray-100">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TopNavbarDropDown />
-          <ArrowDown01Icon />
         </div>
         <div className="flex h-16 items-center justify-between px-4 border">
           <Button
@@ -75,11 +75,21 @@ export default function Layout() {
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
           {/* <div className="text-xl font-semibold">ScholarNest</div> */}
-          <img src={acewallshort} alt="Mobile Logo" className="w-8 rounded-full h-auto block md:hidden" />
-<img src={acewallscholarslogo} alt="Desktop Logo" className="w-32 h-auto hidden md:block" />
+          <img
+            src={acewallshort}
+            alt="Mobile Logo"
+            className="w-8 rounded-full h-auto block md:hidden"
+          />
+          <img
+            src={acewallscholarslogo}
+            alt="Desktop Logo"
+            className="w-40 h-auto hidden md:block"
+          />
           <div className="hidden md:flex gap-5 text-black text-sm ">
-            <p className="cursor-pointer">More Courses</p>
-            <p className="cursor-pointer">Support</p>
+            <Link to="/studentPortal/moreCourses" className="cursor-pointer">
+              More Courses
+            </Link>
+            <Link to="/studentPortal/support" className="cursor-pointer">Support</Link>
           </div>
           <div className="flex items-center space-x-4">
             <Input type="email" placeholder="Search" />
@@ -100,7 +110,7 @@ export default function Layout() {
               </Avatar>
               <div>
                 <p className="font-medium">User Name</p>
-                <p className="text-sm text-gray-600">user@example.com</p>
+                <p className="text-sm text-gray-600">user@email.com</p>
               </div>
             </div>
             <nav className="space-y-2">
@@ -117,11 +127,10 @@ export default function Layout() {
               ))}
             </nav>
           </div>
-
-          
         </aside>
         <main className="flex-1 p-4 hide-scrollbar overflow-y-scroll">
           <Outlet />
+          <Footer/>
         </main>
       </div>
     </div>

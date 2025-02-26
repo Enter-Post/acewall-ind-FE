@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 function DeshBoardCard({ mainHeading, data, link }) {
   return (
@@ -59,9 +60,6 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor }) {
 function AnnouncementCard({ mainHeading, data }) {
   return (
     <Card className="h-fit">
-      {/* <CardHeader className="flex-row justify-between">
-        <CardTitle className="text-lg">{mainHeading}</CardTitle>
-      </CardHeader> */}
       <CardContent className="p-0">
         <div className="divide-y">
           {data?.map((announcement, index) => (
@@ -79,4 +77,34 @@ function AnnouncementCard({ mainHeading, data }) {
   );
 }
 
-export { DeshBoardCard, Assignment, AnnouncementCard };
+function CoursesCard({ course }) {
+  return (
+  <Link key={course.id} to={`/studentPortal/allCourseDetails/${course.id}`}>
+      <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
+        <AspectRatio ratio={16 / 9}>
+          <img
+            src={course.image || "/placeholder.svg"}
+            alt={`${course.course} image`}
+            className="object-cover w-full h-full"
+          />
+        </AspectRatio>
+        <CardHeader>
+          <CardTitle>{course.course}</CardTitle>
+          <p className="text-xs">Teacher: {course.teacher}</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
+              Grade: {course.Grade}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Lecture: {course.NumberOfLecture}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+export { DeshBoardCard, Assignment, AnnouncementCard, CoursesCard };

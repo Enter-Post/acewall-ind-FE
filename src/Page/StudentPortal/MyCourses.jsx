@@ -13,6 +13,7 @@ const CourseCards = () => {
       Language: "English",
       image:
         "https://plus.unsplash.com/premium_photo-1672256330854-98c717493128?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Mr. John Smith",
     },
     {
       id: 2,
@@ -23,6 +24,7 @@ const CourseCards = () => {
       Language: "English",
       image:
         "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Emily White",
     },
     {
       id: 3,
@@ -33,6 +35,7 @@ const CourseCards = () => {
       Language: "English",
       image:
         "https://images.unsplash.com/photo-1628863353691-0071c8c1874c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Ms. Jane Doe",
     },
   ];
 
@@ -52,6 +55,7 @@ const CourseCards = () => {
               </AspectRatio>
               <CardHeader>
                 <CardTitle>{course.course}</CardTitle>
+                <p className="text-xs">Teacher: {course.teacher}</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
