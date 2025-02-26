@@ -1,5 +1,6 @@
+import { Input } from '@/components/ui/input';
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Login = () => {
             >
               Your email
             </label>
-            <input
+            <Input
               type="email"
               name="email"
               id="email"
@@ -37,7 +38,7 @@ const Login = () => {
             >
               Password
             </label>
-            <input
+            <Input
               type="password"
               name="password"
               id="password"
@@ -58,12 +59,8 @@ const Login = () => {
           </button>
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">
             Don’t have an account yet?{" "}
-            <a
-              href="#"
-              className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-            >
-              Sign up
-            </a>
+              <Link to="/signup" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+              Sign up              </Link>
           </p>
         </form>
       </div>

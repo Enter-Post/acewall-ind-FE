@@ -25,9 +25,9 @@ export function TopNavbarDropDown() {
         <DropdownMenuItem asChild>
           <Link to="/studentPortal/account">Account</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        {/* <DropdownMenuItem asChild>
           <Link to="/settings">Setting</Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem asChild>
           <Link to="/login">Logout</Link>
         </DropdownMenuItem>

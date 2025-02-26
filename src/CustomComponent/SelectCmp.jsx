@@ -17,7 +17,7 @@ const SelectCmp = ({ data, title }) => {
   return (
     <div>
       <Select onValueChange={handleChange}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[80%] md:w-[180px]">
           <SelectValue placeholder={title} value={selectedValue} />
         </SelectTrigger>
         <SelectContent>

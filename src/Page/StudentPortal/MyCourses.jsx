@@ -6,26 +6,33 @@ const CourseCards = () => {
   const courses = [
     {
       id: 1,
-      course: "Web Development",
-      RollNumber: 1010,
-      Batch: 11,
+      course: "Math",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 11,
+      Language: "English",
       image:
-        "https://plus.unsplash.com/premium_vector-1733734464224-12248f9547af?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://plus.unsplash.com/premium_photo-1672256330854-98c717493128?q=80&w=1469&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       id: 2,
-      course: "Graphic Designing",
-      RollNumber: 340,
-      Batch: 2,
-      image: "https://plus.unsplash.com/premium_vector-1732811932898-9bed660ff22d?q=80&w=1398&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      course: "Physics",
+      Grade: 10,
+      rating: 3,
+      NumberOfLecture: 2,
+      Language: "English",
+      image:
+        "https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
       id: 3,
-      course: "Digital Marketing",
-      RollNumber: 2211,
-      Batch: 10,
+      course: "Chemistry",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 10,
+      Language: "English",
       image:
-        "https://images.unsplash.com/photo-1557838923-2985c318be48?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1628863353691-0071c8c1874c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   ];
 
@@ -34,7 +41,7 @@ const CourseCards = () => {
       <p className="text-xl pb-10">My Courses</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Link key={course.course} to={`/Course/${course.id}`}>
+          <Link key={course.course} to={`/studentPortal/Course/${course.id}`}>
             <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
               <AspectRatio ratio={16 / 9}>
                 <img
@@ -49,10 +56,10 @@ const CourseCards = () => {
               <CardContent>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Roll Number: {course.RollNumber}
+                    Grade: {course.Grade}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Batch: {course.Batch}
+                    Lecture: {course.NumberOfLecture}
                   </p>
                 </div>
               </CardContent>

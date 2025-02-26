@@ -42,7 +42,7 @@ const Deshboard = () => {
   return (
     <>
       <div>
-        <p className="text-xl pb-4">Deshboard</p>
+        <p className="text-xl pb-4">Dashboard</p>
         <div className="grid sm:grid-cols-1 lg:grid-cols-2 grid-rows-1 gap-4">
           <DeshBoardCard
             mainHeading="My courses"

@@ -13,6 +13,7 @@ import Announcement from "./Page/StudentPortal/Announcement";
 import Account from "./Page/StudentPortal/Account";
 import Gradebook from "./Page/StudentPortal/Gradebook";
 import CoursesDetail from "./Page/CoursesDetail";
+import SignupPage from "./Page/signup";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         {/* <Route path="/" element={<Home />}></Route> */}
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/" element={<Login />}></Route>
         <Route path="/studentPortal" element={<Layout />}>
           <Route index element={<Deshboard />} />
@@ -28,9 +30,8 @@ function App() {
           <Route path="gradebook" element={<Gradebook />}></Route>
           <Route path="announcements" element={<Announcement />}></Route>
           <Route path="account" element={<Account />}></Route>
-
+          <Route path="Course/:id" element={<CoursesDetail />} />
         </Route>
-        <Route path="Course/:id" element={<CoursesDetail />} />
       </Routes>
     </>
   );

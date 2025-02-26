@@ -41,9 +41,14 @@ const Announcement = () => {
     }
   ];
 
-  return <div>
-    <AnnouncementCard mainHeading={"Announcement"} data={announcements} />
-  </div>;
+  return (
+    <div>
+      <p className="text-xl pb-4">Announcement</p>
+      <div className="overflow-hidden">
+        <AnnouncementCard mainHeading={"Announcement"} data={announcements} />
+      </div>
+    </div>
+  );  
 };
 
 export default Announcement;

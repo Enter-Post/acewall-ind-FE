@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Link, Outlet } from "react-router-dom";
 import dummyAvatar from "../../assets/avatar.png";
+import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
+import acewallshort from "../../assets/acewallshort.png";
 
 import {
   LayoutDashboard,
@@ -56,7 +58,7 @@ export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
   return (
-    <div className="flex h-screen flex-col w-screen">
+    <div className="flex h-screen flex-col w-screen ">
       <header className="sticky top-0 z-10 bg-gray-100">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TopNavbarDropDown />
@@ -72,7 +74,13 @@ export default function Layout() {
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
-          <div className="text-xl font-semibold">ScholarNest</div>
+          {/* <div className="text-xl font-semibold">ScholarNest</div> */}
+          <img src={acewallshort} alt="Mobile Logo" className="w-8 rounded-full h-auto block md:hidden" />
+<img src={acewallscholarslogo} alt="Desktop Logo" className="w-32 h-auto hidden md:block" />
+          <div className="hidden md:flex gap-5 text-black text-sm ">
+            <p className="cursor-pointer">More Courses</p>
+            <p className="cursor-pointer">Support</p>
+          </div>
           <div className="flex items-center space-x-4">
             <Input type="email" placeholder="Search" />
           </div>
@@ -109,8 +117,10 @@ export default function Layout() {
               ))}
             </nav>
           </div>
+
+          
         </aside>
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 p-4 hide-scrollbar overflow-y-scroll">
           <Outlet />
         </main>
       </div>
