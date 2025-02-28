@@ -47,7 +47,7 @@ const Login = () => {
               required=""
             />
           </div>
-         
+          
           <button
      
             onClick={() => navigate("/studentPortal")}
