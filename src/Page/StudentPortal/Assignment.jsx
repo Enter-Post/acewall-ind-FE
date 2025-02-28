@@ -13,7 +13,7 @@ import { TickDouble03Icon } from "@/assets/Icons/Tick";
 import { CustomDrawer } from "@/CustomComponent/Drawer";
 
 const Assignment = () => {
-  const courses = ["Web-development", "Graphic designing", "Digital Marketing"];
+  const courses = ["Math", "Physics", "Chemistry"];
   const statusOptions = ["Completed", "Due"];
 
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -21,29 +21,29 @@ const Assignment = () => {
   const [assignments, setAssignments] = useState([
     {
       id: 1,
-      title: "Create a responsive website",
-      course: "Web-development",
+      title: "Solve calculus problems",
+      course: "Math",
       dueDate: "2024-03-01",
       status: "Due",
     },
     {
       id: 2,
-      title: "Design a logo",
-      course: "Graphic designing",
+      title: "Experiment on Newton's Laws",
+      course: "Physics",
       dueDate: "2024-02-25",
       status: "Completed",
     },
     {
       id: 3,
-      title: "Develop a marketing strategy",
-      course: "Digital Marketing",
+      title: "Analyze chemical reactions",
+      course: "Chemistry",
       dueDate: "2024-03-10",
       status: "Due",
     },
     {
       id: 4,
-      title: "Build a React component",
-      course: "Web-development",
+      title: "Graph quadratic functions",
+      course: "Math",
       dueDate: "2024-02-28",
       status: "Completed",
     },
@@ -84,7 +84,10 @@ const Assignment = () => {
             onChange={(value) => setSelectedStatus(value)}
           />
           <div className="flex gap-3">
-            <Button className={"bg-green-500 hover:bg-green-600 "} onClick={handleFilter}>
+            <Button
+              className={"bg-green-500 hover:bg-green-600 "}
+              onClick={handleFilter}
+            >
               Filter
             </Button>
             <Button variant="outline" onClick={handleRemoveFilter}>
@@ -92,7 +95,7 @@ const Assignment = () => {
             </Button>
           </div>
         </div>
-        <Table >
+        <Table>
           <TableHeader>
             <TableRow className={"text-xs md:text-sm"}>
               <TableHead>Title</TableHead>
@@ -103,7 +106,7 @@ const Assignment = () => {
           </TableHeader>
           <TableBody>
             {filteredAssignments.map((assignment) => (
-              <TableRow key={assignment.id} className={"text-xs md:text-sm"} >
+              <TableRow key={assignment.id} className={"text-xs md:text-sm"}>
                 <TableCell>{assignment.title}</TableCell>
                 <TableCell>{assignment.course}</TableCell>
                 <TableCell>{assignment.dueDate}</TableCell>

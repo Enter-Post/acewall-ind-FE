@@ -10,6 +10,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 12,
       Language: "English",
+      Prise: 101,
       image:
         "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Michael Brown",
@@ -21,6 +22,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 15,
       Language: "English",
+      Prise: 110,
       image:
         "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Richard Adams",
@@ -32,6 +34,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 8,
       Language: "English",
+      Prise: 75,
       image:
         "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Olivia Green",
@@ -43,6 +46,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 18,
       Language: "English",
+      Prise: 89,
       image:
         "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Samuel Turner",
@@ -54,6 +58,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 10,
       Language: "English",
+      Prise: 48,
       image:
         "https://plus.unsplash.com/premium_photo-1681488098851-e3913f3b1908?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Clara Foster",
@@ -64,6 +69,7 @@ const AllCourses = () => {
       Grade: 10,
       rating: 3,
       NumberOfLecture: 5,
+      Prise: 94,
       Language: "English",
       image:
         "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -76,6 +82,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 6,
       Language: "English",
+      Prise: 78,
       image:
         "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=1438&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. David Martin",
@@ -87,6 +94,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 9,
       Language: "English",
+      Prise: 76,
       image:
         "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Linda Lee",
@@ -98,6 +106,7 @@ const AllCourses = () => {
       rating: 3,
       NumberOfLecture: 7,
       Language: "English",
+      Prise: 98,
       image:
         "https://images.unsplash.com/photo-1612178991541-b48cc8e92a4d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Charles Young",
@@ -109,6 +118,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 5,
       Language: "English",
+      Prise: 82,
       image:
         "https://images.unsplash.com/photo-1620662736427-b8a198f52a4d?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Daniel Harris",
@@ -120,6 +130,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 14,
       Language: "English",
+      Prise: 91,
       image:
         "https://images.unsplash.com/photo-1573511860302-28c524319d2a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Sophia King",
@@ -131,6 +142,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 11,
       Language: "English",
+      Prise: 98,
       image:
         "https://plus.unsplash.com/premium_photo-1681079526863-7ba34e838026?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Laura White",
@@ -142,6 +154,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 13,
       Language: "English",
+      Prise: 40,
       image:
         "https://images.unsplash.com/photo-1622782914767-404fb9ab3f57?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. William Scott",
@@ -153,6 +166,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 10,
       Language: "English",
+      Prise: 189,
       image:
         "https://plus.unsplash.com/premium_photo-1661335257817-4552acab9656?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Prof. Steven Carter",
@@ -164,6 +178,7 @@ const AllCourses = () => {
       rating: 3,
       NumberOfLecture: 12,
       Language: "English",
+      Prise: 200,
       image:
         "https://plus.unsplash.com/premium_photo-1661540998860-da104459c959?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Alice Green",
@@ -175,6 +190,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 8,
       Language: "English",
+      Prise: 45,
       image:
         "https://images.unsplash.com/photo-1526615735835-530c611a3d8a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Brian Hall",
@@ -186,6 +202,7 @@ const AllCourses = () => {
       rating: 5,
       NumberOfLecture: 11,
       Language: "English",
+      Prise: 99,
       image:
         "https://plus.unsplash.com/premium_photo-1661906977668-ece2c96385c4?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Henry Black",
@@ -197,6 +214,7 @@ const AllCourses = () => {
       rating: 4,
       NumberOfLecture: 9,
       Language: "English",
+      Prise: 53,
       image:
         "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Nathan Allen",

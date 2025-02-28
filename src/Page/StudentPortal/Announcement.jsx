@@ -43,7 +43,6 @@ const Announcement = () => {
 
   return  (
     <div>
-      <p className="text-xl pb-4">Announcement</p>
       <div className="overflow-hidden">
         <AnnouncementCard mainHeading={"Announcement"} data={announcements} />
       </div>

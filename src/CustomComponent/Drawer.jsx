@@ -64,14 +64,11 @@ export function CustomDrawer({ assignment }) {
           disabled={assignment.status == "Completed" ? true : false}
           className={
             assignment.status == "Completed"
-              ? "bg-gray-300 text-black hover:bg-green-600"
-              : "bg-green-500 hover:bg-green-600"
+              ? "bg-gray-300 text-black hover:bg-green-600 "
+              : "bg-green-500 hover:bg-green-600 "
           }
         >
-          {assignment.status == "Completed" ? `Submited` : "Submit"}
-          {assignment.status == "Completed" ? (
-            <TickDouble03Icon className="text-black" />
-          ) : null}
+          {assignment.status == "Completed" ? `Submitted` : "Submit"}
         </Button>
       </DrawerTrigger>
 

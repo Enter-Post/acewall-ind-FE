@@ -61,6 +61,7 @@ function AnnouncementCard({ mainHeading, data }) {
   return (
     <Card className="h-fit">
       <CardContent className="p-0">
+          <p className="text-xl px-4 pb-4 font-bold">Announcement</p>
         <div className="divide-y">
           {data?.map((announcement, index) => (
             <div key={index} className="px-4 py-3 flex flex-col gap-5">
@@ -79,7 +80,7 @@ function AnnouncementCard({ mainHeading, data }) {
 
 function CoursesCard({ course }) {
   return (
-  <Link key={course.id} to={`/studentPortal/allCourseDetails/${course.id}`}>
+    <Link key={course.id} to={`/studentPortal/allCourseDetails/${course.id}`}>
       <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
         <AspectRatio ratio={16 / 9}>
           <img
@@ -99,6 +100,10 @@ function CoursesCard({ course }) {
             </p>
             <p className="text-sm text-muted-foreground">
               Lecture: {course.NumberOfLecture}
+            </p>
+            <p className="font-bold text-xl text-green-500 pt-4">
+              ${course.Prise}{" "}
+              <span className="text-sm text-muted-foreground">per month</span>{" "}
             </p>
           </div>
         </CardContent>

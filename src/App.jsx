@@ -1,9 +1,4 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import { Button } from "./components/ui/button";
 import { Route, Routes } from "react-router-dom";
-import Home from "./Page/Home";
 import Layout from "./Page/StudentPortal/Layout";
 import Deshboard from "./Page/StudentPortal/Deshboard";
 import Mycourses from "./Page/StudentPortal/MyCourses";
@@ -19,6 +14,8 @@ import AllCoursesDetail from "./Page/allCourseDetail";
 import MainLayout from "./Page/MainLayout";
 import Support from "./Page/Support";
 import LandingPage from "./Page/LandingPage";
+import Payment from "./Page/StudentPortal/Payment";
+import TeacherPortalLayout from "./Page/TeacherPortal/Layout";
 
 function App() {
   return (
@@ -28,8 +25,8 @@ function App() {
         <Route path="/" element={<LandingPage />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
-        <Route path="/Home" element={<MainLayout />}>
-        </Route>
+        <Route path="/Home" element={<MainLayout />}></Route>
+        {/* Student Routes */}
         <Route path="/studentPortal" element={<Layout />}>
           <Route index element={<Deshboard />} />
           <Route path="mycourses" element={<Mycourses />}></Route>
@@ -41,6 +38,11 @@ function App() {
           <Route path="support" element={<Support />} />
           <Route path="allCourseDetails/:id" element={<AllCoursesDetail />} />
           <Route path="moreCourses" element={<AllCourses />} />
+          <Route path="payment" element={<Payment />} />
+        </Route>
+        {/* Teachers Routes */}
+        <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
+          <Route />
         </Route>
       </Routes>
     </>
