@@ -20,13 +20,7 @@ import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
 
 const sideBarTabs = [
-    {
-      id: 1,
-      name: "Dashboard",
-      icon: <DashboardCircleAddIcon />,
-      path: "/studentPortal",
-    },
-  {
+      {
     id: 1,
     name: "Dashboard",
     icon: <DashboardCircleAddIcon />,

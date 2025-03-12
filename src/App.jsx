@@ -52,12 +52,7 @@ function App() {
         <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
           <Route index element={<TeacherDeshboard />} />
           <Route path="mycourses" element={<TeacherCourses />} />
-
-        <Route path="/tseacherPortal" element={<TeacherPortalLayout />}>
-        <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
-
-          <Route />
-        </Route>
+;        </Route>
       </Routes>
     </>
   );
