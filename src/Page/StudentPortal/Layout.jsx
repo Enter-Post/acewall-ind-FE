@@ -77,21 +77,6 @@ const topBarTabs = [
   },
 ];
 
-const topBarTabs = [
-  {
-    id: 7,
-    name: "More Courses",
-    icon: <Megaphone02Icon />,
-    path: "/studentPortal/moreCourses",
-  },
-  {
-    id: 8,
-    name: "Support",
-    icon: <Megaphone02Icon />,
-    path: "/studentPortal/support",
-  },
-];
-
 export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 

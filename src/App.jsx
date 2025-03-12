@@ -43,7 +43,6 @@ function App() {
           <Route path="payment" element={<Payment />} />
         </Route>
         {/* Teachers Routes */}
-        <Route path="/tseacherPortal" element={<TeacherPortalLayout />}>
         <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
           <Route />
         </Route>
