@@ -30,12 +30,6 @@ const sideBarTabs = [
       path: "/studentPortal",
     },
   {
-    id: 1,
-    name: "Dashboard",
-    icon: <DashboardCircleAddIcon />,
-    path: "/studentPortal",
-  },
-  {
     id: 2,
     name: "My Courses",
     icon: <Book02Icon />,
