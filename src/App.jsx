@@ -16,6 +16,7 @@ import Support from "./Page/Support";
 import LandingPage from "./Page/LandingPage";
 import Payment from "./Page/StudentPortal/Payment";
 import TeacherPortalLayout from "./Page/TeacherPortal/Layout";
+import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/studentPortal" element={<Layout />}>
           <Route index element={<Deshboard />} />
           <Route path="mycourses" element={<Mycourses />}></Route>
+          <Route path="myCourseDetail" element={<MyCourseDetail />}></Route>
           <Route path="assignment" element={<Assignment />}></Route>
           <Route path="gradebook" element={<Gradebook />}></Route>
           <Route path="announcements" element={<Announcement />}></Route>
@@ -41,6 +43,7 @@ function App() {
           <Route path="payment" element={<Payment />} />
         </Route>
         {/* Teachers Routes */}
+        <Route path="/tseacherPortal" element={<TeacherPortalLayout />}>
         <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
           <Route />
         </Route>

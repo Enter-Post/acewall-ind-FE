@@ -23,6 +23,12 @@ import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
 
 const sideBarTabs = [
+    {
+      id: 1,
+      name: "Dashboard",
+      icon: <DashboardCircleAddIcon />,
+      path: "/studentPortal",
+    },
   {
     id: 1,
     name: "Dashboard",
@@ -36,6 +42,12 @@ const sideBarTabs = [
     path: "/studentPortal/mycourses",
   },
   {
+    id: 5,
+    name: "Announcements",
+    icon: <Megaphone02Icon />,
+    path: "/studentPortal/announcements",
+  },
+  {
     id: 3,
     name: "My Assignments",
     icon: <AssignmentsIcon />,
@@ -47,11 +59,21 @@ const sideBarTabs = [
     icon: <Target02Icon />,
     path: "/studentPortal/gradebook",
   },
+
+];
+
+const topBarTabs = [
   {
-    id: 5,
-    name: "Announcements",
+    id: 7,
+    name: "More Courses",
     icon: <Megaphone02Icon />,
-    path: "/studentPortal/announcements",
+    path: "/studentPortal/moreCourses",
+  },
+  {
+    id: 8,
+    name: "Support",
+    icon: <Megaphone02Icon />,
+    path: "/studentPortal/support",
   },
 ];
 
@@ -80,11 +102,11 @@ export default function Layout() {
 
   React.useEffect(() => {
     localStorage.setItem("selectedTab", selected);
-  }, [selected]);
+  }, [selected]);   
 
   return (
     <div className="flex h-screen flex-col w-screen ">
-      <header className="sticky top-0 z-10 bg-gray-100">
+      <header className="sticky top-0 z-10 bg-green-50">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TopNavbarDropDown selected={selected} setselected={setselected} />
         </div>
@@ -124,7 +146,6 @@ export default function Layout() {
                     setselected(tabs.id);
                     setIsSidebarOpen(false);
                   }}
-                  
                   className={`cursor-pointer ${selected == tabs.id && "text-green-500 font-bold"
                     }`}
                 >
@@ -148,7 +169,7 @@ export default function Layout() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-gray-100 ${isSidebarOpen ? "block" : "hidden"
+          className={`bg-green-50 ${isSidebarOpen ? "block" : "hidden"
             } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
@@ -201,7 +222,7 @@ export default function Layout() {
             </nav>
           </div>
         </aside>
-        <main className="flex-1 p-4 hide-scrollbar overflow-y-scroll">
+        <main className="flex-1 md:p-4 hide-scrollbar overflow-y-scroll">
           <Outlet />
           <Footer />
         </main>
