@@ -1,5 +1,9 @@
 import * as React from "react";
 import { CoursesCard } from "@/CustomComponent/DeshboardCard";
+import SelectCmp from "@/CustomComponent/SelectCmp";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import SearchBox from "@/CustomComponent/SearchBox";
 
 const AllCourses = () => {
   const allCourses = [
@@ -221,9 +225,39 @@ const AllCourses = () => {
     },
   ];
 
+  const courseCategories = [
+    { id: 1, name: "All Category" },
+    { id: 2, name: "Development" },
+    { id: 3, name: "Business" },
+    { id: 4, name: "Design" },
+    { id: 5, name: "Marketing" },
+    { id: 6, name: "Finance" },
+    { id: 7, name: "Health & Fitness" },
+    { id: 8, name: "Music" },
+  ];
+
+  const ratings = [
+    { id: 1, name: "All Ratings" },
+    { id: 2, name: "1 Star & Up" },
+    { id: 3, name: "2 Star & Up" },
+    { id: 4, name: "3 Star & Up" },
+    { id: 5, name: "4 Star & Up" },
+    { id: 6, name: "5 Star Only" },
+  ];
+
+  const sortByOptions = [
+    { id: 1, name: "Latest" },
+    { id: 2, name: "Popularity" },
+    { id: 3, name: "Highest Rated" },
+    { id: 4, name: "Lowest Price" },
+    { id: 5, name: "Highest Price" },
+  ];
+
   return (
     <div>
       <main>
+      <SearchBox/>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-10">
           {allCourses.map((course) => {
             return (

@@ -4,10 +4,7 @@ import dummyAvatar from "../../assets/avatar.png";
 import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
 import acewallshort from "../../assets/acewallshort.png";
 
-import {
-  Menu,
-  Search,
-} from "lucide-react";
+import { Menu, MessageCircleDashed, Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
 import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
@@ -29,6 +26,12 @@ const sideBarTabs = [
       icon: <DashboardCircleAddIcon />,
       path: "/studentPortal",
     },
+  {
+    id: 1,
+    name: "Dashboard",
+    icon: <DashboardCircleAddIcon />,
+    path: "/studentPortal",
+  },
   {
     id: 2,
     name: "My Courses",
@@ -53,7 +56,12 @@ const sideBarTabs = [
     icon: <Target02Icon />,
     path: "/studentPortal/gradebook",
   },
-
+  {
+    id: 10,
+    name: "Messages",
+    icon: <MessageCircleDashed />,
+    path: "/studentPortal/messages",
+  },
 ];
 
 const topBarTabs = [
@@ -71,6 +79,7 @@ const topBarTabs = [
   },
 ];
 
+
 export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
@@ -84,8 +93,9 @@ export default function Layout() {
   }, [selected]);   
 
   return (
-    <div className="flex h-screen flex-col w-screen ">
-      <header className="sticky top-0 z-10 bg-green-50">
+    <div className="flex h-screen w-screen flex-col">
+      <header className="sticky top-0 z-10 bg-green-50 w-full">
+
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TopNavbarDropDown selected={selected} setselected={setselected} />
         </div>
@@ -100,14 +110,22 @@ export default function Layout() {
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
           {/* <div className="text-xl font-semibold">ScholarNest</div> */}
-          <Link onClick={() => setselected(1)} className="block md:hidden" to={"/studentPortal"}>
+          <Link
+            onClick={() => setselected(1)}
+            className="block md:hidden"
+            to={"/studentPortal"}
+          >
             <img
               src={acewallshort}
               alt="Mobile Logo"
               className="w-8 rounded-full h-auto cursor-pointer"
             />
           </Link>
-          <Link onClick={() => setselected(1)} className="hidden md:block" to={"/studentPortal"}>
+          <Link
+            onClick={() => setselected(1)}
+            className="hidden md:block"
+            to={"/studentPortal"}
+          >
             <img
               src={acewallscholarslogo}
               alt="Desktop Logo"
@@ -125,8 +143,9 @@ export default function Layout() {
                     setselected(tabs.id);
                     setIsSidebarOpen(false);
                   }}
-                  className={`cursor-pointer ${selected == tabs.id && "text-green-500 font-bold"
-                    }`}
+                  className={`cursor-pointer ${
+                    selected == tabs.id && "text-green-500 font-bold"
+                  }`}
                 >
                   {tabs.name}
                 </Link>
@@ -134,13 +153,8 @@ export default function Layout() {
             })}
           </div>
           <div className="hidden md:flex items-center space-x-4">
-            <Input
-              type="email"
-              placeholder="Search"
-            />
-            <div
-              className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
-            >
+            <Input type="email" placeholder="Search" />
+            <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
               <Search className="rounded-full" />
             </div>
           </div>
@@ -148,14 +162,25 @@ export default function Layout() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-green-50 ${isSidebarOpen ? "block" : "hidden"
-            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-green-50 ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
-              <Link to={"/studentPortal/account"} onClick={() => setselected(9)} className={`${selected == 9 ? "w-13" : "w-10"}`}>
-                <Avatar >
-                  <AvatarImage className={`rounded-full ${selected == 9 && "border-3 border-green-500"}`} src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="@user" />
+              <Link
+                to={"/studentPortal/account"}
+                onClick={() => setselected(9)}
+                className={`${selected == 9 ? "w-13" : "w-10"}`}
+              >
+                <Avatar>
+                  <AvatarImage
+                    className={`rounded-full ${
+                      selected == 9 && "border-3 border-green-500"
+                    }`}
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt="@user"
+                  />
                   <AvatarFallback>UN</AvatarFallback>
                 </Avatar>
               </Link>
@@ -165,17 +190,12 @@ export default function Layout() {
               </div>
             </div>
             <div className="flex md:hidden items-center space-x-4 mb-5">
-              <Input
-                type="email"
-                placeholder="Search"
-              />
-              <div
-                className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
-              >
+              <Input type="email" placeholder="Search" />
+              <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
                 <Search className="rounded-full" />
               </div>
             </div>
-            <nav className="space-y-2">
+            <nav className="space-y-2 ">
               {sideBarTabs.map((tab) => (
                 <Link
                   key={tab.name}
@@ -184,15 +204,17 @@ export default function Layout() {
                     setIsSidebarOpen(false);
                     setselected(tab.id);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${selected == tab.id
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "hover:bg-gray-200"
-                    } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                    selected == tab.id
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "hover:bg-gray-200"
+                  } `}
                 >
                   {tab.icon}
                   <span
-                    className={`${selected == tab.id ? "text-white" : "text-green-600"
-                      }`}
+                    className={`${
+                      selected == tab.id ? "text-white" : "text-green-600"
+                    }`}
                   >
                     {tab.name}
                   </span>
@@ -201,7 +223,8 @@ export default function Layout() {
             </nav>
           </div>
         </aside>
-        <main className="flex-1 md:p-4 hide-scrollbar overflow-y-scroll">
+        <main className="flex-1 md:p-4 hide-scrollbar overflow-y-scroll w-full">
+
           <Outlet />
           <Footer />
         </main>

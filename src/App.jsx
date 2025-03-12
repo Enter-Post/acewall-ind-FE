@@ -17,6 +17,10 @@ import LandingPage from "./Page/LandingPage";
 import Payment from "./Page/StudentPortal/Payment";
 import TeacherPortalLayout from "./Page/TeacherPortal/Layout";
 import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
+import Messages from "./Page/StudentPortal/Messages";
+import TeacherDeshboard from "./Page/TeacherPortal/TeacherDeshboard";
+import TeacherCourses from "./Page/TeacherPortal/TeacherCourses";
+
 
 function App() {
   return (
@@ -41,9 +45,17 @@ function App() {
           <Route path="allCourseDetails/:id" element={<AllCoursesDetail />} />
           <Route path="moreCourses" element={<AllCourses />} />
           <Route path="payment" element={<Payment />} />
+          <Route path="messages" element={<Messages />} />
         </Route>
         {/* Teachers Routes */}
+
         <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
+          <Route index element={<TeacherDeshboard />} />
+          <Route path="mycourses" element={<TeacherCourses />} />
+
+        <Route path="/tseacherPortal" element={<TeacherPortalLayout />}>
+        <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
+
           <Route />
         </Route>
       </Routes>

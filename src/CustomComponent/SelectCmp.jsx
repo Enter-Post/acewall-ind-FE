@@ -7,23 +7,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const SelectCmp = ({ data, title }) => {
-  const [selectedValue, setSelectedValue] = useState(null);
+const SelectCmp = ({ data, title, className }) => {
+  const [selectedValue, setSelectedValue] = useState("");
 
   const handleChange = (value) => {
     setSelectedValue(value);
   };
 
   return (
-    <div>
+    <div className={className}>
       <Select onValueChange={handleChange}>
-        <SelectTrigger className="w-[80%] md:w-[180px]">
-          <SelectValue placeholder={title} value={selectedValue} />
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={title} />
         </SelectTrigger>
         <SelectContent>
-          {data.map((item, index) => (
-            <SelectItem key={index} value={item}>
-              {item}
+          {data.map((item) => (
+            <SelectItem key={item.id} value={item.name}>
+              {item.name}
             </SelectItem>
           ))}
         </SelectContent>

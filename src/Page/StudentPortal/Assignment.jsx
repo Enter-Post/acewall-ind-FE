@@ -13,8 +13,16 @@ import { TickDouble03Icon } from "@/assets/Icons/Tick";
 import { CustomDrawer } from "@/CustomComponent/Drawer";
 
 const Assignment = () => {
-  const courses = ["Math", "Physics", "Chemistry"];
-  const statusOptions = ["Completed", "Due"];
+  const courses = [
+    { id: 1, name: "Math" },
+    { id: 2, name: "Physics" },
+    { id: 3, name: "Chemistry" },
+  ];
+  
+  const statusOptions = [
+    { id: 1, name: "Completed" },
+    { id: 2, name: "Due" },
+  ];
 
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
