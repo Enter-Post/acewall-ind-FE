@@ -612,13 +612,6 @@ const AllCoursesDetail = () => {
                   </div>
                   <div className="text-sm line-through text-gray-500">
                     {courseDetails.price.original}
-
-                    <p className="font-bold text-xl text-green-500 pt-4">
-                      ${currentCourse[0].Prise}{" "}
-                      <span className="text-sm text-muted-foreground">
-                        per month
-                      </span>{" "}
-                    </p>
                   </div>
                 </div>
                 <div className="text-sm text-red-500 font-medium mb-4">
