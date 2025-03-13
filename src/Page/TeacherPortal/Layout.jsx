@@ -12,6 +12,9 @@ import {
   Bell,
   LogOut,
   Menu,
+  BadgePlus,
+  DollarSign,
+  MessageCircleDashed,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -26,6 +29,7 @@ import { Logout03Icon } from "@/assets/Icons/Logout";
 import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
 import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
+import { TeacherTopNavbarDropDown } from "@/CustomComponent/TeacherTopNavDropDown";
 
 const sideBarTabs = [
   {
@@ -41,6 +45,12 @@ const sideBarTabs = [
     path: "/teacherPortal/courses",
   },
   {
+    id: 6,
+    name: "Create Course ",
+    icon: <BadgePlus />,
+    path: "/teacherPortal/courses/createCourses",
+  },
+  {
     id: 3,
     name: "Assignments",
     icon: <AssignmentsIcon />,
@@ -52,21 +62,33 @@ const sideBarTabs = [
     icon: <Megaphone02Icon />,
     path: "/teacherPortal/announcements",
   },
+  {
+    id: 11,
+    name: "My Earning",
+    icon: <DollarSign />,
+    path: "/teacherPortal/earning",
+  },
+  {
+    id: 12,
+    name: "Messages",
+    icon: <MessageCircleDashed />,
+    path: "/teacherPortal/messages",
+  },
 ];
 
 const topBarTabs = [
-  {
-    id: 7,
-    name: "More Courses",
-    icon: <Megaphone02Icon />,
-    path: "/studentPortal/moreCourses",
-  },
-  {
-    id: 8,
-    name: "Support",
-    icon: <Megaphone02Icon />,
-    path: "/studentPortal/support",
-  },
+  // {
+  //   id: 7,
+  //   name: "More Courses",
+  //   icon: <Megaphone02Icon />,
+  //   path: "/studentPortal/moreCourses",
+  // },
+  // {
+  //   id: 8,
+  //   name: "Support",
+  //   icon: <Megaphone02Icon />,
+  //   path: "/studentPortal/support",
+  // },
 ];
 
 export default function TeacherPortalLayout() {
@@ -83,9 +105,9 @@ export default function TeacherPortalLayout() {
 
   return (
     <div className="flex h-screen flex-col w-screen">
-      <header className="sticky top-0 z-10 bg-gray-100">
+      <header className="sticky top-0 z-10 bg-green-50">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
-          <TopNavbarDropDown selected={selected} setselected={setselected} />
+          <TeacherTopNavbarDropDown selected={selected} setselected={setselected} />
         </div>
         <div className="flex h-16 items-center justify-between px-4 border">
           <Button
@@ -94,7 +116,7 @@ export default function TeacherPortalLayout() {
             className="md:hidden"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6"/>
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
           {/* <div className="text-xl font-semibold">ScholarNest</div> */}
@@ -131,14 +153,14 @@ export default function TeacherPortalLayout() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-gray-100 ${
+          className={`bg-green-50 ${
             isSidebarOpen ? "block" : "hidden"
           } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className={`flex items-center space-x-3 pb-4 cursor-pointer`}>
-              <Avatar className="w-10">
-                <AvatarImage src={dummyAvatar} alt="@user" />
+              <Avatar className="w-10 ">
+                <AvatarImage className="rounded-full" src={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} alt="@user" />
                 <AvatarFallback>UN</AvatarFallback>
               </Avatar>
               <div>

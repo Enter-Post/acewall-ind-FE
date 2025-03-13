@@ -11,18 +11,13 @@ import { Link } from "react-router-dom";
 import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
 import { CircleArrowDown, Slash } from "lucide-react";
 
-export function TopNavbarDropDown({ selected, setselected }) {
+export function TeacherTopNavbarDropDown({ selected, setselected }) {
 
   const tabs = [
     {
       id: 9,
       title: "Account",
-      path: "/student/account",
-    },
-    {
-      id: 10,
-      title: "Payment",
-      path: "/student/payment",
+      path: "/TeacherPortal/account",
     },
   ];
 

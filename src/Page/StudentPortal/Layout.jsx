@@ -19,42 +19,43 @@ import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
 import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
 
+
 const sideBarTabs = [
-      {
+  {
     id: 1,
     name: "Dashboard",
     icon: <DashboardCircleAddIcon />,
-    path: "/studentPortal",
+    path: "/student",
   },
   {
     id: 2,
     name: "My Courses",
     icon: <Book02Icon />,
-    path: "/studentPortal/mycourses",
+    path: "/student/mycourses",
   },
   {
     id: 5,
     name: "Announcements",
     icon: <Megaphone02Icon />,
-    path: "/studentPortal/announcements",
+    path: "/student/announcements",
   },
   {
     id: 3,
     name: "My Assignments",
     icon: <AssignmentsIcon />,
-    path: "/studentPortal/assignment",
+    path: "/student/assignment",
   },
   {
     id: 4,
     name: "Gradebook",
     icon: <Target02Icon />,
-    path: "/studentPortal/gradebook",
+    path: "/student/gradebook",
   },
   {
     id: 10,
     name: "Messages",
     icon: <MessageCircleDashed />,
-    path: "/studentPortal/messages",
+    path: "/student/messages",
   },
 ];
 
@@ -63,13 +64,13 @@ const topBarTabs = [
     id: 7,
     name: "More Courses",
     icon: <Megaphone02Icon />,
-    path: "/studentPortal/moreCourses",
+    path: "/student/moreCourses",
   },
   {
     id: 8,
     name: "Support",
     icon: <Megaphone02Icon />,
-    path: "/studentPortal/support",
+    path: "/student/support",
   },
 ];
 
@@ -84,7 +85,7 @@ export default function Layout() {
 
   React.useEffect(() => {
     localStorage.setItem("selectedTab", selected);
-  }, [selected]);   
+  }, [selected]);
 
   return (
     <div className="flex h-screen w-screen flex-col">
@@ -107,7 +108,7 @@ export default function Layout() {
           <Link
             onClick={() => setselected(1)}
             className="block md:hidden"
-            to={"/studentPortal"}
+            to={"/student"}
           >
             <img
               src={acewallshort}
@@ -118,7 +119,7 @@ export default function Layout() {
           <Link
             onClick={() => setselected(1)}
             className="hidden md:block"
-            to={"/studentPortal"}
+            to={"/student"}
           >
             <img
               src={acewallscholarslogo}
@@ -137,9 +138,8 @@ export default function Layout() {
                     setselected(tabs.id);
                     setIsSidebarOpen(false);
                   }}
-                  className={`cursor-pointer ${
-                    selected == tabs.id && "text-green-500 font-bold"
-                  }`}
+                  className={`cursor-pointer ${selected == tabs.id && "text-green-500 font-bold"
+                    }`}
                 >
                   {tabs.name}
                 </Link>
@@ -156,22 +156,20 @@ export default function Layout() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-green-50 ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-green-50 ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
               <Link
-                to={"/studentPortal/account"}
+                to={"/student/account"}
                 onClick={() => setselected(9)}
                 className={`${selected == 9 ? "w-13" : "w-10"}`}
               >
                 <Avatar>
                   <AvatarImage
-                    className={`rounded-full ${
-                      selected == 9 && "border-3 border-green-500"
-                    }`}
+                    className={`rounded-full ${selected == 9 && "border-3 border-green-500"
+                      }`}
                     src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt="@user"
                   />
@@ -198,31 +196,35 @@ export default function Layout() {
                     setIsSidebarOpen(false);
                     setselected(tab.id);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    selected == tab.id
-                      ? "bg-green-500 hover:bg-green-600"
-                      : "hover:bg-gray-200"
-                  } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${selected == tab.id
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "hover:bg-gray-200"
+                    } `}
                 >
                   {tab.icon}
                   <span
-                    className={`${
-                      selected == tab.id ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${selected == tab.id ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>
                 </Link>
               ))}
             </nav>
+          <div className=" rounded-full flex flex-col items-center justify-between    w-full dark:bg-violet-600">
+            {/* <Link className="flex title-font items-center md:justify-start justify-center text-gray-900"> */}
+              <img src={acewallshort} alt="" className="w-1/2" />
+            {/* </Link> */}
+          <Link to="https://www.acewallscholars.org/contact-Us" className="text-center font-semibold text-sm mt-4 text-acewall-main">Need Tutoring .Contact us</Link>
+          </div>
           </div>
         </aside>
         <main className="flex-1 md:p-4 hide-scrollbar overflow-y-scroll w-full">
-
           <Outlet />
           <Footer />
         </main>
       </div>
+
     </div>
   );
 }

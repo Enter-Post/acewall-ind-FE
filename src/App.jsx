@@ -18,9 +18,20 @@ import Payment from "./Page/StudentPortal/Payment";
 import TeacherPortalLayout from "./Page/TeacherPortal/Layout";
 import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
 import TeacherDashboard from "./Page/TeacherPortal/Dashboard";
-import Messages from "./Page/StudentPortal/Messages";
-import TeacherCourses from "./Page/TeacherPortal/TeacherCourses";
+import Messages from "./Page/StudentPortal/Messages
+import TermsandCondition from "./Page/TermsandCondition";
+import PrivacyPolicy from "./Page/Priactpolicy";
 
+import CreateCourses from "./Page/TeacherPortal/Courses/CreateCourses";
+import TeacherCourses from "./Page/TeacherPortal/Courses/TeacherCourses";
+import CoursesChapter from "./Page/TeacherPortal/Courses/CourseChapters";
+import TeacherCourseDetails from "./Page/TeacherPortal/Courses/CourseDetail";
+import TeacherGradebook from "./Page/TeacherPortal/Courses/Gradebook";
+import Earning from "./Page/TeacherPortal/Earning";
+import TeacherAccount from "./Page/TeacherPortal/Account";
+import TeacherMessages from "./Page/TeacherPortal/Messages";
+import TeacherrAssignment from "./Page/TeacherPortal/TeacherAssignment";
+import TeacherAnnoucement from "./Page/TeacherPortal/TeacherAnnoucement";
 
 function App() {
   return (
@@ -31,8 +42,10 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/Home" element={<MainLayout />}></Route>
+        <Route path="/TermsandConditions" element={<TermsandCondition />}></Route>
+        <Route path="/PrivacyPolicy" element={<PrivacyPolicy />}></Route>
         {/* Student Routes */}
-        <Route path="/studentPortal" element={<Layout />}>
+        <Route path="/student" element={<Layout />}>
           <Route index element={<Deshboard />} />
           <Route path="mycourses" element={<Mycourses />}></Route>
           <Route path="myCourseDetail" element={<MyCourseDetail />}></Route>
@@ -51,8 +64,21 @@ function App() {
 
         <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
           <Route index element={<TeacherDashboard />} />
-          <Route path="mycourses" element={<TeacherCourses />} />
-       </Route>
+          <Route path="earning" element={<Earning />} />
+          <Route path="account" element={<TeacherAccount />} />
+          <Route path="messages" element={<TeacherMessages />} />
+          <Route path="assignment" element={<TeacherrAssignment/>} />
+          <Route path="Announcements" element={<TeacherAnnoucement />} />
+          <Route path="courses">
+            <Route index element={<TeacherCourses />} />
+            <Route path="createCourses">
+              <Route index element={<CreateCourses />} />
+              <Route path="addchapters" element={<CoursesChapter />} />
+              <Route path="courseDetail" element={<TeacherCourseDetails />} />
+              <Route path="gradebook" element={<TeacherGradebook />} />
+            </Route>
+          </Route>
+        </Route>
       </Routes>
     </>
   );

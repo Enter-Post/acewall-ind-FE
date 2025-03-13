@@ -74,8 +74,11 @@ const SignupForm = () => {
   };
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900">
-      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <section className=" bg-[url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] dark:bg-gray-900">
+      <div className="bg-black/50 backdrop-blur-md h-screen ">
+
+      
+      <div className="flex flex-col  items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
         <div className="w-full bg-white border border-gray-300 rounded-lg shadow-md sm:max-w-2xl dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
@@ -90,7 +93,7 @@ const SignupForm = () => {
                 <button
                   type="button"
                   onClick={handlePrevious}
-                  className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5 ${
+                  className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
                     currentStep === 0 ? "invisible" : ""
                   }`}
                 >
@@ -100,7 +103,7 @@ const SignupForm = () => {
                   <Link to={"/login"}>
                     <button
                       type="submit"
-                      className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5"
+                      className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
                     >
                       Create Account
                     </button>
@@ -127,6 +130,7 @@ const SignupForm = () => {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

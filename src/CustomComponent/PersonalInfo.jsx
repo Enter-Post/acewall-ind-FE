@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 const PersonalInfo = ({ formData, handleInputChange }) => {
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="firstName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             First Name
@@ -53,16 +53,16 @@ const PersonalInfo = ({ formData, handleInputChange }) => {
       </div>
 
       <div className="space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
-        <div className="w-full sm:w-1/2">
+        <div className="w-full sm:w-1/2 ">
           <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Preferred Pronouns</Label>
           <RadioGroup
             defaultValue={formData.pronouns || "he/him"}
             name="pronouns"
-            className="grid grid-cols-3 gap-2"
+            className="grid grid-cols-1 gap-2"
             onValueChange={(value) => handleInputChange({ target: { name: "pronouns", value } })}
           >
             {["He/Him", "She/Her", "They/Them"].map((pronoun) => (
-              <div key={pronoun} className="flex items-center space-x-2">
+              <div key={pronoun} className="flex items-center  space-x-2">
                 <RadioGroupItem value={pronoun.toLowerCase()} id={pronoun.toLowerCase()} />
                 <Label htmlFor={pronoun.toLowerCase()} className="text-sm text-gray-900 dark:text-white">
                   {pronoun}
@@ -76,7 +76,7 @@ const PersonalInfo = ({ formData, handleInputChange }) => {
           <RadioGroup
             defaultValue={formData.gender || "male"}
             name="gender"
-            className="grid grid-cols-2 gap-2"
+            className="grid grid-cols-1 gap-2"
             onValueChange={(value) => handleInputChange({ target: { name: "gender", value } })}
           >
             {["Male", "Female", "Non-binary", "Other"].map((gender) => (

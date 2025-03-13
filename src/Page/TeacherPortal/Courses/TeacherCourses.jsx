@@ -3,10 +3,10 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import SelectCmp from "@/CustomComponent/SelectCmp";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import SearchBox from "@/CustomComponent/SearchBox";
 
-const CourseCards = () => {
+const TeacherCourses = () => {
   const courses = [
     {
       id: 1,
@@ -73,15 +73,15 @@ const CourseCards = () => {
 
   return (
     <section className="p-3 md:p-0">
-      <div className="pb-5">
-        <div className="border-green-600 flex bg-green-600 my-2">
-          <p className="text-xl p-2 text-white">My Courses</p>
+      <div className=" flex flex-col pb-5 gap-5">
+        <div className="flex justify-between items-center">
+          <p className="text-xl pb-5">My Courses</p>
         </div>
         <SearchBox />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Link key={course.course} to={`/studentPortal/myCourseDetail/`}>
+          <Link key={course.course} to={`/teacherPortal/courses/courseDetail/`}>
             <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
               <AspectRatio ratio={16 / 9}>
                 <img
@@ -112,4 +112,4 @@ const CourseCards = () => {
   );
 };
 
-export default CourseCards;
+export default TeacherCourses;
