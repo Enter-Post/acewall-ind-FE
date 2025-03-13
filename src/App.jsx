@@ -17,8 +17,8 @@ import LandingPage from "./Page/LandingPage";
 import Payment from "./Page/StudentPortal/Payment";
 import TeacherPortalLayout from "./Page/TeacherPortal/Layout";
 import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
+import TeacherDashboard from "./Page/TeacherPortal/Dashboard";
 import Messages from "./Page/StudentPortal/Messages";
-import TeacherDeshboard from "./Page/TeacherPortal/TeacherDeshboard";
 import TeacherCourses from "./Page/TeacherPortal/TeacherCourses";
 
 
@@ -50,9 +50,9 @@ function App() {
         {/* Teachers Routes */}
 
         <Route path="/teacherPortal" element={<TeacherPortalLayout />}>
-          <Route index element={<TeacherDeshboard />} />
+          <Route index element={<TeacherDashboard />} />
           <Route path="mycourses" element={<TeacherCourses />} />
-;        </Route>
+       </Route>
       </Routes>
     </>
   );
