@@ -3,7 +3,7 @@ import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
 import { Youtube ,X , Mail} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import TermsandCondition from "@/Page/TermsandCondition";
+import TermsandCondition from "../Page/Termsandcondition";
 
 const Footer = () => {
   return (
