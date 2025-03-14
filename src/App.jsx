@@ -45,7 +45,7 @@ function App() {
         <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/Home" element={<MainLayout />}></Route>
-        <Route path="/TermsandConditions" element={<TermsandCondition />}></Route>
+        <Route path="/TermsandCondition" element={<TermsandCondition />}></Route>
         <Route path="/PrivacyPolicy" element={<PrivacyPolicy />}></Route>
         {/* Student Routes */}
         <Route path="/student" element={<Layout />}>
