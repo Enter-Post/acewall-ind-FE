@@ -42,13 +42,13 @@ const Footer = () => {
             <h3 className="uppercase dark:text-gray-900">Courses</h3>
             <ul className="space-y-1">
               <li>
-                <a rel="noopener noreferrer" href="http://localhost:5173/studentPortal/allCourseDetails/4">Biology</a>
+                <a rel="noopener noreferrer" href="/student/allCourseDetails/4">Biology</a>
               </li>
               <li>
-                <a rel="noopener noreferrer" href="http://localhost:5173/studentPortal/allCourseDetails/5">Maths</a>
+                <a rel="noopener noreferrer" href="/student/allCourseDetails/5">Maths</a>
               </li>
               <li>
-                <a rel="noopener noreferrer" href="http://localhost:5173/studentPortal/allCourseDetails/6">Physics</a>
+                <a rel="noopener noreferrer" href="/student/allCourseDetails/6">Physics</a>
               </li>
             </ul>
           </div>

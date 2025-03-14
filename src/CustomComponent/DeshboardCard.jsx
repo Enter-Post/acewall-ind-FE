@@ -103,7 +103,7 @@ function AnnouncementCard({ mainHeading, data }) {
 
 function CoursesCard({ course }) {
   return (
-    <Link key={course.id} to={`/studentPortal/allCourseDetails/${course.id}`}>
+    <Link key={course.id} to={`/student/allCourseDetails/${course.id}`}>
       <Card className="w-full overflow-hidden cursor-pointer gap-0 py-0">
         <AspectRatio ratio={16 / 9}>
           <img
