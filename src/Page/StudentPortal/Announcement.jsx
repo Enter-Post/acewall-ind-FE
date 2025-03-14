@@ -43,7 +43,7 @@ const Announcement = () => {
 
   return  (
     <div>
-      <div className="overflow-hidden">
+      <div className="overflow-hidden ">
         <AnnouncementCard mainHeading={"Announcement"} data={announcements} />
       </div>
     </div>

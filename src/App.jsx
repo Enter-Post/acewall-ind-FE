@@ -32,6 +32,7 @@ import TeacherAccount from "./Page/TeacherPortal/Account";
 import TeacherMessages from "./Page/TeacherPortal/Messages";
 import TeacherrAssignment from "./Page/TeacherPortal/TeacherAssignment";
 import TeacherAnnoucement from "./Page/TeacherPortal/TeacherAnnoucement";
+import TeacherLogin from "./Page/TeacherLogin";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
         {/* <Route path="/" element={<Home />}></Route> */}
         <Route path="/" element={<LandingPage />}></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/Home" element={<MainLayout />}></Route>
         <Route path="/TermsandConditions" element={<TermsandCondition />}></Route>

@@ -80,8 +80,8 @@ function AnnouncementCard({ mainHeading, data }) {
   return (
     <Card className="h-fit p-0">
       <CardContent className="p-0">
-        <div className="flex justify-between items-center bg-green-600 py-3 rounded" >
-          <p className="text-xl px-4 font-bold ">
+        <div className="" >
+          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
             Announcement
           </p>
         </div>

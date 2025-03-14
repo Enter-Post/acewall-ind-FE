@@ -74,8 +74,8 @@ const CourseCards = () => {
   return (
     <section className="p-3 md:p-0">
       <div className="pb-5">
-        <div className="border-green-600 flex bg-green-600 my-2">
-          <p className="text-xl p-2 text-white">My Courses</p>
+        <div className="">
+          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">My Courses</p>
         </div>
         <SearchBox />
       </div>

@@ -60,6 +60,11 @@ const Assignment = () => {
 
   return (
     <div>
+      <div className="" >
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
+        Assignments
+        </p>
+      </div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Search assignments..."
@@ -68,6 +73,7 @@ const Assignment = () => {
           className="max-w-sm"
         />
       </div>
+
       <div className="rounded-md border">
         <ScrollArea>
           <Table>
@@ -101,11 +107,10 @@ const Assignment = () => {
                     <TableCell>{assignment.dueDate}</TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          assignment.status === "Completed"
+                        className={`px-2 py-1 rounded-full text-xs ${assignment.status === "Completed"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
-                        }`}
+                          }`}
                       >
                         {assignment.status}
                       </span>

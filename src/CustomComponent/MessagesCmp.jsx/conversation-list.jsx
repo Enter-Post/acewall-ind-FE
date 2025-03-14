@@ -6,7 +6,6 @@ export default function ConversationList({ activeConversation, onSelectConversat
   return (
     <div className="border-r border-gray-200 flex flex-col h-full overflow-auto hide-scrollbar">
       <div className="p-6 border-b border-gray-200">
-        <h2 className="text-xl font-medium mb-4">Message</h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input

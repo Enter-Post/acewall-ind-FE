@@ -108,7 +108,7 @@ export default function TeacherDashboard() {
 
         {/* Main Content */}
           <div className="">
-            <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+            <h1 className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">Dashboard</h1>
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

@@ -71,7 +71,7 @@ const Gradebook = () => {
 
     return (
         <div>
-            <p className="text-xl p-2 my-3 bg-green-600 text-white">Grades</p>
+            <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
             <div className="flex gap-4 w-full mb-6">
                 <SelectCmp
                     data={courses}

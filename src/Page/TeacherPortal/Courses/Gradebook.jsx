@@ -32,7 +32,12 @@ export default function TeacherGradebook() {
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg">
-      <p className="text-xl pb-5">Grades</p>
+     <div className="mb-6 border-b">
+        <h2 className="text-2xl font-semibold flex items-center">
+          <div className="w-1 h-8 bg-green-500 mr-2"></div>
+          Grades
+        </h2>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <h3 className="text-lg font-medium text-gray-700 mb-2">

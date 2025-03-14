@@ -74,9 +74,11 @@ const TeacherCourses = () => {
   return (
     <section className="p-3 md:p-0">
       <div className=" flex flex-col pb-5 gap-5">
-        <div className="flex justify-between items-center">
-          <p className="text-xl pb-5">My Courses</p>
-        </div>
+         <div className="" >
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
+          My Courses
+        </p>
+      </div>
         <SearchBox />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

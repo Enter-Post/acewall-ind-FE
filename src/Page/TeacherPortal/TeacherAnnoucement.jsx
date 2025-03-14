@@ -52,14 +52,16 @@ export default function TeacherAnnoucement() {
   ]
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Announcements</h1>
-        <Button className="bg-green-500 hover:bg-green-600">
-          <Plus className="mr-2 h-4 w-4" /> Add New
-        </Button>
+    <div className="max-w-5xl mx-auto p-3 md:p-0">
+      <div className="flex flex-col mb-2 justify-between ">
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Announcements
+        </p>
+        <div className="flex justify-end">
+          <Button className="bg-green-500 w-fit hover:bg-green-600">
+            <Plus className="mr-2 h-4 w-4" /> Add New
+          </Button>
+        </div>
       </div>
-
       <div className="space-y-4">
         {/* Current Announcements */}
         <div className="border rounded-lg overflow-hidden bg-white">
@@ -69,7 +71,7 @@ export default function TeacherAnnoucement() {
                 <ChevronDown
                   className={`h-5 w-5 mr-2 transition-transform ${currentOpen ? "transform rotate-180" : ""}`}
                 />
-                <h2 className="text-xl font-semibold">Current Announcements ({currentAnnouncements.length})</h2>
+                <h2 className="text-md font-semibold">Current Announcements ({currentAnnouncements.length})</h2>
               </CollapsibleTrigger>
             </div>
 
@@ -118,7 +120,7 @@ export default function TeacherAnnoucement() {
                 <ChevronDown
                   className={`h-5 w-5 mr-2 transition-transform ${pastOpen ? "transform rotate-180" : ""}`}
                 />
-                <h2 className="text-xl font-semibold">Past Announcements ({pastAnnouncements.length})</h2>
+                <h2 className="text-md font-semibold">Past Announcements ({pastAnnouncements.length})</h2>
               </CollapsibleTrigger>
             </div>
 

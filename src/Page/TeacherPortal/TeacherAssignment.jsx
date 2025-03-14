@@ -64,12 +64,15 @@ export default function TeacherrAssignment() {
   ]
 
   return (
-    <div className="container py-4 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">Assessment</h1>
-        <Button className="bg-green-500 hover:bg-green-600">
-          <Plus className="mr-2 h-4 w-4" /> Add New
-        </Button>
+    <div className="container p-3 md:p-0">
+      <div className="flex flex-col mb-2 justify-between ">
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Assignments
+        </p>
+        <div className="flex justify-end">
+          <Button className="bg-green-500 w-fit hover:bg-green-600">
+            <Plus className="mr-2 h-4 w-4" /> Add New
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-6">

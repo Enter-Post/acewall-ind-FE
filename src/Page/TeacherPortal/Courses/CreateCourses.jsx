@@ -48,7 +48,11 @@ export default function CreateCourses() {
 
   return (
     <div className="container">
-      <h1 className="text-3xl font-bold mb-6">Create Course</h1>
+        <div className="" >
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
+          Create Course
+        </p>
+      </div>
 
       <Card className="p-6">
         <div className="border-l-4 border-green-500 pl-4 mb-6">

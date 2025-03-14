@@ -16,7 +16,7 @@ const Login = () => {
         <div className="w-full flex flex-col md:flex-row items-center justify-center bg-white rounded-lg shadow dark:border sm:max-w-md md:max-w-2xl xl:max-w-4xl p-6 md:p-8 xl:p-10 dark:bg-gray-800 dark:border-gray-700">
           <div className="w-full md:w-1/2 p-6 space-y-4 md:space-y-6 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-              Sign in to your account
+              Sign in as Student
             </h1>
             <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
               <div>
@@ -51,6 +51,12 @@ const Login = () => {
               >
                 Sign in
               </button>
+              <p className="text-sm font-light text-green-500 dark:text-gray-400">
+                
+                <Link to="/TeacherLogin" className="font-medium  uppercase text-primary-600 hover:underline dark:text-primary-500">
+                  login as a teacher                
+                  </Link>
+              </p>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Don’t have an account yet?{' '}
                 <Link to="/signup" className="font-medium text-primary-600 hover:underline dark:text-primary-500">

@@ -3,8 +3,7 @@ import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
 import { Youtube ,X , Mail} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import TermsandCondition from "../Page/Termsandcondition";
-
+import TermsandCondition from "./Page/TermsandCondition";
 const Footer = () => {
   return (
     <footer className="px-4 divide-y bg-gray-800 text-white mt-20 dark:bg-black dark:text-white">
@@ -30,7 +29,7 @@ const Footer = () => {
                 <a rel="noopener noreferrer" href="https://www.acewallscholars.org/academic-tutoring">Services</a>
               </li>
               <li>
-                <Link rel="noopener noreferrer" to="/Termsandconditions">terms and Conditions</Link>
+                <Link rel="noopener noreferrer" to="/TermsandCondition">terms and Conditions</Link>
               </li>
               <li>
                 <Link rel="noopener noreferrer" to="/Privacypolicy">Privacy Policy</Link>
