@@ -1,121 +1,320 @@
+"use client"
+
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import SelectCmp from "@/CustomComponent/SelectCmp"
+import { ChevronDown, ChevronRight, FileText, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Progress } from "@/components/ui/progress"
 
-const Gradebook = () => {
-    const courses = ["Web Development", "Graphic Designing", "Digital Marketing"]
+// Sample data
+const subjectsData = [
+  {
+    id: "env-sci",
+    subject: "Environmental Science 101",
+    assignments: [
+      {
+        id: "env-1",
+        title: "Essay on Climate Change",
+        chapter: 1,
+        marks: 100,
+        obtMarks: 80,
+      },
+      {
+        id: "env-2",
+        title: "Research on Renewable Energy",
+        chapter: 2,
+        marks: 100,
+        obtMarks: 85,
+      },
+      {
+        id: "env-3",
+        title: "Ecosystem Analysis",
+        chapter: 3,
+        marks: 100,
+        obtMarks: 90,
+      },
+    ],
+  },
+  {
+    id: "calc",
+    subject: "Calculus II",
+    assignments: [
+      {
+        id: "calc-1",
+        title: "Math Assignment 1",
+        chapter: 1,
+        marks: 100,
+        obtMarks: 75,
+      },
+      {
+        id: "calc-2",
+        title: "Math Assignment 2",
+        chapter: 2,
+        marks: 100,
+        obtMarks: 82,
+      },
+      {
+        id: "calc-3",
+        title: "Math Assignment 3",
+        chapter: 3,
+        marks: 100,
+        obtMarks: 78,
+      },
+    ],
+  },
+  {
+    id: "hist",
+    subject: "World History",
+    assignments: [
+      {
+        id: "hist-1",
+        title: "History Essay",
+        chapter: 1,
+        marks: 100,
+        obtMarks: 88,
+      },
+      {
+        id: "hist-2",
+        title: "History Presentation",
+        chapter: 2,
+        marks: 100,
+        obtMarks: 92,
+      },
+      {
+        id: "hist-3",
+        title: "Historical Analysis",
+        chapter: 3,
+        marks: 100,
+        obtMarks: 85,
+      },
+    ],
+  },
+]
 
-    const [selectedCourse, setSelectedCourse] = useState("")
-    const [selectedMonth, setSelectedMonth] = useState("")
-    const [assignments, setAssignments] = useState([
-        {
-            subject: "Web Development",
-            months: {
-                June: {
-                    marks: 85,
-                    total: "A"
-                },
-                July: {
-                    marks: 90,
-                    total: "A"
-                }
-            }
-        },
-        {
-            subject: "Graphic Designing",
-            months: {
-                June: {
-                    marks: 78,
-                    total: "B+"
-                },
-                July: {
-                    marks: 82,
-                    total: "A-"
-                }
-            }
-        },
-        {
-            subject: "Digital Marketing",
-            months: {
-                June: {
-                    marks: 92,
-                    total: "A"
-                },
-                July: {
-                    marks: 88,
-                    total: "A"
-                }
-            }
-        }
-    ])
+const gradeScale = [
+  { letter: "A", range: "90% - 100%" },
+  { letter: "B", range: "80% - 89%" },
+  { letter: "C", range: "70% - 79%" },
+  { letter: "D", range: "60% - 69%" },
+  { letter: "F", range: "Below 60%" },
+]
 
-    const [filteredAssignments, setFilteredAssignments] = useState(assignments)
+export default function Gradebook() {
+  const [search, setSearch] = useState("")
+  const [expandedSubjectId, setExpandedSubjectId] = useState(null)
 
-    const handleFilter = () => {
-        const filtered = assignments.filter(
-            (assignment) =>
-                (selectedCourse === "" || assignment.subject === selectedCourse) &&
-                (selectedMonth === "" || assignment.months[selectedMonth])
-        )
-        setFilteredAssignments(filtered)
+  // Calculate average for each subject
+  const subjectsWithAverage = subjectsData.map((subject) => {
+    const totalMarks = subject.assignments.reduce((sum, assignment) => sum + assignment.marks, 0)
+    const totalObtained = subject.assignments.reduce((sum, assignment) => sum + assignment.obtMarks, 0)
+    const average = (totalObtained / totalMarks) * 100
+
+    // Determine grade
+    let grade = "F"
+    if (average >= 90) grade = "A"
+    else if (average >= 80) grade = "B"
+    else if (average >= 70) grade = "C"
+    else if (average >= 60) grade = "D"
+
+    return {
+      ...subject,
+      average,
+      grade,
     }
+  })
 
-    const handleRemoveFilter = () => {
-        setSelectedCourse("")
-        setSelectedMonth("")
-        setFilteredAssignments(assignments)
+  // Calculate overall average
+  const overallTotalMarks = subjectsData.reduce(
+    (sum, subject) => sum + subject.assignments.reduce((sum, assignment) => sum + assignment.marks, 0),
+    0,
+  )
+
+  const overallObtainedMarks = subjectsData.reduce(
+    (sum, subject) => sum + subject.assignments.reduce((sum, assignment) => sum + assignment.obtMarks, 0),
+    0,
+  )
+
+  const overallAverage = (overallObtainedMarks / overallTotalMarks) * 100
+
+  // Determine overall grade
+  let overallGrade = "F"
+  if (overallAverage >= 90) overallGrade = "A"
+  else if (overallAverage >= 80) overallGrade = "B"
+  else if (overallAverage >= 70) overallGrade = "C"
+  else if (overallAverage >= 60) overallGrade = "D"
+
+  // Filter subjects based on search
+  const filteredSubjects = subjectsWithAverage.filter(
+    (subject) =>
+      subject.subject.toLowerCase().includes(search.toLowerCase()) ||
+      subject.assignments.some((assignment) => assignment.title.toLowerCase().includes(search.toLowerCase())),
+  )
+
+  const toggleSubjectExpand = (id) => {
+    if (expandedSubjectId === id) {
+      setExpandedSubjectId(null)
+    } else {
+      setExpandedSubjectId(id)
     }
+  }
 
-    const monthsOrder = ["July", "June"] // Last month first
+  return (
+    <div className="container mx-auto py-6 space-y-6">
+      {/* Overall Performance Card */}
+      <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
+      <Card className={""}>
+        <CardHeader>
+          <CardTitle className={"text-green-500"} >Overall Academic Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium">Overall Average</span>
+                <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}%</span>
+              </div>
+// =======
+//     const monthsOrder = ["July", "June"] // Last month first
 
-    return (
-        <div>
-            <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
-            <div className="flex gap-4 w-full mb-6">
-                <SelectCmp
-                    data={courses}
-                    title="Course"
-                    value={selectedCourse}
-                    onChange={(value) => setSelectedCourse(value)}
-                />
-                <SelectCmp
-                    data={monthsOrder}
-                    title="Month"
-                    value={selectedMonth}
-                    onChange={(value) => setSelectedMonth(value)}
-                />
-                <Button className="bg-green-600" onClick={handleFilter}>Filter</Button>
-                <Button variant="outline" onClick={handleRemoveFilter}>Remove filter</Button>
+//     return (
+//         <div>
+//             <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
+//             <div className="flex gap-4 w-full mb-6">
+//                 <SelectCmp
+//                     data={courses}
+//                     title="Course"
+//                     value={selectedCourse}
+//                     onChange={(value) => setSelectedCourse(value)}
+//                 />
+//                 <SelectCmp
+//                     data={monthsOrder}
+//                     title="Month"
+//                     value={selectedMonth}
+//                     onChange={(value) => setSelectedMonth(value)}
+//                 />
+//                 <Button className="bg-green-600" onClick={handleFilter}>Filter</Button>
+//                 <Button variant="outline" onClick={handleRemoveFilter}>Remove filter</Button>
+// >>>>>>> main
             </div>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Subject</TableHead>
-                        <TableHead>Month</TableHead>
-                        <TableHead>Marks</TableHead>
-                        <TableHead>Grade</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {filteredAssignments.map((assignment) => (
-                        monthsOrder.map((month) => (
-                            (selectedMonth === "" || selectedMonth === month) && (
-                                assignment.months[month] && (
-                                    <TableRow key={`${assignment.subject}-${month}`}>
-                                        <TableCell>{assignment.subject}</TableCell>
-                                        <TableCell>{month}</TableCell>
-                                        <TableCell>{assignment.months[month].marks}</TableCell>
-                                        <TableCell>{assignment.months[month].total}</TableCell>
-                                    </TableRow>
-                                )
-                            )
-                        ))
-                    ))}
-                </TableBody>
-            </Table>
+
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-500">{overallGrade}</div>
+                <div className="text-sm text-muted-foreground">Overall Grade</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Subjects and Assignments Table */}
+      <div>
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Search subjects or assignments..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-sm"
+          />
         </div>
-    )
+        <div className="rounded-md border">
+          <ScrollArea className="">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Subject</TableHead>
+                  <TableHead>Average</TableHead>
+                  <TableHead>Grade</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="p-10">
+                {filteredSubjects.map((subject) => (
+                  <>
+                    <TableRow key={subject.id} className="text-xs md:text-sm border">
+                      <TableCell
+                        className="cursor-pointer hover:text-green-600 flex items-center gap-2 font-medium"
+                        onClick={() => toggleSubjectExpand(subject.id)}
+                      >
+                        {expandedSubjectId === subject.id ? (
+                          <ChevronDown className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-gray-500" />
+                        )}
+                        <span>{subject.subject}</span>
+                      </TableCell>
+                      <TableCell>{subject.average.toFixed(2)}%</TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            subject.grade === "A"
+                              ? "bg-green-100 text-green-800"
+                              : subject.grade === "B"
+                                ? "bg-blue-100 text-blue-800"
+                                : subject.grade === "C"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : subject.grade === "D"
+                                    ? "bg-orange-100 text-orange-800"
+                                    : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {subject.grade}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                    {expandedSubjectId === subject.id && (
+                      <TableRow className="bg-muted/50">
+                        <TableCell colSpan={4} className="p-0">
+                          <div className="p-4">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Assignment</TableHead>
+                                  <TableHead>Chapter</TableHead>
+                                  <TableHead>Marks</TableHead>
+                                  <TableHead>Obtained</TableHead>
+                                  <TableHead>Percentage</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {subject.assignments.map((assignment) => (
+                                  <TableRow key={assignment.id}>
+                                    <TableCell className="flex items-center gap-2">
+                                      <FileText className="h-4 w-4 text-gray-500" />
+                                      {assignment.title}
+                                    </TableCell>
+                                    <TableCell>{assignment.chapter}</TableCell>
+                                    <TableCell>{assignment.marks}</TableCell>
+                                    <TableCell>{assignment.obtMarks}</TableCell>
+                                    <TableCell>
+                                      <div className="flex items-center gap-5">
+                                        <span >{((assignment.obtMarks / assignment.marks) * 100).toFixed(0)}%</span>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
+                ))}
+                {filteredSubjects.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-6">
+                      No subjects or assignments found matching your search.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+        </div>
+      </div>
+    </div>
+  )
 }
 
-export default Gradebook

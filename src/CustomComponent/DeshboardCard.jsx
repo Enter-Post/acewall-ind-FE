@@ -79,31 +79,38 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
 function AnnouncementCard({ mainHeading, data }) {
   return (
     <Card className="h-fit p-0">
-      <CardContent className="p-0">
-        <div className="" >
-          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
-            Announcement
-          </p>
+  <CardContent className="p-0">
+    {/* Announcement Header */}
+    <div className="flex justify-between items-center bg-green-600 py-3 rounded-t">
+    <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
+    </div>
+
+    {/* Announcements List */}
+    <div className="divide-y">
+      {data?.map((announcement, index) => (
+        <div key={index} className="px-4 py-3 flex flex-col gap-3 border-b border-gray-300">
+          {/* Title and Date/Time */}
+          <div className="flex justify-between items-center">
+            <p className="font-bold">{announcement.title}</p>
+            <p className="text-sm text-gray-500">
+              {announcement.date} • {announcement.time}
+            </p>
+          </div>
+
+          {/* Announcement Message */}
+          <p className="text-gray-700">{announcement.message}</p>
         </div>
-        <div className="divide-y">
-          {data?.map((announcement, index) => (
-            <div key={index} className="px-4 py-3 flex flex-col gap-5">
-              <div className="flex justify-between">
-                <p className="font-bold">{announcement.title}</p>
-                <p className="text-sm text-gray-500">{announcement.date}</p>
-              </div>
-              <p className="">{announcement.message}</p>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+      ))}
+    </div>
+  </CardContent>
+</Card>
+
   );
 }
 
 function CoursesCard({ course }) {
   return (
-    <Link key={course.id} to={`/student/allCourseDetails/${course.id}`}>
+    <Link key={course.id} to={`/studentPortal/allCourseDetails/${course.id}`}>
       <Card className="w-full overflow-hidden cursor-pointer gap-0 py-0">
         <AspectRatio ratio={16 / 9}>
           <img

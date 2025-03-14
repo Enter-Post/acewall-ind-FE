@@ -124,7 +124,7 @@ const Assignment = () => {
                           onClick={() => handleSubmitAssignment(assignment.id)}
                         >
                           <Upload className="h-3 w-3 mr-1" />
-                          Submit
+                          Add
                         </Button>
                       )}
                     </TableCell>

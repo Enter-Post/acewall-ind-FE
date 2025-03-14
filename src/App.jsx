@@ -74,6 +74,7 @@ function App() {
           <Route path="Announcements" element={<TeacherAnnoucement />} />
           <Route path="courses">
             <Route index element={<TeacherCourses />} />
+            <Route path="courseDetail" element={<TeacherCourseDetails />} />
             <Route path="createCourses">
               <Route index element={<CreateCourses />} />
               <Route path="addchapters" element={<CoursesChapter />} />
