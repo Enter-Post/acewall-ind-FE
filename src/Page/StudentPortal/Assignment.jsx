@@ -83,7 +83,7 @@ const Assignment = () => {
                 <TableHead>Course</TableHead>
                 <TableHead>Due Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

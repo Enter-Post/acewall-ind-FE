@@ -3,7 +3,6 @@ import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
 import { Youtube ,X , Mail} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import TermsandCondition from "./Page/TermsandCondition";
 const Footer = () => {
   return (
     <footer className="px-4 divide-y bg-gray-800 text-white mt-20 dark:bg-black dark:text-white">
@@ -18,6 +17,8 @@ const Footer = () => {
         </div>
         <div className="grid grid-cols-2 text-sm gap-x-3 gap-y-8 lg:w-2/3 sm:grid-cols-4">
           <div className="space-y-3">
+          <h3 className=" uppercase dark:text-gray-900">Pages</h3>
+
             <ul className="space-y-1">
               <li>
                 <a rel="noopener noreferrer" href="https://www.acewallscholars.org/">Home</a>
@@ -29,7 +30,7 @@ const Footer = () => {
                 <a rel="noopener noreferrer" href="https://www.acewallscholars.org/academic-tutoring">Services</a>
               </li>
               <li>
-                <Link rel="noopener noreferrer" to="/TermsandCondition">terms and Conditions</Link>
+                <Link rel="noopener noreferrer" to="/TermsandCondition">Terms and Conditions</Link>
               </li>
               <li>
                 <Link rel="noopener noreferrer" to="/Privacypolicy">Privacy Policy</Link>
@@ -38,7 +39,7 @@ const Footer = () => {
           </div>
          
           <div className="space-y-3">
-            <h3 className="uppercase dark:text-gray-900">Courses</h3>
+            <h3 className=" uppercase dark:text-gray-900">Courses</h3>
             <ul className="space-y-1">
               <li>
                 <a rel="noopener noreferrer" href="/student/allCourseDetails/4">Biology</a>
@@ -80,7 +81,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="py-6 text-sm text-center dark:text-gray-600">© 2025 Company Co. All rights reserved.</div>
+      <div className="py-6 text-sm text-center dark:text-gray-600">© Acewallscholars.Org All rights reserved.</div>
+
     </footer>
   );
 };

@@ -62,16 +62,16 @@ const Deshboard = () => {
             link={"announcements"}
           />
           <div className="grid sm:grid-cols-1 lg:grid-cols-2 grid-rows-1 gap-4">
+          <Assignment
+              width
+              mainHeading="Assignments Due"
+              data={AssignmentDue}
+            />
             <DeshBoardCard
               mainHeading="My courses"
               data={courses}
               link={"mycourses"}
               width="max-w-1/2"
-            />
-            <Assignment
-              width
-              mainHeading="Assignments Due"
-              data={AssignmentDue}
             />
           </div>
 

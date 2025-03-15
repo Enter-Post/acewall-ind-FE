@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const LandingPage = () => {
   return (
-    <div className="h-screen bg-cover bg-center bg-[url('https://airforshare.com/files/ofFpPT.webp')]">
+    <div className="h-screen bg-cover bg-center bg-[url('assets/hero.webp')]">
       <div className="h-full w-full bg-black/50 backdrop-blur- flex items-center justify-center">
         <div className="flex flex-col justify-center items-center gap-8 text-center">
           <h1 className="text-white text-5xl font-extrabold tracking-wide">

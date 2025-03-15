@@ -175,28 +175,6 @@ export default function Gradebook() {
                 <span className="text-sm font-medium">Overall Average</span>
                 <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}%</span>
               </div>
-// =======
-//     const monthsOrder = ["July", "June"] // Last month first
-
-//     return (
-//         <div>
-//             <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
-//             <div className="flex gap-4 w-full mb-6">
-//                 <SelectCmp
-//                     data={courses}
-//                     title="Course"
-//                     value={selectedCourse}
-//                     onChange={(value) => setSelectedCourse(value)}
-//                 />
-//                 <SelectCmp
-//                     data={monthsOrder}
-//                     title="Month"
-//                     value={selectedMonth}
-//                     onChange={(value) => setSelectedMonth(value)}
-//                 />
-//                 <Button className="bg-green-600" onClick={handleFilter}>Filter</Button>
-//                 <Button variant="outline" onClick={handleRemoveFilter}>Remove filter</Button>
-// >>>>>>> main
             </div>
 
             <div className="flex items-center justify-center">

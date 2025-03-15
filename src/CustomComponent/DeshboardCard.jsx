@@ -81,9 +81,8 @@ function AnnouncementCard({ mainHeading, data }) {
     <Card className="h-fit p-0">
   <CardContent className="p-0">
     {/* Announcement Header */}
-    <div className="flex justify-between items-center bg-green-600 py-3 rounded-t">
-    <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
-    </div>
+    <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Anouncements</p>
+
 
     {/* Announcements List */}
     <div className="divide-y">
