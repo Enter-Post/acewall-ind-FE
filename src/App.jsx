@@ -19,7 +19,7 @@ import TeacherPortalLayout from "./Page/TeacherPortal/Layout";
 import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
 import TeacherDashboard from "./Page/TeacherPortal/Dashboard";
 import Messages from "./Page/StudentPortal/Messages";
-import TermsandCondition from "./Page/TermsandCondition";
+import TermsandCondition from "./Page/Termsandcondition";
 import PrivacyPolicy from "./Page/Priactpolicy";
 
 import CreateCourses from "./Page/TeacherPortal/Courses/CreateCourses";
