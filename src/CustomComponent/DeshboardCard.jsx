@@ -83,7 +83,7 @@ function AnnouncementCard({ mainHeading, data }) {
     {/* Announcement Header */}
     <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Anouncements</p>
 
-
+ 
     {/* Announcements List */}
     <div className="divide-y">
       {data?.map((announcement, index) => (
