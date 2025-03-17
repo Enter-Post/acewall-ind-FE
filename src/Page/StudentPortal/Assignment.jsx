@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,7 +19,8 @@ const initialAssignments = [
     course: "Environmental Science 101",
     dueDate: "2024-03-15",
     status: "Pending",
-    description: "Write a 5-page essay discussing the impacts of climate change.",
+    description:
+      "Write a 5-page essay discussing the impacts of climate change.",
     documents: [
       { id: "doc1", name: "Climate Change Guidelines.pdf", url: "#" },
       { id: "doc2", name: "Sample Essay.docx", url: "#" },
@@ -51,7 +59,9 @@ const Assignment = () => {
   );
 
   const toggleAssignmentExpand = (assignmentId) => {
-    setExpandedAssignmentId(expandedAssignmentId === assignmentId ? null : assignmentId);
+    setExpandedAssignmentId(
+      expandedAssignmentId === assignmentId ? null : assignmentId
+    );
   };
 
   const handleSubmitAssignment = (assignmentId) => {
@@ -59,10 +69,10 @@ const Assignment = () => {
   };
 
   return (
-    <div>
-      <div className="" >
+    <div className="">
+      <div className="">
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
-        Assignments
+          Assignments
         </p>
       </div>
       <div className="flex items-center py-4">
@@ -74,7 +84,7 @@ const Assignment = () => {
         />
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border ">
         <ScrollArea>
           <Table>
             <TableHeader>
@@ -83,13 +93,16 @@ const Assignment = () => {
                 <TableHead>Course</TableHead>
                 <TableHead>Due Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="">Actions</TableHead>
+                {/* <TableHead className="">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredAssignments.map((assignment) => (
                 <>
-                  <TableRow key={assignment.id} className={"text-xs md:text-sm"}>
+                  <TableRow
+                    key={assignment.id}
+                    className={"text-xs md:text-sm"}
+                  >
                     <TableCell
                       className="cursor-pointer hover:text-blue-600 flex items-center gap-2"
                       onClick={() => toggleAssignmentExpand(assignment.id)}
@@ -99,7 +112,13 @@ const Assignment = () => {
                       ) : (
                         <ChevronRight className="h-4 w-4 text-gray-500" />
                       )}
-                      <span className={expandedAssignmentId === assignment.id ? "font-medium" : ""}>
+                      <span
+                        className={
+                          expandedAssignmentId === assignment.id
+                            ? "font-medium"
+                            : ""
+                        }
+                      >
                         {assignment.title}
                       </span>
                     </TableCell>
@@ -107,16 +126,17 @@ const Assignment = () => {
                     <TableCell>{assignment.dueDate}</TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${assignment.status === "Completed"
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          assignment.status === "Completed"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
-                          }`}
+                        }`}
                       >
                         {assignment.status}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      {assignment.status !== "Completed" && (
+                    {/* <TableCell>
+                      {assignment.status !== "Completed" ? (
                         <Button
                           size="sm"
                           variant="outline"
@@ -126,24 +146,47 @@ const Assignment = () => {
                           <Upload className="h-3 w-3 mr-1" />
                           Add
                         </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled
+                          className="text-xs"
+                          onClick={() => handleSubmitAssignment(assignment.id)}
+                        >
+                          <Upload className="h-3 w-3 mr-1" />
+                          Added
+                        </Button>
                       )}
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                   {expandedAssignmentId === assignment.id && (
                     <TableRow className="bg-gray-50">
                       <TableCell colSpan={5} className="p-4">
                         <div className="space-y-4">
                           <div>
-                            <h4 className="text-sm font-medium mb-2">Description</h4>
-                            <p className="text-sm text-gray-600">{assignment.description}</p>
+                            <h4 className="text-sm font-medium mb-2">
+                              Description
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              {assignment.description}
+                            </p>
                           </div>
                           <div>
-                            <h4 className="text-sm font-medium mb-2">Documents</h4>
+                            <h4 className="text-sm font-medium mb-2">
+                              Documents
+                            </h4>
                             <div className="space-y-2">
                               {assignment.documents.map((doc) => (
-                                <div key={doc.id} className="flex items-center gap-2 text-sm">
+                                <div
+                                  key={doc.id}
+                                  className="flex items-center gap-2 text-sm"
+                                >
                                   <FileText className="h-4 w-4 text-gray-500" />
-                                  <a href="#" className="text-blue-600 hover:underline">
+                                  <a
+                                    href="#"
+                                    className="text-blue-600 hover:underline"
+                                  >
                                     {doc.name}
                                   </a>
                                 </div>
@@ -154,10 +197,12 @@ const Assignment = () => {
                             <div className="pt-2">
                               <Button
                                 className="bg-green-500 hover:bg-green-600"
-                                onClick={() => handleSubmitAssignment(assignment.id)}
+                                onClick={() =>
+                                  handleSubmitAssignment(assignment.id)
+                                }
                               >
                                 <Upload className="h-4 w-4 mr-2" />
-                                Submit Assignment
+                                Add Assignment
                               </Button>
                             </div>
                           )}

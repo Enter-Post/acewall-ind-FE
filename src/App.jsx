@@ -56,9 +56,9 @@ function App() {
           <Route path="gradebook" element={<Gradebook />}></Route>
           <Route path="announcements" element={<Announcement />}></Route>
           <Route path="account" element={<Account />}></Route>
-          <Route path="Course/:id" element={<CoursesDetail />} />
+          <Route path="Course" element={<CoursesDetail />} />
           <Route path="support" element={<Support />} />
-          <Route path="allCourseDetails/:id" element={<AllCoursesDetail />} />
+          <Route path="allCourseDetails" element={<AllCoursesDetail />} />
           <Route path="moreCourses" element={<AllCourses />} />
           <Route path="payment" element={<Payment />} />
           <Route path="messages" element={<Messages />} />

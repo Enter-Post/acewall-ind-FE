@@ -72,7 +72,7 @@ const CourseCards = () => {
   ];
 
   return (
-    <section className="p-3 md:p-0">
+    <section className="">
       <div className="pb-5">
         <div className="">
           <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">My Courses</p>

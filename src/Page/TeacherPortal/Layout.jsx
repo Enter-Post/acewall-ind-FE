@@ -104,10 +104,13 @@ export default function TeacherPortalLayout() {
   }, [selected]);
 
   return (
-    <div className="flex h-screen flex-col w-screen">
+    <div className="flex flex-col w-screen">
       <header className="sticky top-0 z-10 bg-green-50">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
-          <TeacherTopNavbarDropDown selected={selected} setselected={setselected} />
+          <TeacherTopNavbarDropDown
+            selected={selected}
+            setselected={setselected}
+          />
         </div>
         <div className="flex h-16 items-center justify-between px-4 border">
           <Button
@@ -116,7 +119,7 @@ export default function TeacherPortalLayout() {
             className="md:hidden"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
-            <Menu className="h-6 w-6"/>
+            <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
           {/* <div className="text-xl font-semibold">ScholarNest</div> */}
@@ -160,7 +163,13 @@ export default function TeacherPortalLayout() {
           <div className="p-4">
             <div className={`flex items-center space-x-3 pb-4 cursor-pointer`}>
               <Avatar className="w-10 ">
-                <AvatarImage className="rounded-full" src={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} alt="@user" />
+                <AvatarImage
+                  className="rounded-full"
+                  src={
+                    "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  }
+                  alt="@user"
+                />
                 <AvatarFallback>UN</AvatarFallback>
               </Avatar>
               <div>
@@ -194,13 +203,22 @@ export default function TeacherPortalLayout() {
                 </Link>
               ))}
             </nav>
+            <div className=" rounded-full flex flex-col items-center justify-between mt-10 w-full dark:bg-violet-600">
+              <img src={acewallshort} alt="" className="w-1/2" />
+              <Link
+                to="https://www.acewallscholars.org/contact-Us"
+                className="text-center font-semibold text-sm mt-4 text-acewall-main"
+              >
+                Need Tutoring .Contact us
+              </Link>
+            </div>
           </div>
         </aside>
-        <main className="flex-1 p-4 hide-scrollbar overflow-y-scroll">
+        <main className="flex-1 p-2 md:p-4 hide-scrollbar h-screen overflow-y-scroll w-full">
           <Outlet selected={selected} setselected={setselected} />
-          <Footer />
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -51,7 +51,7 @@ const Deshboard = () => {
 
   return (
     <>
-      <div>
+      <div className="">
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Dashboard</p>
         <section className="flex flex-col gap-4">
           <DeshBoardCard
