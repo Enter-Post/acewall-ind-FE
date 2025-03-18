@@ -9,9 +9,7 @@ import PasswordInfo from "./PasswordInfo";
 
 const steps = [
   "Personal Information",
-  "Contact Information",
   "Address Information",
-  "Set Password",
 ];
 
 const SignupForm = () => {
@@ -47,23 +45,10 @@ const SignupForm = () => {
             handleInputChange={handleInputChange}
           />
         );
+    
       case 1:
         return (
-          <ContactInfo
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-        );
-      case 2:
-        return (
           <AddressInfo
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-        );
-      case 3:
-        return (
-          <PasswordInfo
             formData={formData}
             handleInputChange={handleInputChange}
           />

@@ -5,7 +5,7 @@ import {
   Twitter,
   Instagram,
   Youtube,
-  Linkedin,
+  Mail,
   ArrowUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -33,28 +33,28 @@ export default function Footer() {
             <h3 className="font-semibold text-white mb-4">Useful Links</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link to="https://www.acewallscholars.org/" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> Home
                 </Link>
               </li>
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link to="https://www.acewallscholars.org/about" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> About us
                 </Link>
               </li>
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link to="https://www.acewallscholars.org/academic-tutoring" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> Services
                 </Link>
               </li>
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link  to="/TermsandCondition" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> Terms of
                   service
                 </Link>
               </li>
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link to="/Privacypolicy" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> Privacy policy
                 </Link>
               </li>
@@ -66,27 +66,27 @@ export default function Footer() {
             <h3 className="font-semibold text-white mb-4">Popular Courses</h3>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Algebra
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Algebra 1
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> English
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> Biology
                 </Link>
               </li>
               <li>
-                <Link href="#" className="flex items-center hover:text-white">
+                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
+                  <span className="text-green-500 mr-2">›</span> Algebra 
+                </Link>
+              </li>
+              <li>
+                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
+                  <span className="text-green-500 mr-2">›</span> English
+                </Link>
+              </li>
+              <li>
+                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
+                  <span className="text-green-500 mr-2">›</span> Maths
+                </Link>
+              </li>
+              <li>
+                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
                   <span className="text-green-500 mr-2">›</span> Physics
                 </Link>
               </li>
@@ -121,7 +121,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-400">
               © Copyright{" "}
-              <a target="#" href="https://www.acewallscholars.org/">
+              <a target="#" to="https://www.acewallscholars.org/">
                 <span className="text-green-500 font-bold">Acewall Scholars.</span>
               </a>
               {" "}
@@ -129,34 +129,34 @@ export default function Footer() {
             </p>
             <div className="flex space-x-2 mt-4 md:mt-0">
               <Link
-                href="#"
+                to="https://twitter.com/AcewallScholars"
                 className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
               >
                 <Twitter className="h-4 w-4" />
               </Link>
               <Link
-                href="#"
+                to="https://www.facebook.com/acewallscholars"
                 className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
               >
                 <Facebook className="h-4 w-4" />
               </Link>
               <Link
-                href="#"
+                to="https://www.instagram.com/acewallscholarsonline/"
                 className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
               >
                 <Instagram className="h-4 w-4" />
               </Link>
               <Link
-                href="#"
+                to="https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ"
                 className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
               >
                 <Youtube className="h-4 w-4" />
               </Link>
               <Link
-                href="#"
+                to="contact@acewallscholars.org"
                 className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
               >
-                <Linkedin className="h-4 w-4" />
+                <Mail className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -164,7 +164,7 @@ export default function Footer() {
 
         {/* Back to top button */}
         <Link
-          href="#"
+          to="#"
           className="absolute right-4 bottom-4 bg-green-500 hover:bg-green-600 text-white p-2 rounded-md"
           onClick={(e) => {
             e.preventDefault();

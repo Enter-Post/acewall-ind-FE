@@ -17,8 +17,6 @@ export default function TeacherAccount() {
     reviews: 214633,
     students: 430117,
     courses: 7,
-    website: "https://www.vakoshvili.com",
-    socialLinks: ["facebook", "twitter", "instagram", "youtube"],
     about: `One day Vako had enough with the 9-to-5 grind, or more like the 8-to-8 in his case, and said to job "where the get out" and never looked back.
 
 He decided to work on his dream: be his own boss, travel the world, only do the work he enjoys, and make a lot more money in the process. No more begging for raises, vacation days, or having to deal with annoying bosses.
@@ -152,33 +150,7 @@ Vako realizes that people who take courses on Udemy want to transform their live
               </div>
             </div>
 
-            {/* Social Links */}
-            <div className="flex items-center gap-4">
-              <a
-                href={instructor.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
-              >
-                <ExternalLink className="h-4 w-4" />
-                {instructor.website}
-              </a>
-
-              <div className="flex gap-2">
-                <a href="#" className="text-gray-500 hover:text-blue-600">
-                  <Facebook className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-500 hover:text-blue-400">
-                  <Twitter className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-500 hover:text-pink-600">
-                  <Instagram className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-500 hover:text-red-600">
-                  <Youtube className="h-5 w-5" />
-                </a>
-              </div>
-            </div>
+            
           </div>
         </div>
       </div>

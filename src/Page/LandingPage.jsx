@@ -6,12 +6,13 @@ import LandingPageCard from "@/CustomComponent/LandingPageCard";
 import Layout from "./StudentPortal/Layout";
 import { TopNavbarDropDown } from "@/CustomComponent/TopNavDropDown";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
-import { Search } from "lucide-react"; // Using lucide-react for the Search icon
-import { Input } from "@/components/ui/input";  // Ensure this import is correct
+import { Menu, Search } from "lucide-react"; // Using lucide-react for the Search icon
+import { Input } from "@/components/ui/input"; // Ensure this import is correct
+import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
 import acewallshort from "../assets/acewallshort.png";
+import Footer from "@/CustomComponent/Footer";
 
 const cardData = [
- 
   {
     name: "Tutoring Services",
     description:
@@ -82,75 +83,119 @@ const LandingPage = () => {
   return (
     <>
       {/* Top Bar */}
-      <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
-      </div>
+      <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer"></div>
       {/* Header Navigation */}
       <header className="sticky top-0 z-10 bg-green-50 w-full">
         <div className="flex h-16 items-center justify-between px-4 border">
-          <div className="flex">
-
-            <img src={logo} alt="" className="w-40 hidden md:block" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle Sidebar</span>
+          </Button>
+          {/* <div className="text-xl font-semibold">ScholarNest</div> */}
+          <Link
+            onClick={() => setselected(1)}
+            className="block md:hidden"
+            to={"/student"}
+          >
             <img
               src={acewallshort}
               alt="Mobile Logo"
-              className="w-8 block md:hidden rounded-full h-auto cursor-pointer"
+              className="w-8 rounded-full h-auto cursor-pointer"
             />
-          </div>
-          <div className="flex gap-2 md:gap-5 text-black text-sm">
-            {topBarTabs.map((tab) => (
-
-              <Link
-                key={tab.id}
-                to={tab.path}
-                onClick={() => setSelected(tab.id)}
-                className={`cursor-pointer ${selected === tab.id ? "text-green-500 font-bold" : ""}`}
-              >
-                {tab.name}
-              </Link>
-            ))}
-          </div>
-
-          {/* Search Bar */}
-          <Link to={"/Login"}>
-            <button
-              type="submit"
-              className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
-            >
-              Login
-            </button>
           </Link>
+          <Link
+            onClick={() => setselected(1)}
+            className="hidden md:block"
+            to={"/student"}
+          >
+            <img
+              src={acewallscholarslogo}
+              alt="Desktop Logo"
+              className="w-40 h-auto  cursor-pointer"
+            />
+          </Link>
+
+          <div className="flex gap-5 text-black text-sm ">
+            {topBarTabs.map((tabs, index) => {
+              return (
+                <Link
+                  key={index}
+                  to={tabs.path}
+                  onClick={() => {
+                    setselected(tabs.id);
+                    setIsSidebarOpen(false);
+                  }}
+                  className={`cursor-pointer ${
+                    selected == tabs.id && "text-green-500 font-bold"
+                  }`}
+                >
+                  {tabs.name}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="hidden md:flex items-center space-x-4">
+            <Input type="email" placeholder="Search" />
+            <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
+              <Search className="rounded-full" />
+            </div>
+          </div>
         </div>
       </header>
       <div className="flex flex-col ">
-
         <div className="h-screen bg-cover bg-center bg-[url('assets/hero.webp')] ">
           <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
             <div className="flex  flex-col mt-10 justify-center  items-center px-2 text-center">
               <h1 className="text-white text-xl font-semibold tracking-wide">
                 Where the vision is realized. Where the dream is achieved
               </h1>
-              <div className=" flex items-center justify-center flex-wrap  sm:flex-row flex-col" >
-                <img src="http://localhost:5173/src/assets/acewallshort.png" alt="" className="w-15" />
-                <h2 className="text-white text-md max-w-lg px-4">Imagine * Beleve * Create</h2>
+              <div className=" flex items-center justify-center flex-wrap  sm:flex-row flex-col">
+                <img
+                  src="http://localhost:5173/src/assets/acewallshort.png"
+                  alt=""
+                  className="w-15"
+                />
+                <h2 className="text-white text-md max-w-lg px-4">
+                  Imagine * Believe * Create
+                </h2>
               </div>
             </div>
           </div>
-
         </div>
-        <div className="bg-black flex gap-5 items-center justify-evenly p-4 px-10 w-full lg:flex-row  flex-col ">
+        <div className="bg-black flex gap-5 items-center justify-evenly p-4 px-10 w-full lg:flex-row flex-col ">
           <h1 className="text-white text-xl">Create an account </h1>
-          <input type="email" placeholder="Enter your email" className="bg-white rounded px-4 text-lg text-center " />
-          <input type="password" placeholder="Enter your password" className="bg-white rounded px-4 text-lg text-center " />
+          <input
+            type="email"
+            placeholder="Enter your email"
+            className="bg-white rounded p-1"
+          />
+          <input
+            type="password"
+            placeholder="Enter your password"
+            className="bg-white rounded p-1"
+          />
           <Link to={"/signup"}>
             <button
               type="submit"
-              className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
+              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
             >
               Create Account
             </button>
           </Link>
+          <Link to={"/login"}>
+            <button
+              type="submit"
+              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
+            >
+              Login
+            </button>
+          </Link>
         </div>
-
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3">
           {cardData.map((card, index) => (
@@ -162,12 +207,10 @@ const LandingPage = () => {
               buttonUrl={card.buttonUrl}
             />
           ))}
-
         </div>
 
+        <Footer />
       </div>
-
-
     </>
   );
 };
