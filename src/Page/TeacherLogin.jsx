@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 // import acewall from '../assets/acewallscholarslogo.png';
-
+ 
 const TeacherLogin = () => {
   const navigate = useNavigate();
 
