@@ -30,7 +30,7 @@ import TeacherGradebook from "./Page/TeacherPortal/Courses/Gradebook";
 import Earning from "./Page/TeacherPortal/Earning";
 import TeacherAccount from "./Page/TeacherPortal/Account";
 import TeacherMessages from "./Page/TeacherPortal/Messages";
-import TeacherrAssignment from "./Page/TeacherPortal/TeacherAssignment";
+import Teacherrassessment from "./Page/TeacherPortal/TeacherAssignment";
 import TeacherAnnoucement from "./Page/TeacherPortal/TeacherAnnoucement";
 import TeacherLogin from "./Page/TeacherLogin";
 
@@ -70,7 +70,7 @@ function App() {
           <Route path="earning" element={<Earning />} />
           <Route path="account" element={<TeacherAccount />} />
           <Route path="messages" element={<TeacherMessages />} />
-          <Route path="assignment" element={<TeacherrAssignment/>} />
+          <Route path="assessment" element={<Teacherrassessment/>} />
           <Route path="Announcements" element={<TeacherAnnoucement />} />
           <Route path="courses">
             <Route index element={<TeacherCourses />} />

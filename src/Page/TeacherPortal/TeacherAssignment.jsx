@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Plus, ChevronDown, ChevronUp, AlignLeft, Pencil, Eye, Trash2, Calendar } from "lucide-react"
+import { AssessmentUploadDialog } from "./AssessmentUploadDialog"
 
-export default function TeacherrAssignment() {
+export default function Teacherrassessment() {
   const [currentExpanded, setCurrentExpanded] = useState(true)
   const [completedExpanded, setCompletedExpanded] = useState(true)
 
@@ -66,12 +67,10 @@ export default function TeacherrAssignment() {
   return (
     <div className="container p-3 md:p-0">
       <div className="flex flex-col mb-2 justify-between ">
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Assignments
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Assessments
         </p>
         <div className="flex justify-end">
-          <Button className="bg-green-500 w-fit hover:bg-green-600">
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Button>
+          <AssessmentUploadDialog />
         </div>
       </div>
 
@@ -128,7 +127,7 @@ export default function TeacherrAssignment() {
             <CollapsibleTrigger className="flex items-center w-full text-left">
               <div className="flex items-center">
                 {completedExpanded ? <ChevronDown className="h-5 w-5 mr-2" /> : <ChevronUp className="h-5 w-5 mr-2" />}
-                <h2 className="text-xl font-semibold">Completed Assessment (3)</h2>
+                <h2 className="text-md font-semibold">Completed Assessment (3)</h2>
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent>

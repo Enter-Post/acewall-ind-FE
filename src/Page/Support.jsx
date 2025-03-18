@@ -17,26 +17,26 @@ const Support = () => {
           </div>
           <div className="flex flex-col gap-5">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-sm font-medium">
-                fullname
+              <Label htmlFor="fullname" className="text-sm font-medium">
+                Full Name
               </Label>
-              <Input id="firstName" placeholder="Enter your fullname" />
+              <Input id="firstName" placeholder="Enter your  Full Name" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="middleName" className="text-sm font-medium">
+              <Label htmlFor="email" className="text-sm font-medium">
                 Email
               </Label>
               <Input
-                id="middleName"
+                id="email"
                 type={"email"}
                 placeholder="Enter your Email"
               />
             </div>
             <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-              <Label htmlFor="lastName" className="text-sm font-medium">
+              <Label htmlFor="feedback" className="text-sm font-medium">
                 Feedback
               </Label>
-              <Textarea id="lastName" placeholder="feedback" />
+              <Textarea id="feedback" placeholder="feedback" />
             </div>
             <div>
               <Button className={"bg-green-400 hover:bg-green-500"}>

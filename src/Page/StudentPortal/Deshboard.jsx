@@ -55,7 +55,7 @@ const Deshboard = () => {
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Dashboard</p>
         <section className="flex flex-col gap-4">
           <DeshBoardCard
-            mainHeading="Annoncements"
+            mainHeading="Announcements"
             data={announcements}
             width="max-w-1/2"
             height={"h-[390px]"}

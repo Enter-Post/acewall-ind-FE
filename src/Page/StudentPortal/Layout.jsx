@@ -224,7 +224,7 @@ export default function Layout() {
             </div>
           </div>
         </aside>
-        <main className="flex-1 p-2 md:p-4 hide-scrollbar h-screen overflow-y-scroll w-full">
+        <main className="flex-1 p-2 md:p-4 hide-scrollbar overflow-y-scroll w-full">
           <Outlet />
         </main>
       </div>

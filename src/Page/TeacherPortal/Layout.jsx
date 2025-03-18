@@ -52,9 +52,9 @@ const sideBarTabs = [
   },
   {
     id: 3,
-    name: "Assignments",
+    name: "Assessments",
     icon: <AssignmentsIcon />,
-    path: "/teacherPortal/assignment",
+    path: "/teacherPortal/assessment",
   },
   {
     id: 5,
@@ -214,7 +214,7 @@ export default function TeacherPortalLayout() {
             </div>
           </div>
         </aside>
-        <main className="flex-1 p-2 md:p-4 hide-scrollbar h-screen overflow-y-scroll w-full">
+        <main className="flex-1 p-2 md:p-4 hide-scrollbar overflow-y-scroll w-full">
           <Outlet selected={selected} setselected={setselected} />
         </main>
       </div>
