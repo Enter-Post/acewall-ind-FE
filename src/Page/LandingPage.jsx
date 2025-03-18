@@ -11,15 +11,15 @@ import { Input } from "@/components/ui/input"; // Ensure this import is correct
 import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
-
+ 
 const cardData = [
   {
-    name: "Tutoring Services",
+    name: "Academic Tutoring",
     description:
       "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_357701907-1920w.jpeg",
-    buttonUrl: "/student/tutoring",
+    buttonUrl: "https://www.acewallscholars.org/academic-tutoring ",
   },
 
   {
@@ -28,15 +28,15 @@ const cardData = [
       "Acewall Scholars offers a 360° approach to mentoring and mental health support. Our experienced mentors and mental health professionals provide personalized support and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
-    buttonUrl: "/student/mentoring",
+    buttonUrl: "https://www.acewallscholars.org/mentoring",
   },
   {
-    name: "The Holistic Parent Aide Program",
+    name: "Parent Aide",
     description:
       "Acewall Scholars offers The Holistic Parent Aid program. This program falls within our mentoring department. Our Parenting progam offers Acewall Scholars will assist students with finding summer programs, internships, and/or apprenticeships, ",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
-    buttonUrl: "/student/parent-aide",
+    buttonUrl: "https://www.acewallscholars.org/parent-aide",
   },
   {
     name: "Test Prep",
@@ -44,7 +44,7 @@ const cardData = [
       "Acewall Scholars offers test preparation services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/row-students-doing-exam-1920w.jpg",
-    buttonUrl: "/student/test-prep",
+    buttonUrl: "https://www.acewallscholars.org/test-prep",
   },
   {
     name: "Internship Support/Placement",
@@ -52,7 +52,7 @@ const cardData = [
       "Acewall Scholars offers internship support and placement services to support students in their academic journey. Our experienced mentors and career counselors provide personalized support and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/internship+support-placement-1920w.jpg",
-    buttonUrl: "/student/internship-support/placement",
+    buttonUrl: "https://www.acewallscholars.org/internship-support/placement",
   },
 
   {
@@ -87,15 +87,7 @@ const LandingPage = () => {
       {/* Header Navigation */}
       <header className="sticky top-0 z-10 bg-green-50 w-full">
         <div className="flex h-16 items-center justify-between px-4 border">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle Sidebar</span>
-          </Button>
+         
           {/* <div className="text-xl font-semibold">ScholarNest</div> */}
           <Link
             onClick={() => setselected(1)}
@@ -148,7 +140,7 @@ const LandingPage = () => {
         </div>
       </header>
       <div className="flex flex-col ">
-        <div className="h-screen bg-cover bg-center bg-[url('assets/hero.webp')] ">
+        <div className="h-[70vh] bg-cover bg-center bg-[url('assets/hero.webp')] ">
           <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
             <div className="flex  flex-col mt-10 justify-center  items-center px-2 text-center">
               <h1 className="text-white text-xl font-semibold tracking-wide">
@@ -156,7 +148,7 @@ const LandingPage = () => {
               </h1>
               <div className=" flex items-center justify-center flex-wrap  sm:flex-row flex-col">
                 <img
-                  src="http://localhost:5173/src/assets/acewallshort.png"
+                  src={acewallshort}
                   alt=""
                   className="w-15"
                 />

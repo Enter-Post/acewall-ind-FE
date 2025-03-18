@@ -2,6 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
+import LandingPage from "./LandingPage";
 // import acewall from '../assets/acewallscholarslogo.png';
 
 const Login = () => {
@@ -17,12 +18,12 @@ const Login = () => {
       {/* Header */}
       <header className="bg-green-600 text-white py-6 px-4">
         <div className="container mx-auto flex justify-between items-center">
-          <a href="#" className="text-sm md:text-base">
+          <Link to={"/"} className="text-sm md:text-base">
             Return to Home
-          </a>
-          <a href="#" className="text-sm md:text-base">
+          </Link>
+          {/* <Link to={"/signup"} className="text-sm  md:text-base">
             Create Account
-          </a>
+          </Link> */}
         </div>
       </header>
 
@@ -38,7 +39,7 @@ const Login = () => {
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
               <form>
                 <div className="mb-6">
-                  <label htmlFor="email" className="block text-gray-500 mb-2">
+                  <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
                   </label>
                   <input
@@ -51,7 +52,7 @@ const Login = () => {
                 <div className="mb-8">
                   <label
                     htmlFor="password"
-                    className="block text-gray-500 mb-2"
+                    className="block text-gray-600 mb-2"
                   >
                     Password
                   </label>
@@ -62,11 +63,12 @@ const Login = () => {
                     defaultValue=""
                   />
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                  <Link to={"/TeacherLogin"} className="text-sm font-bold text-green-500">Log in as Teacher</Link>
                   <Link to={"/student"}>
                     <button
                       type="submit"
-                      className="bg-green-600 text-white px-8 py-2 rounded hover:bg-green-700 transition-colors"
+                      className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
                     >
                       Login
                     </button>
@@ -86,9 +88,9 @@ const Login = () => {
                 Teachers Love Acewall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> Acewall scholars is an amazing program. They have helped me with 
-numerous subjects, including Biology, Algebra, and Spanish….I not only aced 
-the midterm but I got the highest score out of all of Spanish 1, thank you.
+                <span className="text-2xl">"</span> Acewall scholars is an amazing program. They have helped me with
+                numerous subjects, including Biology, Algebra, and Spanish….I not only aced
+                the midterm but I got the highest score out of all of Spanish 1, thank you.
 
                 <span className="text-2xl">"</span>
               </blockquote>

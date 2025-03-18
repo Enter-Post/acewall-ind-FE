@@ -135,8 +135,9 @@ export default function Layout() {
                     setselected(tabs.id);
                     setIsSidebarOpen(false);
                   }}
-                  className={`cursor-pointer ${selected == tabs.id && "text-green-500 font-bold"
-                    }`}
+                  className={`cursor-pointer ${
+                    selected == tabs.id && "text-green-500 font-bold"
+                  }`}
                 >
                   {tabs.name}
                 </Link>
