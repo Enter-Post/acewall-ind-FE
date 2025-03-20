@@ -15,6 +15,7 @@ import {
   BadgePlus,
   DollarSign,
   MessageCircleDashed,
+  GraduationCap,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -52,9 +53,9 @@ const sideBarTabs = [
   },
   {
     id: 3,
-    name: "Assessments",
+    name: "Assignments",
     icon: <AssignmentsIcon />,
-    path: "/teacherPortal/assessment",
+    path: "/teacherPortal/assignment",
   },
   {
     id: 5,
@@ -73,6 +74,12 @@ const sideBarTabs = [
     name: "Messages",
     icon: <MessageCircleDashed />,
     path: "/teacherPortal/messages",
+  },
+  {
+    id: 13,
+    name: "Students",
+    icon: <GraduationCap />,
+    path: "/teacherPortal/allStudent",
   },
 ];
 
@@ -154,7 +161,7 @@ export default function TeacherPortalLayout() {
           </div>
         </div>
       </header>
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 overflow-hidden">
         <aside
           className={`bg-green-50 ${
             isSidebarOpen ? "block" : "hidden"
@@ -222,3 +229,9 @@ export default function TeacherPortalLayout() {
     </div>
   );
 }
+
+
+
+
+
+

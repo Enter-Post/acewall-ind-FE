@@ -33,7 +33,9 @@ import TeacherMessages from "./Page/TeacherPortal/Messages";
 import Teacherrassessment from "./Page/TeacherPortal/TeacherAssignment";
 import TeacherAnnoucement from "./Page/TeacherPortal/TeacherAnnoucement";
 import TeacherLogin from "./Page/TeacherLogin";
-
+import CreateAssessment from "./Page/TeacherPortal/CreateAssessment";
+import AllStudent from "./Page/TeacherPortal/AllStudent";
+import StudentProfile from "./Page/TeacherPortal/studentProfile";
 
 function App() {
   return (
@@ -45,7 +47,10 @@ function App() {
         <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/Home" element={<MainLayout />}></Route>
-        <Route path="/TermsandCondition" element={<TermsandCondition />}></Route>
+        <Route
+          path="/TermsandCondition"
+          element={<TermsandCondition />}
+        ></Route>
         <Route path="/PrivacyPolicy" element={<PrivacyPolicy />}></Route>
         {/* Student Routes */}
         <Route path="/student" element={<Layout />}>
@@ -70,8 +75,13 @@ function App() {
           <Route path="earning" element={<Earning />} />
           <Route path="account" element={<TeacherAccount />} />
           <Route path="messages" element={<TeacherMessages />} />
-          <Route path="assessment" element={<Teacherrassessment/>} />
+          <Route path="assignment">
+          <Route index element={<Teacherrassessment />}/>
+            <Route path="create" element={<CreateAssessment />} />
+          </Route>
           <Route path="Announcements" element={<TeacherAnnoucement />} />
+          <Route path="allStudent" element={<AllStudent />} />
+          <Route path="studentProfile" element={<StudentProfile />} />
           <Route path="courses">
             <Route index element={<TeacherCourses />} />
             <Route path="courseDetail" element={<TeacherCourseDetails />} />

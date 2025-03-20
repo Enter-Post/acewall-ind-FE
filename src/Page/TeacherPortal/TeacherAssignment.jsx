@@ -1,13 +1,27 @@
-import React, { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { Plus, ChevronDown, ChevronUp, AlignLeft, Pencil, Eye, Trash2, Calendar } from "lucide-react"
-import { AssessmentUploadDialog } from "./AssessmentUploadDialog"
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  AlignLeft,
+  Pencil,
+  Eye,
+  Trash2,
+  Calendar,
+} from "lucide-react";
+import { AssessmentUploadDialog } from "./AssessmentUploadDialog";
+import { Link } from "react-router-dom";
 
 export default function Teacherrassessment() {
-  const [currentExpanded, setCurrentExpanded] = useState(true)
-  const [completedExpanded, setCompletedExpanded] = useState(true)
+  const [currentExpanded, setCurrentExpanded] = useState(true);
+  const [completedExpanded, setCompletedExpanded] = useState(true);
 
   const currentAssessments = [
     {
@@ -38,7 +52,7 @@ export default function Teacherrassessment() {
       points: 10,
       dueDate: "Dec 10, 2024",
     },
-  ]
+  ];
 
   const completedAssessments = [
     {
@@ -62,25 +76,41 @@ export default function Teacherrassessment() {
       points: 10,
       dueDate: "Aug 15, 2024",
     },
-  ]
+  ];
 
   return (
     <div className="container p-3 md:p-0">
       <div className="flex flex-col mb-2 justify-between ">
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Assessments
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+          Assessments
         </p>
         <div className="flex justify-end">
-          <AssessmentUploadDialog />
+          {/* <AssessmentUploadDialog /> */}
+          <Link to="/teacherPortal/assignment/create">
+            <Button variant={"ghost"} className="text-green-600">
+              <Plus className="mr-2 h-4 w-4" /> Add New
+            </Button>
+          </Link>
         </div>
       </div>
 
       <div className="space-y-6">
         <Card className="border rounded-lg bg-gray-50 p-4">
-          <Collapsible open={currentExpanded} onOpenChange={setCurrentExpanded} className="space-y-4">
+          <Collapsible
+            open={currentExpanded}
+            onOpenChange={setCurrentExpanded}
+            className="space-y-4"
+          >
             <CollapsibleTrigger className="flex items-center w-full text-left">
               <div className="flex items-center">
-                {currentExpanded ? <ChevronDown className="h-5 w-5 mr-2" /> : <ChevronUp className="h-5 w-5 mr-2" />}
-                <h2 className="text-md font-semibold">Current Assessment (4)</h2>
+                {currentExpanded ? (
+                  <ChevronDown className="h-5 w-5 mr-2" />
+                ) : (
+                  <ChevronUp className="h-5 w-5 mr-2" />
+                )}
+                <h2 className="text-md font-semibold">
+                  Current Assessment (4)
+                </h2>
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -92,10 +122,15 @@ export default function Teacherrassessment() {
                         <AlignLeft className="h-5 w-5 text-gray-500" />
                       </div>
                       <div className="flex-1">
-                        <div className="text-blue-500 font-medium">Quiz {assessment.id}</div>
-                        <div className="font-medium text-lg">{assessment.title}</div>
+                        <div className="text-blue-500 font-medium">
+                          Quiz {assessment.id}
+                        </div>
+                        <div className="font-medium text-lg">
+                          {assessment.title}
+                        </div>
                         <div className="text-sm text-gray-500">
-                          {assessment.questions} questions | {assessment.points} pts
+                          {assessment.questions} questions | {assessment.points}{" "}
+                          pts
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
@@ -114,7 +149,9 @@ export default function Teacherrassessment() {
                         </Button>
                       </div>
                     </div>
-                    {index < currentAssessments.length - 1 && <div className="border-t" />}
+                    {index < currentAssessments.length - 1 && (
+                      <div className="border-t" />
+                    )}
                   </React.Fragment>
                 ))}
               </Card>
@@ -122,12 +159,23 @@ export default function Teacherrassessment() {
           </Collapsible>
         </Card>
 
+        
         <Card className="border rounded-lg bg-gray-50 p-4">
-          <Collapsible open={completedExpanded} onOpenChange={setCompletedExpanded} className="space-y-4">
+          <Collapsible
+            open={completedExpanded}
+            onOpenChange={setCompletedExpanded}
+            className="space-y-4"
+          >
             <CollapsibleTrigger className="flex items-center w-full text-left">
               <div className="flex items-center">
-                {completedExpanded ? <ChevronDown className="h-5 w-5 mr-2" /> : <ChevronUp className="h-5 w-5 mr-2" />}
-                <h2 className="text-md font-semibold">Completed Assessment (3)</h2>
+                {completedExpanded ? (
+                  <ChevronDown className="h-5 w-5 mr-2" />
+                ) : (
+                  <ChevronUp className="h-5 w-5 mr-2" />
+                )}
+                <h2 className="text-md font-semibold">
+                  Completed Assessment (3)
+                </h2>
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -139,10 +187,15 @@ export default function Teacherrassessment() {
                         <AlignLeft className="h-5 w-5 text-gray-500" />
                       </div>
                       <div className="flex-1">
-                        <div className="text-blue-500 font-medium">Quiz {assessment.id}</div>
-                        <div className="font-medium text-lg">{assessment.title}</div>
+                        <div className="text-blue-500 font-medium">
+                          Quiz {assessment.id}
+                        </div>
+                        <div className="font-medium text-lg">
+                          {assessment.title}
+                        </div>
                         <div className="text-sm text-gray-500">
-                          {assessment.questions} questions | {assessment.points} pts
+                          {assessment.questions} questions | {assessment.points}{" "}
+                          pts
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
@@ -161,7 +214,9 @@ export default function Teacherrassessment() {
                         </Button>
                       </div>
                     </div>
-                    {index < completedAssessments.length - 1 && <div className="border-t" />}
+                    {index < completedAssessments.length - 1 && (
+                      <div className="border-t" />
+                    )}
                   </React.Fragment>
                 ))}
               </Card>
@@ -170,6 +225,5 @@ export default function Teacherrassessment() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
-
