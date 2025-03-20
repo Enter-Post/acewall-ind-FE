@@ -11,7 +11,14 @@ import { Input } from "@/components/ui/input"; // Ensure this import is correct
 import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
- 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const cardData = [
   {
     name: "Academic Tutoring",
@@ -80,6 +87,13 @@ const topBarTabs = [
 ];
 const LandingPage = () => {
   const [selected, setSelected] = useState(null);
+  const [usertype, setusertype] = useState(""); // Store selected theme
+
+  const handleUserType = (value) => {
+    setusertype(value);
+    console.log("Selected User type:", value); // Replace this with theme logic
+  };
+
   return (
     <>
       {/* Top Bar */}
@@ -87,7 +101,6 @@ const LandingPage = () => {
       {/* Header Navigation */}
       <header className="sticky top-0 z-10 bg-green-50 w-full">
         <div className="flex h-16 items-center justify-between px-4 border">
-         
           {/* <div className="text-xl font-semibold">ScholarNest</div> */}
           <Link
             onClick={() => setselected(1)}
@@ -147,11 +160,7 @@ const LandingPage = () => {
                 Where the vision is realized. Where the dream is achieved
               </h1>
               <div className=" flex items-center justify-center flex-wrap  sm:flex-row flex-col">
-                <img
-                  src={acewallshort}
-                  alt=""
-                  className="w-15"
-                />
+                <img src={acewallshort} alt="" className="w-15" />
                 <h2 className="text-white text-md max-w-lg px-4">
                   Imagine * Believe * Create
                 </h2>
@@ -159,34 +168,40 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-black flex gap-5 items-center justify-evenly p-4 px-10 w-full lg:flex-row flex-col ">
-          <h1 className="text-white text-xl">Create an account </h1>
+        <div className="bg-black flex flex-col lg:flex-row items-center gap-4 lg:gap-5 p-6 lg:p-4 w-full justify-center">
+          <h1 className="text-white text-2xl font-semibold text-center">
+            Create an account
+          </h1>
+
           <input
             type="email"
             placeholder="Enter your email"
-            className="bg-white rounded p-1"
+            className="bg-white text-black rounded-lg px-4 py-2 w-full lg:w-[250px] focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          <input
-            type="password"
-            placeholder="Enter your password"
-            className="bg-white rounded p-1"
-          />
-          <Link to={"/signup"}>
-            <button
-              type="submit"
-              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
-            >
-              Create Account
-            </button>
-          </Link>
-          <Link to={"/login"}>
-            <button
-              type="submit"
-              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
-            >
-              Login
-            </button>
-          </Link>
+
+          <Select onValueChange={handleUserType}>
+            <SelectTrigger className="w-full lg:w-[180px] bg-white rounded-lg px-4 py-5">
+              <SelectValue placeholder="Select Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Light">Student</SelectItem>
+              <SelectItem value="Dark">Teacher</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+            <Link to="/signup">
+              <button className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full">
+                Create Account
+              </button>
+            </Link>
+
+            <Link to="/login">
+              <button className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full">
+                Login
+              </button>
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3">

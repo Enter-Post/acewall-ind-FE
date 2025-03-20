@@ -20,9 +20,11 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
           {data?.map((item, index) => (
             <div key={index} className="px-4 py-3 flex gap-10 items-center">
               <div className="flex-1">
-                <p className="hover:font-semibold transition-all duration-300 cursor-pointer">
-                  {item.title}
-                </p>
+                <Link to={link}>
+                  <p className="hover:font-semibold transition-all duration-300 cursor-pointer">
+                    {item.title}
+                  </p>
+                </Link>
               </div>
 
               {(item.date || item.time) && (
@@ -54,23 +56,25 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
         </Link>
       </CardHeader>
       <CardContent className={`p-0 ${bgcolor}`}>
-        <div className={`divide-y`}>
-          {data.map((assignment, index) => (
-            <div key={index} className="p-4">
-              <div className="flex justify-between">
-                <h3 className="hover:font-semibold transition-all duration-300 cursor-pointer">
-                  {assignment.course}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  Due: {assignment.dueDate}
+        <Link to="assignment">
+          <div className={`divide-y`}>
+            {data.map((assignment, index) => (
+              <div key={index} className="p-4">
+                <div className="flex justify-between">
+                  <h3 className="hover:font-semibold transition-all duration-300 cursor-pointer">
+                    {assignment.course}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Due: {assignment.dueDate}
+                  </p>
+                </div>
+                <p className="text-muted-foreground text-sm mt-2 hover:font-semibold transition-all duration-300 cursor-pointer">
+                  {assignment.Assignment}
                 </p>
               </div>
-              <p className="text-muted-foreground text-sm mt-2 hover:font-semibold transition-all duration-300 cursor-pointer">
-                {assignment.Assignment}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Link>
       </CardContent>
     </Card>
   );
@@ -79,31 +83,34 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
 function AnnouncementCard({ mainHeading, data }) {
   return (
     <Card className="h-fit p-0">
-  <CardContent className="p-0">
-    {/* Announcement Header */}
-    <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Anouncements</p>
+      <CardContent className="p-0">
+        {/* Announcement Header */}
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+          Anouncements
+        </p>
 
- 
-    {/* Announcements List */}
-    <div className="divide-y">
-      {data?.map((announcement, index) => (
-        <div key={index} className="px-4 py-3 flex flex-col gap-3 border-b border-gray-300">
-          {/* Title and Date/Time */}
-          <div className="flex justify-between items-center">
-            <p className="font-bold">{announcement.title}</p>
-            <p className="text-sm text-gray-500">
-              {announcement.date} • {announcement.time}
-            </p>
-          </div>
+        {/* Announcements List */}
+        <div className="divide-y">
+          {data?.map((announcement, index) => (
+            <div
+              key={index}
+              className="px-4 py-3 flex flex-col gap-3 border-b border-gray-300"
+            >
+              {/* Title and Date/Time */}
+              <div className="flex justify-between items-center">
+                <p className="font-bold">{announcement.title}</p>
+                <p className="text-sm text-gray-500">
+                  {announcement.date} • {announcement.time}
+                </p>
+              </div>
 
-          {/* Announcement Message */}
-          <p className="text-gray-700">{announcement.message}</p>
+              {/* Announcement Message */}
+              <p className="text-gray-700">{announcement.message}</p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </CardContent>
-</Card>
-
+      </CardContent>
+    </Card>
   );
 }
 

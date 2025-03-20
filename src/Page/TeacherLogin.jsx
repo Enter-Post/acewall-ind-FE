@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 // import acewall from '../assets/acewallscholarslogo.png';
- 
+
 const TeacherLogin = () => {
   const navigate = useNavigate();
 
@@ -19,6 +19,9 @@ const TeacherLogin = () => {
         <div className="container mx-auto flex justify-between items-center">
           <Link to={"/"} className="text-sm md:text-base">
             Return to Home
+          </Link>
+          <Link to={"/"} className="text-sm  md:text-base">
+            Create Account
           </Link>
         </div>
       </header>
@@ -60,7 +63,12 @@ const TeacherLogin = () => {
                   />
                 </div>
                 <div className="flex justify-between items-center">
-                  <Link to={"/Login"} className="text-sm font-bold text-green-500">Login as Student</Link>
+                  <Link
+                    to={"/Login"}
+                    className="text-sm font-bold text-green-500"
+                  >
+                    Login as Student
+                  </Link>
                   <Link to={"/teacherPortal"}>
                     <button
                       type="submit"
@@ -84,10 +92,11 @@ const TeacherLogin = () => {
                 Teachers Love Acewall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> Acewall scholars is an amazing program. They have helped me with 
-numerous subjects, including Biology, Algebra, and Spanish….I not only aced 
-the midterm but I got the highest score out of all of Spanish 1, thank you.
-
+                <span className="text-2xl">"</span> Acewall scholars is an
+                amazing program. They have helped me with numerous subjects,
+                including Biology, Algebra, and Spanish….I not only aced the
+                midterm but I got the highest score out of all of Spanish 1,
+                thank you.
                 <span className="text-2xl">"</span>
               </blockquote>
               <div className="text-center md:text-left">

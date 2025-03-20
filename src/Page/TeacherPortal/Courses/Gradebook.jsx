@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
 
 export default function TeacherGradebook() {
   const [categories, setCategories] = useState([
@@ -32,7 +33,7 @@ export default function TeacherGradebook() {
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg">
-     <div className="mb-6 border-b">
+      <div className="mb-6 border-b">
         <h2 className="text-2xl font-semibold flex items-center">
           <div className="w-1 h-8 bg-green-500 mr-2"></div>
           Grades
@@ -180,12 +181,14 @@ export default function TeacherGradebook() {
           </Button>
         </Link>
 
-        <Link to="/teacherPortal/courses">
+        {/* <Link to="/teacherPortal/courses">
           <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white">
             Create Course
             <ArrowRight className="h-4 w-4" />
           </Button>
-        </Link>
+        </Link> */}
+
+        <ConfirmationModal />
       </div>
     </div>
   );

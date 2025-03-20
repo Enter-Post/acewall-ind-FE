@@ -21,9 +21,9 @@ const Login = () => {
           <Link to={"/"} className="text-sm md:text-base">
             Return to Home
           </Link>
-          {/* <Link to={"/signup"} className="text-sm  md:text-base">
+          <Link to={"/"} className="text-sm  md:text-base">
             Create Account
-          </Link> */}
+          </Link>
         </div>
       </header>
 
