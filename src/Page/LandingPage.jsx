@@ -97,7 +97,18 @@ const LandingPage = () => {
   return (
     <>
       {/* Top Bar */}
-      <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer"></div>
+      <div className="h-auto py-1 bg-green-600 flex justify-end items-end px-5 cursor-pointer">
+      <Link to={"/School "}>
+            <button
+              type="submit"
+              className="text-white bg-acewall-main hover:bg-green-700 font-medium rounded-lg text-sm px-2 py-3 md:px-2 md:py-2"
+            >
+              For School's Teachers and Students 
+            </button>
+          </Link>
+
+
+      </div>
       {/* Header Navigation */}
       <header className="sticky top-0 z-10 bg-green-50 w-full">
         <div className="flex h-16 items-center justify-between px-4 border">
@@ -184,20 +195,30 @@ const LandingPage = () => {
               <SelectValue placeholder="Select Theme" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Light">Student</SelectItem>
-              <SelectItem value="Dark">Teacher</SelectItem>
+              <SelectItem value="Student">Student</SelectItem>
+              <SelectItem value="Teacher">Teacher</SelectItem>
             </SelectContent>
           </Select>
 
           <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
             <Link to="/signup">
-              <button className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full">
+              <button
+                onClick={() => {
+                  localStorage.setItem("UserRole", usertype);
+                }}
+                className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
+              >
                 Create Account
               </button>
             </Link>
 
             <Link to="/login">
-              <button className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full">
+              <button
+                onClick={() => {
+                  localStorage.setItem("UserRole", usertype);
+                }}
+                className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
+              >
                 Login
               </button>
             </Link>

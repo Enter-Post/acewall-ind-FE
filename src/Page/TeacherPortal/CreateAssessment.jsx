@@ -34,6 +34,7 @@ import { TextEditor } from "@/CustomComponent/createAssessment/TextEditor";
 
 const CreateAssessmentPage = () => {
   const [editorContent, setEditorContent] = useState("");
+  const [AssessmentType, setAssessmentType] = useState("");
   const [questions, setQuestions] = useState([
     { id: 1, text: "this is my thesis", color: "blue" },
     { id: 2, text: "Left aligned text on all viewport sizes.", color: "green" },
@@ -163,30 +164,16 @@ const CreateAssessmentPage = () => {
               </SelectContent>
             </Select>
           </div>
-
-          {/* <div>
-            <Label htmlFor="file">File</Label>
-            <Input id="file" type="file" className="flex-1" onChange={handleFileChange} />
-            {file && <span className="text-sm text-gray-500">{file.name}</span>}
-          </div> */}
         </div>
       </div>
-
-      {/* <div className="mt-6 flex justify-end gap-4">
-        <Button variant="outline">Cancel</Button>
-        <Button className="bg-green-500 hover:bg-green-600">
-          Upload Assessment
-        </Button>
-      </div> */}
 
       <div className="mx-auto p-4 my-10 bg-white shadow-md rounded-md">
         <TextEditor />
 
-        {/* Assessment Questions */}
-        <AssessmentQuestions />
+        {/* <AssessmentQuestions /> */}
 
         {/* Action Buttons */}
-        <div className="mt-4 flex space-x-2">
+        <div className="mt-10 flex space-x-2">
           <button className="bg-green-500 text-white px-4 py-2 rounded">
             Save
           </button>
