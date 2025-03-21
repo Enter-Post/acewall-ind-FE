@@ -1,0 +1,362 @@
+import * as React from "react";
+import { CoursesCard } from "@/CustomComponent/DeshboardCard";
+import SelectCmp from "@/CustomComponent/SelectCmp";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import SearchBox from "@/CustomComponent/SearchBox";
+import { Link } from "react-router-dom";
+import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
+import acewallshort from "../assets/acewallshort.png";
+import Footer from "@/CustomComponent/Footer";
+
+const GeneralCourses = () => {
+  const allCourses = [
+    {
+      id: 4,
+      course: "Biology",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 12,
+      Language: "English",
+      Prise: 101,
+      image:
+        "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Michael Brown",
+    },
+    {
+      id: 5,
+      course: "History",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 15,
+      Language: "English",
+      Prise: 110,
+      image:
+        "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Mr. Richard Adams",
+    },
+    {
+      id: 6,
+      course: "English Literature",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 8,
+      Language: "English",
+      Prise: 75,
+      image:
+        "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Ms. Olivia Green",
+    },
+    {
+      id: 7,
+      course: "Computer Science",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 18,
+      Language: "English",
+      Prise: 89,
+      image:
+        "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Mr. Samuel Turner",
+    },
+    {
+      id: 8,
+      course: "Geography",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 10,
+      Language: "English",
+      Prise: 48,
+      image:
+        "https://plus.unsplash.com/premium_photo-1681488098851-e3913f3b1908?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Ms. Clara Foster",
+    },
+    {
+      id: 9,
+      course: "Art",
+      Grade: 10,
+      rating: 3,
+      NumberOfLecture: 5,
+      Prise: 94,
+      Language: "English",
+      image:
+        "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Ms. Sarah Collins",
+    },
+    {
+      id: 10,
+      course: "Physical Education",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 6,
+      Language: "English",
+      Prise: 78,
+      image:
+        "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=1438&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Mr. David Martin",
+    },
+    {
+      id: 11,
+      course: "Music",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 9,
+      Language: "English",
+      Prise: 76,
+      image:
+        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Ms. Linda Lee",
+    },
+    {
+      id: 12,
+      course: "Economics",
+      Grade: 10,
+      rating: 3,
+      NumberOfLecture: 7,
+      Language: "English",
+      Prise: 98,
+      image:
+        "https://images.unsplash.com/photo-1612178991541-b48cc8e92a4d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Charles Young",
+    },
+    {
+      id: 13,
+      course: "Philosophy",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 5,
+      Language: "English",
+      Prise: 82,
+      image:
+        "https://images.unsplash.com/photo-1620662736427-b8a198f52a4d?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Daniel Harris",
+    },
+    {
+      id: 14,
+      course: "Psychology",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 14,
+      Language: "English",
+      Prise: 91,
+      image:
+        "https://images.unsplash.com/photo-1573511860302-28c524319d2a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Sophia King",
+    },
+    {
+      id: 15,
+      course: "Sociology",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 11,
+      Language: "English",
+      Prise: 98,
+      image:
+        "https://plus.unsplash.com/premium_photo-1681079526863-7ba34e838026?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Laura White",
+    },
+    {
+      id: 16,
+      course: "Statistics",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 13,
+      Language: "English",
+      Prise: 40,
+      image:
+        "https://images.unsplash.com/photo-1622782914767-404fb9ab3f57?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Mr. William Scott",
+    },
+    {
+      id: 17,
+      course: "Engineering",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 10,
+      Language: "English",
+      Prise: 189,
+      image:
+        "https://plus.unsplash.com/premium_photo-1661335257817-4552acab9656?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Prof. Steven Carter",
+    },
+    {
+      id: 18,
+      course: "Environmental Science",
+      Grade: 10,
+      rating: 3,
+      NumberOfLecture: 12,
+      Language: "English",
+      Prise: 200,
+      image:
+        "https://plus.unsplash.com/premium_photo-1661540998860-da104459c959?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Alice Green",
+    },
+    {
+      id: 19,
+      course: "Political Science",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 8,
+      Language: "English",
+      Prise: 45,
+      image:
+        "https://images.unsplash.com/photo-1526615735835-530c611a3d8a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Brian Hall",
+    },
+    {
+      id: 20,
+      course: "Anthropology",
+      Grade: 10,
+      rating: 5,
+      NumberOfLecture: 11,
+      Language: "English",
+      Prise: 99,
+      image:
+        "https://plus.unsplash.com/premium_photo-1661906977668-ece2c96385c4?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Henry Black",
+    },
+    {
+      id: 21,
+      course: "Astronomy",
+      Grade: 10,
+      rating: 4,
+      NumberOfLecture: 9,
+      Language: "English",
+      Prise: 53,
+      image:
+        "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      teacher: "Dr. Nathan Allen",
+    },
+  ];
+
+  const courseCategories = [
+    { id: 1, name: "All Category" },
+    { id: 2, name: "Development" },
+    { id: 3, name: "Business" },
+    { id: 4, name: "Design" },
+    { id: 5, name: "Marketing" },
+    { id: 6, name: "Finance" },
+    { id: 7, name: "Health & Fitness" },
+    { id: 8, name: "Music" },
+  ];
+
+  const topBarTabs = [
+    {
+      id: 12,
+      name: "Home",
+      path: "/",
+    },
+    {
+      id: 7,
+      name: "More Courses",
+      path: "/Courses",
+    },
+    {
+      id: 8,
+      name: "Support",
+      path: "/Support",
+    },
+  ];
+
+  const ratings = [
+    { id: 1, name: "All Ratings" },
+    { id: 2, name: "1 Star & Up" },
+    { id: 3, name: "2 Star & Up" },
+    { id: 4, name: "3 Star & Up" },
+    { id: 5, name: "4 Star & Up" },
+    { id: 6, name: "5 Star Only" },
+  ];
+
+  const sortByOptions = [
+    { id: 1, name: "Latest" },
+    { id: 2, name: "Popularity" },
+    { id: 3, name: "Highest Rated" },
+    { id: 4, name: "Lowest Price" },
+    { id: 5, name: "Highest Price" },
+  ];
+
+  return (
+    <div className="">
+      <header className="sticky top-0 z-10 bg-green-50 w-full mb-10">
+        <div className="h-auto py-1 bg-green-600 flex justify-end items-end px-5 cursor-pointer">
+          <Link to={"/School "}>
+            <button
+              type="submit"
+              className="text-white bg-acewall-main hover:bg-green-700 font-medium rounded-lg text-sm px-2 py-3 md:px-2 md:py-2"
+            >
+              For School's Teachers and Students
+            </button>
+          </Link>
+        </div>
+        <div className="flex h-16 items-center justify-between px-4 border">
+          {/* <div className="text-xl font-semibold">ScholarNest</div> */}
+          <Link
+            // onClick={() => setselected(1)}
+            className="block md:hidden"
+            to={"/student"}
+          >
+            <img
+              src={acewallshort}
+              alt="Mobile Logo"
+              className="w-8 rounded-full h-auto cursor-pointer"
+            />
+          </Link>
+          <Link
+            // onClick={() => setselected(1)}
+            className="hidden md:block"
+            to={"/student"}
+          >
+            <img
+              src={acewallscholarslogo}
+              alt="Desktop Logo"
+              className="w-40 h-auto  cursor-pointer"
+            />
+          </Link>
+
+          <div className="flex gap-5 text-black text-sm ">
+            {topBarTabs.map((tabs, index) => {
+              return (
+                <Link
+                  key={index}
+                  to={tabs.path}
+                  // onClick={() => {
+                  //   setselected(tabs.id);
+                  //   setIsSidebarOpen(false);
+                  // }}
+                  //   className={`cursor-pointer ${
+                  //     selected == tabs.id && "text-green-500 font-bold"
+                  //   }`
+                  // }
+                >
+                  {tabs.name}
+                </Link>
+              );
+            })}
+          </div>
+          <div className="hidden md:flex items-center space-x-4">
+            <Input type="email" placeholder="Search" />
+            <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
+              <Search className="rounded-full" />
+            </div>
+          </div>
+        </div>
+      </header>
+      <main className="m-10">
+        <SearchBox />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-10">
+          {allCourses.map((course) => {
+            return (
+              <div key={course.id}>
+                <CoursesCard course={course} />
+              </div>
+            );
+          })}
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default GeneralCourses;

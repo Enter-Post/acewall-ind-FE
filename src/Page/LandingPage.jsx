@@ -75,14 +75,12 @@ const topBarTabs = [
   {
     id: 7,
     name: "More Courses",
-    icon: <Megaphone02Icon />,
-    path: "/student/moreCourses",
+    path: "/Courses",
   },
   {
     id: 8,
     name: "Support",
-    icon: <Megaphone02Icon />,
-    path: "/student/support",
+    path: "/Support",
   },
 ];
 const LandingPage = () => {
@@ -142,10 +140,10 @@ const LandingPage = () => {
                 <Link
                   key={index}
                   to={tabs.path}
-                  onClick={() => {
-                    setselected(tabs.id);
-                    setIsSidebarOpen(false);
-                  }}
+                  // onClick={() => {
+                  //   setselected(tabs.id);
+                  //   setIsSidebarOpen(false);
+                  // }}
                   className={`cursor-pointer ${
                     selected == tabs.id && "text-green-500 font-bold"
                   }`}
@@ -164,7 +162,7 @@ const LandingPage = () => {
         </div>
       </header>
       <div className="flex flex-col ">
-        <div className="h-[70vh] bg-cover bg-center bg-[url('assets/hero.webp')] ">
+        <div className="h-[70vh] bg-cover bg-start bg-[url('assets/hero.webp')] ">
           <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
             <div className="flex  flex-col mt-10 justify-center  items-center px-2 text-center">
               <h1 className="text-white text-xl font-semibold tracking-wide">

@@ -35,12 +35,6 @@ export default function TeacherAnnoucement() {
 
   const currentAnnouncements = [
     {
-      id: 1,
-      date: "Oct 10, 2024",
-      title: "Live Q&A Session Tomorrow!",
-      message: "Join us for a live Q&A on October 11th to discuss module 3",
-    },
-    {
       id: 2,
       date: "Oct 8, 2024",
       title: "Assignment 1 Deadline Reminder",

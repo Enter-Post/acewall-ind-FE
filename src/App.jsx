@@ -37,6 +37,8 @@ import CreateAssessment from "./Page/TeacherPortal/CreateAssessment";
 import AllStudent from "./Page/TeacherPortal/AllStudent";
 import StudentProfile from "./Page/TeacherPortal/studentProfile";
 import School from "./Page/School";
+import GeneralCourses from "./Page/GeneralCourses";
+import GeneralSupport from "./Page/GeneralSupport";
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
         <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
         <Route path="/Home" element={<MainLayout />}></Route>
+        <Route path="/Courses" element={<GeneralCourses />}></Route>
+        <Route path="/Support" element={<GeneralSupport />}></Route>
         <Route
           path="/TermsandCondition"
           element={<TermsandCondition />}
