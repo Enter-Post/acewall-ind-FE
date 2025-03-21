@@ -2,15 +2,22 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
+import { useState } from "react";
 // import acewall from '../assets/acewallscholarslogo.png';
 
 const TeacherLogin = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   navigate('/student');
-  // };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (email === "teacher@acewall.org" && password === "00000") {
+      navigate("/teacherPortal");
+    } else {
+      alert("Invalid Email or Password");
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -36,7 +43,7 @@ const TeacherLogin = () => {
           <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
             {/* Login Form */}
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
@@ -46,6 +53,7 @@ const TeacherLogin = () => {
                     id="email"
                     className="w-full p-2 border border-gray-300 rounded"
                     defaultValue=""
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="mb-8">
@@ -60,6 +68,7 @@ const TeacherLogin = () => {
                     id="password"
                     className="w-full p-2 border border-gray-300 rounded"
                     defaultValue=""
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
                 <div className="flex justify-between items-center">
@@ -69,14 +78,13 @@ const TeacherLogin = () => {
                   >
                     Login as Student
                   </Link>
-                  <Link to={"/teacherPortal"}>
-                    <button
-                      type="submit"
-                      className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
-                    >
-                      Login
-                    </button>
-                  </Link>
+
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
+                  >
+                    Login
+                  </button>
                 </div>
               </form>
             </div>

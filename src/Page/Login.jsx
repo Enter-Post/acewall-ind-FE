@@ -3,15 +3,22 @@ import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 import LandingPage from "./LandingPage";
+import { useState } from "react";
 // import acewall from '../assets/acewallscholarslogo.png';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   navigate('/student');
-  // };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (email === "student@acewall.org" && password === "00000") {
+      navigate("/student");
+    } else {
+      alert("Invalid Email or Password");
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -47,6 +54,7 @@ const Login = () => {
                     id="email"
                     className="w-full p-2 border border-gray-300 rounded"
                     defaultValue=""
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="mb-8">
@@ -60,19 +68,26 @@ const Login = () => {
                     type="password"
                     id="password"
                     className="w-full p-2 border border-gray-300 rounded"
+                    onChange={(e) => setPassword(e.target.value)}
                     defaultValue=""
                   />
                 </div>
                 <div className="flex justify-between items-center">
-                  <Link to={"/TeacherLogin"} className="text-sm font-bold text-green-500">Log in as Teacher</Link>
-                  <Link to={"/student"}>
+                  <Link
+                    to={"/TeacherLogin"}
+                    className="text-sm font-bold text-green-500"
+                  >
+                    Log in as Teacher
+                  </Link>
+                  {/* <Link to={"/student"}> */}
                     <button
+                      onClick={() => handleSubmit()}
                       type="submit"
                       className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
                     >
                       Login
                     </button>
-                  </Link>
+                  {/* </Link> */}
                 </div>
               </form>
             </div>
@@ -88,10 +103,11 @@ const Login = () => {
                 Teachers Love Acewall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> Acewall scholars is an amazing program. They have helped me with
-                numerous subjects, including Biology, Algebra, and Spanish….I not only aced
-                the midterm but I got the highest score out of all of Spanish 1, thank you.
-
+                <span className="text-2xl">"</span> Acewall scholars is an
+                amazing program. They have helped me with numerous subjects,
+                including Biology, Algebra, and Spanish….I not only aced the
+                midterm but I got the highest score out of all of Spanish 1,
+                thank you.
                 <span className="text-2xl">"</span>
               </blockquote>
               <div className="text-center md:text-left">
