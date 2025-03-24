@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import logo from "../assets/acewallscholarslogo.webp";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 const cardData = [
   {
@@ -85,10 +86,17 @@ const topBarTabs = [
 ];
 const LandingPage = () => {
   const [selected, setSelected] = useState(null);
-  const [usertype, setusertype] = useState(""); // Store selected theme
+  const [usertype, setusertype] = useState("");
+
+  const { user, setUser } = useContext(GlobalContext);
+
+
+  console.log("user", user);
+  
+
 
   const handleUserType = (value) => {
-    setusertype(value);
+    setUser(value);
     console.log("Selected User type:", value); // Replace this with theme logic
   };
 
@@ -202,7 +210,7 @@ const LandingPage = () => {
             <Link to="/signup">
               <button
                 onClick={() => {
-                  localStorage.setItem("UserRole", usertype);
+                  setUser(usertype);
                 }}
                 className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
               >
