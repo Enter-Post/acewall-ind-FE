@@ -231,7 +231,7 @@ export default function CreateCourses() {
             ))}
           </div>
           <div className="border-t border-gray-300 pt-5 flex justify-end">
-            <Link to={"/teacherPortal/courses/createCourses/addchapters"}>
+            <Link to={"/teacher/courses/createCourses/addchapters"}>
               <Button className="bg-green-500 hover:bg-green-600 ">Next</Button>
             </Link>
           </div>

@@ -83,7 +83,7 @@ const TeacherCourses = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <Link key={course.course} to={`/teacherPortal/courses/courseDetail/`}>
+          <Link key={course.course} to={`/teacher/courses/courseDetail/`}>
             <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
               <AspectRatio ratio={16 / 9}>
                 <img

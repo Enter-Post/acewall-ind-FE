@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CoursesCard } from "@/CustomComponent/DeshboardCard";
+import { CoursesCard } from "@/CustomComponent/Card";
 import SelectCmp from "@/CustomComponent/SelectCmp";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -22,6 +22,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Michael Brown",
+      link: "/Courses/detail",
     },
     {
       id: 5,
@@ -34,6 +35,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Richard Adams",
+      link: "/Courses/detail",
     },
     {
       id: 6,
@@ -46,6 +48,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Olivia Green",
+      link: "/Courses/detail",
     },
     {
       id: 7,
@@ -58,6 +61,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Samuel Turner",
+      link: "/Courses/detail",
     },
     {
       id: 8,
@@ -70,6 +74,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681488098851-e3913f3b1908?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Clara Foster",
+      link: "/Courses/detail",
     },
     {
       id: 9,
@@ -82,6 +87,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Sarah Collins",
+      link: "/Courses/detail",
     },
     {
       id: 10,
@@ -94,6 +100,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=1438&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. David Martin",
+      link: "/Courses/detail",
     },
     {
       id: 11,
@@ -106,6 +113,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Linda Lee",
+      link: "/Courses/detail",
     },
     {
       id: 12,
@@ -118,6 +126,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1612178991541-b48cc8e92a4d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Charles Young",
+      link: "/Courses/detail",
     },
     {
       id: 13,
@@ -130,6 +139,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1620662736427-b8a198f52a4d?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Daniel Harris",
+      link: "/Courses/detail",
     },
     {
       id: 14,
@@ -142,6 +152,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1573511860302-28c524319d2a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Sophia King",
+      link: "/Courses/detail",
     },
     {
       id: 15,
@@ -154,6 +165,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681079526863-7ba34e838026?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Laura White",
+      link: "/Courses/detail",
     },
     {
       id: 16,
@@ -166,6 +178,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1622782914767-404fb9ab3f57?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. William Scott",
+      link: "/Courses/detail",
     },
     {
       id: 17,
@@ -178,6 +191,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661335257817-4552acab9656?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Prof. Steven Carter",
+      link: "/Courses/detail",
     },
     {
       id: 18,
@@ -190,6 +204,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661540998860-da104459c959?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Alice Green",
+      link: "/Courses/detail",
     },
     {
       id: 19,
@@ -202,6 +217,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1526615735835-530c611a3d8a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Brian Hall",
+      link: "/Courses/detail",
     },
     {
       id: 20,
@@ -214,6 +230,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661906977668-ece2c96385c4?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Henry Black",
+      link: "/Courses/detail",
     },
     {
       id: 21,
@@ -226,6 +243,7 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Nathan Allen",
+      link: "/Courses/detail",
     },
   ];
 
@@ -277,70 +295,6 @@ const GeneralCourses = () => {
 
   return (
     <div className="">
-      <header className="sticky top-0 z-10 bg-green-50 w-full mb-10">
-        <div className="h-auto py-1 bg-green-600 flex justify-end items-end px-5 cursor-pointer">
-          <Link to={"/School "}>
-            <button
-              type="submit"
-              className="text-white bg-acewall-main hover:bg-green-700 font-medium rounded-lg text-sm px-2 py-3 md:px-2 md:py-2"
-            >
-              For School's Teachers and Students
-            </button>
-          </Link>
-        </div>
-        <div className="flex h-16 items-center justify-between px-4 border">
-          {/* <div className="text-xl font-semibold">ScholarNest</div> */}
-          <Link
-            // onClick={() => setselected(1)}
-            className="block md:hidden"
-            to={"/student"}
-          >
-            <img
-              src={acewallshort}
-              alt="Mobile Logo"
-              className="w-8 rounded-full h-auto cursor-pointer"
-            />
-          </Link>
-          <Link
-            // onClick={() => setselected(1)}
-            className="hidden md:block"
-            to={"/student"}
-          >
-            <img
-              src={acewallscholarslogo}
-              alt="Desktop Logo"
-              className="w-40 h-auto  cursor-pointer"
-            />
-          </Link>
-
-          <div className="flex gap-5 text-black text-sm ">
-            {topBarTabs.map((tabs, index) => {
-              return (
-                <Link
-                  key={index}
-                  to={tabs.path}
-                  // onClick={() => {
-                  //   setselected(tabs.id);
-                  //   setIsSidebarOpen(false);
-                  // }}
-                  //   className={`cursor-pointer ${
-                  //     selected == tabs.id && "text-green-500 font-bold"
-                  //   }`
-                  // }
-                >
-                  {tabs.name}
-                </Link>
-              );
-            })}
-          </div>
-          <div className="hidden md:flex items-center space-x-4">
-            <Input type="email" placeholder="Search" />
-            <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
-              <Search className="rounded-full" />
-            </div>
-          </div>
-        </div>
-      </header>
       <main className="m-10">
         <SearchBox />
 
@@ -348,13 +302,13 @@ const GeneralCourses = () => {
           {allCourses.map((course) => {
             return (
               <div key={course.id}>
-                <CoursesCard course={course} />
+                <CoursesCard course={course} link={course.link} />
               </div>
             );
           })}
         </div>
       </main>
-      <Footer />
+      s
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Assignment, DeshBoardCard } from "@/CustomComponent/DeshboardCard";
+import { Assignment, DeshBoardCard } from "@/CustomComponent/Card";
 import React from "react";
 
 const Deshboard = () => {

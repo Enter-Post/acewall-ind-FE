@@ -86,7 +86,7 @@ export default function Teacherrassessment() {
         </p>
         <div className="flex justify-end">
           {/* <AssessmentUploadDialog /> */}
-          <Link to="/teacherPortal/assignment/create">
+          <Link to="/teacher/assignment/create">
             <Button variant={"ghost"} className="text-green-600">
               <Plus className="mr-2 h-4 w-4" /> Add New
             </Button>

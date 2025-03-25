@@ -292,7 +292,7 @@ export default function CoursesChapter() {
       </div>
 
       <div className="p-4 flex justify-between">
-        <Link to="/teacherPortal/courses/createCourses/">
+        <Link to="/teacher/courses/createCourses/">
           <Button
             variant="outline"
             className="flex items-center gap-2 bg-green-50 text-green-600 border-green-200 hover:bg-green-100 hover:text-green-700"
@@ -301,7 +301,7 @@ export default function CoursesChapter() {
             Back
           </Button>
         </Link>
-        <Link to="/teacherPortal/courses/createCourses/gradebook">
+        <Link to="/teacher/courses/createCourses/gradebook">
           <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600">
             Next
             <ChevronRight className="h-4 w-4" />

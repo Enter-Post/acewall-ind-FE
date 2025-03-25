@@ -1,22 +1,23 @@
 import * as React from "react";
-import { Link, Outlet, useLocation, useParams } from "react-router-dom";
-import dummyAvatar from "../../assets/avatar.png";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
 import acewallshort from "../../assets/acewallshort.png";
-
-import { Menu, MessageCircleDashed, Search } from "lucide-react";
+import {
+  Menu,
+  MessageCircleDashed,
+  Search,
+  BadgePlus,
+  DollarSign,
+  GraduationCap,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
-import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
+import { TeacherTopNavbarDropDown } from "@/CustomComponent/TeacherTopNavDropDown";
 import { Input } from "../../components/ui/input";
 import { DashboardCircleAddIcon } from "@/assets/Icons/deshboard";
 import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
 import { AssignmentsIcon } from "@/assets/Icons/AssignmentIcon";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
-import { TeacherIcon } from "@/assets/Icons/Classroom";
-import { Logout03Icon } from "@/assets/Icons/Logout";
-import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
-import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
 
 const sideBarTabs = [
@@ -24,74 +25,56 @@ const sideBarTabs = [
     id: 1,
     name: "Dashboard",
     icon: <DashboardCircleAddIcon />,
-    path: "/student",
+    path: "/teacher",
+  },
+  { id: 2, name: "My Courses", icon: <Book02Icon />, path: "/teacher/courses" },
+  {
+    id: 6,
+    name: "Create Course",
+    icon: <BadgePlus />,
+    path: "/teacher/courses/createCourses",
   },
   {
-    id: 2,
-    name: "My Courses",
-    icon: <Book02Icon />,
-    path: "/student/mycourses",
+    id: 3,
+    name: "Assignments",
+    icon: <AssignmentsIcon />,
+    path: "/teacher/assignment",
   },
   {
     id: 5,
     name: "Announcements",
     icon: <Megaphone02Icon />,
-    path: "/student/announcements",
+    path: "/teacher/announcements",
   },
   {
-    id: 3,
-    name: "My Assignments",
-    icon: <AssignmentsIcon />,
-    path: "/student/assignment",
+    id: 11,
+    name: "My Earnings",
+    icon: <DollarSign />,
+    path: "/teacher/earning",
   },
   {
-    id: 4,
-    name: "Gradebook",
-    icon: <Target02Icon />,
-    path: "/student/gradebook",
-  },
-  {
-    id: 10,
+    id: 12,
     name: "Messages",
     icon: <MessageCircleDashed />,
-    path: "/student/messages",
+    path: "/teacher/messages",
+  },
+  {
+    id: 13,
+    name: "Students",
+    icon: <GraduationCap />,
+    path: "/teacher/allStudent",
   },
 ];
 
-const topBarTabs = [
-  {
-    id: 7,
-    name: "More Courses",
-    icon: <Megaphone02Icon />,
-    path: "/student/courses",
-  },
-  {
-    id: 8,
-    name: "Support",
-    icon: <Megaphone02Icon />,
-    path: "/student/support",
-  },
-];
-
-export default function Layout() {
+export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
-
   const location = useLocation().pathname;
 
-  const savedTabinLS = localStorage.getItem("selectedTab");
-  const [selected, setselected] = React.useState(
-    savedTabinLS ? parseInt(savedTabinLS) : 1
-  );
-
-  React.useEffect(() => {
-    localStorage.setItem("selectedTab", selected);
-  }, [selected]);
-
   return (
-    <div className="flex w-screen flex-col">
-      <header className="sticky top-0 z-10 bg-green-50 w-full">
+    <div className="flex flex-col w-screen">
+      <header className="sticky top-0 z-10 bg-green-50">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
-          <TopNavbarDropDown selected={selected} setselected={setselected} />
+          <TeacherTopNavbarDropDown />
         </div>
         <div className="flex h-16 items-center justify-between px-4 border">
           <Button
@@ -103,54 +86,29 @@ export default function Layout() {
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
-          {/* <div className="text-xl font-semibold">ScholarNest</div> */}
-          <Link className="block md:hidden" to={"/student"}>
+          <Link to="/teacher" className="block md:hidden">
             <img
               src={acewallshort}
               alt="Mobile Logo"
               className="w-8 rounded-full h-auto cursor-pointer"
             />
           </Link>
-          <Link
-            onClick={() => setselected(1)}
-            className="hidden md:block"
-            to={"/student"}
-          >
+          <Link to="/teacher" className="hidden md:block">
             <img
               src={acewallscholarslogo}
               alt="Desktop Logo"
-              className="w-40 h-auto  cursor-pointer"
+              className="w-40 h-auto cursor-pointer"
             />
           </Link>
-
-          <div className={`flex gap-5 text-sm`}>
-            {topBarTabs.map((tabs, index) => {
-              return (
-                <Link
-                  key={index}
-                  to={tabs.path}
-                  onClick={() => {
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`cursor-pointer  ${
-                    location == tabs.path
-                      ? "text-green-500 font-bold"
-                      : "text-black"
-                  } `}
-                >
-                  {tabs.name}
-                </Link>
-              );
-            })}
-          </div>
           <div className="hidden md:flex items-center space-x-4">
-            <Input type="email" placeholder="Search" />
+            <Input type="text" placeholder="Search" />
             <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
               <Search className="rounded-full" />
             </div>
           </div>
         </div>
       </header>
+
       <div className="flex flex-1 overflow-hidden">
         <aside
           className={`bg-green-50 ${
@@ -159,39 +117,28 @@ export default function Layout() {
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
-              <Link
-                to={"/student/account"}
-                onClick={() => setselected(9)}
-                className={`w-10`}
-              >
+              <Link to="/teacher/account" className="w-10">
                 <Avatar>
                   <AvatarImage
-                    className={`rounded-full `}
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    className="rounded-full"
+                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop"
                     alt="@user"
                   />
                   <AvatarFallback>UN</AvatarFallback>
                 </Avatar>
               </Link>
               <div>
-                <p className="font-medium">John</p>
+                <p className="font-medium">John Doe</p>
                 <p className="text-sm text-gray-600">john@email.com</p>
               </div>
             </div>
-            <div className="flex md:hidden items-center space-x-4 mb-5">
-              <Input type="email" placeholder="Search" />
-              <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
-                <Search className="rounded-full" />
-              </div>
-            </div>
-            <nav className="space-y-2 ">
+            <nav className="space-y-2">
               {sideBarTabs.map((tab) => (
                 <Link
                   key={tab.name}
                   to={tab.path}
                   onClick={() => {
                     setIsSidebarOpen(false);
-                    setselected(tab.id);
                   }}
                   className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
                     location == tab.path ? "bg-green-500" : "text-black"
@@ -208,13 +155,13 @@ export default function Layout() {
                 </Link>
               ))}
             </nav>
-            <div className=" rounded-full flex flex-col items-center justify-between mt-10 w-full dark:bg-violet-600">
+            <div className="rounded-full flex flex-col items-center justify-between mt-10 w-full">
               <img src={acewallshort} alt="" className="w-1/2" />
               <Link
                 to="https://www.acewallscholars.org/contact-Us"
                 className="text-center font-semibold text-sm mt-4 text-acewall-main"
               >
-                Need Tutoring .Contact us
+                Need Tutoring? Contact us
               </Link>
             </div>
           </div>

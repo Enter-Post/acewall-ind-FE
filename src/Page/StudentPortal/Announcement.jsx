@@ -1,4 +1,4 @@
-import { AnnouncementCard, DeshBoardCard } from "@/CustomComponent/DeshboardCard";
+import { AnnouncementCard, DeshBoardCard } from "@/CustomComponent/Card";
 import React from "react";
 
 const Announcement = () => {

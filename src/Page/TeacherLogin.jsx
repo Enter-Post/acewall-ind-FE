@@ -13,7 +13,7 @@ const TeacherLogin = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === "teacher@acewall.org" && password === "00000") {
-      navigate("/teacherPortal");
+      navigate("/teacher");
     } else {
       alert("Invalid Email or Password");
     }

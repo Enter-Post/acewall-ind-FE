@@ -95,7 +95,7 @@ const courseDetails = {
 };
 
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const GeneralCourseDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -493,4 +493,4 @@ const AllCoursesDetail = () => {
   );
 };
 
-export default AllCoursesDetail;
+export default GeneralCourseDetail;

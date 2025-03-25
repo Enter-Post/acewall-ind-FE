@@ -38,13 +38,13 @@ const Login = () => {
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-center text-2xl md:text-3xl text-gray-800 font-normal mb-8">
-            Log in to your account
+            Log in to your accountmore
           </h1>
 
           <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
             {/* Login Form */}
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
@@ -80,13 +80,12 @@ const Login = () => {
                     Log in as Teacher
                   </Link>
                   {/* <Link to={"/student"}> */}
-                    <button
-                      onClick={() => handleSubmit()}
-                      type="submit"
-                      className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
-                    >
-                      Login
-                    </button>
+                  <button
+                    type="submit"
+                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
+                  >
+                    Login
+                  </button>
                   {/* </Link> */}
                 </div>
               </form>

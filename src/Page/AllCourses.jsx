@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CoursesCard } from "@/CustomComponent/DeshboardCard";
+import { CoursesCard } from "@/CustomComponent/Card";
 import SelectCmp from "@/CustomComponent/SelectCmp";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -18,6 +18,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Michael Brown",
+      link: "/student/courses/detail",
     },
     {
       id: 5,
@@ -30,6 +31,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Richard Adams",
+      link: "/student/courses/detail",
     },
     {
       id: 6,
@@ -42,6 +44,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Olivia Green",
+      link: "/student/courses/detail",
     },
     {
       id: 7,
@@ -54,6 +57,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Samuel Turner",
+      link: "/student/courses/detail",
     },
     {
       id: 8,
@@ -66,6 +70,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681488098851-e3913f3b1908?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Clara Foster",
+      link: "/student/courses/detail",
     },
     {
       id: 9,
@@ -78,6 +83,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Sarah Collins",
+      link: "/student/courses/detail",
     },
     {
       id: 10,
@@ -90,6 +96,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=1438&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. David Martin",
+      link: "/student/courses/detail",
     },
     {
       id: 11,
@@ -102,6 +109,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Linda Lee",
+      link: "/student/courses/detail",
     },
     {
       id: 12,
@@ -114,6 +122,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1612178991541-b48cc8e92a4d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Charles Young",
+      link: "/student/courses/detail",
     },
     {
       id: 13,
@@ -126,6 +135,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1620662736427-b8a198f52a4d?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Daniel Harris",
+      link: "/student/courses/detail",
     },
     {
       id: 14,
@@ -138,6 +148,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1573511860302-28c524319d2a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Sophia King",
+      link: "/student/courses/detail",
     },
     {
       id: 15,
@@ -150,6 +161,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681079526863-7ba34e838026?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Laura White",
+      link: "/student/courses/detail",
     },
     {
       id: 16,
@@ -162,6 +174,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1622782914767-404fb9ab3f57?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. William Scott",
+      link: "/student/courses/detail",
     },
     {
       id: 17,
@@ -174,6 +187,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661335257817-4552acab9656?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Prof. Steven Carter",
+      link: "/student/courses/detail",
     },
     {
       id: 18,
@@ -186,6 +200,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661540998860-da104459c959?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Alice Green",
+      link: "/student/courses/detail",
     },
     {
       id: 19,
@@ -198,6 +213,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1526615735835-530c611a3d8a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Brian Hall",
+      link: "/student/courses/detail",
     },
     {
       id: 20,
@@ -210,6 +226,7 @@ const AllCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661906977668-ece2c96385c4?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Henry Black",
+      link: "/student/courses/detail",
     },
     {
       id: 21,
@@ -222,6 +239,7 @@ const AllCourses = () => {
       image:
         "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Nathan Allen",
+      link: "/student/courses/detail",
     },
   ];
 
@@ -256,13 +274,13 @@ const AllCourses = () => {
   return (
     <div>
       <main>
-      <SearchBox/>
+        <SearchBox />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-10">
           {allCourses.map((course) => {
             return (
               <div key={course.id}>
-                <CoursesCard course={course} />
+                <CoursesCard course={course} link={course.link} />
               </div>
             );
           })}

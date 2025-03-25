@@ -171,7 +171,7 @@ export default function TeacherGradebook() {
       </Card>
 
       <div className="flex justify-between mt-8">
-        <Link to={"/teacherPortal/courses/createCourses/addchapters"}>
+        <Link to={"/teacher/courses/createCourses/addchapters"}>
           <Button
             variant="outline"
             className="flex items-center gap-2 text-green-500 border-green-500 hover:bg-green-50 hover:text-green-600"
@@ -181,7 +181,7 @@ export default function TeacherGradebook() {
           </Button>
         </Link>
 
-        {/* <Link to="/teacherPortal/courses">
+        {/* <Link to="/teacher/courses">
           <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white">
             Create Course
             <ArrowRight className="h-4 w-4" />

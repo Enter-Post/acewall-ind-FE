@@ -1,38 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Link } from "react-router-dom";
-
-const StudentCard = ({ student }) => (
-  <Link to={`/teacherPortal/studentProfile`}>
-    <Card className="overflow-hidden">
-      <CardContent className="p-6 flex flex-col items-center">
-        <Avatar className="w-24 h-24 mb-4">
-          <AvatarImage src={student.image} alt={student.name} />
-          <AvatarFallback>
-            {student.name
-              .split(" ")
-              .map((n) => n[0])
-              .join("")}
-          </AvatarFallback>
-        </Avatar>
-        <h3 className="text-lg font-semibold mb-1 text-center">
-          {student.name}
-        </h3>
-        <p className="text-sm text-gray-500 mb-4">{student.email}</p>
-        <div className="w-full grid grid-cols-2 gap-y-2 text-sm">
-          <span className="text-gray-500">Students</span>
-          <span className="text-right">
-            {student.students.toLocaleString()}
-          </span>
-          <span className="text-gray-500">Joined at</span>
-          <span className="text-right">{student.joinedAt}</span>
-          <span className="text-gray-500">Courses</span>
-          <span className="text-right">{student.courses}</span>
-        </div>
-      </CardContent>
-    </Card>
-  </Link>
-);
+import { StudentCard } from "@/CustomComponent/Card";
 
 const AllStudent = ({ totalCount }) => {
   const students = [

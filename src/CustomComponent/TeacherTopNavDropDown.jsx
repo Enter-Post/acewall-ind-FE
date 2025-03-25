@@ -6,10 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"; // Use ShadCN's Avatar
-import dummyAvatar from "../assets/avatar.png";
 import { Link } from "react-router-dom";
-import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
-import { CircleArrowDown, Slash } from "lucide-react";
 
 export function TeacherTopNavbarDropDown({ selected, setselected }) {
 
@@ -17,7 +14,7 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
     {
       id: 9,
       title: "Account",
-      path: "/TeacherPortal/account",
+      path: "/teacher/account",
     },
   ];
 
@@ -37,7 +34,6 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
           return (
             <DropdownMenuItem
               key={index}
-              onClick={() => setselected(tab.id)}
               className={
                 selected == tab.id && "bg-green-500 hover:bg-green-600 text-white"
               }

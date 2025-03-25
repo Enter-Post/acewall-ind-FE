@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 function DeshBoardCard({ mainHeading, data, link, height }) {
   return (
@@ -114,9 +115,9 @@ function AnnouncementCard({ mainHeading, data }) {
   );
 }
 
-function CoursesCard({ course }) {
+function CoursesCard({ course, link }) {
   return (
-    <Link key={course.id} to={`/student/allCourseDetails`}>
+    <Link key={course.id} to={link}>
       <Card className="w-full overflow-hidden cursor-pointer gap-0 py-0">
         <AspectRatio ratio={16 / 9}>
           <img
@@ -164,4 +165,42 @@ function CoursesCard({ course }) {
   );
 }
 
-export { DeshBoardCard, Assignment, AnnouncementCard, CoursesCard };
+const StudentCard = ({ student }) => (
+  <Link to={`/teacher/studentProfile`}>
+    <Card className="overflow-hidden">
+      <CardContent className="p-6 flex flex-col items-center">
+        <Avatar className="w-24 h-24 mb-4">
+          <AvatarImage src={student.image} alt={student.name} />
+          <AvatarFallback>
+            {student.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")}
+          </AvatarFallback>
+        </Avatar>
+        <h3 className="text-lg font-semibold mb-1 text-center">
+          {student.name}
+        </h3>
+        <p className="text-sm text-gray-500 mb-4">{student.email}</p>
+        <div className="w-full grid grid-cols-2 gap-y-2 text-sm">
+          <span className="text-gray-500">Students</span>
+          <span className="text-right">
+            {student.students.toLocaleString()}
+          </span>
+          <span className="text-gray-500">Joined at</span>
+          <span className="text-right">{student.joinedAt}</span>
+          <span className="text-gray-500">Courses</span>
+          <span className="text-right">{student.courses}</span>
+        </div>
+      </CardContent>
+    </Card>
+  </Link>
+);
+
+export {
+  DeshBoardCard,
+  Assignment,
+  AnnouncementCard,
+  CoursesCard,
+  StudentCard,
+};
