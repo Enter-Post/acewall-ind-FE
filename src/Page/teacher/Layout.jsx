@@ -9,6 +9,7 @@ import {
   BadgePlus,
   DollarSign,
   GraduationCap,
+  Wallet,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -48,9 +49,9 @@ const sideBarTabs = [
   },
   {
     id: 11,
-    name: "My Earnings",
-    icon: <DollarSign />,
-    path: "/teacher/earning",
+    name: "Wallet",
+    icon: <Wallet />,
+    path: "/teacher/wallet",
   },
   {
     id: 12,

@@ -24,7 +24,7 @@ import GeneralSupport from "./Page/GeneralSupport";
 import GeneralCoursesDetail from "./Page/GeneralCourseDetail";
 import TeacherDashboard from "./Page/teacher/Dashboard";
 import TeacherLayout from "./Page/teacher/Layout";
-import Earning from "./Page/teacher/Earning";
+import Earning from "./Page/teacher/Earning/Earning";
 import TeacherAccount from "./Page/teacher/Account";
 import TeacherMessages from "./Page/teacher/Messages";
 import Teacherrassessment from "./Page/teacher/TeacherAssignment";
@@ -38,6 +38,7 @@ import CoursesChapter from "./Page/teacher/Courses/CourseChapters";
 import TeacherGradebook from "./Page/teacher/Courses/Gradebook";
 import TeacherLogin from "./Page/TeacherLogin";
 import CreateAssessmentPage from "./Page/teacher/CreateAssessment";
+import EarningDetail from "./Page/teacher/Earning/EarningDetail";
 
 function App() {
   return (
@@ -80,7 +81,10 @@ function App() {
 
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />
-          <Route path="earning" element={<Earning />} />
+          <Route path="wallet">
+            <Route index element={<Earning />} />
+            <Route path="detail" element={<EarningDetail />} />
+          </Route>
           <Route path="account" element={<TeacherAccount />} />
           <Route path="messages" element={<TeacherMessages />} />
           <Route path="assignment">

@@ -11,6 +11,39 @@ import {
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+  const usefulLinks = [
+    { name: "Home", url: "https://www.acewallscholars.org/" },
+    { name: "About us", url: "https://www.acewallscholars.org/about" },
+    {
+      name: "Services",
+      url: "https://www.acewallscholars.org/academic-tutoring",
+    },
+    { name: "Terms of service", url: "/TermsandCondition" },
+    { name: "Privacy policy", url: "/Privacypolicy" },
+  ];
+
+  const popularCourses = [
+    { name: "Biology", url: "http://localhost:5173/Courses/detail" },
+    { name: "Algebra", url: "http://localhost:5173/Courses/detail" },
+    { name: "English", url: "http://localhost:5173/Courses/detail" },
+    { name: "Maths", url: "http://localhost:5173/Courses/detail" },
+    { name: "Physics", url: "http://localhost:5173/Courses/detail" },
+  ];
+
+  const socialLinks = [
+    { Icon: Twitter, url: "https://twitter.com/AcewallScholars" },
+    { Icon: Facebook, url: "https://www.facebook.com/acewallscholars" },
+    {
+      Icon: Instagram,
+      url: "https://www.instagram.com/acewallscholarsonline/",
+    },
+    {
+      Icon: Youtube,
+      url: "https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ",
+    },
+    { Icon: Mail, url: "mailto:contact@acewallscholars.org" },
+  ];
+
   return (
     <footer className="bg-black text-white">
       <div className="container mx-auto px-4 py-12">
@@ -23,7 +56,6 @@ export default function Footer() {
               <p>P.O. Box 445</p>
               <p>Powhatan, VA 23139</p>
               <p className="mt-4">Phone: (804) 464-7926</p>
-
               <p>Email: contact@acewallscholars.org</p>
             </div>
           </div>
@@ -32,32 +64,16 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4">Useful Links</h3>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>
-                <Link to="https://www.acewallscholars.org/" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Home
-                </Link>
-              </li>
-              <li>
-                <Link to="https://www.acewallscholars.org/about" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> About us
-                </Link>
-              </li>
-              <li>
-                <Link to="https://www.acewallscholars.org/academic-tutoring" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Services
-                </Link>
-              </li>
-              <li>
-                <Link  to="/TermsandCondition" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Terms of
-                  service
-                </Link>
-              </li>
-              <li>
-                <Link to="/Privacypolicy" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Privacy policy
-                </Link>
-              </li>
+              {usefulLinks.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.url}
+                    className="flex items-center hover:text-white"
+                  >
+                    <span className="text-green-500 mr-2">›</span> {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -65,31 +81,16 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-white mb-4">Popular Courses</h3>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>
-                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Biology
-                </Link>
-              </li>
-              <li>
-                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Algebra 
-                </Link>
-              </li>
-              <li>
-                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> English
-                </Link>
-              </li>
-              <li>
-                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Maths
-                </Link>
-              </li>
-              <li>
-                <Link to="http://localhost:5173/student/allCourseDetails" className="flex items-center hover:text-white">
-                  <span className="text-green-500 mr-2">›</span> Physics
-                </Link>
-              </li>
+              {popularCourses.map((course, index) => (
+                <li key={index}>
+                  <Link
+                    to={course.url}
+                    className="flex items-center hover:text-white"
+                  >
+                    <span className="text-green-500 mr-2">›</span> {course.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -99,12 +100,12 @@ export default function Footer() {
               Join Our Newsletter
             </h3>
             <p className="text-sm text-gray-300 mb-4">
-             Stay updated with our latest news and offers.
+              Stay updated with our latest news and offers.
             </p>
             <div className="flex">
               <Input
                 type="email"
-                placeholder=""
+                placeholder="Enter your email"
                 className="rounded-l-md rounded-r-none border-gray-700 bg-black text-white focus:ring-0 focus:border-gray-600"
               />
               <Button className="rounded-l-none bg-green-500 hover:bg-green-600 text-white">
@@ -122,42 +123,22 @@ export default function Footer() {
             <p className="text-sm text-gray-400">
               © Copyright{" "}
               <a target="#" to="https://www.acewallscholars.org/">
-                <span className="text-green-500 font-bold">Acewall Scholars.</span>
-              </a>
-              {" "}
+                <span className="text-green-500 font-bold">
+                  Acewall Scholars.
+                </span>
+              </a>{" "}
               All Rights Reserved
             </p>
             <div className="flex space-x-2 mt-4 md:mt-0">
-              <Link
-                to="https://twitter.com/AcewallScholars"
-                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
-              >
-                <Twitter className="h-4 w-4" />
-              </Link>
-              <Link
-                to="https://www.facebook.com/acewallscholars"
-                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
-              >
-                <Facebook className="h-4 w-4" />
-              </Link>
-              <Link
-                to="https://www.instagram.com/acewallscholarsonline/"
-                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
-              >
-                <Instagram className="h-4 w-4" />
-              </Link>
-              <Link
-                to="https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ"
-                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
-              >
-                <Youtube className="h-4 w-4" />
-              </Link>
-              <Link
-                to="contact@acewallscholars.org"
-                className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
-              >
-                <Mail className="h-4 w-4" />
-              </Link>
+              {socialLinks.map(({ Icon, url }, index) => (
+                <Link
+                  key={index}
+                  to={url}
+                  className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
+                >
+                  <Icon className="h-4 w-4" />
+                </Link>
+              ))}
             </div>
           </div>
         </div>

@@ -3,6 +3,14 @@ import { Link } from "react-router-dom";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 function DeshBoardCard({ mainHeading, data, link, height }) {
   return (
@@ -197,10 +205,51 @@ const StudentCard = ({ student }) => (
   </Link>
 );
 
+const TransactionCard = ({ title, data }) => (
+  <Card className="h-fit p-0 gap-3 rounded mt-5">
+  <CardHeader className="flex-row justify-between items-center bg-green-600 py-3 rounded">
+        <CardTitle className="text-lg text-white">{title}</CardTitle>
+    </CardHeader>
+    <CardContent className="px-3 py-0">
+      <Table>
+        <TableHeader>
+          <TableRow className="border-gray-100">
+            <TableHead className="text-xs font-medium text-gray-500 py-3">
+              Date
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-500 py-3">
+              Time
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-500 py-3 text-right">
+              Amount
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data?.map((transaction, index) => (
+            <TableRow key={index} className="border-t border-gray-100">
+              <TableCell className="text-sm text-gray-700 py-4">
+                {transaction.date}
+              </TableCell>
+              <TableCell className="text-sm text-gray-700 py-4">
+                {transaction.time}
+              </TableCell>
+              <TableCell className="text-sm text-gray-700 py-4 text-right">
+                {transaction.amount}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
+);
+
 export {
   DeshBoardCard,
   Assignment,
   AnnouncementCard,
   CoursesCard,
   StudentCard,
+  TransactionCard,
 };
