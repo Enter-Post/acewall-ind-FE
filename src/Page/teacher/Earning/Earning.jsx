@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import EarningDetail from "./EarningDetail";
+import { Link } from "react-router-dom";
 
 // Mock data for the chart
 const chartData = {
@@ -182,10 +183,11 @@ export default function Earning() {
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-medium">Statistic</h3>
               <div className="flex items-center">
-                <span className="text-sm text-muted-foreground mr-2">
-                  Revenue
-                </span>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                <Link to="/teacher/wallet/detail">
+                  <p className="text-sm font-bold text-green-500 cursor-pointer">
+                    More Details
+                  </p>
+                </Link>
               </div>
             </div>
 
@@ -297,7 +299,7 @@ export default function Earning() {
       </div>
 
       {/* Earning Detail Section */}
-      <EarningDetail />
+      {/* <EarningDetail /> */}
     </div>
   );
 }

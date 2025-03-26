@@ -207,9 +207,7 @@ const StudentCard = ({ student }) => (
 
 const TransactionCard = ({ title, data }) => (
   <Card className="h-fit p-0 gap-3 rounded mt-5">
-  <CardHeader className="flex-row justify-between items-center bg-green-600 py-3 rounded">
-        <CardTitle className="text-lg text-white">{title}</CardTitle>
-    </CardHeader>
+
     <CardContent className="px-3 py-0">
       <Table>
         <TableHeader>
@@ -220,13 +218,19 @@ const TransactionCard = ({ title, data }) => (
             <TableHead className="text-xs font-medium text-gray-500 py-3">
               Time
             </TableHead>
-            <TableHead className="text-xs font-medium text-gray-500 py-3 text-right">
-              Amount
+            <TableHead className="text-xs font-medium text-gray-500 py-3 text-center">
+              Earnings
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-500 py-3 text-center">
+              Withdrawals
+            </TableHead>
+            <TableHead className="text-xs font-medium text-gray-500 py-3 text-center">
+              Balance
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.map((transaction, index) => (
+          {data.map((transaction, index) => (
             <TableRow key={index} className="border-t border-gray-100">
               <TableCell className="text-sm text-gray-700 py-4">
                 {transaction.date}
@@ -234,8 +238,18 @@ const TransactionCard = ({ title, data }) => (
               <TableCell className="text-sm text-gray-700 py-4">
                 {transaction.time}
               </TableCell>
-              <TableCell className="text-sm text-gray-700 py-4 text-right">
-                {transaction.amount}
+              <TableCell className="text-sm text-green-600 py-4 text-center">
+                {transaction.type === "Earning"
+                  ? `$${transaction.amount}`
+                  : "-"}
+              </TableCell>
+              <TableCell className="text-sm text-red-600 py-4 text-center">
+                {transaction.type === "Withdrawal"
+                  ? `$${transaction.amount}`
+                  : "-"}
+              </TableCell>
+              <TableCell className="text-sm text-black py-4 text-center">
+                {transaction.balance}
               </TableCell>
             </TableRow>
           ))}
