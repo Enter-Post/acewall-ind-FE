@@ -91,15 +91,19 @@ const CourseCards = () => {
                 />
               </AspectRatio>
               <CardHeader>
+                <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
+                  {course.category || "Developments"}
+                </div>
                 <CardTitle>{course.course}</CardTitle>
-                <p className="text-xs">Teacher: {course.teacher}</p>
+                <p className="text-sm font-medium">Teacher: {course.teacher}</p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
+                <div className="">
+                  {/* <p className="text-sm text-muted-foreground">
                     Grade: {course.Grade}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
+                  </p> */}
+
+                  <p className="text-md text-muted-foreground font-semibold">
                     Lecture: {course.NumberOfLecture}
                   </p>
                 </div>
