@@ -9,7 +9,7 @@ export default function ConversationList({
 }) {
   return (
     <div className="border-r border-gray-200 flex flex-col h-full overflow-auto hide-scrollbar">
-      <div className="flex justify-between p-4 border-b border-gray-200">
+      <div className="flex justify-between items-center gap-3 p-4 border-b border-gray-200">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
@@ -20,7 +20,7 @@ export default function ConversationList({
         </div>
 
         <div>
-          <Button className="bg-green-500 hover:bg-green-600 rounded-lg flex items-center gap-2 p-4">
+          <Button className="bg-green-500 hover:bg-green-600 rounded-lg flex items-center gap- p-4">
             <Plus className="h-24 w-24" />
             New
           </Button>

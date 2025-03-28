@@ -120,7 +120,7 @@ Vako realizes that people who take courses on Udemy want to transform their live
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <h2 className="text-2xl font-bold">{instructor.name}</h2>
               {instructor.isTopRated && (
-                <Badge variant="outline" className="bg-orange-50 text-orange-500 border-orange-200 font-medium">
+                <Badge variant="outline" className="bg-green-50 text-green-500 border-green-200 font-medium">
                   Top Rated
                 </Badge>
               )}
@@ -168,7 +168,7 @@ Vako realizes that people who take courses on Udemy want to transform their live
             <TabsTrigger
               value="courses"
               className={cn(
-                "px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-orange-500 data-[state=active]:shadow-none font-medium",
+                "px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:shadow-none font-medium",
                 "data-[state=active]:bg-transparent",
               )}
             >
@@ -177,7 +177,7 @@ Vako realizes that people who take courses on Udemy want to transform their live
             <TabsTrigger
               value="reviews"
               className={cn(
-                "px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-orange-500 data-[state=active]:shadow-none font-medium",
+                "px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:shadow-none font-medium",
                 "data-[state=active]:bg-transparent",
               )}
             >
@@ -188,12 +188,12 @@ Vako realizes that people who take courses on Udemy want to transform their live
 
         <TabsContent value="courses" className="mt-6">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold">Vako Courses ({instructor.courseCount})</h3>
+            <h3 className="text-xl font-bold">Courses ({instructor.courseCount})</h3>
           </div>
 
           {/* Course Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {courses.map((course) => (
+            {courses?.map((course) => (
               <div key={course.id} className="border rounded-lg overflow-hidden shadow-sm">
                 <div className="aspect-video overflow-hidden">
                   <img
@@ -224,7 +224,7 @@ Vako realizes that people who take courses on Udemy want to transform their live
                 </div>
                 <div className="bg-gray-50 p-4 border-t">
                   <div className="text-right">
-                    <span className="text-orange-500 font-bold">${course.price}</span>
+                    <span className="text-green-500 font-bold">${course.price}</span>
                   </div>
                 </div>
               </div>

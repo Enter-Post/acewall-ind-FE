@@ -95,7 +95,7 @@ export default function Teacherrassessment() {
       </div>
 
       <div className="space-y-6">
-        <Card className="border rounded-lg bg-gray-50 p-4">
+        <Card className="border rounded-lg bg-gray-50 p-4 border-red-500">
           <Collapsible
             open={currentExpanded}
             onOpenChange={setCurrentExpanded}
@@ -160,7 +160,7 @@ export default function Teacherrassessment() {
         </Card>
 
         
-        <Card className="border rounded-lg bg-gray-50 p-4">
+        <Card className="border rounded-lg bg-gray-50 p-4  border-red-500 ">
           <Collapsible
             open={completedExpanded}
             onOpenChange={setCompletedExpanded}

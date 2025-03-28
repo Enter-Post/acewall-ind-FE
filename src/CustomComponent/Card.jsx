@@ -207,7 +207,6 @@ const StudentCard = ({ student }) => (
 
 const TransactionCard = ({ title, data }) => (
   <Card className="h-fit p-0 gap-3 rounded mt-5">
-
     <CardContent className="px-3 py-0">
       <Table>
         <TableHeader>
@@ -259,6 +258,21 @@ const TransactionCard = ({ title, data }) => (
   </Card>
 );
 
+const EarningStateCard = ({ data }) => {
+  return (
+    <Card>
+      <CardContent className="flex items-center p-6">
+        <div className={`h-12 w-12 rounded-lg flex ${data.bgColor} items-center justify-center mr-4`} >
+          {data.icon}
+        </div>
+        <div>
+          <p className="text-xl font-bold"> {data.value} </p>
+          <p className="text-sm text-muted-foreground">{data.description}</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 export {
   DeshBoardCard,
   Assignment,
@@ -266,4 +280,5 @@ export {
   CoursesCard,
   StudentCard,
   TransactionCard,
+  EarningStateCard,
 };

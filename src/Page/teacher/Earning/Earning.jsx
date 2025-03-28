@@ -29,6 +29,7 @@ import {
 import { cn } from "@/lib/utils";
 import EarningDetail from "./EarningDetail";
 import { Link } from "react-router-dom";
+import { EarningStateCard } from "@/CustomComponent/Card";
 
 // Mock data for the chart
 const chartData = {
@@ -107,6 +108,33 @@ const paymentMethods = [
   },
 ];
 
+const cardDetails = [
+  {
+    icon: <Layers className="h-6 w-6 text-orange-500" />,
+    bgColor: "bg-orange-50",
+    value: "$13,804",
+    description: "Total Revenue",
+  },
+  {
+    icon: <Wallet className="h-6 w-6 text-indigo-500" />,
+    bgColor: "bg-indigo-50",
+    value: "$16,593",
+    description: "Current Balance",
+  },
+  {
+    icon: <Receipt className="h-6 w-6 text-indigo-500" />,
+    bgColor: "bg-red-50",
+    value: "$13,184",
+    description: "Total Withdrawals",
+  },
+  {
+    icon: <Wallet className="h-6 w-6 text-green-500" />,
+    bgColor: "bg-green-50",
+    value: "$162.00",
+    description: "Today Revenue",
+  },
+];
+
 export default function Earning() {
   const [activeCard, setActiveCard] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(0);
@@ -124,55 +152,14 @@ export default function Earning() {
       <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
         My Earnings
       </p>
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="h-12 w-12 rounded-lg bg-orange-50 flex items-center justify-center mr-4">
-              <Layers className="h-6 w-6 text-orange-500" />
+        {cardDetails.map((data, index) => {
+          return (
+            <div className="" key={index}>
+              <EarningStateCard data={data} />
             </div>
-            <div>
-              <p className="text-2xl font-bold">$13,804.00</p>
-              <p className="text-sm text-muted-foreground">Total Revenue</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="h-12 w-12 rounded-lg bg-indigo-50 flex items-center justify-center mr-4">
-              <Wallet className="h-6 w-6 text-indigo-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">$16,593.00</p>
-              <p className="text-sm text-muted-foreground">Current Balance</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="h-12 w-12 rounded-lg bg-red-50 flex items-center justify-center mr-4">
-              <Receipt className="h-6 w-6 text-red-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">$13,184.00</p>
-              <p className="text-sm text-muted-foreground">Total Withdrawals</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="flex items-center p-6">
-            <div className="h-12 w-12 rounded-lg bg-green-50 flex items-center justify-center mr-4">
-              <Wallet className="h-6 w-6 text-green-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">$162.00</p>
-              <p className="text-sm text-muted-foreground">Today Revenue</p>
-            </div>
-          </CardContent>
-        </Card>
+          );
+        })}
       </div>
 
       {/* Main Content */}

@@ -43,9 +43,9 @@ export default function ChatWindow({ contactName }) {
             <p className="text-sm text-green-600">Active Now</p>
           </div>
         </div>
-        <Button variant="ghost" size="icon">
+        {/* <Button variant="ghost" size="icon">
           <MoreHorizontal className="h-5 w-5" />
-        </Button>
+        </Button> */}
       </div>
 
       <MessageList messages={messages} contactName={contactName} contactAvatar={contact?.avatar} />
@@ -53,11 +53,11 @@ export default function ChatWindow({ contactName }) {
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Edit className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-600 h-5 w-5" />
+            {/* <Edit className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-600 h-5 w-5" /> */}
             <input
               type="text"
               placeholder="Type your message"
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}

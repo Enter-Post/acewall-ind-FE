@@ -84,17 +84,6 @@ export default function TeacherGradebook() {
             className="bg-gray-50 border-gray-200"
           />
         </div>
-
-        <div>
-          <h3 className="text-lg font-medium text-gray-700 mb-2">
-            Late Submission Penalty
-          </h3>
-          <Input
-            type="text"
-            defaultValue="-10 %"
-            className="bg-gray-50 border-gray-200"
-          />
-        </div>
       </div>
 
       <Card className="mb-6 border-gray-200">

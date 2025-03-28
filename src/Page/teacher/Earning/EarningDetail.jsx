@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { TransactionCard } from "@/CustomComponent/Card";
-import { CustomDatePicker } from "@/CustomComponent/datepicker";
+import { CustomDatePicker } from "@/CustomComponent/teacher/wallet/datepicker";
 
 export default function EarningDetail() {
   const [fromDate, setFromDate] = React.useState(null);
@@ -30,7 +30,7 @@ export default function EarningDetail() {
           <p className="text-xs font-bold text-green-500 ml-2">To</p>
           <CustomDatePicker selectedDate={toDate} onChange={setToDate} />
         </div>
-        <Button className="bg-green-400 px-4 py-2 rounded-md text-white">Apply Filter</Button>
+        <Button className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md text-white">Apply Filter</Button>
       </div>
       
       <div className="mt-6">

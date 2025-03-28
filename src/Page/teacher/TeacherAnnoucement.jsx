@@ -126,9 +126,9 @@ export default function TeacherAnnoucement() {
           </Dialog>
         </div>
       </div>
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         {/* Current Announcements */}
-        <div className="border rounded-lg overflow-hidden bg-white">
+        <div className="border rounded-lg overflow-hidden bg-white border-red-600">
           <Collapsible open={currentOpen} onOpenChange={setCurrentOpen}>
             <div className="border-b">
               <CollapsibleTrigger className="flex items-center w-full p-4 text-left">
@@ -199,7 +199,7 @@ export default function TeacherAnnoucement() {
         </div>
 
         {/* Past Announcements */}
-        <div className="border rounded-lg overflow-hidden bg-white">
+        <div className="border rounded-lg overflow-hidden bg-white border-red-600">
           <Collapsible open={pastOpen} onOpenChange={setPastOpen}>
             <div className="border-b">
               <CollapsibleTrigger className="flex items-center w-full p-4 text-left">

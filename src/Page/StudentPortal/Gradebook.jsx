@@ -144,7 +144,7 @@ export default function Gradebook() {
     </Card>
 
     {/* Subjects and Assignments Table */}
-    <div className="">
+    <div className="border">
       <div className="flex items-center py-4">
         <Input
           placeholder="Search subjects or assignments..."
@@ -166,7 +166,7 @@ export default function Gradebook() {
             <TableBody className="p-10">
               {filteredSubjects.map((subject) => (
                 <>
-                  <TableRow key={subject.id} className="text-xs md:text-sm border">
+                  <TableRow key={subject.id} className="text-xs md:text-sm">
                     <TableCell
                       className="cursor-pointer hover:text-green-600 flex items-center gap-2 font-medium"
                       onClick={() => toggleSubjectExpand(subject.id)}
