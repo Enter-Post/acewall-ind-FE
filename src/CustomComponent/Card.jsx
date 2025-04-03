@@ -260,14 +260,12 @@ const TransactionCard = ({ title, data }) => (
 
 const EarningStateCard = ({ data }) => {
   return (
-    <Card>
-      <CardContent className="flex items-center p-6">
-        <div
-          className={`h-12 w-12 rounded-lg flex ${data.bgColor} items-center justify-center mr-4`}
-        >
+    <Card className="h-full">
+      <CardContent className="flex items-center  px-6 h-full">
+        <div className={`h-12 w-12 rounded-lg flex ${data.bgColor} items-center justify-center mr-4`} >
           {data.icon}
         </div>
-        <div>
+        <div className="h-full">
           <p className="text-xl font-bold"> {data.value} </p>
           <p className="text-sm text-muted-foreground">{data.description}</p>
         </div>

@@ -26,6 +26,8 @@ import {
   FileVideo,
   Plus,
 } from "lucide-react";
+// import Canvas from "@/CustomComponent/Canvas";
+import AssessmentQuestions from "@/CustomComponent/createAssessment/createQuestion";
 import { TextEditor } from "@/CustomComponent/createAssessment/TextEditor";
 
 const CreateAssessmentPage = () => {
