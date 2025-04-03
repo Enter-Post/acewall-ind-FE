@@ -89,7 +89,7 @@ export default function Layout() {
 
   return (
     <div className="flex w-screen flex-col">
-      <header className="sticky top-0 z-10 bg-green-50 w-full">
+      <header className="sticky top-0 z-10 bg-white w-full">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TopNavbarDropDown selected={selected} setselected={setselected} />
         </div>

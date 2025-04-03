@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import TermsModal from "@/CustomComponent/Termsandcondition";
 import {
   Facebook,
   Twitter,
@@ -9,17 +10,17 @@ import {
   ArrowUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import PrivacyPolicy from "./PrivacePolicy";
 
 export default function Footer() {
   const usefulLinks = [
-    { name: "Home", url: "https://www.acewallscholars.org/" },
+    { name: "Home", url: "http://localhost:5173/" },
     { name: "About us", url: "https://www.acewallscholars.org/about" },
+    { name: "Services", url: "https://www.acewallscholars.org/" },
     {
-      name: "Services",
-      url: "https://www.acewallscholars.org/academic-tutoring",
+      name: "Additional Services",
+      url: "/AdditionalServices",
     },
-    { name: "Terms of service", url: "/TermsandCondition" },
-    { name: "Privacy policy", url: "/Privacypolicy" },
   ];
 
   const popularCourses = [
@@ -70,10 +71,18 @@ export default function Footer() {
                     to={link.url}
                     className="flex items-center hover:text-white"
                   >
-                    <span className="text-green-500 mr-2">›</span> {link.name}
+                    <span className="text-green-500 mr-2">›</span>{" "}
+                    <p>{link.name}</p>
                   </Link>
                 </li>
               ))}
+
+              <li className="flex cursor-pointer">
+                <span className="text-green-500 mr-2 ">›</span> <TermsModal />
+              </li>
+              <li className="flex cursor-pointer">
+                <span className="text-green-500 mr-2 ">›</span> <PrivacyPolicy />
+              </li>
             </ul>
           </div>
 

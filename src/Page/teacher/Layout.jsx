@@ -73,7 +73,7 @@ export default function TeacherLayout() {
 
   return (
     <div className="flex flex-col w-screen">
-      <header className="sticky top-0 z-10 bg-green-50">
+      <header className="sticky top-0 z-10 bg-white">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TeacherTopNavbarDropDown />
         </div>

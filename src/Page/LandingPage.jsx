@@ -1,16 +1,6 @@
 import React, { useContext, useState } from "react";
-import logo from "../assets/acewallscholarslogo.webp";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import LandingPageCard from "@/CustomComponent/LandingPageCard";
-import Layout from "./StudentPortal/Layout";
-import { TopNavbarDropDown } from "@/CustomComponent/TopNavDropDown";
-import { Megaphone02Icon } from "@/assets/Icons/Announcement";
-import { Menu, Search } from "lucide-react"; // Using lucide-react for the Search icon
-import { Input } from "@/components/ui/input"; // Ensure this import is correct
-import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
-import acewallshort from "../assets/acewallshort.png";
-import Footer from "@/CustomComponent/Footer";
+import { Dot } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -19,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { LandingPageCard } from "@/CustomComponent/Card";
 
 const cardData = [
   {
@@ -92,14 +83,17 @@ const LandingPage = () => {
         <div className="h-[70vh] bg-cover bg-start bg-[url('assets/hero.webp')] ">
           <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
             <div className="flex  flex-col mt-10 justify-center  items-center px-2 text-center">
-              <h1 className="text-white text-xl font-semibold tracking-wide">
+              <h1 className="text-white text-xl font-semibold tracking-wide mx-10">
                 Where the vision is realized. Where the dream is achieved
               </h1>
-              <div className=" flex items-center justify-center flex-wrap  sm:flex-row flex-col">
-                <img src={acewallshort} alt="" className="w-15" />
-                <h2 className="text-white text-md max-w-lg px-4">
-                  Imagine * Believe * Create
-                </h2>
+              <div className="flex items-center justify-center flex-wrap sm:flex-row flex-col gap-x-2 text-white ml-2">
+                <div className="flex items-center text-md whitespace-nowrap">
+                  <p>Imagine</p>
+                  <Dot size={28} strokeWidth={3} className="-mx-1.5" />
+                  <p>Believe</p>
+                  <Dot size={28} strokeWidth={3} className="-mx-1.5" />
+                  <p>Create</p>
+                </div>
               </div>
             </div>
           </div>
@@ -149,17 +143,22 @@ const LandingPage = () => {
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3">
-          {cardData.map((card, index) => (
-            <LandingPageCard
-              key={index}
-              name={card.name}
-              description={card.description}
-              imageUrl={card.imageUrl}
-              buttonUrl={card.buttonUrl}
-            />
-          ))}
-        </div>
+        <section className="flex justify-center">
+          <div
+            id="additionalServices"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3 w-[80%]"
+          >
+            {cardData.map((card, index) => (
+              <LandingPageCard
+                key={index}
+                name={card.name}
+                description={card.description}
+                imageUrl={card.imageUrl}
+                buttonUrl={card.buttonUrl}
+              />
+            ))}
+          </div>
+        </section>
       </div>
     </>
   );

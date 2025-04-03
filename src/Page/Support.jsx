@@ -36,7 +36,7 @@ const Support = () => {
               <Label htmlFor="feedback" className="text-sm font-medium">
                 Feedback
               </Label>
-              <Textarea id="feedback" placeholder="feedback" />
+              <Textarea id="feedback" placeholder="Feedback" />
             </div>
             <div>
               <Button className={"bg-green-400 hover:bg-green-500"}>

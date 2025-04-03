@@ -16,8 +16,6 @@ import LandingPage from "./Page/LandingPage";
 import Payment from "./Page/StudentPortal/Payment";
 import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
 import Messages from "./Page/StudentPortal/Messages";
-import TermsandCondition from "./Page/Termsandcondition";
-import PrivacyPolicy from "./Page/Priactpolicy";
 
 import GeneralCourses from "./Page/GeneralCourses";
 import GeneralSupport from "./Page/GeneralSupport";
@@ -39,6 +37,7 @@ import TeacherGradebook from "./Page/teacher/Courses/Gradebook";
 import TeacherLogin from "./Page/TeacherLogin";
 import CreateAssessmentPage from "./Page/teacher/CreateAssessment";
 import EarningDetail from "./Page/teacher/Earning/EarningDetail";
+import AdditionalServices from "./Page/AdditionalServices";
 
 function App() {
   return (
@@ -56,8 +55,7 @@ function App() {
             <Route path="detail" element={<GeneralCoursesDetail />}></Route>
           </Route>
           <Route path="/Support" element={<GeneralSupport />}></Route>
-          <Route path="/TermsandCondition" element={<TermsandCondition />} />
-          <Route path="/PrivacyPolicy" element={<PrivacyPolicy />}></Route>
+          <Route path="/AdditionalServices" element={<AdditionalServices />}></Route>
         </Route>
 
         {/* Student Routes */}
