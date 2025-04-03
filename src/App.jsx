@@ -38,6 +38,7 @@ import TeacherLogin from "./Page/TeacherLogin";
 import CreateAssessmentPage from "./Page/teacher/CreateAssessment";
 import EarningDetail from "./Page/teacher/Earning/EarningDetail";
 import AdditionalServices from "./Page/AdditionalServices";
+import About from "./Page/About";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
             <Route index element={<GeneralCourses />}></Route>
             <Route path="detail" element={<GeneralCoursesDetail />}></Route>
           </Route>
+          <Route path="/about" element={<About />}></Route>
           <Route path="/Support" element={<GeneralSupport />}></Route>
           <Route path="/AdditionalServices" element={<AdditionalServices />}></Route>
         </Route>

@@ -49,6 +49,7 @@ const initialAssignments = [
   },
 ];
 
+const tableHead = ["Title", "Course", "Due Date", "Status"];
 const Assignment = () => {
   const [search, setSearch] = useState("");
   const [assignments, setAssignments] = useState(initialAssignments);
@@ -89,10 +90,10 @@ const Assignment = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Course</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Status</TableHead>
+                {tableHead.map(() => {
+                  return <TableHead>Title</TableHead>;
+                })}
+
                 {/* <TableHead className="">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
@@ -161,7 +162,7 @@ const Assignment = () => {
                     </TableCell> */}
                   </TableRow>
                   {expandedAssignmentId === assignment.id && (
-                    <TableRow className="bg-gray-50">
+                    <TableRow className="bg-gray-50 border">
                       <TableCell colSpan={5} className="p-4">
                         <div className="space-y-4">
                           <div>
@@ -180,7 +181,7 @@ const Assignment = () => {
                               {assignment.documents.map((doc) => (
                                 <div
                                   key={doc.id}
-                                  className="flex items-center gap-2 text-sm"
+                                  className="flex items-center gap-2 text-sm border"
                                 >
                                   <FileText className="h-4 w-4 text-gray-500" />
                                   <a

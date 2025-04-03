@@ -15,7 +15,7 @@ import PrivacyPolicy from "./PrivacePolicy";
 export default function Footer() {
   const usefulLinks = [
     { name: "Home", url: "http://localhost:5173/" },
-    { name: "About us", url: "https://www.acewallscholars.org/about" },
+    { name: "About us", url: "/about" },
     { name: "Services", url: "https://www.acewallscholars.org/" },
     {
       name: "Additional Services",

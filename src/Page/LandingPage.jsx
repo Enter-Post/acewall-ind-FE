@@ -146,7 +146,7 @@ const LandingPage = () => {
         <section className="flex justify-center">
           <div
             id="additionalServices"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3 w-[80%]"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3 w-[95%] md:w-[80%] "
           >
             {cardData.map((card, index) => (
               <LandingPageCard
