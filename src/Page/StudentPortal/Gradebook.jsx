@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown, ChevronRight,} from "lucide-react"
+import { ChevronDown, ChevronRight, } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -54,6 +54,8 @@ const subjectsData = [
     finalTest: { id: "hist-final", title: "Final Exam", marks: 200, obtMarks: 180 },
   },
 ]
+const tableHead = ["Subject", "Average", "Grade"];
+
 export default function Gradebook() {
   const [search, setSearch] = useState("")
   const [expandedSubjectId, setExpandedSubjectId] = useState(null)
@@ -113,54 +115,56 @@ export default function Gradebook() {
     }
   }
 
-  
+
 
 
   return (
     <div className="container mx-auto space-y-6">
-    {/* Overall Performance Card */}
-    <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
-    <Card className={""}>
-      <CardHeader>
-        <CardTitle className={"text-green-500"}>Overall Academic Performance</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">Overall Average</span>
-              <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}%</span>
+      {/* Overall Performance Card */}
+      <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">Grades</p>
+      <Card className={""}>
+        <CardHeader>
+          <CardTitle className={"text-green-500"}>Overall Academic Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium">Overall Average</span>
+                <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}%</span>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-500">{overallGrade}</div>
-              <div className="text-sm text-muted-foreground">Overall Grade</div>
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-500">{overallGrade}</div>
+                <div className="text-sm text-muted-foreground">Overall Grade</div>
+              </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Subjects and Assignments Table */}
+      <div className="border">
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Search subjects or assignments..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-sm"
+          />
         </div>
-      </CardContent>
-    </Card>
-
-    {/* Subjects and Assignments Table */}
-    <div className="border">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Search subjects or assignments..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
-      <div className="rounded-md border ">
-        {/* <ScrollArea className=""> */}
+        <div className="rounded-md border ">
+          {/* <ScrollArea className=""> */}
           <Table className="">
             <TableHeader>
               <TableRow>
-                <TableHead>Subject</TableHead>
-                <TableHead>Average</TableHead>
-                <TableHead>Grade</TableHead>
+                {tableHead.map((item, idx) => {
+                  return <TableHead key={idx}>{item}  </TableHead>;
+                })}
+
+                {/* <TableHead className="">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody className="p-10">
@@ -181,8 +185,7 @@ export default function Gradebook() {
                     <TableCell>{subject.average.toFixed(2)}%</TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          subject.grade === "A"
+                        className={`px-2 py-1 rounded-full text-xs ${subject.grade === "A"
                             ? "bg-green-100 text-green-800"
                             : subject.grade === "B"
                               ? "bg-blue-100 text-blue-800"
@@ -191,7 +194,7 @@ export default function Gradebook() {
                                 : subject.grade === "D"
                                   ? "bg-orange-100 text-orange-800"
                                   : "bg-red-100 text-red-800"
-                        }`}
+                          }`}
                       >
                         {subject.grade}
                       </span>
@@ -219,10 +222,10 @@ export default function Gradebook() {
               )}
             </TableBody>
           </Table>
-        {/* </ScrollArea> */}
+          {/* </ScrollArea> */}
+        </div>
       </div>
     </div>
-  </div>
   )
 }
 

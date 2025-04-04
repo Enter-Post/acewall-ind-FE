@@ -14,6 +14,7 @@ import { TickDouble03Icon } from "@/assets/Icons/Tick";
 const Payment = () => {
   const courses = ["Math", "Physics", "Chemistry"];
   const statusOptions = ["Paid", "Unpaid"];
+  const tableHead = ["Course", "Fee", "Transaction Data"];
 
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
@@ -48,7 +49,7 @@ const Payment = () => {
     {
       id: 5,
       course: "Chemistry",
-    
+
       fee: "$190",
       transactionDetail: "2024-01-15",
 
@@ -56,10 +57,10 @@ const Payment = () => {
     {
       id: 6,
       course: "Chemistry",
-     
+
       fee: "$190",
       transactionDetail: "2024-02-15",
- 
+
     },
   ]);
 
@@ -110,12 +111,14 @@ const Payment = () => {
       </div>
       <Table>
         <TableHeader>
-          <TableRow className="text-xs md:text-sm ">
-            <TableHead >Course</TableHead>
-            <TableHead>Fee</TableHead>
-            <TableHead>Transaction Date</TableHead>
+          <TableRow>
+            {tableHead.map((item, index) => (
+              <TableHead key={index}>{item}</TableHead>
+            ))}
+            {/* <TableHead className="">Actions</TableHead> */}
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {filteredPayment.map((item) => (
             <TableRow key={item.id} className="text-xs md:text-sm">
@@ -123,7 +126,7 @@ const Payment = () => {
               <TableCell>{item.fee}</TableCell>
               <TableCell>{item.transactionDetail}</TableCell>
               <TableCell>
-                
+
               </TableCell>
             </TableRow>
           ))}

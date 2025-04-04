@@ -98,7 +98,7 @@ const Account = () => {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button onClick={handleSave}             className=" text-white bg-green-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
+          <Button onClick={handleSave} className=" text-white bg-green-600 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center "
           >Save Changes</Button>
         </div>
       </div>

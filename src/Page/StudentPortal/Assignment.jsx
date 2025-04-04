@@ -90,8 +90,8 @@ const Assignment = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                {tableHead.map(() => {
-                  return <TableHead>Title</TableHead>;
+                {tableHead.map((item, idx) => {
+                  return <TableHead key={idx}>{item}  </TableHead>;
                 })}
 
                 {/* <TableHead className="">Actions</TableHead> */}
@@ -127,39 +127,14 @@ const Assignment = () => {
                     <TableCell>{assignment.dueDate}</TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          assignment.status === "Completed"
+                        className={`px-2 py-1 rounded-full text-xs ${assignment.status === "Completed"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
-                        }`}
+                          }`}
                       >
                         {assignment.status}
                       </span>
                     </TableCell>
-                    {/* <TableCell>
-                      {assignment.status !== "Completed" ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-xs"
-                          onClick={() => handleSubmitAssignment(assignment.id)}
-                        >
-                          <Upload className="h-3 w-3 mr-1" />
-                          Add
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled
-                          className="text-xs"
-                          onClick={() => handleSubmitAssignment(assignment.id)}
-                        >
-                          <Upload className="h-3 w-3 mr-1" />
-                          Added
-                        </Button>
-                      )}
-                    </TableCell> */}
                   </TableRow>
                   {expandedAssignmentId === assignment.id && (
                     <TableRow className="bg-gray-50 border">
