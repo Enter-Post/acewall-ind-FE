@@ -16,10 +16,10 @@ export default function Footer() {
   const usefulLinks = [
     { name: "Home", url: "http://localhost:5173/" },
     { name: "About us", url: "/about" },
-    { name: "Services", url: "https://www.acewallscholars.org/" },
+    { name: "Additional Services", url: "/AdditionalServices" },
     {
-      name: "Additional Services",
-      url: "/AdditionalServices",
+      name: "https://www.acewallscholars.org",
+      url: "https://www.acewallscholars.org/",
     },
   ];
 
@@ -56,7 +56,6 @@ export default function Footer() {
               <p>Acewall Scholars</p>
               <p>P.O. Box 445</p>
               <p>Powhatan, VA 23139</p>
-              <p className="mt-4">Phone: (804) 464-7926</p>
               <p>Email: contact@acewallscholars.org</p>
             </div>
           </div>

@@ -121,7 +121,7 @@ const MainLayout = () => {
             <div className="hidden md:flex items-center space-x-4">
               <Input
                 type="email"
-                placeholder="Search for courses and lessons"
+                placeholder="Search courses and lessons"
               />
               <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
                 <Search className="rounded-full" />

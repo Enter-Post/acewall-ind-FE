@@ -276,17 +276,17 @@ const EarningStateCard = ({ data }) => {
 
 const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
   return (
-    <Card className="pb-6 pt-0 overflow-hidden cursor-pointer border flex flex-col gap-3">
+    <Card className="pb-6 pt-0 overflow-hidden cursor-pointer border flex flex-col gap-4">
       <AspectRatio ratio={16 / 5}>
         <img src={imageUrl} alt={name} className="object-cover w-full h-full" />
       </AspectRatio>
       <CardHeader>
         {/* <CardTitle>{name}</CardTitle> */}
-        <p className="text-lg font-bold">{name}</p>
+        <p className="text-md font-bold">{name}</p>
       </CardHeader>
       <CardContent className="flex flex-col flex-1">
-        <div className="flex flex-col flex-1 space-y-2">
-          <p className="text-muted-foreground text-xs">{description}</p>
+        <div className="flex flex-col flex-1 gap-6">
+          <p className="text-muted-foreground  text-xs">{description}</p>
           <a
             href={buttonUrl}
             className="inline-flex items-center justify-center w-full px-3 py-2 mt-auto text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"

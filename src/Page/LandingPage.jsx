@@ -24,7 +24,7 @@ const cardData = [
   {
     name: "Mentoring and Mental Health ",
     description:
-    "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/mentoring",
@@ -32,7 +32,7 @@ const cardData = [
   {
     name: "Parent Aide",
     description:
-    "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
@@ -40,7 +40,7 @@ const cardData = [
   {
     name: "Test Prep",
     description:
-    "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/row-students-doing-exam-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/test-prep",
@@ -48,7 +48,7 @@ const cardData = [
   {
     name: "Internship Support/Placement",
     description:
-      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",    imageUrl:
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.", imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/internship+support-placement-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/internship-support/placement",
   },
@@ -56,7 +56,7 @@ const cardData = [
   {
     name: "College Counseling",
     description:
-    "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/college+counseling-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/college-counseling",
@@ -79,10 +79,11 @@ const LandingPage = () => {
       {/* Top Bar */}
 
       <div className="flex flex-col ">
-        <div className="h-[70vh] bg-cover bg-start bg-[url('assets/hero.webp')] ">
+        <div className="h-[70vh] bg-cover bg-start bg-no-repeat bg-[url('assets/hero.webp')] ">
           <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
-            <div className="flex  flex-col mt-10 justify-center  items-center px-2 text-center">
-              <h1 className="text-white text-xl font-semibold tracking-wide mx-10">
+            <div className="flex  flex-col mt-10 justify-center  items-center px-2 md:px-10  md:mt-16 
+            text-center">
+              <h1 className="text-white   text-xl font-semibold tracking-wide mx-10">
                 Where the vision is realized. Where the dream is achieved
               </h1>
               <div className="flex items-center justify-center flex-wrap sm:flex-row flex-col gap-x-2 text-white ml-2">
@@ -126,7 +127,7 @@ const LandingPage = () => {
                 }}
                 className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
               >
-                Create Account
+                Create an Account
               </button>
             </Link>
 
