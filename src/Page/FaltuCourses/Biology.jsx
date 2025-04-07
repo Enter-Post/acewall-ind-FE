@@ -19,83 +19,87 @@ import {
 } from "lucide-react";
 
 const courseDetails = {
-  title:
-    "Complete Website Responsive Design: from Figma to Webflow to Website Design",
-  subtitle:
-    "In 5 hours+ Learn to design websites with Webflow, and make it a living masterpiece",
+  title: "Complete Biology Masterclass: From Cells to Systems",
+  subtitle: "Understand the foundations of life and living organisms with real-world applications.",
   instructor: {
-    name: "John Doe",
-    profileImage: "instructor.jpg",
-    role: "Web Designer",
-    bio: "Experienced Web Designer with a passion for modern UI/UX.",
+    name: "Dr. Samantha Lee",
+    profileImage: "instructor-biology.jpg",
+    role: "Biology Educator & Researcher",
+    bio: "PhD in Molecular Biology with over 10 years of experience teaching biology at high school and college levels.",
     rating: 4.8,
-    students: 1200,
+    students: 2800,
   },
   price: {
-    original: "$199",
-    discounted: "$99",
+    original: "$179",
+    discounted: "$79",
   },
   rating: 4.8,
   reviews: [
     {
-      student: "Alice Johnson",
+      student: "Daniel Kim",
       rating: 5,
-      comment: "Great course! Helped me improve my design skills.",
+      comment: "This course helped me prep for my AP Bio exam. Super clear explanations!",
     },
     {
-      student: "Michael Smith",
-      rating: 4.5,
-      comment: "Well-structured and informative.",
+      student: "Sofia Martinez",
+      rating: 4.6,
+      comment: "Love the visuals and the depth. Great for beginners and refreshers alike.",
     },
   ],
   curriculum: [
     {
-      section: "Introduction",
+      section: "Introduction to Biology",
       lessons: [
-        { title: "Welcome to the Course", duration: "5 min" },
-        { title: "Understanding Web Design Principles", duration: "10 min" },
+        { title: "What is Biology?", duration: "6 min" },
+        { title: "Scientific Method & Experimentation", duration: "12 min" },
       ],
     },
     {
-      section: "UI/UX Basics",
+      section: "Cell Biology",
       lessons: [
-        { title: "Typography and Color Theory", duration: "15 min" },
-        { title: "Creating Wireframes", duration: "20 min" },
+        { title: "Prokaryotic vs. Eukaryotic Cells", duration: "15 min" },
+        { title: "Organelles and Their Functions", duration: "20 min" },
+      ],
+    },
+    {
+      section: "Human Body Systems",
+      lessons: [
+        { title: "The Nervous System", duration: "25 min" },
+        { title: "The Circulatory System", duration: "18 min" },
       ],
     },
   ],
   description:
-    "Learn how to create and design websites with Webflow, and make it a living masterpiece...",
+    "Dive into the science of life in this detailed biology course. From the microscopic world of cells to complex human systems, this course equips you with a deep understanding of how living organisms function, evolve, and interact.",
   requirements: [
-    "Basic HTML/CSS knowledge (helpful, but not required)",
-    "No coding required (everything can be done visually in Webflow)",
-    "A computer with internet connection",
-    "Free Webflow account (we'll create one during the course)",
+    "Basic understanding of science is helpful but not required",
+    "Notebook or device for taking notes",
+    "Curiosity about how life works",
   ],
   whatYouWillLearn: [
-    "Understand core UI/UX principles",
-    "Create modern website layouts",
-    "Master responsive design techniques",
-    "Use Figma, Adobe XD, and Sketch",
+    "Master the basics of cell structure and function",
+    "Understand DNA, genetics, and heredity",
+    "Explore how body systems work together",
+    "Learn ecological relationships and evolution concepts",
   ],
   relatedCourses: [
     {
-      title: "Advanced Webflow Techniques: Video Editing in Premiere",
-      price: "$19.99",
-      rating: 4.5,
+      title: "Human Anatomy & Physiology Essentials",
+      price: "$27.99",
+      rating: 4.7,
       image: "/placeholder.svg?height=120&width=240",
     },
     {
-      title: "Mastering Web Design with Sketch",
-      price: "$29.99",
-      rating: 4.8,
+      title: "Genetics: From Mendel to Modern Science",
+      price: "$22.99",
+      rating: 4.9,
       image: "/placeholder.svg?height=120&width=240",
     },
   ],
 };
 
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const Biology = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -156,7 +160,7 @@ const AllCoursesDetail = () => {
 
                 <div className="relative aspect-video">
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                    src="https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt="Course preview"
                     className="w-full h-full object-cover"
                   />
@@ -401,7 +405,9 @@ const AllCoursesDetail = () => {
                 <Button className="w-full mb-4 bg-green-600 hover:bg-green-700">
                   Add to cart
                 </Button>
-             
+                <div className="text-center text-sm text-gray-500 mb-6">
+                  30-Day Money-Back Guarantee
+                </div>
 
                 <div className="space-y-4">
                   <div className="text-sm font-medium">
@@ -446,7 +452,7 @@ const AllCoursesDetail = () => {
                   <div className="relative aspect-video">
                     <img
                       src={
-                        "https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                        "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       }
                       alt={`Related course ${index}`}
                       className="w-full h-full object-cover"
@@ -491,4 +497,4 @@ const AllCoursesDetail = () => {
   );
 };
 
-export default AllCoursesDetail;
+export default Biology;

@@ -97,10 +97,10 @@ const TeacherLogin = () => {
                 </div>
               </div>
               <h2 className="text-xl text-gray-800 font-medium mb-2 text-center md:text-left">
-                Teachers Love Acewall Scholars
+                Teachers Love Ace Wall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> Acewall scholars is an
+                <span className="text-2xl">"</span> Ace Wall scholars is an
                 amazing program. They have helped me with numerous subjects,
                 including Biology, Algebra, and Spanish….I not only aced the
                 midterm but I got the highest score out of all of Spanish 1,

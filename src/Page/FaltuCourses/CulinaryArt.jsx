@@ -19,83 +19,87 @@ import {
 } from "lucide-react";
 
 const courseDetails = {
-  title:
-    "Complete Website Responsive Design: from Figma to Webflow to Website Design",
-  subtitle:
-    "In 5 hours+ Learn to design websites with Webflow, and make it a living masterpiece",
+  title: "Culinary Arts Masterclass: From Kitchen Basics to Gourmet Dishes",
+  subtitle: "Learn essential cooking techniques, flavor pairing, and plate like a pro—perfect for beginners and food lovers.",
   instructor: {
-    name: "John Doe",
-    profileImage: "instructor.jpg",
-    role: "Web Designer",
-    bio: "Experienced Web Designer with a passion for modern UI/UX.",
-    rating: 4.8,
-    students: 1200,
+    name: "Chef Maria Alvarez",
+    profileImage: "chef-maria.jpg",
+    role: "Professional Chef & Culinary Educator",
+    bio: "Trained at Le Cordon Bleu, Chef Maria has over 15 years of experience in international cuisine and culinary instruction.",
+    rating: 4.9,
+    students: 3200,
   },
   price: {
-    original: "$199",
-    discounted: "$99",
+    original: "$179",
+    discounted: "$79",
   },
-  rating: 4.8,
+  rating: 4.9,
   reviews: [
     {
-      student: "Alice Johnson",
+      student: "Daniel Kim",
       rating: 5,
-      comment: "Great course! Helped me improve my design skills.",
+      comment: "The best online cooking class I’ve taken. Super clear and delicious results!",
     },
     {
-      student: "Michael Smith",
-      rating: 4.5,
-      comment: "Well-structured and informative.",
+      student: "Amira Patel",
+      rating: 4.8,
+      comment: "Loved the hands-on approach. I now cook confidently every day.",
     },
   ],
   curriculum: [
     {
-      section: "Introduction",
+      section: "Kitchen Fundamentals",
       lessons: [
-        { title: "Welcome to the Course", duration: "5 min" },
-        { title: "Understanding Web Design Principles", duration: "10 min" },
+        { title: "Knife Skills and Safety", duration: "12 min" },
+        { title: "Pantry Setup and Equipment", duration: "10 min" },
       ],
     },
     {
-      section: "UI/UX Basics",
+      section: "Essential Techniques",
       lessons: [
-        { title: "Typography and Color Theory", duration: "15 min" },
-        { title: "Creating Wireframes", duration: "20 min" },
+        { title: "Sautéing, Roasting & Blanching", duration: "18 min" },
+        { title: "Sauce Making and Seasoning", duration: "15 min" },
+      ],
+    },
+    {
+      section: "Global Dishes",
+      lessons: [
+        { title: "Italian: Pasta from Scratch", duration: "20 min" },
+        { title: "Asian: Stir Fry & Dumplings", duration: "22 min" },
       ],
     },
   ],
   description:
-    "Learn how to create and design websites with Webflow, and make it a living masterpiece...",
+    "Whether you're a home cook or aspiring chef, this course will walk you through core culinary techniques, flavor building, and international dishes. No experience needed—just passion for food!",
   requirements: [
-    "Basic HTML/CSS knowledge (helpful, but not required)",
-    "No coding required (everything can be done visually in Webflow)",
-    "A computer with internet connection",
-    "Free Webflow account (we'll create one during the course)",
+    "Basic kitchen tools and access to a stove/oven",
+    "Willingness to try new recipes and ingredients",
+    "Optional: Notebook for flavor experiments",
   ],
   whatYouWillLearn: [
-    "Understand core UI/UX principles",
-    "Create modern website layouts",
-    "Master responsive design techniques",
-    "Use Figma, Adobe XD, and Sketch",
+    "Master knife techniques and kitchen safety",
+    "Cook restaurant-quality meals at home",
+    "Understand how to balance flavors and textures",
+    "Explore cooking styles from around the world",
   ],
   relatedCourses: [
     {
-      title: "Advanced Webflow Techniques: Video Editing in Premiere",
-      price: "$19.99",
-      rating: 4.5,
+      title: "Baking Basics: Cakes, Cookies & More",
+      price: "$24.99",
+      rating: 4.7,
       image: "/placeholder.svg?height=120&width=240",
     },
     {
-      title: "Mastering Web Design with Sketch",
-      price: "$29.99",
+      title: "French Cuisine Essentials",
+      price: "$34.99",
       rating: 4.8,
       image: "/placeholder.svg?height=120&width=240",
     },
   ],
 };
 
-// AllCoursesDetail Component
-const AllCoursesDetail = () => {
+
+const CulinaryArtDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -156,7 +160,7 @@ const AllCoursesDetail = () => {
 
                 <div className="relative aspect-video">
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                    src="https://plus.unsplash.com/premium_photo-1695028377519-70fb0c385db2?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt="Course preview"
                     className="w-full h-full object-cover"
                   />
@@ -401,7 +405,9 @@ const AllCoursesDetail = () => {
                 <Button className="w-full mb-4 bg-green-600 hover:bg-green-700">
                   Add to cart
                 </Button>
-             
+                <div className="text-center text-sm text-gray-500 mb-6">
+                  30-Day Money-Back Guarantee
+                </div>
 
                 <div className="space-y-4">
                   <div className="text-sm font-medium">
@@ -446,7 +452,7 @@ const AllCoursesDetail = () => {
                   <div className="relative aspect-video">
                     <img
                       src={
-                        "https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                        "https://plus.unsplash.com/premium_photo-1695028377519-70fb0c385db2?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       }
                       alt={`Related course ${index}`}
                       className="w-full h-full object-cover"
@@ -491,4 +497,4 @@ const AllCoursesDetail = () => {
   );
 };
 
-export default AllCoursesDetail;
+export default CulinaryArtDetail;

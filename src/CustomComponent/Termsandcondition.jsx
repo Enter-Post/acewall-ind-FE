@@ -27,7 +27,7 @@ export default function TermsModal() {
           <div className="text-sm leading-6 pr-4">
             <strong>AGREEMENT TO OUR LEGAL TERMS</strong>
             <br />
-            We are Acewall Scholars ("Company," "we," "us," "our"). We operate
+            We are Ace Wall Scholars ("Company," "we," "us," "our"). We operate
             the website{" "}
             <a
               href="https://www.acewallscholars.org"
@@ -40,7 +40,7 @@ export default function TermsModal() {
             (collectively, the "Services").
             <br />
             <br />
-            You can contact us by phone at (+1)8046151845, email at{" "}
+            You can contact us by phone at (804) 464-7926., email at{" "}
             <a
               href="mailto:contact@acewallscholars.org"
               className="text-blue-600 underline"
@@ -53,7 +53,7 @@ export default function TermsModal() {
             <br />
             These Legal Terms constitute a legally binding agreement made
             between you, whether personally or on behalf of an entity ("you"),
-            and Acewall Scholars, concerning your access to and use of the
+            and Ace Wall Scholars, concerning your access to and use of the
             Services. By accessing the Services, you agree to be bound by these
             Legal Terms. If you do not agree, you must discontinue use
             immediately.

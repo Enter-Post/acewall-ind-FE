@@ -19,75 +19,87 @@ import {
 } from "lucide-react";
 
 const courseDetails = {
-  title:
-    "Complete Website Responsive Design: from Figma to Webflow to Website Design",
+  img: "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  title: "World History: From Ancient Civilizations to Modern Day",
   subtitle:
-    "In 5 hours+ Learn to design websites with Webflow, and make it a living masterpiece",
+    "Explore the events, cultures, and movements that shaped our world across centuries.",
   instructor: {
-    name: "John Doe",
-    profileImage: "instructor.jpg",
-    role: "Web Designer",
-    bio: "Experienced Web Designer with a passion for modern UI/UX.",
-    rating: 4.8,
-    students: 1200,
+    name: "Dr. Eleanor Carter",
+    profileImage: "instructor-history.jpg",
+    role: "History Professor",
+    bio: "Historian with 15+ years of teaching global history and specializing in ancient civilizations.",
+    rating: 4.9,
+    students: 3400,
   },
   price: {
-    original: "$199",
-    discounted: "$99",
+    original: "$149",
+    discounted: "$69",
   },
-  rating: 4.8,
+  rating: 4.9,
   reviews: [
     {
-      student: "Alice Johnson",
+      student: "James Wilson",
       rating: 5,
-      comment: "Great course! Helped me improve my design skills.",
+      comment: "Fascinating insights! Made history feel alive.",
     },
     {
-      student: "Michael Smith",
-      rating: 4.5,
-      comment: "Well-structured and informative.",
+      student: "Maria Lopez",
+      rating: 4.7,
+      comment: "Clear, well-organized, and highly engaging.",
     },
   ],
   curriculum: [
     {
-      section: "Introduction",
+      section: "Foundations of Civilization",
       lessons: [
-        { title: "Welcome to the Course", duration: "5 min" },
-        { title: "Understanding Web Design Principles", duration: "10 min" },
+        { title: "Origins of Human Societies", duration: "12 min" },
+        { title: "Mesopotamia, Egypt & the Indus Valley", duration: "18 min" },
       ],
     },
     {
-      section: "UI/UX Basics",
+      section: "Empires and Religions",
       lessons: [
-        { title: "Typography and Color Theory", duration: "15 min" },
-        { title: "Creating Wireframes", duration: "20 min" },
+        { title: "Greek and Roman Empires", duration: "20 min" },
+        {
+          title: "Major World Religions & Their Influence",
+          duration: "25 min",
+        },
+      ],
+    },
+    {
+      section: "Modern History Highlights",
+      lessons: [
+        {
+          title: "The Enlightenment & Industrial Revolution",
+          duration: "22 min",
+        },
+        { title: "World Wars and the Cold War", duration: "30 min" },
       ],
     },
   ],
   description:
-    "Learn how to create and design websites with Webflow, and make it a living masterpiece...",
+    "This comprehensive course dives deep into the history of humanity — from ancient empires to the modern globalized world. Gain context, perspective, and appreciation for the people and events that shaped our civilizations.",
   requirements: [
-    "Basic HTML/CSS knowledge (helpful, but not required)",
-    "No coding required (everything can be done visually in Webflow)",
-    "A computer with internet connection",
-    "Free Webflow account (we'll create one during the course)",
+    "An interest in global history",
+    "No prior history knowledge required",
+    "Willingness to explore diverse cultures and eras",
   ],
   whatYouWillLearn: [
-    "Understand core UI/UX principles",
-    "Create modern website layouts",
-    "Master responsive design techniques",
-    "Use Figma, Adobe XD, and Sketch",
+    "Trace the development of ancient civilizations",
+    "Understand the causes and effects of major wars",
+    "Identify key historical figures and their impact",
+    "Connect past events to current world issues",
   ],
   relatedCourses: [
     {
-      title: "Advanced Webflow Techniques: Video Editing in Premiere",
-      price: "$19.99",
-      rating: 4.5,
+      title: "US History: The Road to Independence",
+      price: "$24.99",
+      rating: 4.6,
       image: "/placeholder.svg?height=120&width=240",
     },
     {
-      title: "Mastering Web Design with Sketch",
-      price: "$29.99",
+      title: "European History: Renaissance to Revolution",
+      price: "$34.99",
       rating: 4.8,
       image: "/placeholder.svg?height=120&width=240",
     },
@@ -95,7 +107,7 @@ const courseDetails = {
 };
 
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const HistoryDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -156,7 +168,7 @@ const AllCoursesDetail = () => {
 
                 <div className="relative aspect-video">
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                    src={courseDetails.img}
                     alt="Course preview"
                     className="w-full h-full object-cover"
                   />
@@ -360,7 +372,7 @@ const AllCoursesDetail = () => {
                                   />
                                   <AvatarFallback>S{index}</AvatarFallback>
                                 </Avatar>
-                                <div>  
+                                <div>
                                   <div className="font-medium">
                                     {review.student}
                                   </div>
@@ -401,7 +413,9 @@ const AllCoursesDetail = () => {
                 <Button className="w-full mb-4 bg-green-600 hover:bg-green-700">
                   Add to cart
                 </Button>
-             
+                <div className="text-center text-sm text-gray-500 mb-6">
+                  30-Day Money-Back Guarantee
+                </div>
 
                 <div className="space-y-4">
                   <div className="text-sm font-medium">
@@ -445,9 +459,7 @@ const AllCoursesDetail = () => {
                 >
                   <div className="relative aspect-video">
                     <img
-                      src={
-                        "https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
-                      }
+                      src={courseDetails.img}
                       alt={`Related course ${index}`}
                       className="w-full h-full object-cover"
                     />
@@ -491,4 +503,4 @@ const AllCoursesDetail = () => {
   );
 };
 
-export default AllCoursesDetail;
+export default HistoryDetail;

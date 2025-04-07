@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 const About = () => {
   return (
@@ -19,17 +19,35 @@ const About = () => {
               <h2 className="text-3xl font-bold text-green-700 mb-4">
                 Our History
               </h2>
-              <p className="text-gray-700 mb-6">
-                Acewall Scholars was originally formed in 2006 as a non-profit in home and online tutoring company. Acewall Scholars was formed with an unwavering yearning to improve the academic performance of students in the math and sciences. Acewall Scholars is designed to offer students a curriculum that provides remediation, enrichment, and mastery. With a growing awareness that many academic deficiencies stem from problematic areas beyond the classroom, in 2010 Acewall Scholars began to take a more holistic approach to education and the overall personal growth of each student. To do this, the program Kids Going Green was developed which tied together classroom performance with overall diet.
-
-
+              <p className="text-gray-700 mb-6 text-justify">
+                Ace Wall Scholars was originally formed in 2006 as a non-profit
+                in home and online tutoring company. Ace Wall Scholars was formed
+                with an unwavering yearning to improve the academic performance
+                of students in the math and sciences. Ace Wall Scholars is
+                designed to offer students a curriculum that provides
+                remediation, enrichment, and mastery. With a growing awareness
+                that many academic deficiencies stem from problematic areas
+                beyond the classroom, in 2010 Ace Wall Scholars began to take a
+                more holistic approach to education and the overall personal
+                growth of each student. To do this, the program Kids Going Green
+                was developed which tied together classroom performance with
+                overall diet.
               </p>
-              <p className="text-gray-700 mb-6">
-                Reorganized in 2015 as a for-profit educational and mentoring organization, Acewall Scholars has adopted a more comprehensive method to reach more students in the most effective and permanent way. Our assistance goes beyond the classroom now. We assist our clients with not just academic growth, but social, spiritual and physical growth. We know that every child wants to succeed in life. It is our goal to give them the space to see that they can, and the tenacity to determine their own definition of success. Collectively we are determined to build relationships and positively affect the lives of all the students and families that we touch.
+              <p className="text-gray-700 mb-6 text-justify">
+                Reorganized in 2015 as a for-profit educational and mentoring
+                organization, Ace Wall Scholars has adopted a more comprehensive
+                method to reach more students in the most effective and
+                permanent way. Our assistance goes beyond the classroom now. We
+                assist our clients with not just academic growth, but social,
+                spiritual and physical growth. We know that every child wants to
+                succeed in life. It is our goal to give them the space to see
+                that they can, and the tenacity to determine their own
+                definition of success. Collectively we are determined to build
+                relationships and positively affect the lives of all the
+                students and families that we touch.
               </p>
             </div>
           </div>
-
         </div>
 
         {/* Our Mission Section */}
@@ -39,7 +57,8 @@ const About = () => {
         <div
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: "url(https://irp.cdn-website.com/6602115c/dms3rep/multi/section+background.jpg)",
+            backgroundImage:
+              "url(https://irp.cdn-website.com/6602115c/dms3rep/multi/section+background.jpg)",
             backgroundSize: "contain",
             backgroundPosition: "center",
             backgroundAttachment: "fixed",
@@ -58,13 +77,13 @@ const About = () => {
               <h2 className="text-3xl font-bold text-green-700 mb-4">
                 Our Mission
               </h2>
-              <p className="text-gray-700">
-                Aceswell Scholars, Inc. is an organization holistically designed
-                to prepare and meet the needs of each child. We promote the
+              <p className="text-gray-700 text-justify">
+                Ace Wall Scholars, Inc. is an organization holistically designed
+                to engage and meet the needs of each child. We promote the
                 enrichment of the mind, body, and spirit. It is our position
-                that academics and social sciences are intricately connected to
-                the development of the whole child. We strive to expose students
-                to different facets of our society, as well as the cultures
+                that academics and social success are intricately connected to
+                the overall belief in one’s capability and the depth of exposure
+                to the different facets of our society, as well as the cultures
                 within it. It is with this belief that we look to broaden the
                 vision of each child and obtain improvements in their academic
                 and social life.
@@ -85,8 +104,6 @@ const About = () => {
           </div>
         </div>
       </section>
-
-
     </div>
   );
 };

@@ -19,83 +19,88 @@ import {
 } from "lucide-react";
 
 const courseDetails = {
-  title:
-    "Complete Website Responsive Design: from Figma to Webflow to Website Design",
-  subtitle:
-    "In 5 hours+ Learn to design websites with Webflow, and make it a living masterpiece",
+  title: "Mastering English: From Grammar to Great Writing",
+  subtitle: "Build your English language skills with grammar, vocabulary, reading, and writing practice.",
   instructor: {
-    name: "John Doe",
-    profileImage: "instructor.jpg",
-    role: "Web Designer",
-    bio: "Experienced Web Designer with a passion for modern UI/UX.",
-    rating: 4.8,
-    students: 1200,
+    name: "Sarah Collins",
+    profileImage: "instructor-english.jpg",
+    role: "English Language Educator",
+    bio: "Certified English teacher with over 12 years of experience in ESL and academic writing.",
+    rating: 4.7,
+    students: 4200,
   },
   price: {
-    original: "$199",
-    discounted: "$99",
+    original: "$129",
+    discounted: "$59",
   },
-  rating: 4.8,
+  rating: 4.7,
   reviews: [
     {
-      student: "Alice Johnson",
+      student: "Ravi Sharma",
       rating: 5,
-      comment: "Great course! Helped me improve my design skills.",
+      comment: "This course helped me improve my writing and grammar so much!",
     },
     {
-      student: "Michael Smith",
-      rating: 4.5,
-      comment: "Well-structured and informative.",
+      student: "Lily Nguyen",
+      rating: 4.6,
+      comment: "Great explanations and writing tips. Very practical.",
     },
   ],
   curriculum: [
     {
-      section: "Introduction",
+      section: "Grammar Essentials",
       lessons: [
-        { title: "Welcome to the Course", duration: "5 min" },
-        { title: "Understanding Web Design Principles", duration: "10 min" },
+        { title: "Parts of Speech", duration: "12 min" },
+        { title: "Sentence Structure and Punctuation", duration: "15 min" },
       ],
     },
     {
-      section: "UI/UX Basics",
+      section: "Vocabulary and Reading",
       lessons: [
-        { title: "Typography and Color Theory", duration: "15 min" },
-        { title: "Creating Wireframes", duration: "20 min" },
+        { title: "Building Your Vocabulary", duration: "10 min" },
+        { title: "Reading Comprehension Strategies", duration: "18 min" },
+      ],
+    },
+    {
+      section: "Writing and Communication",
+      lessons: [
+        { title: "Paragraph and Essay Writing", duration: "20 min" },
+        { title: "Effective Email and Academic Writing", duration: "16 min" },
       ],
     },
   ],
   description:
-    "Learn how to create and design websites with Webflow, and make it a living masterpiece...",
+    "This all-in-one English course helps learners improve grammar, reading comprehension, vocabulary, and writing. Perfect for students, professionals, and non-native speakers who want to communicate clearly and confidently.",
   requirements: [
-    "Basic HTML/CSS knowledge (helpful, but not required)",
-    "No coding required (everything can be done visually in Webflow)",
-    "A computer with internet connection",
-    "Free Webflow account (we'll create one during the course)",
+    "Basic understanding of English",
+    "Willingness to practice regularly",
+    "Notebook or digital notes for writing exercises",
   ],
   whatYouWillLearn: [
-    "Understand core UI/UX principles",
-    "Create modern website layouts",
-    "Master responsive design techniques",
-    "Use Figma, Adobe XD, and Sketch",
+    "Master grammar fundamentals and sentence structure",
+    "Expand your vocabulary with everyday and academic words",
+    "Read and analyze texts more effectively",
+    "Write essays, emails, and responses with clarity",
   ],
   relatedCourses: [
     {
-      title: "Advanced Webflow Techniques: Video Editing in Premiere",
-      price: "$19.99",
-      rating: 4.5,
+      title: "American Literature Essentials",
+      price: "$27.99",
+      rating: 4.6,
       image: "/placeholder.svg?height=120&width=240",
     },
     {
-      title: "Mastering Web Design with Sketch",
-      price: "$29.99",
-      rating: 4.8,
+      title: "Creative Writing for Beginners",
+      price: "$21.99",
+      rating: 4.9,
       image: "/placeholder.svg?height=120&width=240",
     },
   ],
 };
 
+
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const EnglishDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -156,7 +161,7 @@ const AllCoursesDetail = () => {
 
                 <div className="relative aspect-video">
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                    src="https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt="Course preview"
                     className="w-full h-full object-cover"
                   />
@@ -401,7 +406,9 @@ const AllCoursesDetail = () => {
                 <Button className="w-full mb-4 bg-green-600 hover:bg-green-700">
                   Add to cart
                 </Button>
-             
+                <div className="text-center text-sm text-gray-500 mb-6">
+                  30-Day Money-Back Guarantee
+                </div>
 
                 <div className="space-y-4">
                   <div className="text-sm font-medium">
@@ -446,7 +453,7 @@ const AllCoursesDetail = () => {
                   <div className="relative aspect-video">
                     <img
                       src={
-                        "https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                        "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       }
                       alt={`Related course ${index}`}
                       className="w-full h-full object-cover"
@@ -491,4 +498,4 @@ const AllCoursesDetail = () => {
   );
 };
 
-export default AllCoursesDetail;
+export default EnglishDetail;

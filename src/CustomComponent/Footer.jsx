@@ -9,26 +9,36 @@ import {
   Mail,
   ArrowUp,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import PrivacyPolicy from "./PrivacePolicy";
 
 export default function Footer() {
+  const location = useLocation().pathname;
+
   const usefulLinks = [
-    { name: "Home", url: "http://localhost:5173/" },
+    { name: "Home", url: "/" },
     { name: "About us", url: "/about" },
     { name: "Additional Services", url: "/AdditionalServices" },
+
     {
-      name: "https://www.acewallscholars.org",
-      url: "https://www.acewallscholars.org/",
+      name: "Home",
+      url: "/",
+      func: () => {
+        if (window.location.pathname === "/") {
+          window.scrollTo(0, 0);
+        }
+      },
     },
+    { name: "About us", url: "/about" },
+    { name: "Additional Services", url: "https://www.acewallscholars.org/" },
   ];
 
   const popularCourses = [
-    { name: "Biology", url: "http://localhost:5173/Courses/detail" },
-    { name: "Algebra", url: "http://localhost:5173/Courses/detail" },
-    { name: "English", url: "http://localhost:5173/Courses/detail" },
-    { name: "Maths", url: "http://localhost:5173/Courses/detail" },
-    { name: "Physics", url: "http://localhost:5173/Courses/detail" },
+    { name: "Cell Biology", url: "/Courses/detail" },
+    { name: "Calculus", url: "/Courses/detail" },
+    { name: "American Literature", url: "/Courses/detail" },
+    { name: "Momentum and Energy", url: "/Courses/detail" },
+    { name: "Thermodynamics", url: "/Courses/detail" },
   ];
 
   const socialLinks = [
@@ -68,9 +78,10 @@ export default function Footer() {
                 <li key={index}>
                   <Link
                     to={link.url}
+                    onClick={link.func ? link.func : undefined}
                     className="flex items-center hover:text-white"
                   >
-                    <span className="text-green-500 mr-2">›</span>{" "}
+                    <span className="text-green-500 mr-2">›</span>
                     <p>{link.name}</p>
                   </Link>
                 </li>
@@ -80,7 +91,8 @@ export default function Footer() {
                 <span className="text-green-500 mr-2 ">›</span> <TermsModal />
               </li>
               <li className="flex cursor-pointer">
-                <span className="text-green-500 mr-2 ">›</span> <PrivacyPolicy />
+                <span className="text-green-500 mr-2 ">›</span>{" "}
+                <PrivacyPolicy />
               </li>
             </ul>
           </div>

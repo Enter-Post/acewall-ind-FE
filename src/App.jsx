@@ -39,10 +39,16 @@ import CreateAssessmentPage from "./Page/teacher/CreateAssessment";
 import EarningDetail from "./Page/teacher/Earning/EarningDetail";
 import AdditionalServices from "./Page/AdditionalServices";
 import About from "./Page/About";
+import ScrollToTop from "./lib/scrolltop";
+import HistoryDetail from "./Page/FaltuCourses/History";
+import Biology from "./Page/FaltuCourses/Biology";
+import AlgebraDetail from "./Page/FaltuCourses/algebra";
+import EnglishDetail from "./Page/FaltuCourses/English";
 
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Routes>
         {/* <Route path="/" element={<Home />}></Route> */}
         <Route path="/login" element={<Login />}></Route>
@@ -54,10 +60,18 @@ function App() {
           <Route path="/Courses">
             <Route index element={<GeneralCourses />}></Route>
             <Route path="detail" element={<GeneralCoursesDetail />}></Route>
+            <Route path="history" element={<HistoryDetail />} />
+            <Route path="biology" element={<Biology />} />
+            <Route path="algebra" element={<AlgebraDetail />} />
+            <Route path="english" element={<EnglishDetail />} />
+            <Route path="culinaryArts" element={<AllCoursesDetail />} />
           </Route>
           <Route path="/about" element={<About />}></Route>
           <Route path="/Support" element={<GeneralSupport />}></Route>
-          <Route path="/AdditionalServices" element={<AdditionalServices />}></Route>
+          <Route
+            path="/AdditionalServices"
+            element={<AdditionalServices />}
+          ></Route>
         </Route>
 
         {/* Student Routes */}
@@ -73,6 +87,11 @@ function App() {
           <Route path="courses">
             <Route index element={<AllCourses />} />
             <Route path="detail" element={<AllCoursesDetail />} />
+            <Route path="history" element={<AllCoursesDetail />} />
+            <Route path="biology" element={<AllCoursesDetail />} />
+            <Route path="algebra" element={<AllCoursesDetail />} />
+            <Route path="english" element={<AllCoursesDetail />} />
+            <Route path="culinaryArts" element={<AllCoursesDetail />} />
           </Route>
           <Route path="payment" element={<Payment />} />
           <Route path="messages" element={<Messages />} />

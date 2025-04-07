@@ -57,7 +57,7 @@ export const MultiLevelDropdown = ({ label, items }) => {
                     {item.subItems.map((subItem, subIndex) => (
                       <DropdownMenuItem 
                         key={subIndex}
-                        onClick={() => handleSubItemClick({ ...subItem, link: "/Courses/detail" })}
+                        onClick={() => handleSubItemClick({ ...subItem, link: subItem.link })}
                       >
                         {subItem.label}
                       </DropdownMenuItem>

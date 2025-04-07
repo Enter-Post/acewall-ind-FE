@@ -401,9 +401,7 @@ const GeneralCourseDetail = () => {
                 <Button className="w-full mb-4 bg-green-600 hover:bg-green-700">
                   Add to cart
                 </Button>
-                <div className="text-center text-sm text-gray-500 mb-6">
-                  30-Day Money-Back Guarantee
-                </div>
+                
 
                 <div className="space-y-4">
                   <div className="text-sm font-medium">

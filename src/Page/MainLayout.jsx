@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 import { Input } from "../components/ui/input";
 import Footer from "@/CustomComponent/Footer";
 import { MultiLevelDropdown } from "@/CustomComponent/MultilevelDropdown";
+import ScrollToTop from "@/lib/scrolltop";
 
 const topBarTabs = [
   {
@@ -15,72 +16,71 @@ const topBarTabs = [
       {
         label: "History",
         subItems: [
-          { label: "World History", onClick: () => {} },
-          { label: "US History", onClick: () => {} },
-          { label: "African American History", onClick: () => {} },
-          { label: "European History", onClick: () => {} },
-          { label: "Government", onClick: () => {} },
+          { label: "World History", link: "/Courses/detail" },
+          { label: "US History", link: "/Courses/detail" },
+          { label: "African American History", link: "/Courses/detail" },
+          { label: "European History", link: "/Courses/detail" },
+          { label: "Government", link: "/Courses/detail" },
         ],
       },
       {
-        label: "Science",
+        label: "Physics",
         subItems: [
-          { label: "Biology", onClick: () => {} },
-          { label: "Chemistry", onClick: () => {} },
-          { label: "Physics", onClick: () => {} },
-          { label: "Earth Science", onClick: () => {} },
-          { label: "Geology", onClick: () => {} },
+          { label: "Classical Mechanics", onClick: () => {} },
+          { label: "Electromagnetism", onClick: () => {} },
+          { label: "Thermodynamics", onClick: () => {} },
+          { label: "Quantum Mechanics", onClick: () => {} },
+          { label: "Relativity", onClick: () => {} },
         ],
       },
       {
         label: "Mathematics",
         subItems: [
-          { label: "Algebra 1", onClick: () => {} },
-          { label: "Algebra 2", onClick: () => {} },
-          { label: "Pre-Algebra", onClick: () => {} },
-          { label: "Geometry", onClick: () => {} },
-          { label: "Pre-Calculus", onClick: () => {} },
-          { label: "Trigonometry", onClick: () => {} },
-          { label: "Calculus", onClick: () => {} },
+          { label: "Algebra 1", link: "/Courses/detail" },
+          { label: "Algebra 2", link: "/Courses/detail" },
+          { label: "Pre-Algebra", link: "/Courses/detail" },
+          { label: "Geometry", link: "/Courses/detail" },
+          { label: "Pre-Calculus", link: "/Courses/detail" },
+          { label: "Trigonometry", link: "/Courses/detail" },
+          { label: "Calculus", link: "/Courses/detail" },
         ],
       },
       {
         label: "English",
         subItems: [
-          { label: "American Literature", onClick: () => {} },
-          { label: "World Literature", onClick: () => {} },
-          { label: "British Literature", onClick: () => {} },
+          { label: "American Literature", link: "/Courses/detail" },
+          { label: "World Literature", link: "/Courses/detail" },
+          { label: "British Literature", link: "/Courses/detail" },
         ],
       },
       {
         label: "Culinary Arts",
         subItems: [
-          { label: "Baking", onClick: () => {} },
-          { label: "Sauces", onClick: () => {} },
-          { label: "Italian Cuisine", onClick: () => {} },
-          { label: "French Cuisine", onClick: () => {} },
-          { label: "Asian Cuisine", onClick: () => {} },
+          { label: "Baking", link: "/Courses/detail" },
+          { label: "Sauces", link: "/Courses/detail" },
+          { label: "Italian Cuisine", link: "/Courses/detail" },
+          { label: "French Cuisine", link: "/Courses/detail" },
+          { label: "Asian Cuisine", link: "/Courses/detail" },
         ],
       },
       {
         label: "Mental Wellness",
         subItems: [
-          { label: "Breath Work", onClick: () => {} },
-          { label: "Meditation/Yoga", onClick: () => {} },
+          { label: "Breath Work", link: "/Courses/" },
+          { label: "Meditation/Yoga", link: "/Courses/" },
         ],
       },
       {
         label: "Engineering",
-        subItems: [{ label: "Audio Engineering", onClick: () => {} }],
+        subItems: [{ label: "Audio Engineering", link: "/Courses/" }],
       },
     ],
   },
   {
     label: "SUPPORT",
     items: [
-      { label: "Contact Us", onClick: () => {} },
-      { label: "FAQ", onClick: () => {} },
-      { label: "Help Center", onClick: () => {} },
+      { label: "Contact Us", link: "/Courses/" },
+      { label: "FAQ", link: "/Courses/" },
     ],
   },
 ];
@@ -88,6 +88,7 @@ const topBarTabs = [
 const MainLayout = () => {
   return (
     <>
+      <ScrollToTop />
       <div className="flex h-screen flex-col w-screen">
         <div className="h-8 bg-green-600 flex justify-end items-end px-5 cursor-pointer" />
         {/* Header Navigation */}
@@ -119,10 +120,7 @@ const MainLayout = () => {
               ))}
             </div>
             <div className="hidden md:flex items-center space-x-4">
-              <Input
-                type="email"
-                placeholder="Search courses and lessons"
-              />
+              <Input type="email" placeholder="Search courses and lessons" />
               <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
                 <Search className="rounded-full" />
               </div>

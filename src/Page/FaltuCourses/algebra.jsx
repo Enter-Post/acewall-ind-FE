@@ -19,83 +19,88 @@ import {
 } from "lucide-react";
 
 const courseDetails = {
-  title:
-    "Complete Website Responsive Design: from Figma to Webflow to Website Design",
-  subtitle:
-    "In 5 hours+ Learn to design websites with Webflow, and make it a living masterpiece",
+  title: "Algebra 1 Made Easy: The Complete Foundation Course",
+  subtitle: "Master the core concepts of Algebra 1 with clear lessons and practical examples.",
   instructor: {
-    name: "John Doe",
-    profileImage: "instructor.jpg",
-    role: "Web Designer",
-    bio: "Experienced Web Designer with a passion for modern UI/UX.",
-    rating: 4.8,
-    students: 1200,
+    name: "Mr. Brian Thompson",
+    profileImage: "instructor-algebra1.jpg",
+    role: "Mathematics Instructor",
+    bio: "High school math teacher with 15+ years of experience helping students excel in Algebra and beyond.",
+    rating: 4.9,
+    students: 3500,
   },
   price: {
-    original: "$199",
-    discounted: "$99",
+    original: "$149",
+    discounted: "$69",
   },
-  rating: 4.8,
+  rating: 4.9,
   reviews: [
     {
-      student: "Alice Johnson",
+      student: "Emily Rogers",
       rating: 5,
-      comment: "Great course! Helped me improve my design skills.",
+      comment: "I finally understand Algebra! This course breaks it down so well.",
     },
     {
-      student: "Michael Smith",
-      rating: 4.5,
-      comment: "Well-structured and informative.",
+      student: "Tariq Williams",
+      rating: 4.8,
+      comment: "Helpful examples and step-by-step lessons. Great for school prep.",
     },
   ],
   curriculum: [
     {
-      section: "Introduction",
+      section: "Introduction to Algebra",
       lessons: [
-        { title: "Welcome to the Course", duration: "5 min" },
-        { title: "Understanding Web Design Principles", duration: "10 min" },
+        { title: "What is Algebra?", duration: "7 min" },
+        { title: "Variables and Expressions", duration: "10 min" },
       ],
     },
     {
-      section: "UI/UX Basics",
+      section: "Equations and Inequalities",
       lessons: [
-        { title: "Typography and Color Theory", duration: "15 min" },
-        { title: "Creating Wireframes", duration: "20 min" },
+        { title: "Solving One-Step Equations", duration: "15 min" },
+        { title: "Multi-Step Equations and Inequalities", duration: "18 min" },
+      ],
+    },
+    {
+      section: "Graphing and Functions",
+      lessons: [
+        { title: "Understanding the Coordinate Plane", duration: "12 min" },
+        { title: "Graphing Linear Equations", duration: "20 min" },
       ],
     },
   ],
   description:
-    "Learn how to create and design websites with Webflow, and make it a living masterpiece...",
+    "Build a strong mathematical foundation with this comprehensive Algebra 1 course. Whether you're a student or an adult learner, this course helps demystify algebra with easy-to-understand explanations and practical exercises.",
   requirements: [
-    "Basic HTML/CSS knowledge (helpful, but not required)",
-    "No coding required (everything can be done visually in Webflow)",
-    "A computer with internet connection",
-    "Free Webflow account (we'll create one during the course)",
+    "Basic arithmetic knowledge (addition, subtraction, multiplication, division)",
+    "Calculator (optional but helpful)",
+    "Motivation to improve math skills",
   ],
   whatYouWillLearn: [
-    "Understand core UI/UX principles",
-    "Create modern website layouts",
-    "Master responsive design techniques",
-    "Use Figma, Adobe XD, and Sketch",
+    "Understand variables, expressions, and equations",
+    "Solve linear equations and inequalities",
+    "Work with functions and graph them",
+    "Apply algebra to real-world problems",
   ],
   relatedCourses: [
     {
-      title: "Advanced Webflow Techniques: Video Editing in Premiere",
-      price: "$19.99",
-      rating: 4.5,
+      title: "Pre-Algebra Crash Course",
+      price: "$24.99",
+      rating: 4.6,
       image: "/placeholder.svg?height=120&width=240",
     },
     {
-      title: "Mastering Web Design with Sketch",
-      price: "$29.99",
+      title: "Algebra 2: Next Level Math Mastery",
+      price: "$34.99",
       rating: 4.8,
       image: "/placeholder.svg?height=120&width=240",
     },
   ],
 };
 
+
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const AlgebraDetail = () => {
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -156,7 +161,7 @@ const AllCoursesDetail = () => {
 
                 <div className="relative aspect-video">
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                    src="https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt="Course preview"
                     className="w-full h-full object-cover"
                   />
@@ -401,7 +406,9 @@ const AllCoursesDetail = () => {
                 <Button className="w-full mb-4 bg-green-600 hover:bg-green-700">
                   Add to cart
                 </Button>
-             
+                <div className="text-center text-sm text-gray-500 mb-6">
+                  30-Day Money-Back Guarantee
+                </div>
 
                 <div className="space-y-4">
                   <div className="text-sm font-medium">
@@ -446,7 +453,7 @@ const AllCoursesDetail = () => {
                   <div className="relative aspect-video">
                     <img
                       src={
-                        "https://plus.unsplash.com/premium_photo-1722111091429-dd3dc55979d3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                        "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       }
                       alt={`Related course ${index}`}
                       className="w-full h-full object-cover"
@@ -491,4 +498,4 @@ const AllCoursesDetail = () => {
   );
 };
 
-export default AllCoursesDetail;
+export default AlgebraDetail;

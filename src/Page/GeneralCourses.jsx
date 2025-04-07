@@ -22,7 +22,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Dr. Michael Brown",
-      link: "/Courses/detail",
+      link: "/Courses/biology",
     },
     {
       id: 5,
@@ -35,7 +35,7 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Richard Adams",
-      link: "/Courses/detail",
+      link: "/Courses/history",
     },
     {
       id: 6,
@@ -48,11 +48,11 @@ const GeneralCourses = () => {
       image:
         "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Olivia Green",
-      link: "/Courses/detail",
+      link: "/Courses/english",
     },
     {
       id: 7,
-      course: "Computer Science",
+      course: "Algebra",
       Grade: 10,
       rating: 5,
       NumberOfLecture: 18,
@@ -61,20 +61,20 @@ const GeneralCourses = () => {
       image:
         "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Mr. Samuel Turner",
-      link: "/Courses/detail",
+      link: "/Courses/algebra",
     },
     {
       id: 8,
-      course: "Geography",
+      course: "Culinary Arts",
       Grade: 10,
       rating: 4,
       NumberOfLecture: 10,
       Language: "English",
       Prise: 48,
       image:
-        "https://plus.unsplash.com/premium_photo-1681488098851-e3913f3b1908?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://plus.unsplash.com/premium_photo-1695028377519-70fb0c385db2?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       teacher: "Ms. Clara Foster",
-      link: "/Courses/detail",
+      link: "/Courses/culinaryArts",
     },
     {
       id: 9,
