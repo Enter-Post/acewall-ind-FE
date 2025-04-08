@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function TermsModal() {
+export default function TermsModal({ style }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <p className="text-gray-300  hover:text-white" variant="outline">Terms of Service</p>
+        <p className={`${style}`} variant="outline">
+          Terms of Service
+        </p>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>

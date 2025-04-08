@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function PrivacyPolicy() {
+export default function PrivacyPolicy({ style }) {
   // const [open, setOpen] = useState(false)
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <p className="text-gray-300  hover:text-white" variant="outline">
+        <p className={`${style}`} >
           Privacy Policy
         </p>
       </DialogTrigger>

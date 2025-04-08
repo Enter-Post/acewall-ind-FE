@@ -46,18 +46,20 @@ export const MultiLevelDropdown = ({ label, items }) => {
           <React.Fragment key={index}>
             {item.subItems ? (
               <DropdownMenuSub>
-               <DropdownMenuSubTrigger 
+                <DropdownMenuSubTrigger
                   className="flex items-center justify-between"
-                  onClick={(e) => handleSubTriggerClick(e, "/Courses")}
+                  onClick={(e) => handleSubTriggerClick(e, item.link)}
                 >
                   {item.label}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
-                <DropdownMenuSubContent className="w-56">
+                  <DropdownMenuSubContent className="w-56">
                     {item.subItems.map((subItem, subIndex) => (
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         key={subIndex}
-                        onClick={() => handleSubItemClick({ ...subItem, link: subItem.link })}
+                        onClick={() =>
+                          handleSubItemClick({ ...subItem, link: subItem.link })
+                        }
                       >
                         {subItem.label}
                       </DropdownMenuItem>
@@ -66,9 +68,14 @@ export const MultiLevelDropdown = ({ label, items }) => {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
             ) : (
-              <DropdownMenuItem onClick={() => handleCourseClick(item)}>
-                {item.label}
-              </DropdownMenuItem>
+              <Link to={item.link} key={index}>
+                <DropdownMenuItem
+                  className={""}
+                  onClick={() => handleCourseClick(item)}
+                >
+                  {item.label}
+                </DropdownMenuItem>
+              </Link>
             )}
           </React.Fragment>
         ))}

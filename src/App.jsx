@@ -44,6 +44,7 @@ import HistoryDetail from "./Page/FaltuCourses/History";
 import Biology from "./Page/FaltuCourses/Biology";
 import AlgebraDetail from "./Page/FaltuCourses/algebra";
 import EnglishDetail from "./Page/FaltuCourses/English";
+import ContactUs from "./Page/ContactUs";
 
 function App() {
   return (
@@ -54,7 +55,6 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
         <Route path="/signup" element={<SignupPage />}></Route>
-        <Route path="/Home" element={<MainLayout />}></Route>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<LandingPage />} />
           <Route path="/Courses">
@@ -68,6 +68,7 @@ function App() {
           </Route>
           <Route path="/about" element={<About />}></Route>
           <Route path="/Support" element={<GeneralSupport />}></Route>
+          <Route path="/contactUs" element={<ContactUs />}></Route>
           <Route
             path="/AdditionalServices"
             element={<AdditionalServices />}
@@ -87,11 +88,6 @@ function App() {
           <Route path="courses">
             <Route index element={<AllCourses />} />
             <Route path="detail" element={<AllCoursesDetail />} />
-            <Route path="history" element={<AllCoursesDetail />} />
-            <Route path="biology" element={<AllCoursesDetail />} />
-            <Route path="algebra" element={<AllCoursesDetail />} />
-            <Route path="english" element={<AllCoursesDetail />} />
-            <Route path="culinaryArts" element={<AllCoursesDetail />} />
           </Route>
           <Route path="payment" element={<Payment />} />
           <Route path="messages" element={<Messages />} />

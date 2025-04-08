@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 import LandingPage from "./LandingPage";
+import ReviewsSlider from "@/CustomComponent/LoginComponent/ReviewsSlider";
 import { useState } from "react";
-// import acewall from '../assets/acewallscholarslogo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email === "student@acewall.org" && password === "00000") {
-      navigate("/student");
+      navigate("/student/mycourses");
     } else {
       alert("Invalid Email or Password");
     }
@@ -37,8 +37,8 @@ const Login = () => {
       {/* Main Content */}
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-center text-2xl md:text-3xl text-gray-800 font-normal mb-8">
-            Log in to your accountmore
+          <h1 className="text-center text-2xl  md:text-3xl text-gray-800 font-normal mb-8">
+            Student Log-in Page
           </h1>
 
           <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
@@ -92,28 +92,7 @@ const Login = () => {
             </div>
 
             {/* Testimonial Section */}
-            <div className="w-full md:w-1/2 flex flex-col justify-center">
-              <div className="flex justify-center mb-4">
-                <div className="w-32 h-32">
-                  <img src={acewallshort} alt="" />
-                </div>
-              </div>
-              <h2 className="text-xl text-gray-800 font-medium mb-2 text-center md:text-left">
-                Teachers Love Ace Wall Scholars
-              </h2>
-              <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> Ace Wall scholars is an
-                amazing program. They have helped me with numerous subjects,
-                including Biology, Algebra, and Spanish….I not only aced the
-                midterm but I got the highest score out of all of Spanish 1,
-                thank you.
-                <span className="text-2xl">"</span>
-              </blockquote>
-              <div className="text-center md:text-left">
-                <p className="font-medium text-gray-800">Sara Wilsson</p>
-                <p className="text-gray-600">Teacher</p>
-              </div>
-            </div>
+            <ReviewsSlider/>
           </div>
         </div>
       </main>

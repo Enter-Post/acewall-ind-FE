@@ -18,18 +18,7 @@ export default function Footer() {
   const usefulLinks = [
     { name: "Home", url: "/" },
     { name: "About us", url: "/about" },
-    { name: "Additional Services", url: "/AdditionalServices" },
-
-    {
-      name: "Home",
-      url: "/",
-      func: () => {
-        if (window.location.pathname === "/") {
-          window.scrollTo(0, 0);
-        }
-      },
-    },
-    { name: "About us", url: "/about" },
+    // { name: "Additional Services", url: "/AdditionalServices" },
     { name: "Additional Services", url: "https://www.acewallscholars.org/" },
   ];
 

@@ -49,7 +49,7 @@ const initialAssignments = [
   },
 ];
 
-const tableHead = ["Title", "Course", "Due Date", "Status"];
+const tableHead = ["Assignment Name", "Course", "Due Date", "Status"];
 const Assignment = () => {
   const [search, setSearch] = useState("");
   const [assignments, setAssignments] = useState(initialAssignments);

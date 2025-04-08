@@ -79,7 +79,7 @@ const topBarTabs = [
   {
     label: "SUPPORT",
     items: [
-      { label: "Contact Us", link: "/Courses/" },
+      { label: "Contact Us", link: "/contactUs" },
       { label: "FAQ", link: "/Courses/" },
     ],
   },

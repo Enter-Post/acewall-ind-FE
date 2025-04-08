@@ -18,19 +18,20 @@ import { Logout03Icon } from "@/assets/Icons/Logout";
 import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
 import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
+import { MultiLevelDropdown } from "@/CustomComponent/MultilevelDropdown";
 
 const sideBarTabs = [
-  {
-    id: 1,
-    name: "Dashboard",
-    icon: <DashboardCircleAddIcon />,
-    path: "/student",
-  },
   {
     id: 2,
     name: "My Courses",
     icon: <Book02Icon />,
     path: "/student/mycourses",
+  },
+  {
+    id: 1,
+    name: "Dashboard",
+    icon: <DashboardCircleAddIcon />,
+    path: "/student",
   },
   {
     id: 5,
@@ -60,16 +61,90 @@ const sideBarTabs = [
 
 const topBarTabs = [
   {
-    id: 7,
-    name: "More Courses",
-    icon: <Megaphone02Icon />,
-    path: "/student/courses",
+    label: "MORE COURSE",
+    items: [
+      {
+        label: "History",
+        link: "/student/courses",
+        subItems: [
+          { label: "World History", link: "/student/courses" },
+          { label: "US History", link: "/student/courses" },
+          {
+            label: "African American History",
+            link: "/student/courses",
+          },
+          { label: "European History", link: "/student/courses" },
+          { label: "Government", link: "/student/courses" },
+        ],
+      },
+      {
+        label: "Physics",
+        link: "/student/courses",
+        subItems: [
+          { label: "Classical Mechanics", onClick: () => {} },
+          { label: "Electromagnetism", onClick: () => {} },
+          { label: "Thermodynamics", onClick: () => {} },
+          { label: "Quantum Mechanics", onClick: () => {} },
+          { label: "Relativity", onClick: () => {} },
+        ],
+      },
+      {
+        label: "Mathematics",
+        link: "/student/courses",
+        subItems: [
+          { label: "Algebra 1", link: "/student/courses" },
+          { label: "Algebra 2", link: "/student/courses" },
+          { label: "Pre-Algebra", link: "/student/courses" },
+          { label: "Geometry", link: "/student/courses" },
+          { label: "Pre-Calculus", link: "/student/courses" },
+          { label: "Trigonometry", link: "/student/courses" },
+          { label: "Calculus", link: "/student/courses" },
+        ],
+      },
+      {
+        label: "English",
+        link: "/student/courses",
+        subItems: [
+          { label: "American Literature", link: "/student/courses" },
+          { label: "World Literature", link: "/student/courses" },
+          { label: "British Literature", link: "/student/courses" },
+        ],
+      },
+      {
+        label: "Culinary Arts",
+        link: "/student/courses",
+        subItems: [
+          { label: "Baking", link: "/student/courses" },
+          { label: "Sauces", link: "/student/courses" },
+          { label: "Italian Cuisine", link: "/student/courses" },
+          { label: "French Cuisine", link: "/student/courses" },
+          { label: "Asian Cuisine", link: "/student/courses" },
+        ],
+      },
+      {
+        label: "Mental Wellness",
+        link: "/student/courses",
+
+        subItems: [
+          { label: "Breath Work", link: "/student/courses" },
+          { label: "Meditation/Yoga", link: "/student/courses" },
+        ],
+      },
+      {
+        label: "Engineering",
+        link: "/student/courses",
+        subItems: [
+          { label: "Audio Engineering", link: "/student/courses" },
+        ],
+      },
+    ],
   },
   {
-    id: 8,
-    name: "Support",
-    icon: <Megaphone02Icon />,
-    path: "/student/support",
+    label: "SUPPORT",
+    items: [
+      { label: "Contact Us", link: "/contactUs" },
+      { label: "FAQ", link: "/Courses/" },
+    ],
   },
 ];
 
@@ -124,24 +199,13 @@ export default function Layout() {
           </Link>
 
           <div className={`flex gap-5 text-sm`}>
-            {topBarTabs.map((tabs, index) => {
-              return (
-                <Link
-                  key={index}
-                  to={tabs.path}
-                  onClick={() => {
-                    setIsSidebarOpen(false);
-                  }}
-                  className={`cursor-pointer  ${
-                    location == tabs.path
-                      ? "text-green-500 font-bold"
-                      : "text-black"
-                  } `}
-                >
-                  {tabs.name}
-                </Link>
-              );
-            })}
+            {topBarTabs.map((category, index) => (
+              <MultiLevelDropdown
+                key={index}
+                label={category.label}
+                items={category.items}
+              />
+            ))}
           </div>
           <div className="hidden md:flex items-center space-x-4">
             <Input type="email" placeholder="Search" />
