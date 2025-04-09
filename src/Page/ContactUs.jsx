@@ -1,11 +1,8 @@
 import { useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
-import TermsModal from "@/CustomComponent/Termsandcondition";
-import PrivacyPolicy from "@/CustomComponent/PrivacePolicy";
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -189,13 +186,13 @@ export default function ContactUs() {
               Data rates may apply.
             </p>
           </div> */}
-
+{/* 
           <div className="py-2">
             <ReCAPTCHA
               sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // This is Google's test key
               onChange={handleCaptchaChange}
             />
-          </div>
+          </div> */}
 
           <div>
             <Button

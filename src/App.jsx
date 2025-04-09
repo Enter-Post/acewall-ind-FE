@@ -40,10 +40,6 @@ import EarningDetail from "./Page/teacher/Earning/EarningDetail";
 import AdditionalServices from "./Page/AdditionalServices";
 import About from "./Page/About";
 import ScrollToTop from "./lib/scrolltop";
-import HistoryDetail from "./Page/FaltuCourses/History";
-import Biology from "./Page/FaltuCourses/Biology";
-import AlgebraDetail from "./Page/FaltuCourses/algebra";
-import EnglishDetail from "./Page/FaltuCourses/English";
 import ContactUs from "./Page/ContactUs";
 
 function App() {
@@ -60,10 +56,6 @@ function App() {
           <Route path="/Courses">
             <Route index element={<GeneralCourses />}></Route>
             <Route path="detail" element={<GeneralCoursesDetail />}></Route>
-            <Route path="history" element={<HistoryDetail />} />
-            <Route path="biology" element={<Biology />} />
-            <Route path="algebra" element={<AlgebraDetail />} />
-            <Route path="english" element={<EnglishDetail />} />
             <Route path="culinaryArts" element={<AllCoursesDetail />} />
           </Route>
           <Route path="/about" element={<About />}></Route>

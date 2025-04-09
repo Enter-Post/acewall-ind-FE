@@ -80,7 +80,7 @@ export default function Gradebook() {
     }
   })
 
-  // Calculate overall average
+  // Calculate Overall GPA
   const overallTotalMarks = subjectsData.reduce(
     (sum, subject) => sum + subject.assignments.reduce((sum, assignment) => sum + assignment.marks, 0),
     0,
@@ -130,7 +130,7 @@ export default function Gradebook() {
           <div className="flex items-center justify-between">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium">Overall Average</span>
+                <span className="text-sm font-medium">Overall GPA</span>
                 <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}%</span>
               </div>
             </div>

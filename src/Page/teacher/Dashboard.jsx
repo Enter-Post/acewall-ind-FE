@@ -102,131 +102,131 @@ export default function TeacherDashboard() {
 
   return (
     <div className="min-h-screen">
-    
 
-      
 
-        {/* Main Content */}
-          <div className="">
-            <h1 className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">Dashboard</h1>
 
-            {/* Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              {metrics.map((metric, i) => (
-                <Card key={i}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-500">{metric.title}</CardTitle>
-                    {metric.icon}
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{metric.value}</div>
-                  </CardContent>
-                </Card>
+
+      {/* Main Content */}
+      <div className="">
+        <h1 className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">Dashboard</h1>
+
+        {/* Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 ">
+          {metrics.map((metric, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
+                <CardTitle className="text-sm font-medium text-gray-500">{metric.title}</CardTitle>
+                {metric.icon}
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{metric.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+
+          {/* Recent Activity */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Recent Activity</h2>
+            </div>
+            <div className="space-y-4">
+              {recentActivity.map((activity, i) => (
+                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                    <MessageSquare size={16} />
+                  </div>
+                  <div>
+                    <p className="text-sm">
+                      <span className="font-medium">{activity.user}</span> {activity.action}{" "}
+                      <span className="text-gray-500">{activity.target}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                  </div>
+                </div>
               ))}
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-             
-
-              {/* Recent Activity */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Recent Activity</h2>
+          {/* Recent Sales */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Recent Sales</h2>
+            </div>
+            <div className="space-y-4">
+              {recentSales.map((sale, i) => (
+                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                    <MessageSquare size={16} />
+                  </div>
+                  <div>
+                    <p className="text-sm">
+                      <span className="font-medium">{sale.user}</span> {sale.action}{" "}
+                      <span className="text-gray-500">{sale.target}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{sale.time}</p>
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  {recentActivity.map((activity, i) => (
-                    <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
-                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                        <MessageSquare size={16} />
-                      </div>
-                      <div>
-                        <p className="text-sm">
-                          <span className="font-medium">{activity.user}</span> {activity.action}{" "}
-                          <span className="text-gray-500">{activity.target}</span>
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Sales */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Recent Sales</h2>
-                </div>
-                <div className="space-y-4">
-                  {recentSales.map((sale, i) => (
-                    <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
-                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                        <MessageSquare size={16} />
-                      </div>
-                      <div>
-                        <p className="text-sm">
-                          <span className="font-medium">{sale.user}</span> {sale.action}{" "}
-                          <span className="text-gray-500">{sale.target}</span>
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">{sale.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
- {/* Top Sellers */}
- <div>
-                <h2 className="text-lg font-semibold mb-4">Top Sellers</h2>
-                <div className="space-y-4">
-                  {topSellers.map((course, i) => (
-                    <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
-                      <img
-                        src={course.image || "/placeholder.svg"}
-                        alt={course.title}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                      <div>
-                        <h3 className="font-medium text-sm mb-1">{course.title}</h3>
-                        <div className="flex gap-2">
-                          {course.categories.map((category, j) => (
-                            <span key={j} className="text-xs text-gray-500">
-                              {category}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent Courses */}
-              <div>
-                <h2 className="text-lg font-semibold mb-4">Recent Courses</h2>
-                <div className="space-y-4">
-                  {recentCourses.map((course, i) => (
-                    <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
-                      <img
-                        src={course.image || "/placeholder.svg"}
-                        alt={course.title}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                      <div>
-                        <h3 className="font-medium text-sm mb-1">{course.title}</h3>
-                        <div className="flex gap-2">
-                          {course.categories.map((category, j) => (
-                            <span key={j} className="text-xs text-gray-500">
-                              {category}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+          {/* Top Sellers */}
+          <div>
+            <h2 className="text-lg font-semibold mb-4">Top Sellers</h2>
+            <div className="space-y-4">
+              {topSellers.map((course, i) => (
+                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+                  <img
+                    src={course.image || "/placeholder.svg"}
+                    alt={course.title}
+                    className="w-10 h-10 rounded-lg object-cover"
+                  />
+                  <div>
+                    <h3 className="font-medium text-sm mb-1">{course.title}</h3>
+                    <div className="flex gap-2">
+                      {course.categories.map((category, j) => (
+                        <span key={j} className="text-xs text-gray-500">
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Recent Courses */}
+          <div>
+            <h2 className="text-lg font-semibold mb-4">Recent Courses</h2>
+            <div className="space-y-4">
+              {recentCourses.map((course, i) => (
+                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+                  <img
+                    src={course.image || "/placeholder.svg"}
+                    alt={course.title}
+                    className="w-10 h-10 rounded-lg object-cover"
+                  />
+                  <div>
+                    <h3 className="font-medium text-sm mb-1">{course.title}</h3>
+                    <div className="flex gap-2">
+                      {course.categories.map((category, j) => (
+                        <span key={j} className="text-xs text-gray-500">
+                          {category}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
   )
 }
 

@@ -10,12 +10,13 @@ function Card({
     (<div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
-        className
+        "bg-gray-100 text-gray-900 flex flex-col gap-4 rounded-xl border border-gray-200 py-6 shadow-md transition-transform transform hover:shadow-lg", className
       )}
       {...props} />)
   );
 }
+
+
 
 function CardHeader({
   className,

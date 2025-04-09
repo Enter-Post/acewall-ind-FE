@@ -67,15 +67,18 @@ export const MultiLevelDropdown = ({ label, items }) => {
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
-            ) : (
-              <Link to={item.link} key={index}>
-                <DropdownMenuItem
-                  className={""}
-                  onClick={() => handleCourseClick(item)}
-                >
-                  {item.label}
-                </DropdownMenuItem>
-              </Link>
+            )
+             :
+             (
+              ""
+              // <Link to={item.link} key={index}>
+              //   <DropdownMenuItem
+              //     className={""}
+              //     onClick={() => handleCourseClick(item)}
+              //   >
+              //     {item.label}
+              //   </DropdownMenuItem>
+              // </Link>
             )}
           </React.Fragment>
         ))}

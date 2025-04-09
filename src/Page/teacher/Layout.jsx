@@ -112,7 +112,7 @@ export default function TeacherLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-green-50 ${
+          className={`bg-white ${
             isSidebarOpen ? "block" : "hidden"
           } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >

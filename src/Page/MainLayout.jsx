@@ -26,11 +26,11 @@ const topBarTabs = [
       {
         label: "Physics",
         subItems: [
-          { label: "Classical Mechanics", onClick: () => {} },
-          { label: "Electromagnetism", onClick: () => {} },
-          { label: "Thermodynamics", onClick: () => {} },
-          { label: "Quantum Mechanics", onClick: () => {} },
-          { label: "Relativity", onClick: () => {} },
+          { label: "Classical Mechanics", onClick: () => { } },
+          { label: "Electromagnetism", onClick: () => { } },
+          { label: "Thermodynamics", onClick: () => { } },
+          { label: "Quantum Mechanics", onClick: () => { } },
+          { label: "Relativity", onClick: () => { } },
         ],
       },
       {
@@ -76,13 +76,7 @@ const topBarTabs = [
       },
     ],
   },
-  {
-    label: "SUPPORT",
-    items: [
-      { label: "Contact Us", link: "/contactUs" },
-      { label: "FAQ", link: "/Courses/" },
-    ],
-  },
+
 ];
 
 const MainLayout = () => {
@@ -110,15 +104,27 @@ const MainLayout = () => {
               />
             </Link>
 
-            <div className="flex gap-5 text-black text-sm ">
-              {topBarTabs.map((category, index) => (
-                <MultiLevelDropdown
-                  key={index}
-                  label={category.label}
-                  items={category.items}
-                />
-              ))}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-5 text-sm font-medium text-gray-700">
+                {topBarTabs.map((category, index) => (
+                  <MultiLevelDropdown
+                    key={index}
+                    label={category.label}
+                    items={category.items}
+                  />
+                ))}
+              </div>
+              <div className="flex gap-6">
+                <Link to="/support" className="text-sm font-medium text-gray-700">
+                  SUPPORT
+                </Link>
+                <Link to="/contactUs" className="text-sm font-medium text-gray-700">
+                  CONTACT US
+                </Link>
+              </div>
             </div>
+
+
             <div className="hidden md:flex items-center space-x-4">
               <Input type="email" placeholder="Search courses and lessons" />
               <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">

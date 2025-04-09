@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
-import dummyAvatar from "../../assets/avatar.png";
 import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
 import acewallshort from "../../assets/acewallshort.png";
 
@@ -13,9 +12,6 @@ import { DashboardCircleAddIcon } from "@/assets/Icons/deshboard";
 import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
 import { AssignmentsIcon } from "@/assets/Icons/AssignmentIcon";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
-import { TeacherIcon } from "@/assets/Icons/Classroom";
-import { Logout03Icon } from "@/assets/Icons/Logout";
-import { ArrowDown01Icon } from "@/assets/Icons/ArrowDown";
 import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
 import { MultiLevelDropdown } from "@/CustomComponent/MultilevelDropdown";
@@ -81,11 +77,11 @@ const topBarTabs = [
         label: "Physics",
         link: "/student/courses",
         subItems: [
-          { label: "Classical Mechanics", onClick: () => {} },
-          { label: "Electromagnetism", onClick: () => {} },
-          { label: "Thermodynamics", onClick: () => {} },
-          { label: "Quantum Mechanics", onClick: () => {} },
-          { label: "Relativity", onClick: () => {} },
+          { label: "Classical Mechanics", onClick: () => { } },
+          { label: "Electromagnetism", onClick: () => { } },
+          { label: "Thermodynamics", onClick: () => { } },
+          { label: "Quantum Mechanics", onClick: () => { } },
+          { label: "Relativity", onClick: () => { } },
         ],
       },
       {
@@ -139,13 +135,6 @@ const topBarTabs = [
       },
     ],
   },
-  {
-    label: "SUPPORT",
-    items: [
-      { label: "Contact Us", link: "/contactUs" },
-      { label: "FAQ", link: "/Courses/" },
-    ],
-  },
 ];
 
 export default function Layout() {
@@ -197,16 +186,27 @@ export default function Layout() {
               className="w-40 h-auto  cursor-pointer"
             />
           </Link>
-
-          <div className={`flex gap-5 text-sm`}>
-            {topBarTabs.map((category, index) => (
-              <MultiLevelDropdown
-                key={index}
-                label={category.label}
-                items={category.items}
-              />
-            ))}
+          <div className="flex justify-between items-center">
+            <div className="flex gap-5 text-xs md:text-md lg:text-base font-medium text-gray-700">
+              {topBarTabs.map((category, index) => (
+                <MultiLevelDropdown
+                  key={index}
+                  label={category.label}
+                  items={category.items}
+                />
+              ))}
+            </div>
+            <div className="flex gap-6">
+              <Link to="/support" className="text-xs md:text-md lg:text-base font-medium text-gray-700">
+                SUPPORT
+              </Link>
+              <Link to="/contactUs" className="text-xs md:text-md lg:text-base font-medium text-gray-700">
+                CONTACT US
+              </Link>
+            </div>
           </div>
+
+
           <div className="hidden md:flex items-center space-x-4">
             <Input type="email" placeholder="Search" />
             <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
@@ -217,9 +217,8 @@ export default function Layout() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-green-50 ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
@@ -257,15 +256,13 @@ export default function Layout() {
                     setIsSidebarOpen(false);
                     setselected(tab.id);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location == tab.path ? "bg-green-500" : "text-black"
-                  } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
+                    } `}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location == tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location == tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

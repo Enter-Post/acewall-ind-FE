@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/select";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { LandingPageCard } from "@/CustomComponent/Card";
+import Footer from "@/CustomComponent/Footer";
 
 const cardData = [
   {
     name: "Academic Tutoring",
     description:
-      "  Ace Wall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "  Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_357701907-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/academic-tutoring ",
@@ -24,7 +25,7 @@ const cardData = [
   {
     name: "Mentoring and Mental Health Support",
     description:
-      "Ace Wall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/mentoring",
@@ -32,7 +33,7 @@ const cardData = [
   {
     name: "Parent Aide",
     description:
-      "Ace Wall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
@@ -40,7 +41,7 @@ const cardData = [
   {
     name: "Test Prep",
     description:
-      "Ace Wall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/row-students-doing-exam-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/test-prep",
@@ -48,7 +49,7 @@ const cardData = [
   {
     name: "Internship Support/Placement",
     description:
-      "Ace Wall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/internship+support-placement-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/internship-support/placement",
@@ -57,7 +58,7 @@ const cardData = [
   {
     name: "College Counseling",
     description:
-      "Ace Wall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/college+counseling-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/college-counseling",

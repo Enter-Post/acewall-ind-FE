@@ -36,7 +36,7 @@ const ReviewsSlider = () => {
     {
       name: "Kelly Douglas",
       review:
-        "Acewall scholars is an amazing program they have helped me with a lot of subjects and made me feel confident in my studies.",
+        "Acewall Scholars is an amazing program they have helped me with a lot of subjects and made me feel confident in my studies.",
       time: "3 months ago",
       image: "https://via.placeholder.com/32",
       rating: 5

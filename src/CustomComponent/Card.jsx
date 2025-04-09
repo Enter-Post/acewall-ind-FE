@@ -27,10 +27,13 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
       <CardContent className="p-0 overflow-auto">
         <div className="divide-y">
           {data?.map((item, index) => (
-            <div key={index} className="px-4 py-3 flex gap-10 items-center">
-              <div className="flex-1">
+            <div key={index} className="px-4 py-3 flex gap-10 items-center hover:font-medium hover:text-normal  transition-all duration-300 ">
+              <div className="flex-1 ">
                 <Link to={link}>
-                  <p className="hover:font-semibold transition-all duration-300 cursor-pointer">
+                  <p className="cursor-pointer font-semibold">
+                    {item.course}
+                  </p>
+                  <p className=" cursor-pointer">
                     {item.title}
                   </p>
                 </Link>
@@ -106,8 +109,9 @@ function AnnouncementCard({ mainHeading, data }) {
               className="px-4 py-3 flex flex-col gap-3 border-b border-gray-300"
             >
               {/* Title and Date/Time */}
+                <p className="font-bold text-lg">{announcement.course}</p>
               <div className="flex justify-between items-center">
-                <p className="font-bold">{announcement.title}</p>
+                <p className="font-semibold">{announcement.title}</p>
                 <p className="text-sm text-gray-500">
                   {announcement.date} • {announcement.time}
                 </p>

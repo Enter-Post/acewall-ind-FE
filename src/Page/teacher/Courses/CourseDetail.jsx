@@ -159,8 +159,8 @@ export default function TeacherCourseDetails() {
 
 function StatCard({ icon, value, label, bgColor }) {
   return (
-    <Card className="border-0 shadow-sm">
-      <CardContent className={`p-4 flex items-center gap-4 ${bgColor}`}>
+    <Card className={`border-0 shadow-sm ${bgColor}`}>
+      <CardContent className={`p-4 flex items-center gap-4 `}>
         <div className="p-2 rounded-md bg-white">{icon}</div>
         <div>
           <div className="font-bold text-lg">{value}</div>

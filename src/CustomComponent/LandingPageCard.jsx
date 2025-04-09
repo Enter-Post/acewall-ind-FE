@@ -11,7 +11,7 @@ const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
           src={imageUrl} alt={name}
           className="object-cover w-full h-full"
         />
-      </AspectRatio>
+      </AspectRatio>  
       <CardHeader>
         <CardTitle> {name}</CardTitle>
       </CardHeader>
