@@ -29,8 +29,8 @@ export default function Footer() {
 
   const usefulLinks = [
     { name: "Home", url: "/" },
-    { name: "About us", url: "/about" },
-    { name: "Additional Services", url: "https://www.acewallscholars.org/" },
+    { name: "About Us", url: "/about" },
+    { name: "Additional Services", url: "/AdditionalServices" },
   ];
 
   const popularCourses = [
@@ -57,7 +57,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-black text-white">
+      <footer className="bg-black text-white mt-10">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Column 1: Acewall Scholars */}

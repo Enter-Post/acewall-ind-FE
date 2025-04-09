@@ -5,20 +5,31 @@ import Footer from "@/CustomComponent/Footer";
 import LandingPage from "./LandingPage";
 import ReviewsSlider from "@/CustomComponent/LoginComponent/ReviewsSlider";
 import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+
+const passwordValidation = new RegExp(
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+);
 
 const Login = () => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const schema = z.object({
+    email: z.string().min(1).email(),
+    password: z.string().min(8).regex(passwordValidation, {
+      message: "Your password is not valid",
+    }),
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (email === "student@acewall.org" && password === "00000") {
-      navigate("/student/mycourses");
-    } else {
-      alert("Invalid Email or Password");
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data) => console.log(data);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -44,7 +55,7 @@ const Login = () => {
           <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
             {/* Login Form */}
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
@@ -54,8 +65,9 @@ const Login = () => {
                     id="email"
                     className="w-full p-2 border border-gray-300 rounded"
                     defaultValue=""
-                    onChange={(e) => setEmail(e.target.value)}
+                    {...register("email")}
                   />
+                  {errors?.email && <p className="text-xs text-red-600">{errors.password.message}</p>}
                 </div>
                 <div className="mb-8">
                   <label
@@ -68,9 +80,10 @@ const Login = () => {
                     type="password"
                     id="password"
                     className="w-full p-2 border border-gray-300 rounded"
-                    onChange={(e) => setPassword(e.target.value)}
+                    {...register("password")}
                     defaultValue=""
                   />
+                  {errors?.password && <p className="text-xs text-red-600">{errors.password.message}</p>}
                 </div>
                 <div className="flex justify-between items-center">
                   <Link
@@ -92,7 +105,7 @@ const Login = () => {
             </div>
 
             {/* Testimonial Section */}
-            <ReviewsSlider/>
+            <ReviewsSlider />
           </div>
         </div>
       </main>

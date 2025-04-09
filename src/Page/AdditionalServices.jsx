@@ -56,8 +56,12 @@ const cardData = [
 
 const AdditionalServices = () => {
   return (
-    <section className="flex justify-center">
+    <section className="flex justify-center flex-col items-center ">
+     <div className=" w-[90%] text-center ">
+          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Additional Services</p>
+        </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3 w-[80%]">
+        
         {cardData.map((card, index) => (
           <LandingPageCard
             key={index}

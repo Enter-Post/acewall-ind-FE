@@ -24,7 +24,13 @@ export default function PrivacyPolicy({ style }) {
           <DialogTitle className="text-3xl font-bold text-center">
             Privacy Policy
           </DialogTitle>
-          <DialogDescription>Last updated February 15, 2025</DialogDescription>
+          <DialogDescription>
+            Last updated {new Date().toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="mt-4 max-h-[60vh]">
           <div className="text-sm leading-6 pr-4">

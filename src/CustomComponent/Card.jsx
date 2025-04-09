@@ -286,11 +286,11 @@ const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
       </AspectRatio>
       <CardHeader>
         {/* <CardTitle>{name}</CardTitle> */}
-        <p className="text-md font-bold truncate">{name}</p>
+        <p className="text-md font-bold truncate line-clamp-1.4">{name}</p>
       </CardHeader>
       <CardContent className="flex flex-col flex-1">
         <div className="flex flex-col flex-1 gap-6">
-          <p className="text-muted-foreground  text-xs">{description}</p>
+          <p className="text-muted-foreground  text-xs line-clamp-4">{description}</p>
           <a
             href={buttonUrl}
             className="inline-flex items-center justify-center w-full px-3 py-2 mt-auto text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"

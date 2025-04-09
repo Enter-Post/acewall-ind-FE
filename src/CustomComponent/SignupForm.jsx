@@ -6,57 +6,77 @@ import PersonalInfo from "./StudentSignup/PersonalInfo";
 import ContactInfo from "./ContactInfo";
 import AddressInfo from "./StudentSignup/AddressInfo";
 import PasswordInfo from "./StudentSignup/PasswordInfo";
+import { z } from "zod";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
+
+const formSchema = z
+  .object({
+    firstName: z.string().min(1, "First name is required"),
+    middleName: z.string().optional(),
+    lastName: z.string().min(1, "Last name is required"),
+    pronouns: z.string(),
+    gender: z.string(),
+    phone: z.string().min(10, "Phone number is required"),
+    homeAddress: z.string().min(1, "Home address is required"),
+    mailingAddress: z.string().optional(),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 const SignupForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState({});
+  const methods = useForm({
+    resolver: zodResolver(formSchema),
+    mode: "onTouched",
+  });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const { handleSubmit, trigger } = methods;
+
+  const onSubmit = (data) => {
+    console.log("Form submitted with data:", data);
+    // navigate("/signup-success");
   };
 
-  const handleNext = () => {
-    setCurrentStep(currentStep + 1);
+  const handleNext = async () => {
+    const fieldsToValidate = {
+      0: ["firstName", "lastName", "pronouns", "gender"], // Personal Info fields
+      1: ["phone","homeAddress", "mailingAddress"], // Address Info fields
+      2: ["password", "confirmPassword"], // Password Info fields
+    }[currentStep];
+
+    console.log(currentStep, "currentStep");
+
+    const valid = await trigger(fieldsToValidate);
+
+    if (valid) {
+      setCurrentStep((prev) => prev + 1);
+    }
   };
 
   const handlePrevious = () => {
-    setCurrentStep(currentStep - 1);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    navigate("/signup-success");
+    setCurrentStep((prev) => {
+      const previousStep = prev - 1;
+      console.log("Returning to previous step:", previousStep);
+      return previousStep;
+    });
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return (
-          <PersonalInfo
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-        );
-
+        return <PersonalInfo />;
       case 1:
-        return (
-          <AddressInfo
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-        );
+        return <AddressInfo />;
       case 2:
-        return (
-          <PasswordInfo
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-        );
+        return <PasswordInfo />;
       default:
         return null;
     }
@@ -74,38 +94,41 @@ const SignupForm = () => {
               <h2 className="mb-2 font-medium text-gray-900 dark:text-white">
                 {steps[currentStep]}
               </h2>
-              <div className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
-                {renderStep()}
-                <div className="flex justify-between">
-                  <button
-                    type="button"
-                    onClick={handlePrevious}
-                    className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
-                      currentStep === 0 ? "invisible" : ""
-                    }`}
-                  >
-                    Previous
-                  </button>
-                  {currentStep === steps.length - 1 ? (
-                    <Link to={"/login"}>
-                      <button
-                        type="submit"
-                        className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
-                      >
-                        Create Account
-                      </button>
-                    </Link>
-                  ) : (
+              <FormProvider {...methods}>
+                <form
+                  className="space-y-4 md:space-y-6"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  {renderStep()}
+                  <div className="flex justify-between">
                     <button
                       type="button"
-                      onClick={handleNext}
-                      className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5"
+                      onClick={handlePrevious}
+                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
+                        currentStep === 0 ? "invisible" : ""
+                      }`}
                     >
-                      Next
+                      Previous
                     </button>
-                  )}
-                </div>
-              </div>
+                    {currentStep === steps.length - 1 ? (
+                        <button
+                          type="submit"
+                          className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
+                        >
+                          Create Account
+                        </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5"
+                      >
+                        Next
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </FormProvider>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link

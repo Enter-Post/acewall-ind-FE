@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils"
 export default function MessageList({ messages, contactName, contactAvatar }) {
   const messagesEndRef = useRef(null)
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  // }, [messages])
 
   // Group messages by date
   const groupedMessages = {}
@@ -19,7 +19,7 @@ export default function MessageList({ messages, contactName, contactAvatar }) {
   })
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-6">
+    <div className="flex-1 overflow-y-auto p-4 space-y-6 ">
       {Object.entries(groupedMessages).map(([date, dateMessages]) => (
         <div key={date} className="space-y-4">
           <div className="flex justify-center">

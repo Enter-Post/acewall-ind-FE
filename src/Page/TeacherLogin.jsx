@@ -3,21 +3,34 @@ import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 // import acewall from '../assets/acewallscholarslogo.png';
+
+const passwordValidation = new RegExp(
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+);
+
+const schema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email"),
+  password: z.string().min(8).regex(passwordValidation, {
+    message: "Invalid password",
+  }),
+});
 
 const TeacherLogin = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (email === "teacher@acewall.org" && password === "00000") {
-      navigate("/teacher");
-    } else {
-      alert("Invalid Email or Password");
-    }
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data) => console.log(data);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -43,7 +56,7 @@ const TeacherLogin = () => {
           <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
             {/* Login Form */}
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
@@ -52,9 +65,13 @@ const TeacherLogin = () => {
                     type="email"
                     id="email"
                     className="w-full p-2 border border-gray-300 rounded"
-                    defaultValue=""
-                    onChange={(e) => setEmail(e.target.value)}
+                    {...register("email")}
                   />
+                  {errors?.email && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-8">
                   <label
@@ -67,9 +84,13 @@ const TeacherLogin = () => {
                     type="password"
                     id="password"
                     className="w-full p-2 border border-gray-300 rounded"
-                    defaultValue=""
-                    onChange={(e) => setPassword(e.target.value)}
+                    {...register("password")}
                   />
+                  {errors?.password && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
                 <div className="flex justify-between items-center">
                   <Link

@@ -16,7 +16,7 @@ const cardData = [
   {
     name: "Academic Tutoring",
     description:
-      "  Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Academic tutoring includes remediation and enrichment in reading, writing, and mathematics with emphasis in STEM education. Serving grades K-12.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_357701907-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/academic-tutoring ",
@@ -25,7 +25,7 @@ const cardData = [
   {
     name: "Mentoring and Mental Health Support",
     description:
-      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Mentoring and Mental Health - a 360° approach works to improve each client’s sense of self by providing mentoring support services that positively affect the client’s mental health through the promotion and integration of emotional, physical, and mental well-being. Participants will receive one-on-one and group activities to support the overall goal of mental wellness, in addition to, the integration of Social and Emotional Learning (SEL) activities.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/mentoring",
@@ -33,7 +33,7 @@ const cardData = [
   {
     name: "Parent Aide",
     description:
-      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars offers The Holistic Parent Aid program. This program falls within our mentoring department. Our Parenting progam offers a holistic approach to developing effective parenting skills. Providing education on healthy and effective ways to support children through their emotional, physical, mental, and spiritual development, is our goal.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
@@ -41,7 +41,7 @@ const cardData = [
   {
     name: "Test Prep",
     description:
-      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Our Test Prep services prepare students to take standardized test by helping improve their overall test scores. Test prep services are offered for the ASVAB, GED, SOL, ACT, SAT, GRE, and LSAT.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/row-students-doing-exam-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/test-prep",
@@ -49,7 +49,7 @@ const cardData = [
   {
     name: "Internship Support/Placement",
     description:
-      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Acewall Scholars will assist students with finding summer programs, internships, and/or apprenticeships, as well as volunteering experience in fields of interest.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/internship+support-placement-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/internship-support/placement",
@@ -58,7 +58,7 @@ const cardData = [
   {
     name: "College Counseling",
     description:
-      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
+      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process. ",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/college+counseling-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/college-counseling",
@@ -149,18 +149,20 @@ const LandingPage = () => {
         <section className="flex justify-center">
           <div
             id="additionalServices"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3 w-[95%] md:w-[80%] "
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-3 w-[95%] md:w-[80%]"
           >
             {cardData.map((card, index) => (
-              <LandingPageCard
-                key={index}
-                name={card.name}
-                description={card.description}
-                imageUrl={card.imageUrl}
-                buttonUrl={card.buttonUrl}
-              />
+              <div key={index} className="h-full">
+                <LandingPageCard
+                  name={card.name}
+                  description={card.description}
+                  imageUrl={card.imageUrl}
+                  buttonUrl={card.buttonUrl}
+                />
+              </div>
             ))}
           </div>
+
         </section>
       </div>
     </>

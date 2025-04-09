@@ -6,9 +6,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ReviewModal from '../ReviewModal';
 
 const ReviewsSlider = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedReview, setSelectedReview] = useState(null);
-
   const reviews = [
     {
       name: "Consuela Gregory",
