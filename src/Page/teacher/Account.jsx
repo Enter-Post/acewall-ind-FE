@@ -108,9 +108,9 @@ Vako realizes that people who take courses on Udemy want to transform their live
           <div className="flex-shrink-0">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-pink-100">
               <img
-                src="/placeholder.svg?height=128&width=128"
-                alt={instructor.name}
-                className="w-full h-full object-cover"
+                src="https://images.unsplash.com/flagged/photo-1559475555-b26777ed3ab4?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                
+                className="w-full h-full  object-cover"
               />
             </div>
           </div>

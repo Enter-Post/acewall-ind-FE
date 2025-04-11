@@ -131,14 +131,15 @@ export default function Gradebook() {
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm font-medium">Overall GPA</span>
-                <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}%</span>
+                {/* <span className="text-lg font-bold text-green-500">{overallAverage.toFixed(2)}</span> */}
+                <span className="text-lg font-bold text-green-500">2.5</span>
               </div>
             </div>
 
             <div className="flex items-center justify-center">
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-500">{overallGrade}</div>
-                <div className="text-sm text-muted-foreground">Overall Grade</div>
+                {/* <div className="text-3xl font-bold text-green-500">{overallGrade}</div> */}
+                {/* <div className="text-sm text-muted-foreground">Overall Grade</div> */}
               </div>
             </div>
           </div>
