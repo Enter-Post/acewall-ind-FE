@@ -147,7 +147,7 @@ export default function Gradebook() {
       </Card>
 
       {/* Subjects and Assignments Table */}
-      <div className="border">
+      <div className="">
         <div className="flex items-center py-4">
           <Input
             placeholder="Search subjects or assignments..."

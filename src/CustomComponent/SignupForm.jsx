@@ -91,7 +91,7 @@ const SignupForm = () => {
               <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
                 Create an account
               </h1>
-              <h2 className="mb-2 font-medium text-gray-900 dark:text-white">
+              <h2 className="mb-2 font-medium text-gray-900 dark:text-white border border-red-500">
                 {steps[currentStep]}
               </h2>
               <FormProvider {...methods}>

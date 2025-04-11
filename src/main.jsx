@@ -5,14 +5,17 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { GlobalProvider } from "./Context/GlobalProvider";
 import ScrollToTop from "./lib/scrolltop";
+import { CourseProvider } from "./Context/CoursesProvider";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <GlobalProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <App />
-      </BrowserRouter>
+      <CourseProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <App />
+        </BrowserRouter>
+      </CourseProvider>
     </GlobalProvider>
   </StrictMode>
 );

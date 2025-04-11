@@ -1,6 +1,6 @@
-import { useState } from "react"
-import { ArrowRight, School } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { ArrowRight, School } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,19 +9,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
-export default function ConfirmationModal() {
-  const [isRentable, setIsRentable] = useState(false)
-  const [open, setOpen] = useState(false)
+export default function ConfirmationModal({ func }) {
+  const [isRentable, setIsRentable] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  console.log(func);
 
   const handleConfirm = () => {
     // Here you would handle the API call to update the course rental status
-    console.log("Course rental status updated:", isRentable)
-    setOpen(false)
-  }
+    console.log("Course rental status updated:", isRentable);
+    setOpen(false);
+    func();
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -35,7 +38,8 @@ export default function ConfirmationModal() {
         <DialogHeader>
           <DialogTitle>Course Access Options</DialogTitle>
           <DialogDescription>
-            Decide whether you want to make this course available for other schools.
+            Decide whether you want to make this course available for other
+            schools.
           </DialogDescription>
         </DialogHeader>
         <div className="flex items-center space-x-2 py-4">
@@ -47,7 +51,11 @@ export default function ConfirmationModal() {
                   Make this course available for other schools
                 </Label>
               </div>
-              <Switch id="rental-option" checked={isRentable} onCheckedChange={setIsRentable} />
+              <Switch
+                id="rental-option"
+                checked={isRentable}
+                onCheckedChange={setIsRentable}
+              />
             </div>
             <p className="text-xs text-muted-foreground">
               {isRentable
@@ -60,12 +68,14 @@ export default function ConfirmationModal() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button className="bg-green-500 hover:bg-green-600 text-white" onClick={handleConfirm}>
+          <Button
+            className="bg-green-500 hover:bg-green-600 text-white"
+            onClick={handleConfirm}
+          >
             Confirm & Create
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-
