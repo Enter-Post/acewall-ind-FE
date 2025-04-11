@@ -4,10 +4,11 @@ import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 import LandingPage from "./LandingPage";
 import ReviewsSlider from "@/CustomComponent/LoginComponent/ReviewsSlider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 const passwordValidation = new RegExp(
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
@@ -29,7 +30,15 @@ const Login = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => console.log(data);
+  // useEffect(() => {
+  //   const fetching = async () => {
+  //     const { data } = await axiosInstance.get("auth/users");
+  //     console.log(data);
+  //   };
+  //   fetching();
+  // }, []);
+
+  const onSubmit = (data) => {};
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -67,7 +76,11 @@ const Login = () => {
                     defaultValue=""
                     {...register("email")}
                   />
-                  {errors?.email && <p className="text-xs text-red-600">{errors.password.message}</p>}
+                  {errors?.email && (
+                    <p className="text-xs text-red-600">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-8">
                   <label
@@ -83,7 +96,11 @@ const Login = () => {
                     {...register("password")}
                     defaultValue=""
                   />
-                  {errors?.password && <p className="text-xs text-red-600">{errors.password.message}</p>}
+                  {errors?.password && (
+                    <p className="text-xs text-red-600">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
                 <div className="flex justify-between items-center">
                   <Link
