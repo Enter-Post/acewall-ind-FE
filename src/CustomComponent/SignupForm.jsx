@@ -9,6 +9,7 @@ import PasswordInfo from "./StudentSignup/PasswordInfo";
 import { z } from "zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
 
@@ -40,19 +41,33 @@ const SignupForm = () => {
 
   const { handleSubmit, trigger } = methods;
 
-  const onSubmit = (data) => {
-    console.log("Form submitted with data:", data);
-    // navigate("/signup-success");
-  };
+  const onSubmit = async (formdata) => {
+
+    console.log(formdata, "formdata");
+    
+    try {
+      // const response = await axiosInstance.post("auth/register", formdata);
+      // console.log(response);
+      // if (response.data.user) {
+      //   alert("Signup successful!");
+      //   navigate("/login")
+      // } else {
+      //   alert("Signup failed!");
+      // }
+    } catch (error) {
+      console.error("Signup Error:", error);
+      alert("something went wrong");
+    }
+  }
 
   const handleNext = async () => {
     const fieldsToValidate = {
       0: ["firstName", "lastName", "pronouns", "gender"], // Personal Info fields
-      1: ["phone","homeAddress", "mailingAddress"], // Address Info fields
+      1: ["phone", "homeAddress", "mailingAddress"], // Address Info fields
       2: ["password", "confirmPassword"], // Password Info fields
     }[currentStep];
 
-    console.log(currentStep, "currentStep");
+    // console.log(currentStep, "currentStep");
 
     const valid = await trigger(fieldsToValidate);
 
@@ -104,19 +119,18 @@ const SignupForm = () => {
                     <button
                       type="button"
                       onClick={handlePrevious}
-                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
-                        currentStep === 0 ? "invisible" : ""
-                      }`}
+                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${currentStep === 0 ? "invisible" : ""
+                        }`}
                     >
                       Previous
                     </button>
                     {currentStep === steps.length - 1 ? (
-                        <button
-                          type="submit"
-                          className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
-                        >
-                          Create Account
-                        </button>
+                      <button
+                        type="submit"
+                        className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
+                      >
+                        Create Account
+                      </button>
                     ) : (
                       <button
                         type="button"

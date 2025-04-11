@@ -9,7 +9,7 @@ const PasswordInfo = () => {
   } = useFormContext();
   const formData = watch();
 
-  console.log(errors, "errors");
+  // console.log(errors, "errors");
 
   return (
     <div>
