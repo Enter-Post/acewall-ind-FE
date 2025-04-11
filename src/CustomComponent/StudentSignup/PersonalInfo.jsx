@@ -81,7 +81,7 @@ const PersonalInfo = () => {
             Preferred Pronouns
           </Label>
           <RadioGroup
-            defaultValue={formData.pronouns || "he/him"}
+            // defaultValue={formData.pronouns || "he/him"}
             name="pronouns"
             className="grid grid-cols-1 gap-2"
             onValueChange={(value) => setValue("pronouns", value)}
@@ -111,7 +111,7 @@ const PersonalInfo = () => {
             Gender Identification
           </Label>
           <RadioGroup
-            defaultValue={formData.gender || "male"}
+            // defaultValue={formData.gender || "male"}
             name="gender"
             className="grid grid-cols-1 gap-2"
             onValueChange={(value) => setValue("gender", value)}

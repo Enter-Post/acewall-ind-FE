@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const process = "production";
+const process = "development";
 
 const BASE_URL =
   process === "development"
