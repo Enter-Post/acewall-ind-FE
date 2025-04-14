@@ -9,16 +9,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "@/lib/AxiosInstance";
 // import acewall from '../assets/acewallscholarslogo.png';
 
-// const passwordValidation = new RegExp(
-//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-// );
+const passwordValidation = new RegExp(
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+);
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(8)
-  // .regex(passwordValidation, {
-  //   message: "Invalid password",
-  // }),
+  password: z.string().min(8).regex(passwordValidation, {
+    message: "Invalid password",
+  }),
 });
 
 const TeacherLogin = () => {
@@ -32,26 +31,7 @@ const TeacherLogin = () => {
     resolver: zodResolver(schema),
   });
 
-
-  const onSubmit = async (formData) => {
-    try {
-      const response = await axiosInstance.post("auth/login", formData);
-      // console.log("Login Response:", response.data);
-
-      if (response.data.user) {
-        alert("Login successful! 🎉");
-        navigate("/teacher");
-
-      } else {
-        alert("invalid email or Password.");
-      }
-
-    }
-    catch (error) {
-      console.error("Login Error:", error);
-      alert(" Try again later.");
-    }
-  }
+  const onSubmit = (data) => console.log(data);
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
