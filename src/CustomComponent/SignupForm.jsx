@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PersonalInfo from "./StudentSignup/PersonalInfo";
 import ContactInfo from "./ContactInfo";
@@ -10,6 +8,7 @@ import { z } from "zod";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
 
@@ -23,7 +22,7 @@ const formSchema = z
     phone: z.string().min(10, "Phone number is required"),
     homeAddress: z.string().min(1, "Home address is required"),
     mailingAddress: z.string().optional(),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(8),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -34,31 +33,25 @@ const formSchema = z
 const SignupForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
+  const { signUpdata, setSignupData, signup } = useContext(GlobalContext);
   const methods = useForm({
     resolver: zodResolver(formSchema),
     mode: "onTouched",
   });
 
+  useEffect(() => {
+    console.log(signUpdata.email);
+    if (signUpdata.email === undefined && signUpdata.role === undefined) {
+      navigate("/");
+    }
+  }, []);
+
   const { handleSubmit, trigger } = methods;
 
   const onSubmit = async (formdata) => {
-
-    console.log(formdata, "formdata");
-    
-    try {
-      // const response = await axiosInstance.post("auth/register", formdata);
-      // console.log(response);
-      // if (response.data.user) {
-      //   alert("Signup successful!");
-      //   navigate("/login")
-      // } else {
-      //   alert("Signup failed!");
-      // }
-    } catch (error) {
-      console.error("Signup Error:", error);
-      alert("something went wrong");
-    }
-  }
+    setSignupData({ ...signUpdata, ...formdata });
+    setTimeout(signup(), [2000]);
+  };
 
   const handleNext = async () => {
     const fieldsToValidate = {
@@ -106,7 +99,7 @@ const SignupForm = () => {
               <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
                 Create an account
               </h1>
-              <h2 className="mb-2 font-medium text-gray-900 dark:text-white border border-red-500">
+              <h2 className="mb-2 font-medium text-gray-900 dark:text-white border  ">
                 {steps[currentStep]}
               </h2>
               <FormProvider {...methods}>
@@ -119,8 +112,9 @@ const SignupForm = () => {
                     <button
                       type="button"
                       onClick={handlePrevious}
-                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${currentStep === 0 ? "invisible" : ""
-                        }`}
+                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
+                        currentStep === 0 ? "invisible" : ""
+                      }`}
                     >
                       Previous
                     </button>

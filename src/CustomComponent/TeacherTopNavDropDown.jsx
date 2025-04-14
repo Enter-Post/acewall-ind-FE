@@ -6,7 +6,9 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"; // Use ShadCN's Avatar
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 export function TeacherTopNavbarDropDown({ selected, setselected }) {
 
@@ -17,6 +19,19 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
       path: "/teacher/account",
     },
   ];
+  
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try { 
+      const response = await axiosInstance.post("auth/logout");
+      if (response.status === 200) {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -44,7 +59,7 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
           );
         })}
         <DropdownMenuItem asChild>
-          <Link onClick={()=>setselected(null)} to="/login">Logout</Link>
+        <button onClick={logout}>Logout</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

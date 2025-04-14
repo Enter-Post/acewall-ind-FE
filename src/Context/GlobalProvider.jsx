@@ -1,15 +1,22 @@
+import { axiosInstance } from "@/lib/AxiosInstance";
+import axios from "axios";
 import { createContext, useState } from "react";
 
 export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [CourseBasics, setCourseBasics] = useState();
-  const [CourseChapter, setCourseChapter] = useState();
-  const [CoursesGrade, setCoursesGrade] = useState();
+  const [signUpdata, setSignupData] = useState({});
+
+  console.log(signUpdata, "signUpdata");
+
+  const signup = async () => {
+    const res = await axiosInstance.post("auth/register", signUpdata);
+    console.log(res);
+    
+  };
 
   return (
-    <GlobalContext.Provider value={{ user, setUser }}>
+    <GlobalContext.Provider value={{ signUpdata, setSignupData, signup }}>
       {children}
     </GlobalContext.Provider>
   );

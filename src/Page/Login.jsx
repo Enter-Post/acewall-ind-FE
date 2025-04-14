@@ -50,7 +50,7 @@ const Login = () => {
       if (response.data.user) {
         
         alert("Login successful! 🎉");
-e
+
         navigate("/student");
       } else {
         alert("Login failed 😕. Please check credentials.");

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { axiosInstance } from "@/lib/AxiosInstance";
 // import acewall from '../assets/acewallscholarslogo.png';
 
 // const passwordValidation = new RegExp(

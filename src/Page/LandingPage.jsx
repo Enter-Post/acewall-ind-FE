@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dot } from "lucide-react";
 import {
   Select,
@@ -11,6 +11,9 @@ import {
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { LandingPageCard } from "@/CustomComponent/Card";
 import Footer from "@/CustomComponent/Footer";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const cardData = [
   {
@@ -65,11 +68,36 @@ const cardData = [
   },
 ];
 
-const LandingPage = () => {
-  const [selected, setSelected] = useState(null);
-  const [usertype, setusertype] = useState("");
+const schema = z.object({
+  email: z.string().email(),
+  role: z.enum(["student", "teacher"]),
+});
 
-  const { user, setUser } = useContext(GlobalContext);
+const LandingPage = () => {
+  const navigate = useNavigate();
+  const { signUpdata, setSignupData } = useContext(GlobalContext);
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: "",
+      role: "",
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log("Form submitted:", data);
+    if (data) {
+      setSignupData({ ...data });
+      navigate("/signup");
+    }
+  };
+
+  console.log(signUpdata, "signUpdata");
 
   const handleUserType = (value) => {
     setUser(value);
@@ -102,50 +130,71 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-        <div className="bg-black flex flex-col lg:flex-row items-center gap-8 lg:gap-20 p-6 lg:p-4 w-full justify-center">
-          <h1 className="text-white text-2xl font-semibold text-center">
-            Create an account
-          </h1>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="bg-black flex flex-col lg:flex-row items-center gap-8 lg:gap-20 p-6 lg:p-4 w-full justify-center"
+        >
+          <div className="bg-black flex flex-col lg:flex-row items-center gap-8 lg:gap-20 p-6 lg:p-4 w-full justify-center">
+            <h1 className="text-white text-2xl font-semibold text-center">
+              Create an account
+            </h1>
+            <div>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                {...register("email")}
+                className="bg-white text-black rounded-lg px-4 py-2 w-full lg:w-[250px] focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="bg-white text-black rounded-lg px-4 py-2 w-full lg:w-[250px] focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+            <div>
+              <Controller
+                name="role"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full lg:w-[180px] bg-white rounded-lg px-4 py-5">
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="teacher">Teacher</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.role && (
+                <p className="text-red-500 text-xs">{errors.role.message}</p>
+              )}
+            </div>
 
-          <Select onValueChange={handleUserType}>
-            <SelectTrigger className="w-full lg:w-[180px] bg-white rounded-lg px-4 py-5">
-              <SelectValue placeholder="Select Role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Student">Student</SelectItem>
-              <SelectItem value="Teacher">Teacher</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
-            <Link to="/signup">
+            <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+              <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
+                <button
+                  type="submit"
+                  className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
+                >
+                  Create an Account
+                </button>
+              </div>
+            </div>
+            <Link to="/login">
               <button
                 onClick={() => {
-                  setUser(usertype);
+                  localStorage.setItem("UserRole", usertype);
                 }}
                 className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
               >
-                Create an Account
+                Login
               </button>
             </Link>
           </div>
-          <Link to="/login">
-            <button
-              onClick={() => {
-                localStorage.setItem("UserRole", usertype);
-              }}
-              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
-            >
-              Login
-            </button>
-          </Link>
-        </div>
+        </form>
         <section className="flex justify-center">
           <div
             id="additionalServices"
@@ -162,7 +211,6 @@ const LandingPage = () => {
               </div>
             ))}
           </div>
-
         </section>
       </div>
     </>
