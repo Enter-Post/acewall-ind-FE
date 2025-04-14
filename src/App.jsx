@@ -41,78 +41,99 @@ import AdditionalServices from "./Page/AdditionalServices";
 import About from "./Page/About";
 import ScrollToTop from "./lib/scrolltop";
 import ContactUs from "./Page/ContactUs";
+import { useState } from "react";
+import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
+
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
 import CreateCourse from "./Page/teacher/Courses/CreateCourses";
-
+import { Toaster } from "./components/ui/sonner";
 function App() {
+  const [user, setUser] = useState({
+    role: "teacher",
+  });
+
   return (
     <>
       <ScrollToTop />
       <Routes>
-        {/* <Route path="/" element={<Home />}></Route> */}
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
-        <Route path="/signup" element={<SignupPage />}></Route>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} />
-          <Route path="/Courses">
-            <Route index element={<GeneralCourses />}></Route>
-            <Route path="detail" element={<GeneralCoursesDetail />}></Route>
+        <Route
+          element={
+            <PublicRoute
+              user={user}
+              redirectTo={user?.role === "teacher" ? "/teacher" : "/student"}
+            />
+          }
+        >
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
+          <Route path="/signup" element={<SignupPage />}></Route>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<LandingPage />} />
+            <Route path="/Courses">
+              <Route index element={<GeneralCourses />}></Route>
+              <Route path="detail" element={<GeneralCoursesDetail />}></Route>
+              <Route path="culinaryArts" element={<AllCoursesDetail />} />
+            </Route>
+            <Route path="/about" element={<About />}></Route>
+            <Route path="/Support" element={<GeneralSupport />}></Route>
+            <Route path="/contactUs" element={<ContactUs />}></Route>
+            <Route
+              path="/AdditionalServices"
+              element={<AdditionalServices />}
+            ></Route>
           </Route>
-          <Route path="/about" element={<About />}></Route>
-          <Route path="/Support" element={<GeneralSupport />}></Route>
-          <Route path="/contactUs" element={<ContactUs />}></Route>
-          <Route
-            path="/AdditionalServices"
-            element={<AdditionalServices />}
-          ></Route>
         </Route>
 
         {/* Student Routes */}
-        <Route path="/student" element={<Layout />}>
-          <Route index element={<Deshboard />} />
-          <Route path="mycourses" element={<Mycourses />}></Route>
-          <Route path="myCourseDetail" element={<MyCourseDetail />}></Route>
-          <Route path="assignment" element={<Assignment />}></Route>
-          <Route path="gradebook" element={<Gradebook />}></Route>
-          <Route path="announcements" element={<Announcement />}></Route>
-          <Route path="account" element={<Account />}></Route>
-          <Route path="support" element={<Support />} />
-          <Route path="courses">
-            <Route index element={<AllCourses />} />
-            <Route path="detail" element={<AllCoursesDetail />} />
+        <Route element={<PrivateRoute user={user} allowedRole="student" />}>
+          <Route path="/student" element={<Layout />}>
+            <Route index element={<Deshboard />} />
+            <Route path="mycourses" element={<Mycourses />}></Route>
+            <Route path="myCourseDetail" element={<MyCourseDetail />}></Route>
+            <Route path="assignment" element={<Assignment />}></Route>
+            <Route path="gradebook" element={<Gradebook />}></Route>
+            <Route path="announcements" element={<Announcement />}></Route>
+            <Route path="account" element={<Account />}></Route>
+            <Route path="support" element={<Support />} />
+            <Route path="courses">
+              <Route index element={<AllCourses />} />
+              <Route path="detail" element={<AllCoursesDetail />} />
+            </Route>
+            <Route path="payment" element={<Payment />} />
+            <Route path="messages" element={<Messages />} />
           </Route>
-          <Route path="payment" element={<Payment />} />
-          <Route path="messages" element={<Messages />} />
         </Route>
-        {/* Teachers Routes */}
 
-        <Route path="/teacher" element={<TeacherLayout />}>
-          <Route index element={<TeacherDashboard />} />
-          <Route path="wallet">
-            <Route index element={<Earning />} />
-            <Route path="detail" element={<EarningDetail />} />
-          </Route>
-          <Route path="account" element={<TeacherAccount />} />
-          <Route path="messages" element={<TeacherMessages />} />
-          <Route path="assignment">
-            <Route index element={<Teacherrassessment />} />
-            <Route path="create" element={<CreateAssessmentPage />} />
-          </Route>
-          <Route path="Announcements" element={<TeacherAnnoucement />} />
-          <Route path="allStudent" element={<AllStudent />} />
-          <Route path="studentProfile" element={<StudentProfile />} />
-          <Route path="courses">
-            <Route index element={<TeacherCourses />} />
-            <Route path="courseDetail" element={<TeacherCourseDetails />} />
-            <Route path="createCourses">
-              <Route index element={<CoursesBasis />} />
-              <Route path="addchapters" element={<CoursesChapter />} />
-              <Route path="addgrade" element={<TeacherGradebook />} />
+        {/* Teachers Routes */}
+        <Route element={<PrivateRoute user={user} allowedRole="teacher" />}>
+          <Route path="/teacher" element={<TeacherLayout />}>
+            <Route index element={<TeacherDashboard />} />
+            <Route path="wallet">
+              <Route index element={<Earning />} />
+              <Route path="detail" element={<EarningDetail />} />
+            </Route>
+            <Route path="account" element={<TeacherAccount />} />
+            <Route path="messages" element={<TeacherMessages />} />
+            <Route path="assignment">
+              <Route index element={<Teacherrassessment />} />
+              <Route path="create" element={<CreateAssessmentPage />} />
+            </Route>
+            <Route path="Announcements" element={<TeacherAnnoucement />} />
+            <Route path="allStudent" element={<AllStudent />} />
+            <Route path="studentProfile" element={<StudentProfile />} />
+            <Route path="courses">
+              <Route index element={<TeacherCourses />} />
+              <Route path="courseDetail" element={<TeacherCourseDetails />} />
+              <Route path="createCourses">
+                <Route index element={<CoursesBasis />} />
+                <Route path="addchapters" element={<CoursesChapter />} />
+                <Route path="gradebook" element={<TeacherGradebook />} />
+              </Route>
             </Route>
           </Route>
         </Route>
       </Routes>
+      <Toaster richColors  />
     </>
   );
 }

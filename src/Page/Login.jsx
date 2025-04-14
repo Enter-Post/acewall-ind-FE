@@ -10,16 +10,17 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { axiosInstance } from "@/lib/AxiosInstance";
 
-const passwordValidation = new RegExp(
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-);
+// const passwordValidation = new RegExp(
+//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+// );
 
 const Login = () => {
   const schema = z.object({
     email: z.string().min(1).email(),
-    password: z.string().min(8).regex(passwordValidation, {
-      message: "Your password is not valid",
-    }),
+    password: z.string().min(8)
+    // .regex(passwordValidation, {
+    //   message: "Your password is not valid",
+    // }),
   });
 
   const {

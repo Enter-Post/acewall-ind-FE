@@ -12,6 +12,10 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
 
+// const passwordValidation = new RegExp(
+//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+// );
+
 const formSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
@@ -23,6 +27,9 @@ const formSchema = z
     homeAddress: z.string().min(1, "Home address is required"),
     mailingAddress: z.string().optional(),
     password: z.string().min(8),
+    // .regex(passwordValidation, {
+    //   message: "Your password is not valid",
+    // }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -49,8 +56,9 @@ const SignupForm = () => {
   const { handleSubmit, trigger } = methods;
 
   const onSubmit = async (formdata) => {
-    setSignupData({ ...signUpdata, ...formdata });
-    setTimeout(signup(), [2000]);
+    const completeData = { ...signUpdata, ...formdata };
+    setSignupData(completeData);
+    await signup(completeData);
   };
 
   const handleNext = async () => {

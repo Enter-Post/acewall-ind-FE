@@ -44,7 +44,7 @@ const chapterSchema = z.object({
   lessons: z.array(lessonSchema).min(1, "At least one lesson is required"),
 });
 
-const CourseCreationModal = () => {
+const CourseCreationModal = ({ chapters, setChapters }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -53,7 +53,7 @@ const CourseCreationModal = () => {
   ]);
   const [errors, setErrors] = useState({});
 
-  const { course, setCourse } = useContext(CourseContext);
+  console.log(chapters, "chapters");
 
   const handleAddLesson = () => {
     const newId =
@@ -187,7 +187,7 @@ const CourseCreationModal = () => {
   };
 
   const handleCreateChapter = () => {
-    let Singlecourse = {
+    let Singlechapter = {
       title,
       description,
       lessons: lessons.map(
@@ -202,11 +202,8 @@ const CourseCreationModal = () => {
 
     if (validateForm()) {
       console.log("Chapter created:");
-      setCourse((prev) => ({
-        ...prev,
-        chapters: [...prev.chapters, Singlecourse],
-      }));
-      console.log(course, "course chapters");
+      setChapters((prev) => [...prev, Singlechapter]);
+      // console.log(chapters, "course chapters");
 
       // Reset form after successful submission
       setTitle("");
@@ -261,6 +258,7 @@ const CourseCreationModal = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={errors["description"] ? "border-red-500" : ""}
+              style={{ height: "100px", width: "450px" }}
               rows={4}
             />
             {errors["description"] && (
@@ -333,6 +331,8 @@ const CourseCreationModal = () => {
                   <Textarea
                     placeholder="Enter lesson description"
                     value={lesson.description}
+                    style={{ height: "100px", width: "420px" }}
+
                     onChange={(e) =>
                       handleLessonChange(
                         lesson.id,
@@ -341,6 +341,7 @@ const CourseCreationModal = () => {
                       )
                     }
                     className={
+                      
                       errors[`lessons.${index}.description`]
                         ? "border-red-500"
                         : ""

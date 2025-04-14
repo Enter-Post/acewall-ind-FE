@@ -427,10 +427,7 @@ export default function CoursesBasis() {
         </section>
 
         <div className="flex justify-end gap-4 mt-10">
-          <Button type="button" variant="outline">
-            Cancel
-          </Button>
-          <Button type="submit">Create Course</Button>
+          <Button type="submit" className={"bg-green-500 hover:bg-green-600"}>Next</Button>
         </div>
       </form>
     </div>

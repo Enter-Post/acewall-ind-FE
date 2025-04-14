@@ -197,7 +197,7 @@ export default function ContactUs() {
           <div>
             <Button
               type="submit"
-              disabled={isSubmitting || !captchaValue}
+              // disabled={isSubmitting || !captchaValue}
               className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3"
             >
               {isSubmitting ? "SUBMITTING..." : "SUBMIT"}

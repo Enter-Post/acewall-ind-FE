@@ -81,15 +81,15 @@ export default function TeacherGradebook() {
   const { course, setCourse } =
     useContext(CourseContext);
 
-  useEffect(() => {
-    const isEmptyBasics = Object.keys(course.basics).length === 0;
-    const isEmptyChapters = course.chapters.length === 0;
-    const isEmptyGrades = Object.keys(course.grades).length === 0;
+  // useEffect(() => {
+  //   const isEmptyBasics = Object.keys(course.basics).length === 0;
+  //   const isEmptyChapters = course.chapters.length === 0;
+  //   const isEmptyGrades = Object.keys(course.grades).length === 0;
 
-    if (isEmptyBasics && isEmptyChapters) {
-      navigate("/teacher/courses/createCourses", { replace: true });
-    }
-  }, []);
+  //   if (isEmptyBasics && isEmptyChapters) {
+  //     navigate("/teacher/courses/createCourses", { replace: true });
+  //   }
+  // }, []);
 
   // Initialize the form with React Hook Form
   const {
@@ -105,8 +105,8 @@ export default function TeacherGradebook() {
       gradingMethod: "points-based",
       minimumPassingGrade: "60%",
       categories: [
-        { name: "Assignments", weight: 40 },
-        { name: "Final Project", weight: 40 },
+        { name: "Assignments", weight: 50 },
+        { name: "Final Project", weight: 50 },
       ],
       gradingScale: [
         { letter: "A", range: "90% - 100%" },
@@ -116,7 +116,39 @@ export default function TeacherGradebook() {
         { letter: "F", range: "Below 60%" },
       ],
     },
-  });
+  });const parseRange = (range) => {
+    if (range.toLowerCase().includes('below')) {
+      const value = parseInt(range.match(/\d+/)?.[0], 10);
+      return { start: 0, end: value - 1 };
+    }
+  
+    const match = range.match(/(\d+)%\s*-\s*(\d+)%/);
+    if (!match) return null;
+  
+    return {
+      start: parseInt(match[1], 10),
+      end: parseInt(match[2], 10),
+    };
+  };
+  
+  const validateGradeRange = (updatedGrade, index) => {
+    const currentRange = parseRange(updatedGrade.range);
+    const previousGrade = scaleFields[index - 1];
+    const previousRange = previousGrade ? parseRange(previousGrade.range) : null;
+  
+    // Validate current range format
+    if (!currentRange) return false;
+  
+    if (previousRange) {
+      // Ensure current END is less than previous START
+      if (currentRange.end >= previousRange.start) {
+        return false;
+      }
+    }
+  
+    return true;
+  };
+  
 
   // Set up field arrays for categories and grading scale
   const {
@@ -318,9 +350,8 @@ export default function TeacherGradebook() {
             <div className="p-4 bg-gray-50 flex justify-between items-center">
               <span className="font-medium">Total Weight:</span>
               <span
-                className={`font-medium ${
-                  totalWeight !== 100 ? "text-red-500" : "text-green-500"
-                }`}
+                className={`font-medium ${totalWeight !== 100 ? "text-red-500" : "text-green-500"
+                  }`}
               >
                 {totalWeight}%
               </span>
@@ -387,7 +418,13 @@ export default function TeacherGradebook() {
                             ...grade,
                             range: e.target.value,
                           };
-                          updateScale(index, updatedGrade);
+
+                          if (validateGradeRange(updatedGrade, index)) {
+                            updateScale(index, updatedGrade);
+                          } else {
+                            // Optional: Show some feedback to the user
+                            alert("The range is not valid! The next grade's range must not exceed the previous one.");
+                          }
                         }}
                         className="w-40 bg-gray-50 border-gray-200"
                       />
@@ -421,7 +458,7 @@ export default function TeacherGradebook() {
         </Card>
 
         <div className="flex justify-between mt-8">
-          <Link href="/teacher/courses/createCourses/addchapters">
+          <Link to="/teacher/courses/createCourses/addchapters">
             <Button
               type="button"
               variant="outline"
