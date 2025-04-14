@@ -69,7 +69,7 @@ export default function CoursesChapter() {
       <div className="p-4 space-y-6">
         {course?.chapters &&
           course.chapters.map((chapter, index) => (
-            <div key={chapter.id} className="bg-gray-50 rounded-lg">
+            <div key={index} className="bg-gray-50 rounded-lg">
               <Collapsible
                 open={chapter.isOpen}
                 onOpenChange={() => toggleChapter(chapter.id)}
@@ -123,8 +123,12 @@ export default function CoursesChapter() {
             Back
           </Button>
         </Link>
-        <ConfirmationModal />
-
+        <Link to="/teacher/courses/createCourses/addgrade">
+          <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600">
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </Link>
       </div>
     </div>
   );

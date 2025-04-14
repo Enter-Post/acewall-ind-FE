@@ -43,24 +43,19 @@ const Login = () => {
   const onSubmit = async (formData) => {
     try {
       const response = await axiosInstance.post("auth/login", formData);
-
-      // console.log("Login Response:", response.data);
-
       if (response.data.user) {
-        
         alert("Login successful! 🎉");
-
         navigate("/student/mycourses");
       } else {
         alert("Login failed 😕. Please check credentials.");
       }
-    };
-  
-    fetching();
-  }, []);
-  
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login. Please try again.");
+    }
+  };
 
-  const onSubmit = (data) => {};
+  // const onSubmit = (data) => {};
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

@@ -74,15 +74,19 @@ function App() {
           <Route path="mycourses" element={<Mycourses />}></Route>
           <Route path="myCourseDetail" element={<MyCourseDetail />}></Route>
           <Route path="assignment" element={<Assignment />}></Route>
-          {/* <Route path="gradebook" element={<Gradebook />}></Route> */}
-          {/* <Route path="announcements" element={<Announcement />}></Route> */}
+          <Route path="gradebook" element={<Gradebook />}></Route>
+          <Route path="announcements" element={<Announcement />}></Route>
           <Route path="account" element={<Account />}></Route>
           <Route path="support" element={<Support />} />
           <Route path="courses">
             <Route index element={<AllCourses />} />
             <Route path="detail" element={<AllCoursesDetail />} />
           </Route>
+          <Route path="payment" element={<Payment />} />
+          <Route path="messages" element={<Messages />} />
+        </Route>
         {/* Teachers Routes */}
+
         <Route path="/teacher" element={<TeacherLayout />}>
           <Route index element={<TeacherDashboard />} />
           <Route path="wallet">
@@ -95,17 +99,16 @@ function App() {
             <Route index element={<Teacherrassessment />} />
             <Route path="create" element={<CreateAssessmentPage />} />
           </Route>
-          {/* <Route path="Announcements" element={<TeacherAnnoucement />} /> */}
+          <Route path="Announcements" element={<TeacherAnnoucement />} />
           <Route path="allStudent" element={<AllStudent />} />
           <Route path="studentProfile" element={<StudentProfile />} />
           <Route path="courses">
             <Route index element={<TeacherCourses />} />
             <Route path="courseDetail" element={<TeacherCourseDetails />} />
             <Route path="createCourses">
-              <Route index element={<CreateCourses />} />
+              <Route index element={<CoursesBasis />} />
               <Route path="addchapters" element={<CoursesChapter />} />
-              <Route path="courseDetail" element={<TeacherCourseDetails />} />
-              {/* <Route path="gradebook" element={<TeacherGradebook />} /> */}
+              <Route path="addgrade" element={<TeacherGradebook />} />
             </Route>
           </Route>
         </Route>
