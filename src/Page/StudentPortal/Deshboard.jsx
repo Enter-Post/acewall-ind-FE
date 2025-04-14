@@ -65,13 +65,13 @@ const Deshboard = () => {
           Dashboard
         </p>
         <div className="grid sm:grid-cols-1 lg:grid-cols-2 grid-rows-1 gap-4">
-          <DeshBoardCard
+          {/* <DeshBoardCard
             mainHeading="Announcements"
             data={announcements}
             width="max-w-1/2"
             height={"h-[390px]"}
             link={"announcements"}
-          />
+          /> */}
           <Assignment
             width
             mainHeading="Assignments Due"

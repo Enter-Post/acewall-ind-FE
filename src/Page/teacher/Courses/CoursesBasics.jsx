@@ -314,16 +314,14 @@ export default function CoursesBasis() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <div className="relative flex gap-2">
+                <div className=" flex flex-2 gap-2 w-[100%]">
+
                   <Input
                     {...register(`teachingPoints.${index}.value`)}
-                    placeholder="What you will teach in this course..."
-                    className="pr-16 bg-gray-50 flex-1"
+                    placeholder="What you will teach in this course... "
+                    className="pr-16 bg-gray-50 w-full relative "
                     maxLength={120}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                    {watch(`teachingPoints.${index}.value`)?.length || 0}/120
-                  </span>
 
                   {teachingPointsFields.length > 1 && (
                     <Button
@@ -331,12 +329,19 @@ export default function CoursesBasis() {
                       variant="outline"
                       size="sm"
                       onClick={() => removeTeachingPoint(index)}
-                      className="text-red-500"
+                      className="text-red-500 cursor-pointer"
                     >
                       Remove
                     </Button>
                   )}
                 </div>
+
+                <input
+                  type="text"
+                  value={`${watch(`teachingPoints.${index}.value`)?.length || 0}/120`}
+                  readOnly
+                  className="text-sm text-gray-500 bg-transparent border-none"
+                />
                 {errors.teachingPoints?.[index]?.value && (
                   <p className="text-xs text-red-500 mt-1">
                     {errors.teachingPoints[index]?.value?.message}
@@ -372,11 +377,11 @@ export default function CoursesBasis() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <div className="relative flex gap-2">
+                <div className="flex flex-2 gap-2 w-[100%]">
                   <Input
                     {...register(`requirements.${index}.value`)}
                     placeholder="What is your course requirement..."
-                    className="pr-16 bg-gray-50 flex-1"
+                    className="pr-16 bg-gray-50 w-full relative "
                     maxLength={120}
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
@@ -389,7 +394,7 @@ export default function CoursesBasis() {
                       variant="outline"
                       size="sm"
                       onClick={() => removeRequirement(index)}
-                      className="text-red-500"
+                      className="text-red-500 cursor-pointer"
                     >
                       Remove
                     </Button>

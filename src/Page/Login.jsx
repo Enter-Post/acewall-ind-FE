@@ -51,7 +51,7 @@ const Login = () => {
         
         alert("Login successful! 🎉");
 
-        navigate("/student");
+        navigate("/student/mycourses");
       } else {
         alert("Login failed 😕. Please check credentials.");
       }

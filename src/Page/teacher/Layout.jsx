@@ -41,12 +41,12 @@ const sideBarTabs = [
     icon: <AssignmentsIcon />,
     path: "/teacher/assignment",
   },
-  {
-    id: 5,
-    name: "Announcements",
-    icon: <Megaphone02Icon />,
-    path: "/teacher/announcements",
-  },
+  // {
+  //   id: 5,
+  //   name: "Announcements",
+  //   icon: <Megaphone02Icon />,
+  //   path: "/teacher/announcements",
+  // },
   {
     id: 11,
     name: "Wallet",

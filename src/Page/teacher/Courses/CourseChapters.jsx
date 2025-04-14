@@ -123,12 +123,8 @@ export default function CoursesChapter() {
             Back
           </Button>
         </Link>
-        <Link to="/teacher/courses/createCourses/addgrade">
-          <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600">
-            Next
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        <ConfirmationModal />
+
       </div>
     </div>
   );
