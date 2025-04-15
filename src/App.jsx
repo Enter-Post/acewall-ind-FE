@@ -50,6 +50,7 @@ import { Toaster } from "./components/ui/sonner";
 function App() {
   const [user, setUser] = useState({
     role: "teacher",
+    // role: "student",
   });
 
   return (

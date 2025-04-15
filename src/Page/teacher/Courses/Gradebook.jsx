@@ -81,15 +81,15 @@ export default function TeacherGradebook() {
   const { course, setCourse } =
     useContext(CourseContext);
 
-  // useEffect(() => {
-  //   const isEmptyBasics = Object.keys(course.basics).length === 0;
-  //   const isEmptyChapters = course.chapters.length === 0;
-  //   const isEmptyGrades = Object.keys(course.grades).length === 0;
+  useEffect(() => {
+    const isEmptyBasics = Object.keys(course.basics).length === 0;
+    const isEmptyChapters = course.chapters.length === 0;
+    const isEmptyGrades = Object.keys(course.grades).length === 0;
 
-  //   if (isEmptyBasics && isEmptyChapters) {
-  //     navigate("/teacher/courses/createCourses", { replace: true });
-  //   }
-  // }, []);
+    if (isEmptyBasics && isEmptyChapters) {
+      navigate("/teacher/courses/createCourses", { replace: true });
+    }
+  }, []);
 
   // Initialize the form with React Hook Form
   const {
@@ -513,3 +513,4 @@ export default function TeacherGradebook() {
     </div>
   );
 }
+

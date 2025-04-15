@@ -37,13 +37,13 @@ export default function CoursesChapter() {
 
   console.log(chapters, "chapters in modal");
 
-  // useEffect(() => {
-  //   const isEmptyBasics = Object.keys(course.basics).length === 0;
+  useEffect(() => {
+    const isEmptyBasics = Object.keys(course.basics).length === 0;
 
-  //   if (isEmptyBasics) {
-  //     navigate("/teacher/courses/createCourses", { replace: true });
-  //   }
-  // }, []);
+    if (isEmptyBasics) {
+      navigate("/teacher/courses/createCourses", { replace: true });
+    }
+  }, []);
 
   const toggleChapter = (chapterId) => {
     setCourse((prevCourse) => ({
@@ -54,6 +54,25 @@ export default function CoursesChapter() {
           : chapter
       ),
     }));
+  };
+
+  // const handleDeleteLesson = (chapterId, lessonId) => {
+  //   setChapters((prevChapters) =>
+  //     prevChapters.map((chapter) => {
+  //       if (chapter.id === chapterId) {
+  //         return {
+  //           ...chapter,
+  //           lessons: chapter.lessons.filter((lesson) => lesson._id !== lessonId),
+  //         };
+  //       }
+  //       return chapter;
+  //     })
+  //   );
+  // };
+  const handleDeleteChapter = (chapterId) => {
+    const updatedChapters = chapters.filter((chapter) => chapter.id !== chapterId);
+    setChapters(updatedChapters);
+    setCourse((prev) => ({ ...prev, chapters: updatedChapters }));
   };
 
   return (
@@ -95,15 +114,14 @@ export default function CoursesChapter() {
                         className="text-blue-600 border-blue-600 hover:bg-blue-100"
                         onClick={() => handleUpdateLesson(chapter.id, lesson)}
                       >
-                        Update
+                        <Edit className="h-4 w-4  " />
                       </Button>
                       <Button
                         variant="destructive"
-                        onClick={() =>
-                          handleDeleteLesson(chapter.id, lesson._id)
-                        }
+                        onClick={() => handleDeleteChapter(chapter.id)}
                       >
-                        Delete
+
+                        <Trash className="h-4 w-4 " />
                       </Button>
                     </div>
                   </CollapsibleTrigger>
@@ -117,10 +135,10 @@ export default function CoursesChapter() {
                         className="flex flex-col border-b last:border-b-0 p-4 space-y-2"
                       >
                         {/* Lesson Header */}
-                          <h2 className="text-xl font-bold text-primary mb-2">
-                            Lesson {index + 1}
-                          </h2>
-                       
+                        <h2 className="text-xl font-bold text-primary mb-2">
+                          Lesson {index + 1}
+                        </h2>
+
 
                         {/* Title */}
                         <div>
