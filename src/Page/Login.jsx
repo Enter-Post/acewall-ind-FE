@@ -4,20 +4,22 @@ import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 import LandingPage from "./LandingPage";
 import ReviewsSlider from "@/CustomComponent/LoginComponent/ReviewsSlider";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 // const passwordValidation = new RegExp(
 //   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
 // );
 
 const Login = () => {
+  const { login } = useContext(GlobalContext);
   const schema = z.object({
     email: z.string().min(1).email(),
-    password: z.string().min(8)
+    password: z.string().min(8),
     // .regex(passwordValidation, {
     //   message: "Your password is not valid",
     // }),
@@ -26,37 +28,16 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
   });
 
-  // useEffect(() => {
-  //   const fetching = async () => {
-  //     const { data } = await axiosInstance.get("auth/users");
-  //     console.log(data);
-  //   };
-  //   fetching();
-  // }, []);
-
-  const navigate = useNavigate();
-
   const onSubmit = async (formData) => {
-    try {
-      const response = await axiosInstance.post("auth/login", formData);
-      if (response.data.user) {
-        alert("Login successful! 🎉");
-        navigate("/student/mycourses");
-      } else {
-        alert("Login failed 😕. Please check credentials.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login. Please try again.");
-    }
+    login(formData);
+    // reset();
   };
-
-  // const onSubmit = (data) => {};
 
   return (
     <div className="flex flex-col min-h-screen bg-white">

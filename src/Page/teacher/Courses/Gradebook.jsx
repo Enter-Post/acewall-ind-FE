@@ -105,8 +105,8 @@ export default function TeacherGradebook() {
       gradingMethod: "points-based",
       minimumPassingGrade: "60%",
       categories: [
-        { name: "Assignments", weight: 50 },
-        { name: "Final Project", weight: 50 },
+        { name: "Assignments", weight: 40 },
+        { name: "Final Project", weight: 40 },
       ],
       gradingScale: [
         { letter: "A", range: "90% - 100%" },
@@ -116,39 +116,7 @@ export default function TeacherGradebook() {
         { letter: "F", range: "Below 60%" },
       ],
     },
-  });const parseRange = (range) => {
-    if (range.toLowerCase().includes('below')) {
-      const value = parseInt(range.match(/\d+/)?.[0], 10);
-      return { start: 0, end: value - 1 };
-    }
-  
-    const match = range.match(/(\d+)%\s*-\s*(\d+)%/);
-    if (!match) return null;
-  
-    return {
-      start: parseInt(match[1], 10),
-      end: parseInt(match[2], 10),
-    };
-  };
-  
-  const validateGradeRange = (updatedGrade, index) => {
-    const currentRange = parseRange(updatedGrade.range);
-    const previousGrade = scaleFields[index - 1];
-    const previousRange = previousGrade ? parseRange(previousGrade.range) : null;
-  
-    // Validate current range format
-    if (!currentRange) return false;
-  
-    if (previousRange) {
-      // Ensure current END is less than previous START
-      if (currentRange.end >= previousRange.start) {
-        return false;
-      }
-    }
-  
-    return true;
-  };
-  
+  });
 
   // Set up field arrays for categories and grading scale
   const {
@@ -350,8 +318,9 @@ export default function TeacherGradebook() {
             <div className="p-4 bg-gray-50 flex justify-between items-center">
               <span className="font-medium">Total Weight:</span>
               <span
-                className={`font-medium ${totalWeight !== 100 ? "text-red-500" : "text-green-500"
-                  }`}
+                className={`font-medium ${
+                  totalWeight !== 100 ? "text-red-500" : "text-green-500"
+                }`}
               >
                 {totalWeight}%
               </span>
@@ -418,13 +387,7 @@ export default function TeacherGradebook() {
                             ...grade,
                             range: e.target.value,
                           };
-
-                          if (validateGradeRange(updatedGrade, index)) {
-                            updateScale(index, updatedGrade);
-                          } else {
-                            // Optional: Show some feedback to the user
-                            alert("The range is not valid! The next grade's range must not exceed the previous one.");
-                          }
+                          updateScale(index, updatedGrade);
                         }}
                         className="w-40 bg-gray-50 border-gray-200"
                       />
@@ -447,7 +410,7 @@ export default function TeacherGradebook() {
                         className="h-8 w-8 rounded-full"
                         onClick={() => setIsEditingScale(index)}
                       >
-                        <Pencil className="h-4 w-4 text-gray-500" />
+                        {/* <Pencil className="h-4 w-4 text-gray-500" /> */}
                       </Button>
                     </>
                   )}
@@ -458,7 +421,7 @@ export default function TeacherGradebook() {
         </Card>
 
         <div className="flex justify-between mt-8">
-          <Link to="/teacher/courses/createCourses/addchapters">
+          <Link href="/teacher/courses/createCourses/addchapters">
             <Button
               type="button"
               variant="outline"
@@ -513,4 +476,3 @@ export default function TeacherGradebook() {
     </div>
   );
 }
-

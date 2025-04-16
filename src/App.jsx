@@ -47,11 +47,17 @@ import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
 import CreateCourse from "./Page/teacher/Courses/CreateCourses";
 import { Toaster } from "./components/ui/sonner";
+import { useEffect } from "react";
+import { GlobalContext } from "./Context/GlobalProvider";
+import { useContext } from "react";
+
 function App() {
-  const [user, setUser] = useState({
-    role: "teacher",
-    // role: "student",
-  });
+  const { checkAuth, user } = useContext(GlobalContext);
+  console.log(user, "user in app.jsx");
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   return (
     <>
@@ -124,7 +130,7 @@ function App() {
             <Route path="studentProfile" element={<StudentProfile />} />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
-              <Route path="courseDetail" element={<TeacherCourseDetails />} />
+              <Route path="courseDetail/:id" element={<TeacherCourseDetails />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addchapters" element={<CoursesChapter />} />
@@ -134,7 +140,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
-      <Toaster richColors  />
+      <Toaster richColors />
     </>
   );
 }

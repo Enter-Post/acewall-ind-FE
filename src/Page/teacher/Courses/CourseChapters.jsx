@@ -56,21 +56,10 @@ export default function CoursesChapter() {
     }));
   };
 
-  // const handleDeleteLesson = (chapterId, lessonId) => {
-  //   setChapters((prevChapters) =>
-  //     prevChapters.map((chapter) => {
-  //       if (chapter.id === chapterId) {
-  //         return {
-  //           ...chapter,
-  //           lessons: chapter.lessons.filter((lesson) => lesson._id !== lessonId),
-  //         };
-  //       }
-  //       return chapter;
-  //     })
-  //   );
-  // };
   const handleDeleteChapter = (chapterId) => {
-    const updatedChapters = chapters.filter((chapter) => chapter.id !== chapterId);
+    const updatedChapters = chapters.filter(
+      (chapter) => chapter.id !== chapterId
+    );
     setChapters(updatedChapters);
     setCourse((prev) => ({ ...prev, chapters: updatedChapters }));
   };
@@ -120,7 +109,6 @@ export default function CoursesChapter() {
                         variant="destructive"
                         onClick={() => handleDeleteChapter(chapter.id)}
                       >
-
                         <Trash className="h-4 w-4 " />
                       </Button>
                     </div>
@@ -138,7 +126,6 @@ export default function CoursesChapter() {
                         <h2 className="text-xl font-bold text-primary mb-2">
                           Lesson {index + 1}
                         </h2>
-
 
                         {/* Title */}
                         <div>

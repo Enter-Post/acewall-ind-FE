@@ -52,6 +52,7 @@ const CourseCreationModal = ({ chapters, setChapters }) => {
     { id: 1, title: "", description: "", youtubeLinks: [], pdfFiles: [] },
   ]);
   const [errors, setErrors] = useState({});
+  const { course, setCourse } = useContext(CourseContext);
 
   console.log(chapters, "chapters");
 
@@ -203,7 +204,10 @@ const CourseCreationModal = ({ chapters, setChapters }) => {
     if (validateForm()) {
       console.log("Chapter created:");
       setChapters((prev) => [...prev, Singlechapter]);
-      // console.log(chapters, "course chapters");
+      setCourse((prev) => ({
+        ...prev,
+        chapters: [...prev.chapters, Singlechapter],
+      }));
 
       // Reset form after successful submission
       setTitle("");
@@ -332,7 +336,6 @@ const CourseCreationModal = ({ chapters, setChapters }) => {
                     placeholder="Enter lesson description"
                     value={lesson.description}
                     style={{ height: "100px", width: "420px" }}
-
                     onChange={(e) =>
                       handleLessonChange(
                         lesson.id,
@@ -341,7 +344,6 @@ const CourseCreationModal = ({ chapters, setChapters }) => {
                       )
                     }
                     className={
-                      
                       errors[`lessons.${index}.description`]
                         ? "border-red-500"
                         : ""
@@ -479,7 +481,7 @@ const CourseCreationModal = ({ chapters, setChapters }) => {
           </Button>
           <Button
             className="bg-green-500 hover:bg-green-600 text-white"
-            onClick={handleCreateChapter}
+            onClick={() => handleCreateChapter()}
           >
             Create Chapter
           </Button>

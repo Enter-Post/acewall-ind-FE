@@ -9,8 +9,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"; /
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { useContext } from "react";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 export function TeacherTopNavbarDropDown({ selected, setselected }) {
+  const { logout, checkAuth } = useContext(GlobalContext);
 
   const tabs = [
     {
@@ -19,18 +22,12 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
       path: "/teacher/account",
     },
   ];
-  
+
   const navigate = useNavigate();
 
-  const logout = async () => {
-    try { 
-      const response = await axiosInstance.post("auth/logout");
-      if (response.status === 200) {
-        navigate("/login");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const handleLogout = async () => {
+    logout();
+    checkAuth();
   };
 
   return (
@@ -38,7 +35,12 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
       <DropdownMenuTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer">
           <Avatar className="w-5 h-5">
-            <AvatarImage src={"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"} alt="User Avatar" />
+            <AvatarImage
+              src={
+                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              }
+              alt="User Avatar"
+            />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
           <p className="text-white flex items-center">John</p>
@@ -50,7 +52,8 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
             <DropdownMenuItem
               key={index}
               className={
-                selected == tab.id && "bg-green-500 hover:bg-green-600 text-white"
+                selected == tab.id &&
+                "bg-green-500 hover:bg-green-600 text-white"
               }
               asChild
             >
@@ -59,7 +62,7 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
           );
         })}
         <DropdownMenuItem asChild>
-        <button onClick={logout}>Logout</button>
+          <button onClick={() => handleLogout()}>Logout</button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
