@@ -28,9 +28,11 @@ import { CourseContext } from "@/Context/CoursesProvider";
 
 // Define the form schema with Zod
 const gradebookSchema = z.object({
-  gradingMethod: z.enum(["points-based", "percentage", "letter-grade"], {
-    required_error: "Please select a grading method",
+  gradingMethod: z.enum(["points-based"], {
   }),
+  // gradingMethod: z.enum(["points-based", "percentage", "letter-grade"], {
+  //   required_error: "Please select a grading method",
+  // }),
   minimumPassingGrade: z
     .string()
     .min(1, { message: "Minimum passing grade is required" })
@@ -177,10 +179,14 @@ export default function TeacherGradebook() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Grading Method
             </h3>
-            <Controller
+            <div className="flex items-center">
+              <span className=" text-gray-500 mr-4">Percentage Based %</span>
+         
+            </div>
+            {/* <Controller
               name="gradingMethod"
               control={control}
               render={({ field }) => (
@@ -203,15 +209,15 @@ export default function TeacherGradebook() {
               <p className="text-xs text-red-500 mt-1">
                 {errors.gradingMethod.message}
               </p>
-            )}
+            )} */}
           </div>
 
           <div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Total Course Points
             </h3>
             <div className="flex items-center">
-              <span className="text-lg font-medium mr-4">70</span>
+              <span className="text-lg font-semibold mr-4">70</span>
               <span className="text-gray-500 italic">
                 Auto-calculated based on assignments, quizzes
               </span>
@@ -225,13 +231,13 @@ export default function TeacherGradebook() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Minimum Passing Grade
             </h3>
             <Input
               type="text"
               {...register("minimumPassingGrade")}
-              className="bg-gray-50 border-gray-200"
+              className="bg-gray-50 text-black font-medium border-gray-200"
             />
             {errors.minimumPassingGrade && (
               <p className="text-xs text-red-500 mt-1">
@@ -243,15 +249,15 @@ export default function TeacherGradebook() {
 
         <Card className="mb-6 border-gray-200">
           <CardContent className="p-0">
-            <div className="grid grid-cols-2 bg-gray-50 p-4 border-b border-gray-200">
-              <div className="text-gray-600 font-medium">Category</div>
-              <div className="text-gray-600 font-medium">Weight (%)</div>
+            <div className="grid grid-cols-2 gap-10 bg-gray-50 p-4 border-b border-gray-200">
+              <div className=" font-semibold">Category</div>
+              <div className=" font-semibold">Weight (%)</div>
             </div>
 
             {categoryFields.map((field, index) => (
               <div
                 key={field.id}
-                className="grid grid-cols-2 p-4 border-b border-gray-200"
+                className="grid grid-cols-2 gap-10 p-4 font-semibold border-b border-gray-200"
               >
                 <div>
                   <Input
@@ -267,7 +273,7 @@ export default function TeacherGradebook() {
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-10  ">
                   <Input
                     type="number"
                     {...register(`categories.${index}.weight`, {
@@ -316,7 +322,7 @@ export default function TeacherGradebook() {
             ))}
 
             <div className="p-4 bg-gray-50 flex justify-between items-center">
-              <span className="font-medium">Total Weight:</span>
+              <span className="font-semibold">Total Weight:</span>
               <span
                 className={`font-medium ${
                   totalWeight !== 100 ? "text-red-500" : "text-green-500"
@@ -351,8 +357,8 @@ export default function TeacherGradebook() {
         <Card className="mb-6 border-gray-200">
           <CardContent className="p-0">
             <div className="grid grid-cols-2 bg-gray-50 p-4 border-b border-gray-200">
-              <div className="text-gray-600 font-medium">Letter Grade</div>
-              <div className="text-gray-600 font-medium">Percentage Range</div>
+              <div className="text-gray-600 font-semibold">Letter Grade</div>
+              <div className="text-gray-600 font-semibold">Percentage Range</div>
             </div>
 
             {scaleFields.map((grade, index) => (

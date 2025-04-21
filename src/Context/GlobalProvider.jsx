@@ -8,52 +8,69 @@ export const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
   const [user, setUser] = useState();
+  const [Authloading, setAuthLoading] = useState(false);
   const [signUpdata, setSignupData] = useState({});
 
-  console.log(user, "user in context");
-
   const signup = async (completeData) => {
+    setAuthLoading(true);
     await axiosInstance
       .post("auth/register", completeData)
       .then((res) => {
         setUser(res.data.user);
+        setAuthLoading(false);
         toast.success(res.data.message);
       })
       .catch((error) => {
+        setAuthLoading(false);
         toast.error(error.response?.data?.message);
       });
   };
 
   const login = async (formdata) => {
+    setAuthLoading(true);
     await axiosInstance
       .post("auth/login", formdata)
       .then((res) => {
         console.log(res, "res");
         setUser(res.data.user);
         toast.success(res.data.message);
+        setAuthLoading(false);
       })
-      .catch((error) => {
-        toast.error(error.response?.data?.message);
+      .catch((err) => {
+        console.log(err);
+        setAuthLoading(false);
+        toast.error(err.response.data.message);
       });
   };
 
   const checkAuth = async () => {
     try {
+      setAuthLoading(true);
       const res = await axiosInstance.get("auth/checkAuth");
       setUser(res.data.user);
+      setAuthLoading(false);
     } catch (error) {
+      setAuthLoading(false);
       console.log(error);
       // toast.error(error.response?.data?.message);
     }
   };
 
   const logout = async () => {
-    console.log("click");
-    
+    setAuthLoading(true);
     await axiosInstance
       .post("auth/logout")
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        console.log(res);
+        setAuthLoading(false);
+        toast.success(res.data.message);
+        checkAuth();
+      })
+      .catch((err) => {
+        console.log(err);
+        setAuthLoading(false);
+        toast.error(err.response.data.message);
+      });
   };
 
   return (
@@ -66,6 +83,8 @@ export const GlobalProvider = ({ children }) => {
         login,
         logout,
         user,
+        Authloading,
+        setAuthLoading,
       }}
     >
       {children}

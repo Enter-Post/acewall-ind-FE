@@ -1,29 +1,30 @@
-import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { axiosInstance } from "@/lib/AxiosInstance";
-// import acewall from '../assets/acewallscholarslogo.png';
+import { GlobalContext } from "@/Context/GlobalProvider";
 
-const passwordValidation = new RegExp(
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-);
 
 const schema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(8).regex(passwordValidation, {
-    message: "Invalid password",
-  }),
+  email: z.string().email(),
+  password: z.string()
 });
 
 const TeacherLogin = () => {
-  const navigate = useNavigate();
+ const { login } = useContext(GlobalContext);
 
-  const {
+//  console.log(login, "login in teacherlogin");
+ 
+  const schema = z.object({
+    email: z.string().min(1).email(),
+    password: z.string().min(8),
+    
+  });
+
+const {
     register,
     handleSubmit,
     formState: { errors },
@@ -31,8 +32,11 @@ const TeacherLogin = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => console.log(data);
 
+  const onSubmit = async (formData) => {
+    
+    login(formData);  
+  };
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}

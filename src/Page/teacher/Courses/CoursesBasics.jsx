@@ -1,4 +1,3 @@
-"use client";
 import React, { useContext, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -17,26 +16,29 @@ import {
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { CourseContext } from "@/Context/CoursesProvider";
+import CategorySelect from "@/CustomComponent/CreateCourse/CategorySelect";
+import axios from "axios";
 
 // Define the form schema with Zod
 const courseFormSchema = z.object({
-  thumbnail: z
-    .instanceof(FileList)
-    .optional()
-    .refine(
-      (files) =>
-        !files || files.length === 0 || files[0].size <= 5 * 1024 * 1024,
-      {
-        message: "Thumbnail must be less than 5MB",
-      }
-    ),
+  thumbnail: z.string(),
+  // .refine(
+  //   (files) => {
+  //     console.log(files);
+  //     !files || files.length === 0 || files.size <= 5 * 1024 * 1024;
+  //   },
+  //   {
+  //     message: "Thumbnail must be less than 5MB",
+  //   }
+  // ),
   courseTitle: z
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
     .max(100, { message: "Course title must be less than 100 characters" }),
-  category: z.string({
-    required_error: "Please select a category",
-  }),
+  category: z
+    .string({
+      required_error: "Please select a category",
+    }),
   language: z.string({
     required_error: "Please select a language",
   }),
@@ -68,20 +70,29 @@ const courseFormSchema = z.object({
       })
     )
     .min(1, { message: "Add at least one requirement" }),
+  price: z
+    .string()
+    .min(1, { message: "Price is required" })
+    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "Price must be a non-negative number",
+    }),
 });
 
 export default function CoursesBasis() {
-  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const navigate = useNavigate();
   const { course, setCourse } = useContext(CourseContext);
   // Initialize the form with React Hook Form
 
-  console.log(course, "course in basis");
+  // console.log(thumbnail, "thumbnail");
+  console.log(course, "course");
+  console.log(course.basics.thumbnail, "course.basics.thumbnail");
 
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
     watch,
   } = useForm({
@@ -93,10 +104,13 @@ export default function CoursesBasis() {
       courseDescription: "",
       teachingPoints: [{ value: "" }],
       requirements: [{ value: "" }],
+      price: "",
     },
   });
 
-  // Set up field arrays for teaching points and requirements
+  console.log(errors, "errors");
+
+  // Set up field arrays for teaching points and requirements,
   const {
     fields: teachingPointsFields,
     append: appendTeachingPoint,
@@ -116,22 +130,37 @@ export default function CoursesBasis() {
   });
 
   // Handle thumbnail change
-  const handleThumbnailChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setThumbnail(reader.result);
-      };
-      reader.readAsDataURL(file);
+  const handleThumbnailChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file) {
+      const file = event.target.files[0];
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
+      data.append("cloud_name", import.meta.env.VITE_CLOUD_NAME);
+
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUD_NAME
+        }/image/upload`,
+        data
+      );
+      console.log(res.data.url, "cloudnary");
+
+      setValue("thumbnail", res.data.url, { shouldValidate: true });
+      setThumbnailPreview(URL.createObjectURL(file)); // for preview
     }
   };
 
   // Handle form submission
+
   const onSubmit = (data) => {
+    console.log(data, "data in onSubmit");
+
     if (data) {
-      setCourse({ basics: data, chapters: [], grades: {} });
       navigate("/teacher/courses/createCourses/addchapters");
+      setCourse({ basics: data, chapters: [] });
       console.log(course, "data");
     }
   };
@@ -139,7 +168,6 @@ export default function CoursesBasis() {
   return (
     <div>
       <h1>Create New Course</h1>
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <section>
           <div className="space-y-6">
@@ -153,25 +181,14 @@ export default function CoursesBasis() {
                 </p>
               )}
               <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
-                {thumbnail ? (
+                {thumbnailPreview ? (
                   <div className="relative">
                     <img
-                      src={thumbnail || "/placeholder.svg"}
+                      src={thumbnailPreview || "/placeholder.svg"}
                       alt="Course thumbnail"
                       className="w-full h-[300px] object-cover rounded"
                     />
                     <div className="absolute bottom-2 right-2 flex space-x-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="bg-white hover:bg-gray-100 text-indigo-500"
-                        onClick={() => {
-                          document.getElementById("thumbnailInput")?.click();
-                        }}
-                      >
-                        Change
-                      </Button>
                       <Button
                         type="button"
                         variant="secondary"
@@ -190,7 +207,6 @@ export default function CoursesBasis() {
                       accept="image/*"
                       className="hidden"
                       id="thumbnailInput"
-                      {...register("thumbnail")}
                       onChange={handleThumbnailChange}
                     />
 
@@ -223,33 +239,8 @@ export default function CoursesBasis() {
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="category" className="block mb-2">
-                  Category
-                </Label>
-                <Select
-                  onValueChange={(value) => {
-                    const event = { target: { name: "category", value } };
-                    register("category").onChange(event);
-                  }}
-                >
-                  <SelectTrigger className="bg-gray-50">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="marketing">Marketing</SelectItem>
-                    <SelectItem value="design">Design</SelectItem>
-                    <SelectItem value="development">Development</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
-                  </SelectContent>
-                </Select>
-                <input type="hidden" {...register("category")} />
-                {errors.category && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.category.message}
-                  </p>
-                )}
-              </div>
+              {/* Category */}
+              <CategorySelect register={register} errors={errors} />
             </div>
 
             <div>
@@ -281,7 +272,7 @@ export default function CoursesBasis() {
               )}
             </div>
 
-            <div>
+            <div className="border">
               <Label htmlFor="courseDescription" className="block mb-2">
                 Course Description
               </Label>
@@ -293,6 +284,26 @@ export default function CoursesBasis() {
               {errors.courseDescription && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.courseDescription.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="price" className="block mb-2">
+                Price (in USD)
+              </Label>
+              <Input
+                id="price"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="e.g. 19.99"
+                className="bg-gray-50"
+                {...register("price")}
+              />
+              {errors.price && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.price.message}
                 </p>
               )}
             </div>
@@ -315,7 +326,6 @@ export default function CoursesBasis() {
                   </span>
                 </div>
                 <div className=" flex flex-2 gap-2 w-[100%]">
-
                   <Input
                     {...register(`teachingPoints.${index}.value`)}
                     placeholder="What you will teach in this course... "
@@ -338,7 +348,9 @@ export default function CoursesBasis() {
 
                 <input
                   type="text"
-                  value={`${watch(`teachingPoints.${index}.value`)?.length || 0}/120`}
+                  value={`${
+                    watch(`teachingPoints.${index}.value`)?.length || 0
+                  }/120`}
                   readOnly
                   className="text-sm text-gray-500 bg-transparent border-none"
                 />
@@ -427,7 +439,9 @@ export default function CoursesBasis() {
         </section>
 
         <div className="flex justify-end gap-4 mt-10">
-          <Button type="submit" className={"bg-green-500 hover:bg-green-600"}>Next</Button>
+          <Button type="submit" className={"bg-green-500 hover:bg-green-600"}>
+            Next
+          </Button>
         </div>
       </form>
     </div>

@@ -18,8 +18,8 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 const Login = () => {
   const { login } = useContext(GlobalContext);
   const schema = z.object({
-    email: z.string().min(1).email(),
-    password: z.string().min(8),
+    email: z.string().email(),
+    password: z.string(),
     // .regex(passwordValidation, {
     //   message: "Your password is not valid",
     // }),
@@ -35,7 +35,7 @@ const Login = () => {
   });
 
   const onSubmit = async (formData) => {
-    login(formData);
+    login(formData);  
     // reset();
   };
 

@@ -13,6 +13,8 @@ import { useContext } from "react";
 
 export function TopNavbarDropDown({ selected, setselected }) {
   const { logout, checkAuth } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext);
+
   const tabs = [
     {
       id: 9,
@@ -38,15 +40,10 @@ export function TopNavbarDropDown({ selected, setselected }) {
       <DropdownMenuTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer">
           <Avatar className="w-5 h-5">
-            <AvatarImage
-              src={
-                "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              }
-              alt="User Avatar"
-            />
+            <AvatarImage src={user.profileImg} alt="User Avatar" />
             <AvatarFallback>U</AvatarFallback>
           </Avatar>
-          <p className="text-white flex items-center">John</p>
+          <p className="text-white flex items-center">{user.firstName}</p>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 bg-white">

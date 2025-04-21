@@ -5,6 +5,9 @@ export const TextEditor = ({ placeholder }) => {
 	const editor = useRef(null);
 	const [content, setContent] = useState('');
 
+	console.log(content);
+	
+
 	const config = useMemo(() => ({
 			readonly: false, // all options from https://xdsoft.net/jodit/docs/,
 			placeholder: placeholder || 'Start typings...',

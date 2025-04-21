@@ -41,7 +41,6 @@ import AdditionalServices from "./Page/AdditionalServices";
 import About from "./Page/About";
 import ScrollToTop from "./lib/scrolltop";
 import ContactUs from "./Page/ContactUs";
-import { useState } from "react";
 import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
 
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
@@ -50,14 +49,28 @@ import { Toaster } from "./components/ui/sonner";
 import { useEffect } from "react";
 import { GlobalContext } from "./Context/GlobalProvider";
 import { useContext } from "react";
+import { Loader } from "lucide-react";
 
 function App() {
-  const { checkAuth, user } = useContext(GlobalContext);
-  console.log(user, "user in app.jsx");
+  const { checkAuth, user, Authloading, setAuthLoading } =
+    useContext(GlobalContext);
+
+    console.log(user);
+    
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  if (Authloading) {
+    return (
+      <div>
+        <section className="flex justify-center items-center h-screen w-screen">
+          <Loader size={48} className={"animate-spin"} />
+        </section>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -140,7 +153,6 @@ function App() {
           </Route>
         </Route>
       </Routes>
-      <Toaster richColors />
     </>
   );
 }

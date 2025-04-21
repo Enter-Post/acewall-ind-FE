@@ -100,6 +100,7 @@ const LandingPage = () => {
   console.log(signUpdata, "signUpdata");
 
   const handleUserType = (value) => {
+
     setUser(value);
     console.log("Selected User type:", value); // Replace this with theme logic
   };
@@ -185,9 +186,6 @@ const LandingPage = () => {
             </div>
             <Link to="/login">
               <button
-                onClick={() => {
-                  localStorage.setItem("UserRole", usertype);
-                }}
                 className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
               >
                 Login

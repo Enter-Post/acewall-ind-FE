@@ -20,6 +20,9 @@ import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
 import { AssignmentsIcon } from "@/assets/Icons/AssignmentIcon";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
 import Footer from "@/CustomComponent/Footer";
+import { useContext } from "react";
+import { GlobalContext } from "@/Context/GlobalProvider";
+import { useState } from "react";
 
 const sideBarTabs = [
   {
@@ -68,7 +71,10 @@ const sideBarTabs = [
 ];
 
 export default function TeacherLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { checkAuth, user, Authloading, setAuthLoading } =
+    useContext(GlobalContext);
+
   const location = useLocation().pathname;
 
   return (
@@ -102,7 +108,7 @@ export default function TeacherLayout() {
             />
           </Link>
           <div className="hidden md:flex items-center space-x-4">
-            <Input type="text" placeholder="Search" />
+          <Input type="text" placeholder="Search courses and lessons" />
             <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
               <Search className="rounded-full" />
             </div>
@@ -122,15 +128,15 @@ export default function TeacherLayout() {
                 <Avatar>
                   <AvatarImage
                     className="rounded-full"
-                    src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1760&auto=format&fit=crop"
+                    src={user.profileImg}
                     alt="@user"
                   />
                   <AvatarFallback>UN</AvatarFallback>
                 </Avatar>
               </Link>
               <div>
-                <p className="font-medium">John Doe</p>
-                <p className="text-sm text-gray-600">john@email.com</p>
+                <p className="font-medium">{user.firstName}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
               </div>
             </div>
             <nav className="space-y-2">

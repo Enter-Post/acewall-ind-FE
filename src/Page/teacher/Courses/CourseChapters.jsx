@@ -27,15 +27,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Youtube } from "lucide-react";
-import CourseCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
+import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
 import { CourseContext } from "@/Context/CoursesProvider";
+import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
+import CourseConfirmationModal from "@/CustomComponent/CreateCourse/CourseConfirmationModal";
 
 export default function CoursesChapter() {
   const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
-  const { course, setCourse } = useContext(CourseContext);
+  const { course, setCourse, getCourse } = useContext(CourseContext);
 
-  console.log(chapters, "chapters in modal");
+  console.log(course.chapters, "chapters in modal");
 
   useEffect(() => {
     const isEmptyBasics = Object.keys(course.basics).length === 0;
@@ -45,23 +47,25 @@ export default function CoursesChapter() {
     }
   }, []);
 
-  const toggleChapter = (chapterId) => {
-    setCourse((prevCourse) => ({
-      ...prevCourse,
-      chapters: prevCourse.chapters.map((chapter) =>
-        chapter.id === chapterId
-          ? { ...chapter, isOpen: !chapter.isOpen }
-          : chapter
-      ),
-    }));
-  };
 
   const handleDeleteChapter = (chapterId) => {
-    const updatedChapters = chapters.filter(
+    const updatedChapters = course.chapters.filter(
       (chapter) => chapter.id !== chapterId
     );
-    setChapters(updatedChapters);
+    // setChapters(updatedChapters);
     setCourse((prev) => ({ ...prev, chapters: updatedChapters }));
+  };
+
+  const handleSubmit = () => {
+    // setCourse(chapters);
+    // setCourse((prev) => ({
+    //   ...prev,
+    //   chapters: [...(prev.chapters || []), newChapter],
+    // }));
+    console.log(course, "course in submitting course");
+
+    getCourse();
+    navigate("/teacher/courses");
   };
 
   return (
@@ -74,18 +78,17 @@ export default function CoursesChapter() {
           </h2>
         </div>
         <div>
-          <CourseCreationModal chapters={chapters} setChapters={setChapters} />
+          <ChapterCreationModal chapters={chapters} setChapters={setChapters} />
         </div>
       </section>
 
       <div className="p-4 space-y-6">
-        {chapters &&
-          chapters?.map((chapter, index) => (
+        {course.chapters.length === 0 ? (
+          <p>No Chapters Available</p>
+        ) : (
+          course.chapters?.map((chapter, index) => (
             <div key={index} className="bg-gray-50 rounded-lg">
-              <Collapsible
-                open={chapter.isOpen}
-                onOpenChange={() => toggleChapter(chapter.id)}
-              >
+              <Collapsible open={chapter.isOpen}>
                 <div className="flex items-center justify-between p-4">
                   <CollapsibleTrigger className="flex items-center text-left w-full justify-between">
                     <span className="font-semibold flex">
@@ -98,13 +101,13 @@ export default function CoursesChapter() {
                       {chapter.lessons.length} Lessons)
                     </span>
                     <div className="flex gap-2">
-                      <Button
+                      {/* <Button
                         variant="outline"
                         className="text-blue-600 border-blue-600 hover:bg-blue-100"
-                        onClick={() => handleUpdateLesson(chapter.id, lesson)}
+                        onClick={() => handleUpdateLessons(chapter.id, lessons)}
                       >
                         <Edit className="h-4 w-4  " />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="destructive"
                         onClick={() => handleDeleteChapter(chapter.id)}
@@ -122,9 +125,9 @@ export default function CoursesChapter() {
                         key={index}
                         className="flex flex-col border-b last:border-b-0 p-4 space-y-2"
                       >
-                        {/* Lesson Header */}
+                        {/* Lessons Header */}
                         <h2 className="text-xl font-bold text-primary mb-2">
-                          Lesson {index + 1}
+                          Lessons {index + 1}
                         </h2>
 
                         {/* Title */}
@@ -190,23 +193,81 @@ export default function CoursesChapter() {
                           <span className="font-medium text-gray-700">
                             YouTube Links:
                           </span>
-                          {lesson.youtubeLinks?.length > 0 ? (
-                            <ul className="list-disc list-inside text-sm text-red-500 mt-1">
-                              {lesson.youtubeLinks.map((link, idx) => (
+                          {lesson.youtubeLinks.length > 0 ? (
+                            <p>{lesson.youtubeLinks}</p>
+                          ) : (
+                            <p className="italic text-gray-500 ml-2">
+                              YouTube links are not available.
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {chapter.assessment.map((assessment, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col border-b last:border-b-0 p-4 space-y-2"
+                      >
+                        {/* assessment Header */}
+                        <h2 className="text-xl font-bold text-primary mb-2">
+                          Assessments {index + 1}
+                        </h2>
+
+                        {/* Title */}
+                        <div>
+                          <span className="font-medium text-gray-700">
+                            Title:
+                          </span>{" "}
+                          <span className="text-gray-800">
+                            {assessment.title?.trim() ? (
+                              assessment.title
+                            ) : (
+                              <span className="italic text-gray-500">
+                                Title is not available.
+                              </span>
+                            )}
+                          </span>
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <span className="font-medium text-gray-700">
+                            Description:
+                          </span>{" "}
+                          <span className="text-gray-800">
+                            {assessment.description?.trim() ? (
+                              assessment.description
+                            ) : (
+                              <span className="italic text-gray-500">
+                                Description is not available.
+                              </span>
+                            )}
+                          </span>
+                        </div>
+
+                        {/* PDFs */}
+                        <div>
+                          <span className="font-medium text-gray-700">
+                            PDFs:
+                          </span>
+                          {assessment.pdfFiles?.length > 0 ? (
+                            <ul className="list-disc list-inside text-sm text-blue-600 mt-1">
+                              {assessment.pdfFiles.map((pdf, idx) => (
                                 <li key={idx}>
                                   <a
-                                    href={link}
+                                    href={pdf.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                   >
-                                    Watch Video {idx + 1}
+                                    {pdf.name || `PDF ${idx + 1}`}
                                   </a>
                                 </li>
                               ))}
                             </ul>
                           ) : (
                             <p className="italic text-gray-500 ml-2">
-                              YouTube links are not available.
+                              PDFs are not available.
                             </p>
                           )}
                         </div>
@@ -216,7 +277,8 @@ export default function CoursesChapter() {
                 </CollapsibleContent>
               </Collapsible>
             </div>
-          ))}
+          ))
+        )}
       </div>
 
       <div className="p-4 flex justify-between">
@@ -229,15 +291,14 @@ export default function CoursesChapter() {
             Back
           </Button>
         </Link>
-        <Link to="/teacher/courses/createCourses/gradebook">
-          <Button
-            disabled={!chapters}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600"
-          >
-            Next
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </Link>
+        {/* <Button
+          disabled={!course.chapters}
+          className="flex items-center gap-2 bg-green-500 hover:bg-green-600"
+          onClick={() => handleSubmit()}
+        >
+          Create Course
+        </Button> */}
+        <CourseConfirmationModal submit={() => handleSubmit()} />
       </div>
     </div>
   );
