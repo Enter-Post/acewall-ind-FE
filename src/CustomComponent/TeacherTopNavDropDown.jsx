@@ -11,9 +11,10 @@ import axios from "axios";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useContext } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { toast } from "sonner";
 
 export function TeacherTopNavbarDropDown({ selected, setselected }) {
-  const { logout, user, checkAuth } = useContext(GlobalContext);
+  const { user, checkAuth, logout, setAuthLoading } = useContext(GlobalContext);
 
   const tabs = [
     {
@@ -28,6 +29,7 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
   const handleLogout = async () => {
     logout();
     checkAuth();
+    location.reload();
   };
 
   return (

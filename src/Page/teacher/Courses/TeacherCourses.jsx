@@ -2,41 +2,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Link } from "react-router-dom";
 import SearchBox from "@/CustomComponent/SearchBox";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 const TeacherCourses = () => {
   const [allCourses, setAllCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user } = useContext(GlobalContext);
 
   const searching = searchQuery.trim() !== "";
 
-  console.log(allCourses);
-
-  // const
-
   useEffect(() => {
-    const getCourses = async () => {
-      setLoading(true);
-      try {
-        const response = await axiosInstance.get("/course/get", {
-          params: { search: searchQuery },
-        });
-        setAllCourses(response.data.courses);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-        setAllCourses([]); // prevent stale data
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getCourses();
-  }, [searchQuery]);
-
+    setLoading(true);
+    const delayDebounce = setTimeout(() => {
+      const getCourses = async () => {
+        try {
+          const response = await axiosInstance.get("/course/getindividualcourse", {
+            params: { search: searchQuery },
+          });
+          setAllCourses(response.data.courses);
+        } catch (error) {
+          console.error("Error fetching courses:", error);
+          setAllCourses([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getCourses();
+    }, 2000); // 500ms delay
+  
+    return () => clearTimeout(delayDebounce); // cleanup
+  }, [searchQuery]);
+  
   return (
     <section className="p-3 md:p-0">
       <div className="flex flex-col pb-5 gap-5">
@@ -54,7 +55,7 @@ const TeacherCourses = () => {
             <Loader size={48} className={"animate-spin"} />
           </section>
         </div>
-      ) : allCourses.length === 0 ? (
+      ) : allCourses?.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center px-4">
           {searching ? (
             <>

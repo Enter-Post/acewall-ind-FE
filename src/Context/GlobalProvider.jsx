@@ -62,9 +62,9 @@ export const GlobalProvider = ({ children }) => {
       .post("auth/logout")
       .then((res) => {
         console.log(res);
+        checkAuth();
         setAuthLoading(false);
         toast.success(res.data.message);
-        checkAuth();
       })
       .catch((err) => {
         console.log(err);

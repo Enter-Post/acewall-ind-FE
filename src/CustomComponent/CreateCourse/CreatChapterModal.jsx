@@ -163,9 +163,10 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
             )}
           </div>
 
-          <div>
+          <div className="w-[28rem]">
             <Textarea
               placeholder="Chapter Description"
+              className={"w-full"}
               {...register("description")}
             />
             {errors.description && (
@@ -178,39 +179,16 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
           {/* Lessons */}
           <div className="space-y-4">
             <div className="flex justify-between">
-              <h3 className="font-medium">Lessons</h3>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  append({
-                    title: "",
-                    description: "",
-                    youtubeLinks: [],
-                    pdfFiles: [],
-                  })
-                }
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add Lesson
-              </Button>
+              <h3 className="text-xl font-bold mb-4">Lessons</h3>
             </div>
 
             {fields.map((field, index) => (
               <div
                 key={field.id}
-                className="border rounded-lg p-4 space-y-3 bg-gray-50"
+                className="border rounded-lg p-4 space-y-3 bg-white"
               >
                 <div className="flex justify-between items-center">
                   <h4 className="font-medium">Lesson {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="text-red-500"
-                    onClick={() => remove(index)}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
                 </div>
 
                 <Input
@@ -225,6 +203,7 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
 
                 <Textarea
                   placeholder="Lesson Description"
+                  className="w-[400px]"
                   {...register(`lessons.${index}.description`)}
                 />
                 {errors.lessons?.[index]?.description && (
@@ -257,18 +236,43 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
                     onChange={(e) => handleLessonPDF(e, index, "lessons")}
                   />
                 </div>
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-red-500 flex"
+                    onClick={() => remove(index)}
+                  >
+                    Remove Lesson
+                  </Button>
+                </div>
               </div>
             ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                append({
+                  title: "",
+                  description: "",
+                  youtubeLinks: [],
+                  pdfFiles: [],
+                })
+              }
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add Lesson
+            </Button>
           </div>
 
           {/* Assessment Section */}
 
           <section>
-            <div className="mx-auto p-2 bg-white rounded-lg">
+            <div className="mx-auto p-2 bg-white   rounded-lg">
               <h2 className="text-xl font-bold mb-4">Create New Assessment</h2>
-              <p className="text-gray-600 mb-6">
+              {/* <p className="text-gray-600 mb-6">
                 Upload a new Assessment for students.
-              </p>
+              </p> */}
 
               {assessmentfields.map((field, index) => (
                 <div key={field.id} className="border p-4 rounded-md mb-4">
@@ -292,6 +296,7 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
                     </Label>
                     <Textarea
                       id={`assessment.${index}.description`}
+                      className="w-[400px]"
                       placeholder="Enter Assessment description and instructions"
                       {...register(`assessments.${index}.description`)}
                     />
@@ -324,7 +329,7 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
                 </div>
               ))}
 
-              <button
+              <Button
                 type="button"
                 onClick={() =>
                   assessmentappend({
@@ -333,10 +338,12 @@ export default function ChapterCreationModal({ chapters, setChapters }) {
                     pdfFiles: [],
                   })
                 }
-                className="mt-4 text-blue-600 font-semibold"
+                variant="outline"
+                className=" flex items-center gap-1"
               >
-                ➕ Add Assessment
-              </button>
+                <Plus className="h-4 w-4" />
+                Add Assessment
+              </Button>
             </div>
           </section>
 

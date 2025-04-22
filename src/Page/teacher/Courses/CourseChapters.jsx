@@ -298,7 +298,7 @@ export default function CoursesChapter() {
         >
           Create Course
         </Button> */}
-        <CourseConfirmationModal submit={() => handleSubmit()} />
+        <CourseConfirmationModal submit={() => handleSubmit()} chapters={course.chapters} />
       </div>
     </div>
   );

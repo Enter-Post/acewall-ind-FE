@@ -1,101 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useContext } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Star, Users, BookOpen, Facebook, Twitter, Instagram, Youtube, ExternalLink } from "lucide-react"
+import { Star, Users, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { GlobalContext } from "@/Context/GlobalProvider"
 
 export default function TeacherAccount() {
-  const [activeTab, setActiveTab] = useState("courses")
+  const { user } = useContext(GlobalContext);
 
-  const instructor = {
-    name: "Vako Shvili",
-    isTopRated: true,
-    title: "Web Designer & Best Selling Instructor",
-    rating: 4.8,
-    reviews: 214633,
-    students: 430117,
-    courses: 7,
-    about: `One day Vako had enough with the 9-to-5 grind, or more like the 8-to-8 in his case, and said to job "where the get out" and never looked back.
-
-He decided to work on his dream: be his own boss, travel the world, only do the work he enjoys, and make a lot more money in the process. No more begging for raises, vacation days, or having to deal with annoying bosses.
-
-After trying everything from e-commerce stores to freelance design, Vako fell in love with the idea when he started teaching design. Vako fell in love with the idea that gives him the liberty of his dreams.
-
-Vako realizes that people who take courses on Udemy want to transform their lives. Today with his courses and coaching programs, he helps people to transform their lives, just like he did once.`,
-    courseCount: 12,
-  }
-
-  const courses = [
-    {
-      id: 1,
-      title: "Machine Learning A-Z™: Hands-On Python & R in Data Science",
-      category: "DEVELOPMENT",
-      price: 57,
-      rating: 5.0,
-      students: 266712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-    {
-      id: 2,
-      title: "Selenium WebDriver with Java -Basics to Advanced+Frameworks",
-      category: "BUSINESS",
-      price: 57,
-      rating: 5.0,
-      students: 266712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-    {
-      id: 3,
-      title: "Data Structures & Algorithms Essentials (2023)",
-      category: "DEVELOPMENT",
-      price: 57,
-      rating: 5.0,
-      students: 265712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-    {
-      id: 4,
-      title: "Complete Adobe Lightroom Megacourse: Beginner to Expert",
-      category: "DEVELOPMENT",
-      price: 57,
-      rating: 5.0,
-      students: 266712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-    {
-      id: 5,
-      title: "Graphic Design Masterclass - Learn GREAT Design",
-      category: "DEVELOPMENT",
-      price: 57,
-      rating: 5.0,
-      students: 266712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-    {
-      id: 6,
-      title: "Digital Marketing Masterclass - 23 Courses in 1",
-      category: "BUSINESS",
-      price: 57,
-      rating: 5.0,
-      students: 266712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-    {
-      id: 7,
-      title: "Mega Digital Marketing Course A-Z: 12 Courses in 1 + Updates",
-      category: "DEVELOPMENT",
-      price: 57,
-      rating: 5.0,
-      students: 266712,
-      image: "/placeholder.svg?height=200&width=350",
-    },
-  ]
-
-  const formatNumber = (num) => {
-    return num.toLocaleString()
-  }
+  const formatNumber = (num) => num?.toLocaleString();
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -108,9 +23,9 @@ Vako realizes that people who take courses on Udemy want to transform their live
           <div className="flex-shrink-0">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-pink-100">
               <img
-                src="https://images.unsplash.com/flagged/photo-1559475555-b26777ed3ab4?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                
-                className="w-full h-full  object-cover"
+                src={user?.profileImg}
+                className="w-full h-full object-cover"
+                alt="Profile"
               />
             </div>
           </div>
@@ -118,118 +33,72 @@ Vako realizes that people who take courses on Udemy want to transform their live
           {/* Profile Info */}
           <div className="flex-grow">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h2 className="text-2xl font-bold">{instructor.name}</h2>
-              {instructor.isTopRated && (
+              <h2 className="text-2xl font-bold">{`${user?.firstName} ${user?.middleName || ""} ${user?.lastName}`}</h2>
+              {user?.isTopRated && (
                 <Badge variant="outline" className="bg-green-50 text-green-500 border-green-200 font-medium">
                   Top Rated
                 </Badge>
               )}
             </div>
 
-            <p className="text-gray-600 mb-3">{instructor.title}</p>
+            <p className="text-gray-600 mb-3">{user?.role?.toUpperCase()}</p>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 mb-4">
               <div className="flex items-center gap-1">
                 <div className="flex items-center text-amber-500">
                   <Star className="h-4 w-4 fill-current" />
                 </div>
-                <span className="font-medium">{instructor.rating}</span>
-                <span className="text-gray-500 text-sm">({formatNumber(instructor.reviews)} reviews)</span>
+                <span className="font-medium">{user?.rating || "N/A"}</span>
               </div>
 
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{formatNumber(instructor.students)}</span>
+                <span className="font-medium">{formatNumber(user?.students || 0)}</span>
                 <span className="text-gray-500 text-sm">students</span>
               </div>
 
               <div className="flex items-center gap-1">
                 <BookOpen className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{instructor.courses}</span>
+                <span className="font-medium">{user?.courses || 0}</span>
                 <span className="text-gray-500 text-sm">courses</span>
               </div>
             </div>
-
-            
           </div>
         </div>
       </div>
 
       {/* About Me Section */}
-      <div className="mb-8">
-        <h3 className="text-lg font-bold uppercase mb-4">About Me</h3>
-        <div className="whitespace-pre-line text-gray-700">{instructor.about}</div>
+      <div className="mb-8 space-y-4">
+        <h3 className="text-lg font-bold uppercase border-b border-gray-200 pb-2">About Me</h3>
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
+          <dt className="text-sm font-medium text-gray-500">Pronouns</dt>
+          <dd className="text-sm text-gray-700">{user?.pronouns || "N/A"}</dd>
+          <dt className="text-sm font-medium text-gray-500">Gender</dt>
+          <dd className="text-sm text-gray-700">{user?.gender || "N/A"}</dd>
+          <dt className="text-sm font-medium text-gray-500">Email</dt>
+          <dd className="text-sm text-gray-700">{user?.email || "N/A"}</dd>
+          <dt className="text-sm font-medium text-gray-500">Phone</dt>
+          <dd className="text-sm text-gray-700">{user?.phone || "N/A"}</dd>
+          <dt className="text-sm font-medium text-gray-500">Address</dt>
+          <dd className="text-sm text-gray-700">{user?.homeAddress || "N/A"}</dd>
+        </dl>
       </div>
 
       {/* Tabs Section */}
       <Tabs defaultValue="courses" className="mb-8">
         <div className="border-b">
           <TabsList className="bg-transparent h-auto p-0 mb-[-1px]">
-            <TabsTrigger
-              value="courses"
-              className={cn(
-                "px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:shadow-none font-medium",
-                "data-[state=active]:bg-transparent",
-              )}
-            >
+            <TabsTrigger value="courses" className={cn("px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 font-medium")}>
               Courses
             </TabsTrigger>
-            <TabsTrigger
-              value="reviews"
-              className={cn(
-                "px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:shadow-none font-medium",
-                "data-[state=active]:bg-transparent",
-              )}
-            >
+            <TabsTrigger value="reviews" className={cn("px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 font-medium")}>
               Reviews
             </TabsTrigger>
           </TabsList>
         </div>
 
         <TabsContent value="courses" className="mt-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold">Courses ({instructor.courseCount})</h3>
-          </div>
-
-          {/* Course Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {courses?.map((course) => (
-              <div key={course.id} className="border rounded-lg overflow-hidden shadow-sm">
-                <div className="aspect-video overflow-hidden">
-                  <img
-                    src={course.image || "/placeholder.svg"}
-                    alt={course.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="mb-2">
-                    <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">
-                      {course.category}
-                    </span>
-                  </div>
-                  <h4 className="font-medium mb-3 line-clamp-2">{course.title}</h4>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center text-amber-500">
-                        <Star className="h-4 w-4 fill-current" />
-                      </div>
-                      <span className="font-medium">{course.rating}</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                      <Users className="h-3 w-3" />
-                      <span>{formatNumber(course.students)} students</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-gray-50 p-4 border-t">
-                  <div className="text-right">
-                    <span className="text-green-500 font-bold">${course.price}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <div className="text-gray-500">Courses will be listed here</div>
         </TabsContent>
 
         <TabsContent value="reviews" className="mt-6">
@@ -239,6 +108,5 @@ Vako realizes that people who take courses on Udemy want to transform their live
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

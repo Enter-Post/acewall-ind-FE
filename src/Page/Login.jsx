@@ -2,27 +2,21 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
-import LandingPage from "./LandingPage";
 import ReviewsSlider from "@/CustomComponent/LoginComponent/ReviewsSlider";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
-
-// const passwordValidation = new RegExp(
-//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-// );
 
 const Login = () => {
   const { login } = useContext(GlobalContext);
+  const [loginError, setLoginError] = useState("");
+  const navigate = useNavigate();
+
   const schema = z.object({
     email: z.string().email(),
     password: z.string(),
-    // .regex(passwordValidation, {
-    //   message: "Your password is not valid",
-    // }),
   });
 
   const {
@@ -35,8 +29,17 @@ const Login = () => {
   });
 
   const onSubmit = async (formData) => {
-    login(formData);  
-    // reset();
+    try {
+      await login(formData);
+      setLoginError(""); // clear previous errors
+      // Optionally navigate somewhere on successful login
+      // navigate("/student/dashboard");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "Login failed. Please try again.";
+      console.error(errorMessage);
+      setLoginError(errorMessage);
+    }
   };
 
   return (
@@ -56,7 +59,7 @@ const Login = () => {
       {/* Main Content */}
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-center text-2xl  md:text-3xl text-gray-800 font-normal mb-8">
+          <h1 className="text-center text-2xl md:text-3xl text-gray-800 font-normal mb-8">
             Student Log-in Page
           </h1>
 
@@ -72,20 +75,17 @@ const Login = () => {
                     type="email"
                     id="email"
                     className="w-full p-2 border border-gray-300 rounded"
-                    defaultValue=""
                     {...register("email")}
                   />
                   {errors?.email && (
                     <p className="text-xs text-red-600">
-                      {errors.password.message}
+                      {errors.email.message}
                     </p>
                   )}
+
                 </div>
                 <div className="mb-8">
-                  <label
-                    htmlFor="password"
-                    className="block text-gray-600 mb-2"
-                  >
+                  <label htmlFor="password" className="block text-gray-600 mb-2">
                     Password
                   </label>
                   <input
@@ -93,14 +93,20 @@ const Login = () => {
                     id="password"
                     className="w-full p-2 border border-gray-300 rounded"
                     {...register("password")}
-                    defaultValue=""
                   />
                   {errors?.password && (
                     <p className="text-xs text-red-600">
                       {errors.password.message}
                     </p>
                   )}
+
                 </div>
+
+                {loginError && (
+                  <p className="text-sm text-red-500 mb-4">{loginError}</p>
+                )}
+
+
                 <div className="flex justify-between items-center">
                   <Link
                     to={"/TeacherLogin"}
@@ -108,14 +114,12 @@ const Login = () => {
                   >
                     Log in as Teacher
                   </Link>
-                  {/* <Link to={"/student"}> */}
                   <button
                     type="submit"
                     className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
                   >
                     Login
                   </button>
-                  {/* </Link> */}
                 </div>
               </form>
             </div>
@@ -125,7 +129,8 @@ const Login = () => {
           </div>
         </div>
       </main>
-      <Footer></Footer>
+
+      <Footer />
     </div>
   );
 };

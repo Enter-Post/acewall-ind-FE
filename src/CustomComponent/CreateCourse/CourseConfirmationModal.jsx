@@ -11,13 +11,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function CourseConfirmationModal({ submit }) {
+export default function CourseConfirmationModal({ submit, chapters }) {
   const [open, setOpen] = useState(false);
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white">
+        <Button disabled={chapters.length === 0} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white">
           Create Course
           <ArrowRight className="h-4 w-4" />
         </Button>

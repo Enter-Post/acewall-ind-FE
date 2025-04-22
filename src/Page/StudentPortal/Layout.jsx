@@ -144,8 +144,8 @@ export default function Layout() {
   const location = useLocation().pathname;
 
   return (
-    <div className="flex w-screen flex-col">
-      <header className="sticky top-0 z-10 bg-white w-full">
+    <div className="flex flex-col">
+      <header className="sticky top-0 z-10 bg-white">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TopNavbarDropDown />
         </div>
@@ -271,7 +271,7 @@ export default function Layout() {
             </div>
           </div>
         </aside>
-        <main className="flex-1 p-2 md:p-4 hide-scrollbar overflow-y-scroll w-full">
+        <main className="flex-1 p-2 md:p-4">
           <Outlet />
         </main>
       </div>

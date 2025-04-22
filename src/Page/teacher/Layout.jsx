@@ -38,12 +38,12 @@ const sideBarTabs = [
     icon: <BadgePlus />,
     path: "/teacher/courses/createCourses",
   },
-  {
-    id: 3,
-    name: "Assessments",
-    icon: <AssignmentsIcon />,
-    path: "/teacher/assignment",
-  },
+  // {
+  //   id: 3,
+  //   name: "Assessments",
+  //   icon: <AssignmentsIcon />,
+  //   path: "/teacher/assignment",
+  // },
   // {
   //   id: 5,
   //   name: "Announcements",
@@ -78,7 +78,7 @@ export default function TeacherLayout() {
   const location = useLocation().pathname;
 
   return (
-    <div className="flex flex-col w-screen">
+    <div className="flex flex-col">
       <header className="sticky top-0 z-10 bg-white">
         <div className="h-8 bg-green-600 flex justify-end items-center px-5 cursor-pointer">
           <TeacherTopNavbarDropDown />

@@ -10,10 +10,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"; /
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { useContext } from "react";
+import { toast } from "sonner";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 export function TopNavbarDropDown({ selected, setselected }) {
-  const { logout, checkAuth } = useContext(GlobalContext);
-  const { user } = useContext(GlobalContext);
+  const { checkAuth, user, logout, setAuthLoading } = useContext(GlobalContext);
 
   const tabs = [
     {
@@ -31,8 +32,25 @@ export function TopNavbarDropDown({ selected, setselected }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    // logout();
+    // checkAuth();
     logout();
     checkAuth();
+    location.reload();
+    // setAuthLoading(true);
+    // await axiosInstance
+    //   .post("auth/logout")
+    //   .then((res) => {
+    //     console.log(res);
+    //     setAuthLoading(false);
+    //     toast.success(res.data.message);
+    //     navigate("/login");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     setAuthLoading(false);
+    //     toast.error(err.response.data.message);
+    //   });
   };
 
   return (

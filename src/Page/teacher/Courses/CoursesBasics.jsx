@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
-import { Upload } from "lucide-react";
+import { Loader, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,27 +18,18 @@ import { useNavigate } from "react-router-dom";
 import { CourseContext } from "@/Context/CoursesProvider";
 import CategorySelect from "@/CustomComponent/CreateCourse/CategorySelect";
 import axios from "axios";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 // Define the form schema with Zod
 const courseFormSchema = z.object({
   thumbnail: z.string(),
-  // .refine(
-  //   (files) => {
-  //     console.log(files);
-  //     !files || files.length === 0 || files.size <= 5 * 1024 * 1024;
-  //   },
-  //   {
-  //     message: "Thumbnail must be less than 5MB",
-  //   }
-  // ),
   courseTitle: z
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
     .max(100, { message: "Course title must be less than 100 characters" }),
-  category: z
-    .string({
-      required_error: "Please select a category",
-    }),
+  category: z.string({
+    required_error: "Please select a category",
+  }),
   language: z.string({
     required_error: "Please select a language",
   }),
@@ -80,7 +71,9 @@ const courseFormSchema = z.object({
 
 export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
   // Initialize the form with React Hook Form
 
@@ -131,6 +124,7 @@ export default function CoursesBasis() {
 
   // Handle thumbnail change
   const handleThumbnailChange = async (e) => {
+    setLoading(true);
     const file = e.target.files?.[0];
     if (!file) return;
     if (file) {
@@ -147,6 +141,7 @@ export default function CoursesBasis() {
         data
       );
       console.log(res.data.url, "cloudnary");
+      setLoading(false);
 
       setValue("thumbnail", res.data.url, { shouldValidate: true });
       setThumbnailPreview(URL.createObjectURL(file)); // for preview
@@ -160,7 +155,7 @@ export default function CoursesBasis() {
 
     if (data) {
       navigate("/teacher/courses/createCourses/addchapters");
-      setCourse({ basics: data, chapters: [] });
+      setCourse({ basics: data, chapters: [], createdby: user._id });
       console.log(course, "data");
     }
   };
@@ -194,11 +189,17 @@ export default function CoursesBasis() {
                         variant="secondary"
                         size="sm"
                         className="bg-white hover:bg-gray-100 text-red-500"
-                        onClick={() => setThumbnail(null)}
+                        onClick={() => setThumbnailPreview(null)}
                       >
                         Remove
                       </Button>
                     </div>
+                  </div>
+                ) : loading ? (
+                  <div>
+                    <section className="flex justify-center items-center">
+                      <Loader size={48} className={"animate-spin"} />
+                    </section>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center h-[300px]">
@@ -209,8 +210,6 @@ export default function CoursesBasis() {
                       id="thumbnailInput"
                       onChange={handleThumbnailChange}
                     />
-
-                    {/* Upload Button */}
                     <label htmlFor="thumbnailInput">
                       <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
                         <Upload size={16} />
@@ -272,7 +271,7 @@ export default function CoursesBasis() {
               )}
             </div>
 
-            <div className="border">
+            <div className="">
               <Label htmlFor="courseDescription" className="block mb-2">
                 Course Description
               </Label>
@@ -396,9 +395,6 @@ export default function CoursesBasis() {
                     className="pr-16 bg-gray-50 w-full relative "
                     maxLength={120}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
-                    {watch(`requirements.${index}.value`)?.length || 0}/120
-                  </span>
 
                   {requirementsFields.length > 1 && (
                     <Button

@@ -55,9 +55,6 @@ function App() {
   const { checkAuth, user, Authloading, setAuthLoading } =
     useContext(GlobalContext);
 
-    console.log(user);
-    
-
   useEffect(() => {
     checkAuth();
   }, []);

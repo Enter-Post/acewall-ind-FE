@@ -5,6 +5,9 @@ import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+// import { Play } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"; // Assuming you're using shadcn/ui
+
 import {
   ChevronDown,
   FileText,
@@ -19,6 +22,10 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 export default function TeacherCourseDetails() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
+
+
 
   console.log(id);
 
@@ -47,7 +54,7 @@ export default function TeacherCourseDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-bold mb-8">My Courses</h1>
+      <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
 
       <div className="space-y-8">
         {/* Course Info */}
@@ -59,7 +66,7 @@ export default function TeacherCourseDetails() {
                 "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
               }
               alt="Course thumbnail"
-              className="w-full rounded-md object-cover aspect-video"
+              className="w-full  rounded-md object-cover  aspect-video"
             />
           </div>
 
@@ -73,7 +80,7 @@ export default function TeacherCourseDetails() {
                   Last Updated: {course.updatedAt?.split("T")[0] || "N/A"}
                 </span>
               </div>
-              <h2 className="text-2xl font-semibold">
+              <h2 className="text-2xl uppercase font-semibold">
                 {course.basics.courseTitle || "Course Title"}
               </h2>
               <p className="text-muted-foreground">
@@ -83,20 +90,13 @@ export default function TeacherCourseDetails() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
+
               <div>
-                <div className="text-2xl font-bold">
-                  {course.basics.language}
+                <div className="text-xl uppercase text-green-500 font-bold">
+                  ${course.basics.price || "N/A"}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Course Language
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold">
-                  {course.basics.category.title || "N/A"}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Course Category
+                  Course Price
                 </div>
               </div>
             </div>
@@ -106,29 +106,108 @@ export default function TeacherCourseDetails() {
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard
-            icon={<Play className="h-5 w-5 text-orange-500" />}
-            value={course.chapters?.length || 0}
-            label="Chapters"
+            icon={<Play className="h-5 w-5  text-orange-500" />}
+            value={course.basics.language?.toUpperCase()}
+            label="Language"
             bgColor="bg-orange-50"
           />
-          {/* <StatCard
-            icon={<MessageSquare className="h-5 w-5 text-indigo-500" />}
-            value={course.grading?.categories?.length || 0}
-            label="Grading Categories"
-            bgColor="bg-indigo-50"
-          /> */}
+          <StatCard
+            icon={<Play className="h-5 w-5 text-orange-500" />}
+            value={course.basics.category.title?.toUpperCase()}
+            label="Category"
+            bgColor="bg-orange-50"
+          />
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <div onClick={() => setOpen(true)}>
+                <StatCard
+                  icon={<Play className="h-5 w-5 text-orange-500" />}
+                  value={course.chapters?.length || 0}
+                  label="Chapters"
+                  bgColor="bg-orange-50"
+                />
+              </div>
+            </DialogTrigger>
+
+            <DialogContent>
+
+              <DialogHeader>
+                <DialogTitle>Course Chapters & Lessons</DialogTitle>
+                <DialogDescription>
+                  This course has <strong>{course.chapters.length}</strong> chapters and{" "}
+                  <strong>
+                    {course.chapters.reduce((total, chapter) => total + (chapter.lessons?.length || 0), 0)}
+                  </strong>{" "}
+                  lessons.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="mt-4 space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                {course.chapters.map((chapter, index) => (
+                  <div key={index} className="border p-4 rounded-md bg-t-50 shadow-sm">
+                    <div className="mb-2   ">
+                      <button
+                        onClick={() => setOpenChapter(index)}
+                        className="w-full text-left font-semibold text-md flex justify-between items-center"
+                      >
+                        <span className="w-80">Chapter {index + 1}: {chapter.title}</span>
+                        <span className="text-xs">{openChapter === index ? "Hide" : "Show"} Lessons</span>
+                      </button>
+                    </div>
+
+                    {openChapter === index && (
+                      <div className="space-y-4 mt-2 ">
+                        {chapter.lessons && chapter.lessons.length > 0 ? (
+                          chapter.lessons.map((lesson, i) => (
+                            <div key={i} className="border-t border-gray-200 pt-2">
+                              <div className="font-medium text-sm">
+                                Lesson {i + 1}: {lesson.title}
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {lesson.description || "No description available."}
+                              </p>
+
+                              {/* Show assignments if any */}
+                              {lesson.assignments && lesson.assignments.length > 0 ? (
+                                <div className="mt-2 space-y-2">
+                                  <p className="font-semibold text-sm">Assignments:</p>
+                                  {lesson.assignments.map((assignment, aIndex) => (
+                                    <div key={aIndex} className="bg-gray-100 p-3 rounded-md">
+                                      <p className="font-semibold">{assignment.title}</p>
+                                      <p className="text-sm text-gray-700">{assignment.details || "No details provided."}</p>
+                                      <p className="text-xs text-muted-foreground">{assignment.dueDate || "No due date"}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="italic text-sm text-muted-foreground">No assignments for this lesson.</p>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm italic text-muted-foreground">No lessons in this chapter.</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+            </DialogContent>
+          </Dialog>
+
+          <StatCard
+            icon={<Play className="h-5 w-5 text-orange-500" />}
+            value={course.chapters.reduce((total, chapter) => total + chapter.lessons?.length, 0) || 0}
+            label="Lessons"
+            bgColor="bg-orange-50"
+          />
           <StatCard
             icon={<Users className="h-5 w-5 text-rose-500" />}
             value={course.student.length}
             label="Students Enrolled"
             bgColor="bg-rose-50"
           />
-          {/* <StatCard
-            icon={<Trophy className="h-5 w-5 text-green-500" />}
-            value={course.language || "English"}
-            label="Language"
-            bgColor="bg-green-50"
-          /> */}
         </div>
 
         {/* Rating */}
@@ -137,18 +216,17 @@ export default function TeacherCourseDetails() {
           <div className="bg-green-50 p-8 rounded-lg flex flex-col items-center">
             {course.rating && course.rating.length > 0 ? (
               <>
-                <div className="text-5xl font-bold mb-4">
+                <div className="text-5xl font-semibold mb-4">
                   {course.averageRating || "4.8"}
                 </div>
                 <div className="flex items-center gap-1 mb-2">
                   {[1, 2, 3, 4, 5].map((star, index) => (
                     <svg
                       key={index}
-                      className={`w-6 h-6 ${
-                        index + 1 <= Math.floor(course.averageRating || 5)
-                          ? "text-orange-400"
-                          : "text-gray-300"
-                      }`}
+                      className={`w-6 h-6 ${index + 1 <= Math.floor(course.averageRating || 5)
+                        ? "text-orange-400"
+                        : "text-gray-300"
+                        }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -178,7 +256,7 @@ function StatCard({ icon, value, label, bgColor }) {
       <CardContent className="p-4 flex items-center gap-4">
         <div className="p-2 rounded-md bg-white">{icon}</div>
         <div>
-          <div className="font-bold text-lg">{value}</div>
+          <div className="font-semibold text-lg">{value}</div>
           <div className="text-sm text-muted-foreground">{label}</div>
         </div>
       </CardContent>
