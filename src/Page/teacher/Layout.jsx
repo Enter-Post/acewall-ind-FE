@@ -24,6 +24,8 @@ import { useContext } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { useState } from "react";
 
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { axiosInstance } from "@/lib/AxiosInstance";
 const sideBarTabs = [
   {
     id: 1,
@@ -56,12 +58,12 @@ const sideBarTabs = [
     icon: <Wallet />,
     path: "/teacher/wallet",
   },
-  {
-    id: 12,
-    name: "Messages",
-    icon: <MessageCircleDashed />,
-    path: "/teacher/messages",
-  },
+  // {
+  //   id: 12,
+  //   name: "Messages",
+  //   icon: <MessageCircleDashed />,
+  //   path: "/teacher/messages",
+  // },
   {
     id: 13,
     name: "Students",
@@ -70,12 +72,40 @@ const sideBarTabs = [
   },
 ];
 
+
 export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { checkAuth, user, Authloading, setAuthLoading } =
     useContext(GlobalContext);
 
   const location = useLocation().pathname;
+
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [dropdownCourses, setDropdownCourses] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [openDropdown, setOpenDropdown] = React.useState(false); // control visibility manually
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || loading) return;
+  
+    setLoading(true);
+    setOpenDropdown(true);
+  
+    try {
+      const res = await axiosInstance.get("/course/getindividualcourse", {
+        params: { search: searchQuery },
+      });
+      console.log(res.data);
+      setDropdownCourses(res.data.courses || []);
+    } catch (error) {
+      console.error("Search error:", error);
+      setDropdownCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+
 
   return (
     <div className="flex flex-col">
@@ -107,20 +137,62 @@ export default function TeacherLayout() {
               className="w-40 h-auto cursor-pointer"
             />
           </Link>
+          {/* search dropdown */}
           <div className="hidden md:flex items-center space-x-4">
-          <Input type="text" placeholder="Search courses and lessons" />
-            <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
-              <Search className="rounded-full" />
-            </div>
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (!e.target.value.trim()) {
+                  setDropdownCourses([]);
+                  setOpenDropdown(false);
+                }
+              }}
+              placeholder="Search courses and lessons"
+            />
+            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onClick={handleSearch}
+                  className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
+                >
+                  <Search className="rounded-full" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
+                {loading ? (
+                  <DropdownMenuItem disabled>
+                    <span className="text-sm text-gray-700">Searching...</span>
+                  </DropdownMenuItem>
+                ) : dropdownCourses.length > 0 ? (
+                  dropdownCourses.map((course) => (
+                    <DropdownMenuItem
+                      key={course._id}
+                      asChild
+                      onSelect={() => setOpenDropdown(false)} // optional: close dropdown on select
+                    >
+                      <Link to={`/teacher/courses/courseDetail/${course._id}`}>
+                        {course.basics?.courseTitle || "Untitled Course"}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>
+                    <span className="text-sm text-gray-500">No results found</span>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
@@ -147,15 +219,13 @@ export default function TeacherLayout() {
                   onClick={() => {
                     setIsSidebarOpen(false);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location == tab.path ? "bg-green-500" : "text-black"
-                  } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
+                    } `}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location == tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location == tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

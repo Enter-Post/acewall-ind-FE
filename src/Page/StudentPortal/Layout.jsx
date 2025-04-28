@@ -17,6 +17,8 @@ import Footer from "@/CustomComponent/Footer";
 import { MultiLevelDropdown } from "@/CustomComponent/MultilevelDropdown";
 import { useContext } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 const sideBarTabs = [
   {
@@ -49,12 +51,12 @@ const sideBarTabs = [
     icon: <Target02Icon />,
     path: "/student/gradebook",
   },
-  {
-    id: 10,
-    name: "Messages",
-    icon: <MessageCircleDashed />,
-    path: "/student/messages",
-  },
+  // {
+  //   id: 10,
+  //   name: "Messages",
+  //   icon: <MessageCircleDashed />,
+  //   path: "/student/messages",
+  // },
 ];
 
 const topBarTabs = [
@@ -79,11 +81,11 @@ const topBarTabs = [
         label: "Physics",
         link: "/student/courses",
         subItems: [
-          { label: "Classical Mechanics", onClick: () => {} },
-          { label: "Electromagnetism", onClick: () => {} },
-          { label: "Thermodynamics", onClick: () => {} },
-          { label: "Quantum Mechanics", onClick: () => {} },
-          { label: "Relativity", onClick: () => {} },
+          { label: "Classical Mechanics", onClick: () => { } },
+          { label: "Electromagnetism", onClick: () => { } },
+          { label: "Thermodynamics", onClick: () => { } },
+          { label: "Quantum Mechanics", onClick: () => { } },
+          { label: "Relativity", onClick: () => { } },
         ],
       },
       {
@@ -143,6 +145,31 @@ export default function Layout() {
 
   const location = useLocation().pathname;
 
+   const [searchQuery, setSearchQuery] = React.useState("");
+    const [dropdownCourses, setDropdownCourses] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+  
+    // Function to handle search on button click
+    const handleSearch = async () => {
+      if (!searchQuery.trim()) {
+        setDropdownCourses([]);
+        return;
+      }
+  
+      setLoading(true);
+      try {
+        const res = await axiosInstance.get("/course/get", {
+          params: { search: searchQuery },
+        });
+        setDropdownCourses(res.data.courses || []);
+      } catch (error) {
+        console.error("Search error:", error);
+        setDropdownCourses([]);
+      }
+      setLoading(false);
+    };
+
+
   return (
     <div className="flex flex-col">
       <header className="sticky top-0 z-10 bg-white">
@@ -175,7 +202,7 @@ export default function Layout() {
             />
           </Link>
           <div className="flex justify-between items-center">
-            <div className="flex gap-5 text-xs md:text-md lg:text-base font-medium text-gray-700">
+            {/* <div className="flex gap-5 text-xs md:text-md lg:text-base font-medium text-gray-700">
               {topBarTabs.map((category, index) => (
                 <MultiLevelDropdown
                   key={index}
@@ -183,8 +210,14 @@ export default function Layout() {
                   items={category.items}
                 />
               ))}
-            </div>
+            </div> */}
             <div className="flex gap-6">
+              <Link
+                to="/student/Courses"
+                className="text-xs md:text-md lg:text-base font-medium text-gray-700"
+              >
+                MORE COURSES
+              </Link>
               <Link
                 to="/support"
                 className="text-xs md:text-md lg:text-base font-medium text-gray-700"
@@ -201,18 +234,49 @@ export default function Layout() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <Input type="text" placeholder="Search courses and lessons" />
-            <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
-              <Search className="rounded-full" />
-            </div>
+            <Input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search courses and lessons"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onClick={handleSearch}
+                  className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
+                >
+                  <Search className="rounded-full" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
+                {loading ? (
+                  <DropdownMenuItem disabled>
+                    <span className="text-sm text-gray-700">Searching...</span>
+                  </DropdownMenuItem>
+                ) : dropdownCourses.length > 0 ? (
+                  dropdownCourses.map((course) => (
+                    <DropdownMenuItem key={course._id} asChild>
+                      <Link to={`/student/myCourseDetail/`}>
+                        {course.basics?.courseTitle || "Untitled Course"}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>
+                    <span className="text-sm text-gray-500">No results found</span>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
@@ -245,15 +309,13 @@ export default function Layout() {
                   onClick={() => {
                     setIsSidebarOpen(false);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location == tab.path ? "bg-green-500" : "text-black"
-                  } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
+                    } `}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location == tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location == tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

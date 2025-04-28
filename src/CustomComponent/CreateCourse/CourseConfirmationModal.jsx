@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ArrowRight, School } from "lucide-react";
+import { useContext, useState } from "react";
+import { ArrowRight, Loader, School } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,15 +10,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { CourseContext } from "@/Context/CoursesProvider";
 
 export default function CourseConfirmationModal({ submit, chapters }) {
   const [open, setOpen] = useState(false);
-
+  const { courseLoading, setCourseLoading } = useContext(CourseContext);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button disabled={chapters.length === 0} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white">
+        <Button
+          disabled={
+            chapters.length === 0 ||
+            !chapters[0].lessons ||
+            !chapters[0].assessment
+          }
+          className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white"
+        >
           Create Course
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -39,7 +47,11 @@ export default function CourseConfirmationModal({ submit, chapters }) {
             className="bg-green-500 hover:bg-green-600 text-white"
             onClick={submit}
           >
-            Confirm & Create
+            {courseLoading ? (
+              <Loader className={"animate-spin"} />
+            ) : (
+              "Confirm & Create"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

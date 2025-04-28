@@ -12,9 +12,9 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
 
-const passwordValidation = new RegExp(
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-);
+// const passwordValidation = new RegExp(
+//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+// );
 
 const formSchema = z
   .object({
@@ -26,9 +26,10 @@ const formSchema = z
     phone: z.string().min(10, "Phone number is required"),
     homeAddress: z.string().min(1, "Home address is required"),
     mailingAddress: z.string().optional(),
-    password: z.string().min(8).regex(passwordValidation, {
-      message: "Your password is not valid",
-    }),
+    password: z.string().min(8),
+    // .regex(passwordValidation, {
+    //   message: "Your password is not valid",
+    // }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

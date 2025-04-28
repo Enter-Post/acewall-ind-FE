@@ -1,292 +1,186 @@
 import * as React from "react";
-import { CoursesCard } from "@/CustomComponent/Card";
-import SelectCmp from "@/CustomComponent/SelectCmp";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
 import SearchBox from "@/CustomComponent/SearchBox";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 const AllCourses = () => {
-  const allCourses = [
-    {
-      id: 4,
-      course: "Biology",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 12,
-      Language: "English",
-      Prise: 101,
-      image:
-        "https://plus.unsplash.com/premium_photo-1681399991680-b2be2e767b32?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Michael Brown",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 5,
-      course: "History",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 15,
-      Language: "English",
-      Prise: 110,
-      image:
-        "https://plus.unsplash.com/premium_photo-1661963952208-2db3512ef3de?q=80&w=1544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Mr. Richard Adams",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 6,
-      course: "English Literature",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 8,
-      Language: "English",
-      Prise: 75,
-      image:
-        "https://images.unsplash.com/photo-1506513083865-434a8a207e11?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Ms. Olivia Green",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 7,
-      course: "Computer Science",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 18,
-      Language: "English",
-      Prise: 89,
-      image:
-        "https://plus.unsplash.com/premium_photo-1661872817492-fd0c30404d74?q=80&w=1487&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Mr. Samuel Turner",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 8,
-      course: "Geography",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 10,
-      Language: "English",
-      Prise: 48,
-      image:
-        "https://plus.unsplash.com/premium_photo-1681488098851-e3913f3b1908?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Ms. Clara Foster",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 9,
-      course: "Art",
-      Grade: 10,
-      rating: 3,
-      NumberOfLecture: 5,
-      Prise: 94,
-      Language: "English",
-      image:
-        "https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Ms. Sarah Collins",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 10,
-      course: "Physical Education",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 6,
-      Language: "English",
-      Prise: 78,
-      image:
-        "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=1438&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Mr. David Martin",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 11,
-      course: "Music",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 9,
-      Language: "English",
-      Prise: 76,
-      image:
-        "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Ms. Linda Lee",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 12,
-      course: "Economics",
-      Grade: 10,
-      rating: 3,
-      NumberOfLecture: 7,
-      Language: "English",
-      Prise: 98,
-      image:
-        "https://images.unsplash.com/photo-1612178991541-b48cc8e92a4d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Charles Young",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 13,
-      course: "Philosophy",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 5,
-      Language: "English",
-      Prise: 82,
-      image:
-        "https://images.unsplash.com/photo-1620662736427-b8a198f52a4d?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Daniel Harris",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 14,
-      course: "Psychology",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 14,
-      Language: "English",
-      Prise: 91,
-      image:
-        "https://images.unsplash.com/photo-1573511860302-28c524319d2a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Sophia King",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 15,
-      course: "Sociology",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 11,
-      Language: "English",
-      Prise: 98,
-      image:
-        "https://plus.unsplash.com/premium_photo-1681079526863-7ba34e838026?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Laura White",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 16,
-      course: "Statistics",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 13,
-      Language: "English",
-      Prise: 40,
-      image:
-        "https://images.unsplash.com/photo-1622782914767-404fb9ab3f57?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Mr. William Scott",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 17,
-      course: "Engineering",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 10,
-      Language: "English",
-      Prise: 189,
-      image:
-        "https://plus.unsplash.com/premium_photo-1661335257817-4552acab9656?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Prof. Steven Carter",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 18,
-      course: "Environmental Science",
-      Grade: 10,
-      rating: 3,
-      NumberOfLecture: 12,
-      Language: "English",
-      Prise: 200,
-      image:
-        "https://plus.unsplash.com/premium_photo-1661540998860-da104459c959?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Alice Green",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 19,
-      course: "Political Science",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 8,
-      Language: "English",
-      Prise: 45,
-      image:
-        "https://images.unsplash.com/photo-1526615735835-530c611a3d8a?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Brian Hall",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 20,
-      course: "Anthropology",
-      Grade: 10,
-      rating: 5,
-      NumberOfLecture: 11,
-      Language: "English",
-      Prise: 99,
-      image:
-        "https://plus.unsplash.com/premium_photo-1661906977668-ece2c96385c4?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Henry Black",
-      link: "/student/courses/detail",
-    },
-    {
-      id: 21,
-      course: "Astronomy",
-      Grade: 10,
-      rating: 4,
-      NumberOfLecture: 9,
-      Language: "English",
-      Prise: 53,
-      image:
-        "https://images.unsplash.com/photo-1504333638930-c8787321eee0?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teacher: "Dr. Nathan Allen",
-      link: "/student/courses/detail",
-    },
-  ];
+ 
+  const [allCourses, setAllCourses] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { user } = useContext(GlobalContext);
 
-  const courseCategories = [
-    { id: 1, name: "All Category" },
-    { id: 2, name: "Development" },
-    { id: 3, name: "Business" },
-    { id: 4, name: "Design" },
-    { id: 5, name: "Marketing" },
-    { id: 6, name: "Finance" },
-    { id: 7, name: "Health & Fitness" },
-    { id: 8, name: "Music" },
-  ];
+  const searching = searchQuery.trim() !== "";
 
-  const ratings = [
-    { id: 1, name: "All Ratings" },
-    { id: 2, name: "1 Star & Up" },
-    { id: 3, name: "2 Star & Up" },
-    { id: 4, name: "3 Star & Up" },
-    { id: 5, name: "4 Star & Up" },
-    { id: 6, name: "5 Star Only" },
-  ];
+  useEffect(() => {
+    setLoading(true);
+    const delayDebounce = setTimeout(() => {
+      const getCourses = async () => {
+        try {
+          const response = await axiosInstance.get("/course/get", {
+            params: { search: searchQuery },
+          });
+          console.log("API Response:", response.data);
+          setAllCourses(response.data.courses);
+        } catch (error) {
+          console.error("Error fetching courses:", error);
+          setAllCourses([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      getCourses();
+    }, 2000); // 500ms delay
 
-  const sortByOptions = [
-    { id: 1, name: "Latest" },
-    { id: 2, name: "Popularity" },
-    { id: 3, name: "Highest Rated" },
-    { id: 4, name: "Lowest Price" },
-    { id: 5, name: "Highest Price" },
-  ];
+    return () => clearTimeout(delayDebounce); // cleanup
+  }, [searchQuery]);
+
 
   return (
-    <div>
-      <main>
-        <SearchBox />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-10">
-          {allCourses.map((course) => {
-            return (
-              <div key={course.id}>
-                <CoursesCard course={course} link={course.link} />
-              </div>
-            );
-          })}
+    <section className="p-3 md:p-0">
+      <div className="flex flex-col pb-5 gap-2">
+        <div>
+          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+            My Courses
+          </p>
         </div>
-      </main>
-    </div>
+        <SearchBox query={searchQuery} setQuery={setSearchQuery} />
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <section className="flex justify-center items-center h-full w-full">
+            <Loader size={48} className={"animate-spin"} />
+          </section>
+        </div>
+      ) : allCourses?.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center px-4">
+          {searching ? (
+            <>
+              <h1 className="text-2xl font-semibold text-muted-foreground">
+                No course found for "{searchQuery}"
+              </h1>
+              <p className="text-md mt-4 text-muted-foreground">
+                Try a different keyword or explore all your courses.
+              </p>
+              <ul className="list-disc pl-6 leading-relaxed mt-4 text-left text-muted-foreground">
+                <li>Check spelling</li>
+                <li>Try different or more general terms</li>
+              </ul>
+              <Button
+                className="mt-6 bg-green-500 text-white hover:bg-acewall-main"
+                onClick={() => setSearchQuery("")}
+              >
+                Reset Search
+              </Button>
+            </>
+          ) : (
+            <>
+              <img
+                src="https://img.freepik.com/free-vector/exclamation-illustration-concept_114360-23479.jpg?t=st=1745438134~exp=1745441734~hmac=008d4f2dacd0316f660b0c54d3c43bc0a6ccbcc5b622b0cddf56ccc61b482ba9&w=900"
+                alt="No courses"
+                className="w-full h-75 object-contain "
+              />
+              <p className="text-2xl font-bold  text-muted-foreground">
+                Something went wrong !
+              </p>
+            </>
+          )}
+        </div>
+      ) : (
+        <section className="    ">
+      
+      <div className="px-10">
+
+       
+
+        {loading ? (
+          <div className="flex justify-center items-center py-10 ">
+            <section className="flex justify-center items-center h-full w-full">
+              <Loader size={48} className={"animate-spin"} />
+            </section>
+          </div>
+        ) : allCourses?.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-center px-4">
+            {searching ? (
+              <>
+                <h1 className="text-2xl font-semibold text-muted-foreground">
+                  No course found for "{searchQuery}"
+                </h1>
+                <p className="text-md mt-4 text-muted-foreground">
+                  Try a different keyword or explore all your courses.
+                </p>
+                <ul className="list-disc pl-6 leading-relaxed mt-4 text-left text-muted-foreground">
+                  <li>Check spelling</li>
+                  <li>Try different or more general terms</li>
+                </ul>
+                <Button
+                  className="mt-6 bg-green-500 text-white hover:bg-acewall-main"
+                  onClick={() => setSearchQuery("")}
+                >
+                  Reset Search
+                </Button>
+              </>
+            ) : (
+              <>
+                <img
+                  src="https://img.freepik.com/free-vector/exclamation-illustration-concept_114360-23479.jpg?t=st=1745438134~exp=1745441734~hmac=008d4f2dacd0316f660b0c54d3c43bc0a6ccbcc5b622b0cddf56ccc61b482ba9&w=900"
+                  alt="No courses"
+                  className="w-full h-75 object-contain "
+                />
+                <p className="text-2xl font-bold  text-muted-foreground">
+                  Something went wrong !
+                </p>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {allCourses?.map((course) => (
+              <Link
+                key={course._id}
+                to={`/student/courses/detail/${course._id}`}
+              >
+                <Card className=" pt-0 w-full h-full overflow-hidden cursor-pointer">
+                  <AspectRatio ratio={16 / 9}>
+                    <img
+                      src={course.basics.thumbnail || "/placeholder.svg"}
+                      alt={`${course.thumbnail} image`}
+                      className="object-cover w-full h-full"
+                    />
+                  </AspectRatio>
+                  <CardHeader>
+                    <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
+                      {course.basics.category?.title || "Developments"}
+                    </div>
+                    <CardTitle>{course.basics.courseTitle}</CardTitle>
+                    <p className="text-xs">
+                      Teacher: {course.createdby?.firstName}
+                    </p>
+                    <div className="text-xs flex items-center">
+
+                      <span className="text-yellow-500 ml-1">★</span>
+                      <span className="ml-1">{course.rating?.length || 0}</span>
+                    </div>
+                    <p className="text-lg  font-bold ">
+                      ${course.basics.price}
+                    </p>
+                  </CardHeader>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+      )}
+    </section>
   );
 };
 

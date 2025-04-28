@@ -1,5 +1,3 @@
-"use client";
-
 import { useContext, useEffect, useState } from "react";
 import {
   ChevronDown,
@@ -31,13 +29,18 @@ import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterMod
 import { CourseContext } from "@/Context/CoursesProvider";
 import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
 import CourseConfirmationModal from "@/CustomComponent/CreateCourse/CourseConfirmationModal";
+import LessonDialog from "./chapterFields/LessonTesting";
+import { AssessmentDialog } from "./chapterFields/AssessmentFields";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { toast } from "sonner";
 
 export default function CoursesChapter() {
   const navigate = useNavigate();
   const [chapters, setChapters] = useState([]);
-  const { course, setCourse, getCourse } = useContext(CourseContext);
+  const { course, setCourse, courseLoading, setCourseLoading } =
+    useContext(CourseContext);
 
-  console.log(course.chapters, "chapters in modal");
+  console.log(course, "course");
 
   useEffect(() => {
     const isEmptyBasics = Object.keys(course.basics).length === 0;
@@ -47,8 +50,9 @@ export default function CoursesChapter() {
     }
   }, []);
 
-
   const handleDeleteChapter = (chapterId) => {
+    console.log(chapterId, "chapterId");
+
     const updatedChapters = course.chapters.filter(
       (chapter) => chapter.id !== chapterId
     );
@@ -56,20 +60,27 @@ export default function CoursesChapter() {
     setCourse((prev) => ({ ...prev, chapters: updatedChapters }));
   };
 
-  const handleSubmit = () => {
-    // setCourse(chapters);
-    // setCourse((prev) => ({
-    //   ...prev,
-    //   chapters: [...(prev.chapters || []), newChapter],
-    // }));
-    console.log(course, "course in submitting course");
-
-    getCourse();
-    navigate("/teacher/courses");
+  const handleSubmit = async () => {
+    try {
+      setCourseLoading(true);
+      const res = await axiosInstance.post("course/create", course, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toast.success(res.data.message);
+      setCourseLoading(false);
+      navigate("/teacher/courses");
+      course = {};
+    } catch (error) {
+      console.error(error);
+      toast.error(res.data.message);
+      setCourseLoading(false);
+    }
   };
 
   return (
-    <div className="border rounded-lg ">
+    <div className="p-4 space-y-6">
       <section className="flex justify-between items-center border-b p-4">
         <div className="">
           <h2 className="text-2xl font-semibold flex items-center">
@@ -78,12 +89,11 @@ export default function CoursesChapter() {
           </h2>
         </div>
         <div>
-          <ChapterCreationModal chapters={chapters} setChapters={setChapters} />
+          <ChapterCreationModal />
         </div>
       </section>
-
-      <div className="p-4 space-y-6">
-        {course.chapters.length === 0 ? (
+      <div className="rounded-lg ">
+        {course?.chapters.length === 0 ? (
           <p>No Chapters Available</p>
         ) : (
           course.chapters?.map((chapter, index) => (
@@ -97,17 +107,15 @@ export default function CoursesChapter() {
                       ) : (
                         <ChevronRight className="h-5 w-5 mr-2 flex-shrink-0" />
                       )}
-                      Chapter {chapter.id} : {chapter.title} (
-                      {chapter.lessons.length} Lessons)
+                      Chapter : {chapter.title} ({chapter?.lessons?.length}{" "}
+                      Lessons)
                     </span>
                     <div className="flex gap-2">
-                      {/* <Button
-                        variant="outline"
-                        className="text-blue-600 border-blue-600 hover:bg-blue-100"
-                        onClick={() => handleUpdateLessons(chapter.id, lessons)}
-                      >
-                        <Edit className="h-4 w-4  " />
-                      </Button> */}
+                      <LessonDialog id={chapter.id} />
+                      {!chapter.assessment && (
+                        <AssessmentDialog id={chapter.id} />
+                      )}
+
                       <Button
                         variant="destructive"
                         onClick={() => handleDeleteChapter(chapter.id)}
@@ -117,10 +125,9 @@ export default function CoursesChapter() {
                     </div>
                   </CollapsibleTrigger>
                 </div>
-
                 <CollapsibleContent>
                   <div className="border rounded-lg mx-4 mb-4 bg-white">
-                    {chapter.lessons.map((lesson, index) => (
+                    {chapter?.lessons?.map((lesson, index) => (
                       <div
                         key={index}
                         className="flex flex-col border-b last:border-b-0 p-4 space-y-2"
@@ -204,14 +211,14 @@ export default function CoursesChapter() {
                       </div>
                     ))}
 
-                    {chapter.assessment.map((assessment, index) => (
+                    {chapter.assessment && (
                       <div
                         key={index}
                         className="flex flex-col border-b last:border-b-0 p-4 space-y-2"
                       >
                         {/* assessment Header */}
                         <h2 className="text-xl font-bold text-primary mb-2">
-                          Assessments {index + 1}
+                          Assessments
                         </h2>
 
                         {/* Title */}
@@ -220,8 +227,8 @@ export default function CoursesChapter() {
                             Title:
                           </span>{" "}
                           <span className="text-gray-800">
-                            {assessment.title?.trim() ? (
-                              assessment.title
+                            {chapter?.assessment?.title ? (
+                              chapter.assessment.title
                             ) : (
                               <span className="italic text-gray-500">
                                 Title is not available.
@@ -236,8 +243,8 @@ export default function CoursesChapter() {
                             Description:
                           </span>{" "}
                           <span className="text-gray-800">
-                            {assessment.description?.trim() ? (
-                              assessment.description
+                            {chapter?.assessment?.description?.trim() ? (
+                              chapter.assessment.description
                             ) : (
                               <span className="italic text-gray-500">
                                 Description is not available.
@@ -251,9 +258,9 @@ export default function CoursesChapter() {
                           <span className="font-medium text-gray-700">
                             PDFs:
                           </span>
-                          {assessment.pdfFiles?.length > 0 ? (
+                          {chapter?.assessment?.pdfFiles?.length > 0 ? (
                             <ul className="list-disc list-inside text-sm text-blue-600 mt-1">
-                              {assessment.pdfFiles.map((pdf, idx) => (
+                              {chapter.assessment.pdfFiles.map((pdf, idx) => (
                                 <li key={idx}>
                                   <a
                                     href={pdf.url}
@@ -272,7 +279,7 @@ export default function CoursesChapter() {
                           )}
                         </div>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </CollapsibleContent>
               </Collapsible>
@@ -291,14 +298,10 @@ export default function CoursesChapter() {
             Back
           </Button>
         </Link>
-        {/* <Button
-          disabled={!course.chapters}
-          className="flex items-center gap-2 bg-green-500 hover:bg-green-600"
-          onClick={() => handleSubmit()}
-        >
-          Create Course
-        </Button> */}
-        <CourseConfirmationModal submit={() => handleSubmit()} chapters={course.chapters} />
+        <CourseConfirmationModal
+          submit={() => handleSubmit()}
+          chapters={course.chapters}
+        />
       </div>
     </div>
   );

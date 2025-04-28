@@ -2,22 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-// import { Play } from "lucide-react";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"; // Assuming you're using shadcn/ui
 
 import {
-  ChevronDown,
-  FileText,
-  Loader,
-  MessageSquare,
-  Play,
-  Trophy,
-  Users,
-} from "lucide-react";
+  Dialog,
+  DialogFooter,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+
+import { Loader, Play, Users } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { CheckCircle } from "lucide-react";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
@@ -25,20 +25,37 @@ export default function TeacherCourseDetails() {
   const [open, setOpen] = useState(false);
   const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
+  const handleDeleteCourse = async () => {
+    try {
+      await axiosInstance.delete(`/course/delete/${id}`);
+      setConfirmOpen(false);
+      setSuccessOpen(true);
 
-  console.log(id);
+      // Wait 2 seconds before redirecting
+      setTimeout(() => {
+        setSuccessOpen(false);
+        window.location.href = "/teacher/courses";
+      }, 2000);
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      alert("Failed to delete course.");
+    }
+  };
 
   useEffect(() => {
     const fetchCourseDetail = async () => {
-      try {
-        const response = await axiosInstance.post(`course/get/${id}`);
-        setCourse(response.data.course); // Set the course data in state
-        console.log("response>>>>>>>>>", response);
-        console.log("Course detail:", response.data.course);
-      } catch (error) {
-        console.error("Error fetching course detail:", error);
-      }
+      await axiosInstance
+        .get(`course/get/${id}`)
+        .then((res) => {
+          setCourse(res.data.course);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // Set the course data in state
     };
     fetchCourseDetail();
   }, [id]); // Added id as a dependency to refetch when the id changes
@@ -90,7 +107,6 @@ export default function TeacherCourseDetails() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-
               <div>
                 <div className="text-xl uppercase text-green-500 font-bold">
                   ${course.basics.price || "N/A"}
@@ -130,75 +146,114 @@ export default function TeacherCourseDetails() {
             </DialogTrigger>
 
             <DialogContent>
-
               <DialogHeader>
-                <DialogTitle>Course Chapters & Lessons</DialogTitle>
-                <DialogDescription>
-                  This course has <strong>{course.chapters.length}</strong> chapters and{" "}
+                <DialogTitle className="text-xl font-bold">
+                  Course Chapters & Lessons
+                </DialogTitle>
+                <DialogDescription className="text-sm text-muted-foreground mt-1">
+                  This course includes <strong>{course.chapters.length}</strong>{" "}
+                  chapters and{" "}
                   <strong>
-                    {course.chapters.reduce((total, chapter) => total + (chapter.lessons?.length || 0), 0)}
+                    {course.chapters.reduce(
+                      (total, chapter) =>
+                        total + (chapter.lessons?.length || 0),
+                      0
+                    )}
                   </strong>{" "}
                   lessons.
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="mt-4 space-y-4 max-h-[500px] overflow-y-auto pr-2">
+              <div className="mt-6 space-y-4 max-h-[500px] overflow-y-auto pr-2">
                 {course.chapters.map((chapter, index) => (
-                  <div key={index} className="border p-4 rounded-md bg-t-50 shadow-sm">
-                    <div className="mb-2   ">
-                      <button
-                        onClick={() => setOpenChapter(index)}
-                        className="w-full text-left font-semibold text-md flex justify-between items-center"
-                      >
-                        <span className="w-80">Chapter {index + 1}: {chapter.title}</span>
-                        <span className="text-xs">{openChapter === index ? "Hide" : "Show"} Lessons</span>
-                      </button>
-                    </div>
+                  <div
+                    key={index}
+                    className="rounded-2xl border bg-white shadow-md p-4 hover:shadow-lg transition-all"
+                  >
+                    <button
+                      onClick={() =>
+                        setOpenChapter(openChapter === index ? null : index)
+                      }
+                      className="w-full flex justify-between items-center text-left group"
+                    >
+                      <span className="text-md font-semibold  ">
+                        Chapter {index + 1}: {chapter.title}
+                      </span>
+                      <span className="text-sm text-gray-500 hover:underline whitespace-nowrap">
+                        {openChapter === index ? "Hide" : "Show"} Lessons
+                      </span>
+                    </button>
 
                     {openChapter === index && (
-                      <div className="space-y-4 mt-2 ">
-                        {chapter.lessons && chapter.lessons.length > 0 ? (
+                      <div className="mt-4 space-y-4">
+                        {chapter.lessons?.length > 0 ? (
                           chapter.lessons.map((lesson, i) => (
-                            <div key={i} className="border-t border-gray-200 pt-2">
-                              <div className="font-medium text-sm">
+                            <div
+                              key={i}
+                              className="border-t pt-4 pl-2 border-gray-200 bg-gray-50 rounded-lg p-3"
+                            >
+                              <div className="font-medium text-base ">
                                 Lesson {i + 1}: {lesson.title}
                               </div>
-                              <p className="text-sm text-gray-600">
-                                {lesson.description || "No description available."}
+                              <p className="text-sm text-gray-600 mt-1">
+                                {lesson.description ||
+                                  "No description available."}
                               </p>
 
-                              {/* Show assignments if any */}
-                              {lesson.assignments && lesson.assignments.length > 0 ? (
-                                <div className="mt-2 space-y-2">
-                                  <p className="font-semibold text-sm">Assignments:</p>
-                                  {lesson.assignments.map((assignment, aIndex) => (
-                                    <div key={aIndex} className="bg-gray-100 p-3 rounded-md">
-                                      <p className="font-semibold">{assignment.title}</p>
-                                      <p className="text-sm text-gray-700">{assignment.details || "No details provided."}</p>
-                                      <p className="text-xs text-muted-foreground">{assignment.dueDate || "No due date"}</p>
-                                    </div>
-                                  ))}
+                              {/* Assignments */}
+                              {lesson.assignments?.length > 0 ? (
+                                <div className="mt-3 space-y-2">
+                                  <p className="font-semibold text-sm text-gray-800">
+                                    Assignments:
+                                  </p>
+                                  {lesson.assignments.map(
+                                    (assignment, aIndex) => (
+                                      <div
+                                        key={aIndex}
+                                        className="bg-white border border-green-100 p-3 rounded-md shadow-sm"
+                                      >
+                                        <p className="font-semibold text-green-700">
+                                          {assignment.title}
+                                        </p>
+                                        <p className="text-sm text-gray-700">
+                                          {assignment.details ||
+                                            "No details provided."}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {assignment.dueDate || "No due date"}
+                                        </p>
+                                      </div>
+                                    )
+                                  )}
                                 </div>
                               ) : (
-                                <p className="italic text-sm text-muted-foreground">No assignments for this lesson.</p>
+                                <p className="italic text-sm text-muted-foreground mt-2">
+                                  No assignments for this lesson.
+                                </p>
                               )}
                             </div>
                           ))
                         ) : (
-                          <p className="text-sm italic text-muted-foreground">No lessons in this chapter.</p>
+                          <p className="italic text-sm text-muted-foreground">
+                            No lessons in this chapter.
+                          </p>
                         )}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
-
             </DialogContent>
           </Dialog>
 
           <StatCard
             icon={<Play className="h-5 w-5 text-orange-500" />}
-            value={course.chapters.reduce((total, chapter) => total + chapter.lessons?.length, 0) || 0}
+            value={
+              course.chapters.reduce(
+                (total, chapter) => total + chapter.lessons?.length,
+                0
+              ) || 0
+            }
             label="Lessons"
             bgColor="bg-orange-50"
           />
@@ -223,10 +278,11 @@ export default function TeacherCourseDetails() {
                   {[1, 2, 3, 4, 5].map((star, index) => (
                     <svg
                       key={index}
-                      className={`w-6 h-6 ${index + 1 <= Math.floor(course.averageRating || 5)
-                        ? "text-orange-400"
-                        : "text-gray-300"
-                        }`}
+                      className={`w-6 h-6 ${
+                        index + 1 <= Math.floor(course.averageRating || 5)
+                          ? "text-orange-400"
+                          : "text-gray-300"
+                      }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -245,6 +301,50 @@ export default function TeacherCourseDetails() {
             )}
           </div>
         </div>
+      </div>
+      <div className="flex mt-10 justify-end space-x-2">
+        {/* Delete Confirmation Modal */}
+        <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <DialogTrigger asChild>
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150"
+              onClick={() => setConfirmOpen(true)}
+            >
+              Delete Course
+            </Button>
+          </DialogTrigger>
+
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Are you sure?</DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                This will permanently delete the course and all related data.
+                Are you sure?
+              </p>
+            </DialogHeader>
+            <DialogFooter className="mt-4 flex flex-col-reverse justify-end gap-2">
+              <Button
+                className="bg-red-600 text-white hover:bg-red-700"
+                onClick={handleDeleteCourse}
+              >
+                Yes, Delete
+              </Button>
+              <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+                Cancel
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* ✅ Success Confirmation Modal */}
+        <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+          <DialogContent className="flex flex-col items-center justify-center text-center">
+            <CheckCircle className="w-12 h-12 text-green-500" />
+            <h3 className="text-lg font-semibold mt-2">
+              Course deleted successfully!
+            </h3>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -105,16 +105,14 @@ const MainLayout = () => {
             </Link>
 
             <div className="flex justify-between items-center">
-              <div className="flex gap-5 text-sm font-medium text-gray-700">
-                {topBarTabs.map((category, index) => (
-                  <MultiLevelDropdown
-                    key={index}
-                    label={category.label}
-                    items={category.items}
-                  />
-                ))}
-              </div>
+
               <div className="flex gap-6">
+                <Link
+                  to="/Courses"
+                  className="text-xs md:text-md lg:text-base font-medium text-gray-700"
+                >
+                  MORE COURSES
+                </Link>
                 <Link to="/support" className="text-sm font-medium text-gray-700">
                   SUPPORT
                 </Link>

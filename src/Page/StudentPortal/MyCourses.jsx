@@ -30,6 +30,8 @@ const CourseCards = () => {
       }
     };
 
+
+
     getCourses();
   }, [searchQuery]);
 
@@ -84,28 +86,33 @@ const CourseCards = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course) => (
-            <Link key={course._id} to={`/student/myCourseDetail/`}>
+            <Link key={course._id}
+              to={`/student/myCourseDetail/${course._id}`}
+            >
               <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
                 <AspectRatio ratio={16 / 9}>
                   <img
-                    src={course.thumbnail || "/placeholder.svg"}
-                    alt={`${course.thumbnail} image`}
+                    src={course.basics.thumbnail || "/placeholder.svg"}
+                    alt={`${course.basics.thumbnail} image`}
                     className="object-cover w-full h-full"
                   />
                 </AspectRatio>
                 <CardHeader>
                   <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-                    {course.category?.title || "Development"}
+                    {course.basics.category?.title || "Development"}
                   </div>
                   <CardTitle className="flex justify-between items-center">
-                    <span>{course.title}</span>
-                    <span className="text-lg font-semibold text-green-500">${course.price}</span>
+                    <span>{course.basics.courseTitle}</span>
+                    <span className="text-lg font-semibold text-green-500">${course.basics.price}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">Teacher: {course.teacher}</p>
-                    <p className="text-sm text-muted-foreground">Language: {course.language}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Teacher: {course.createdby?.firstName}{" "}
+                      {course.createdby?.middleName ? course.createdby.middleName + " " : ""}
+                      {course.createdby?.lastName}
+                    </p>                    <p className="text-sm text-muted-foreground">Language: {course.basics.language}</p>
                     <p className="text-sm text-muted-foreground">Chapters: {course.chapters.length}</p>
                   </div>
                 </CardContent>

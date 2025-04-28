@@ -59,6 +59,8 @@ function App() {
     checkAuth();
   }, []);
 
+  // const socket = io("http://localhost:5050");
+
   if (Authloading) {
     return (
       <div>
@@ -88,7 +90,10 @@ function App() {
             <Route index element={<LandingPage />} />
             <Route path="/Courses">
               <Route index element={<GeneralCourses />}></Route>
-              <Route path="detail" element={<GeneralCoursesDetail />}></Route>
+              <Route
+                path="detail/:id"
+                element={<GeneralCoursesDetail />}
+              ></Route>
               <Route path="culinaryArts" element={<AllCoursesDetail />} />
             </Route>
             <Route path="/about" element={<About />}></Route>
@@ -106,7 +111,10 @@ function App() {
           <Route path="/student" element={<Layout />}>
             <Route index element={<Deshboard />} />
             <Route path="mycourses" element={<Mycourses />}></Route>
-            <Route path="myCourseDetail" element={<MyCourseDetail />}></Route>
+            <Route
+              path="myCourseDetail/:id"
+              element={<MyCourseDetail />}
+            ></Route>
             <Route path="assignment" element={<Assignment />}></Route>
             <Route path="gradebook" element={<Gradebook />}></Route>
             <Route path="announcements" element={<Announcement />}></Route>
@@ -114,7 +122,7 @@ function App() {
             <Route path="support" element={<Support />} />
             <Route path="courses">
               <Route index element={<AllCourses />} />
-              <Route path="detail" element={<AllCoursesDetail />} />
+              <Route path="detail/:id" element={<AllCoursesDetail />} />
             </Route>
             <Route path="payment" element={<Payment />} />
             <Route path="messages" element={<Messages />} />
@@ -140,7 +148,10 @@ function App() {
             <Route path="studentProfile" element={<StudentProfile />} />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
-              <Route path="courseDetail/:id" element={<TeacherCourseDetails />} />
+              <Route
+                path="courseDetail/:id"
+                element={<TeacherCourseDetails />}
+              />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addchapters" element={<CoursesChapter />} />

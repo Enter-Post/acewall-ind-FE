@@ -22,7 +22,7 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 
 // Define the form schema with Zod
 const courseFormSchema = z.object({
-  thumbnail: z.string(),
+  thumbnail: z.any(),
   courseTitle: z
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
@@ -35,7 +35,7 @@ const courseFormSchema = z.object({
   }),
   courseDescription: z
     .string()
-    .min(20, { message: "Description must be at least 20 characters" })
+    .min(5, { message: "Description must be at least 5 characters" })
     .max(500, { message: "Description must be less than 500 characters" }),
   teachingPoints: z
     .array(
@@ -78,8 +78,6 @@ export default function CoursesBasis() {
   // Initialize the form with React Hook Form
 
   // console.log(thumbnail, "thumbnail");
-  console.log(course, "course");
-  console.log(course.basics.thumbnail, "course.basics.thumbnail");
 
   const {
     register,
@@ -122,31 +120,47 @@ export default function CoursesBasis() {
     name: "requirements",
   });
 
-  // Handle thumbnail change
-  const handleThumbnailChange = async (e) => {
-    setLoading(true);
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+
+    setValue("thumbnail", file);
     if (file) {
-      const file = event.target.files[0];
-      const data = new FormData();
-      data.append("file", file);
-      data.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
-      data.append("cloud_name", import.meta.env.VITE_CLOUD_NAME);
+      const reader = new FileReader();
 
-      const res = await axios.post(
-        `https://api.cloudinary.com/v1_1/${
-          import.meta.env.VITE_CLOUD_NAME
-        }/image/upload`,
-        data
-      );
-      console.log(res.data.url, "cloudnary");
-      setLoading(false);
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result); // This will be the Base64 image data
+      };
 
-      setValue("thumbnail", res.data.url, { shouldValidate: true });
-      setThumbnailPreview(URL.createObjectURL(file)); // for preview
+      reader.readAsDataURL(file); // Read file as Base64 URL
     }
   };
+
+  // Handle thumbnail change
+  // const handleThumbnailChange = async (e) => {
+  //   setLoading(true);
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+  //   if (file) {
+  //     const file = event.target.files[0];
+  //     const data = new FormData();
+  //     data.append("file", file);
+  //     data.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
+  //     data.append("cloud_name", import.meta.env.VITE_CLOUD_NAME);
+
+  //     const res = await axios.post(
+  //       `https://api.cloudinary.com/v1_1/${
+  //         import.meta.env.VITE_CLOUD_NAME
+  //       }/image/upload`,
+  //       data
+  //     );
+  //     // console.log(res.data.url, "cloudnary");
+  //     setLoading(false);
+
+  //     setValue("thumbnail", res.data.url, { shouldValidate: true });
+  //     setThumbnailPreview(URL.createObjectURL(file)); // for preview
+  //   }
+  // };
 
   // Handle form submission
 
@@ -155,7 +169,11 @@ export default function CoursesBasis() {
 
     if (data) {
       navigate("/teacher/courses/createCourses/addchapters");
-      setCourse({ basics: data, chapters: [], createdby: user._id });
+      setCourse({
+        ...course,
+        basics: data,
+        // chapters: [], createdby: user._id
+      });
       console.log(course, "data");
     }
   };
@@ -208,7 +226,7 @@ export default function CoursesBasis() {
                       accept="image/*"
                       className="hidden"
                       id="thumbnailInput"
-                      onChange={handleThumbnailChange}
+                      onChange={(e) => handleThumbnailChange(e)}
                     />
                     <label htmlFor="thumbnailInput">
                       <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">

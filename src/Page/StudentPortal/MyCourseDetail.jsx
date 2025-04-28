@@ -1,55 +1,83 @@
-import { useState } from "react";
-import {
-  ChevronDown,
-  ChevronRight,
-  CheckCircle,
-  Play,
-  Pause,
-  Volume2,
-  Maximize2,
-  Square,
-  Download,
-  MessageCircle,
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
 
-const sectionsData = [
-  { name: "Getting Started", lectures: 4 },
-  { name: "Secret of Good Design", lectures: 52 },
-  { name: "Practice Design Like an Artist", lectures: 43 },
-  { name: "Web Development (workflow)", lectures: 35 },
-  { name: "Secrets of Making Money Freelancing", lectures: 21 },
-  { name: "Advanced", lectures: 39 },
-  { name: "What's Next", lectures: 7 },
-];
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useParams } from "react-router-dom";
+import { axiosInstance } from "@/lib/AxiosInstance";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import { CheckCircle, CheckCircle2, ChevronDown, ChevronRight, PlayCircle, Star, StarHalf } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
+import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+
+
+
 
 export default function MyCourseDetail() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [expandedSections, setExpandedSections] = useState(
-    sectionsData.reduce((acc, section) => {
-      acc[section.name] = false;
-      return acc;
-    }, {})
-  );
-  const [activeTab, setActiveTab] = useState("description");
+  const { id } = useParams(); // ✅ Get the ID from the URL
+  const [courseDetails, setCourseDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const toggleSection = (sectionName) => {
+
+  const [expandedSections, setExpandedSections] = useState({});
+
+  const toggleSection = (title) => {
     setExpandedSections((prev) => ({
       ...prev,
-      [sectionName]: !prev[sectionName],
+      [title]: !prev[title],
     }));
   };
+  
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+
+
+  useEffect(() => {
+    const getCourseDetails = async () => {
+      try {
+        console.log("Fetching course with ID:", id);
+        const response = await axiosInstance.get(`/course/get/${id}`);
+        console.log("API Response:", response.data);
+
+        if (response.data?.course) {
+          setCourseDetails(response.data.course);
+        } else {
+          console.error("No course found in response");
+          setCourseDetails(null);
+        }
+      } catch (error) {
+        console.error("Error fetching course:", error);
+        setCourseDetails(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      if (id) getCourseDetails();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [id]);
+
+  console.log("Course Details State:", courseDetails);
+
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!courseDetails) return <div className="p-6 text-red-500">Course not found.</div>;
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
       {/* Left side - Video and Content */}
       <div className="flex-1 overflow-auto">
+        <div className="p-6 border-b">
+          <h1 className="text-xl font-bold mb-2">
+            {courseDetails.basics.courseTitle}
+          </h1>
+          <div className="flex items-center mt-2">
+            {/* <div className="ml-auto flex items-center text-xs text-gray-500">
+              <span className="mx-4">Comments: 154</span>
+            </div> */}
+          </div>
+        </div>
         {/* Video Player */}
         <div className="relative bg-black">
           <div className="aspect-video relative">
@@ -58,7 +86,7 @@ export default function MyCourseDetail() {
               alt="Course video"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 flex items-center justify-center">
+            {/* <div className="absolute inset-0 flex items-center justify-center">
               <button
                 className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm"
                 onClick={togglePlay}
@@ -69,11 +97,11 @@ export default function MyCourseDetail() {
                   <Play className="w-6 h-6 text-white ml-1" />
                 )}
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* Video Controls */}
-          <div className="flex items-center justify-between p-2 bg-black text-white">
+          {/* <div className="flex items-center justify-between p-2 bg-black text-white">
             <div className="flex items-center gap-2">
               <button onClick={togglePlay}>
                 {isPlaying ? (
@@ -89,183 +117,221 @@ export default function MyCourseDetail() {
               <Square className="w-4 h-4" />
               <Maximize2 className="w-4 h-4" />
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Course Title */}
-        <div className="p-6 border-b">
-          <h1 className="text-xl font-semibold">2. Sign up in Webflow</h1>
-          <div className="flex items-center mt-2">
-            <div className="ml-auto flex items-center text-xs text-gray-500">
-              <span className="mx-4">Comments: 154</span>
-            </div>
-          </div>
-        </div>
+
 
         {/* Tabs */}
-        <Tabs
-          defaultValue="description"
-          className="w-full"
-          onValueChange={setActiveTab}
-        >
-          <div className="border-b overflow-auto hide-scrollbar">
-            <TabsList className="bg-transparent h-12">
-              {["description", "notes", "file", "comments"].map((tab) => (
-                <TabsTrigger
-                  key={tab}
-                  value={tab}
-                  className={`px-6 data-[state=active]:border-b-2 data-[state=active]:border-green-500 data-[state=active]:shadow-none rounded-none h-full`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
+        <Tabs defaultValue="overview" className="w-full p-5">
+          <TabsList className="grid grid-cols-4 bg-transparent border-b border-gray-200 border w-full text-green-600">
+            <TabsTrigger
+              value="overview"
+              className="data-[state=active]:border-b-3   data-[state=active]:border-green-500 rounded-none"
+            >
+              Description
+            </TabsTrigger>
+            {/* <TabsTrigger
+              value="curriculum"
+              className="data-[state=active]:border-b-3   data-[state=active]:border-green-500 rounded-none"
+            >
+              
+            </TabsTrigger> */}
+            <TabsTrigger
+              value="reviews"
+              className="data-[state=active]:border-b-3   data-[state=active]:border-green-500 rounded-none"
+            >
+              Attach Files
+            </TabsTrigger>
+            <TabsTrigger
+              value="instructor"
+              className="data-[state=active]:border-b-3   data-[state=active]:border-green-500 rounded-none"
+            >
+              Instructor
+            </TabsTrigger>
 
-          <TabsContent value="description" className="p-6">
-            <h2 className="font-semibold text-lg mb-4">Lectures Description</h2>
-            <p className="text-gray-700 mb-4">
-              We cover everything you need to know about this website. From
-              creating your first project to publishing your website, we'll go
-              through all the steps together and show you how to use Webflow.
-            </p>
-            <p className="text-gray-700 mb-4">
-              If we have a lot of videos, we'll break them down into smaller
-              chunks for easier follow-along.
-            </p>
-          </TabsContent>
+          </TabsList>
 
-          <TabsContent value="notes" className="p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="font-semibold text-lg">Lecture Notes</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-green-500 border-green-500 hover:bg-green-50"
-              >
-                <Download className="w-4 h-4 mr-2" /> Download Notes
-              </Button>
-            </div>
-            <div className="prose max-w-none">
-              <p>Lecture notes content here...</p>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="file" className="p-6">
-            <h2 className="font-semibold text-lg mb-4">Attach Files (01)</h2>
-            <div className="border rounded-md p-4 flex items-center">
-              <div className="bg-green-100 text-green-500 p-2 rounded mr-4">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
-                </svg>
+          {/* overview */}
+          <TabsContent value="overview" className="p-6">
+            {courseDetails?.chapters?.map((chapter, index) => (
+              <div key={index} className="mb-4">
+                <h3 className="text-lg font-bold">{chapter.title}</h3>
+                <span className="text-gray-600 mt-4 text-sm block">
+                  {chapter.lessons.map((lesson, index) => (
+                    <span key={index} className="block">
+                      {lesson.description}
+                    </span>
+                  ))}
+                </span>
               </div>
-              <div className="flex-1">
-                <h3 className="font-medium">Create account on Webflow.pdf</h3>
-                <p className="text-sm text-gray-500">12.5 MB</p>
-              </div>
-              <Button className="bg-green-500 hover:bg-green-600">
-                Download File
-              </Button>
-            </div>
+            ))}
+
+
+
+
+
+
           </TabsContent>
 
-          <TabsContent value="comments" className="p-6">
-            <h2 className="font-semibold text-lg mb-4">Comments (154)</h2>
-            <div className="space-y-6">
-              {/* Comment List */}
-              {["Donald Stewart", "Kristin Watson", "Cody Fisher"].map(
-                (name, index) => (
-                  <div className="flex gap-3" key={index}>
-                    <Avatar>
-                      <AvatarImage
-                        src={`/placeholder.svg?height=40&width=40`}
-                      />
-                      <AvatarFallback>{name[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium">{name}</span>
-                        <span className="text-xs text-gray-500">• 1 week ago</span>
+          {/* curriculam */}
+          <TabsContent value="curriculum" className="p-6">
+            <Accordion type="curriculum" collapsible className="w-full">
+              {Array.isArray(courseDetails?.chapters) && courseDetails.chapters.length > 0 ? (
+                courseDetails.chapters.map((chapter, index) => (
+                  <AccordionItem key={index} value={`chapter-${index}`}>
+                    <AccordionTrigger className="py-4 text-sm font-semibold flex justify-between items-center group">
+                      <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                      <span>{chapter.title}</span>
+                    </AccordionTrigger>
+
+                    <AccordionContent>
+                      <div className="space-y-4 pl-6">
+                        {Array.isArray(chapter.lessons) && chapter.lessons.length > 0 ? (
+                          chapter.lessons.map((lesson, i) => (
+                            <Collapsible key={i}>
+                              <CollapsibleContent className="mt-3 rounded-lg bg-gray-50 border border-gray-200 p-4 shadow-inner space-y-3">
+
+                                {Array.isArray(lesson.pdfFiles) && lesson.pdfFiles.length > 0 && (
+                                  <div className="text-sm text-gray-400 space-y-1 cursor-not-allowed">
+                                    {lesson.pdfFiles.map((pdf, idx) => (
+                                      <div key={idx}>
+                                        <span
+                                          className="text-gray-400 hover:underline"
+                                          title="Access restricted"
+                                        >
+                                          📄 View PDF {idx + 1}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                              </CollapsibleContent>
+
+                            </Collapsible>
+                          ))
+                        ) : (
+                          <div className="text-sm text-gray-500">No lessons available</div>
+                        )}
                       </div>
-                      <p className="text-gray-700 mb-2">
-                        Example comment for {name}.
-                      </p>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-500 h-8"
-                      >
-                        <MessageCircle className="w-4 h-4 mr-1" /> REPLY
-                      </Button>
-                    </div>
-                  </div>
-                )
+
+                      {/* {Array.isArray(chapter.assessment) && chapter.assessment.length > 0 && (
+                        <div className="mt-6 border-t pt-4 space-y-2 pl-6">
+                          <div className="text-sm font-medium text-gray-700">Assessment</div>
+                          {chapter.assessment.map((assess, j) => (
+                            <div key={j} className="text-sm text-gray-600">
+                              {assess.title} — <span className="italic">{assess.description}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )} */}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))
+              ) : (
+                <div className="text-sm text-gray-500">No chapters available</div>
               )}
-              {/* Load More Button */}
-              <Button
-                variant="outline"
-                className="w-full border-dashed text-gray-500"
-              >
-                Load More
-              </Button>
+            </Accordion>
+          </TabsContent>
+
+          {/* instructor */}
+          <TabsContent value="instructor" className="p-6">
+            <div className="flex items-start gap-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage
+
+                  src={courseDetails.createdby.profileImage}
+                  alt="Instructor"
+                />
+                {/* <AvatarFallback>VS</AvatarFallback> */}
+              </Avatar>
+              <div>
+                <h3 className="text-lg font-bold">
+                  {courseDetails.createdby.firstName} {courseDetails.createdby.middleName} {courseDetails.createdby.lastName}
+                </h3>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <Star
+                    size={16}
+                    className="text-yellow-400 fill-yellow-400"
+                  />
+                  {/* <span className="text-sm font-medium">
+                              {courseDetails.createdby.rating} Instructor Rating
+                            </span> */}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  {/* <User size={16} className="text-gray-500" /> */}
+                  {/* <span className="text-sm text-gray-500">
+                              {courseDetails.instructor.students} Students
+                            </span> */}
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <PlayCircle size={16} className="text-gray-500" />
+                  <span className="text-sm text-gray-500">
+                    5 Courses
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 mt-4">
+                  {courseDetails.createdby.bio}
+                </p>
+              </div>
             </div>
           </TabsContent>
+
+          {/* reviews */}
+          <TabsContent value="reviews" className="p-6">
+            <div className="space-y-4">
+              {Array.isArray(courseDetails?.chapters) &&
+                courseDetails.chapters[0]?.lessons &&
+                courseDetails.chapters[0].lessons[0]?.pdfFiles?.length > 0 ? (
+                courseDetails.chapters[0].lessons[0].pdfFiles.map((pdf, index) => (
+                  <div key={index} className="text-sm text-blue-600 hover:underline cursor-pointer">
+                    📄 PDF {index + 1}
+                  </div>
+                ))
+              ) : (
+                <div className="text-sm text-gray-500">No PDF files available for this lesson</div>
+              )}
+            </div>
+          </TabsContent>
+
+
         </Tabs>
       </div>
 
       {/* Right side - Course Contents */}
       <div className="w-full lg:w-80 border-l bg-gray-50 overflow-auto max-h-screen hide-scrollbar">
-        <div className="p-4 border-b bg-white">
-          <div className="flex justify-between items-center">
-            <h2 className="font-medium">Course Contents</h2>
-            <span className="text-xs text-green-500 font-medium">
-              15% Completed
-            </span>
-          </div>
-          <Progress
-            value={15}
-            className="h-1 mt-2 bg-gray-200"
-            indicatorClassName="bg-green-500"
-          />
-        </div>
+        
 
         <div className="max-h-[calc(100vh-64px)]">
-          {sectionsData.map((section, index) => (
-            <div key={index} className="border-b">
+          {courseDetails.chapters.map((chapter, chapterIndex) => (
+            <div key={chapterIndex} className="border-b">
               <button
                 className="flex items-center justify-between w-full p-4 text-left"
-                onClick={() => toggleSection(section.name)}
+                onClick={() => toggleSection(chapter.title)}
               >
-                {expandedSections[section.name] ? (
+                {expandedSections[chapter.title] ? (
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 ) : (
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 )}
                 <span className="flex-1 ml-2 font-medium text-sm">
-                  {section.name}
+                  {chapter.title}
                 </span>
                 <span className="text-xs text-gray-500 flex items-center">
                   <CheckCircle className="w-3 h-3 text-gray-400 mr-1" />{" "}
-                  {section.lectures} lectures
+                  {chapter.lessons.length} lessons
                 </span>
               </button>
-              {expandedSections[section.name] && (
+              {expandedSections[chapter.title] && (
                 <div className="pl-10 pr-4 pb-2">
-                  <div className="py-2 flex items-center text-sm">
-                    <input type="checkbox" className="bg-green-100" />
-                    <span className="ml-2 text-gray-700">First Lecture</span>
-                  </div>
+                  {chapter.lessons.map((lesson, lessonIndex) => (
+                    <div key={lessonIndex} className="py-2 flex items-center text-sm">
+                      <span className="ml-2 text-gray-700">{lesson.title}</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

@@ -1,17 +1,36 @@
-import { useState } from "react"
-import { MoreHorizontal, Send, Edit } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { getContactByName, messages as initialMessages } from "@/lib/data"
-import MessageList from "./messages-list"
+import { useEffect, useState } from "react";
+import { MoreHorizontal, Send, Edit } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { getContactByName, messages as initialMessages } from "@/lib/data";
+import MessageList from "./messages-list";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
-export default function ChatWindow({ contactName }) {
-  const contact = getContactByName(contactName)
-  const [messages, setMessages] = useState(initialMessages)
-  const [newMessage, setNewMessage] = useState("")
+export default function ChatWindow({ activeConversation }) {
+  // const contact = getContactByName(contactName);
+  const [messages, setMessages] = useState();
+  const [newMessage, setNewMessage] = useState("");
+  const [chat, setChat] = useState();
 
+  console.log(activeConversation, "activeConversation");
+
+  useEffect(() => {
+    const getChats = async () => {
+      await axiosInstance
+        .get(`/messeges/allmsg/${activeConversation}`)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getChats();
+  }, [activeConversation]);
+
+  // return;
   const handleSendMessage = () => {
-    if (!newMessage.trim()) return
+    // if (!newMessage.trim()) return;
 
     const message = {
       id: `msg-${Date.now()}`,
@@ -19,27 +38,22 @@ export default function ChatWindow({ contactName }) {
       content: newMessage,
       time: "now",
       isNew: true,
-    }
+    };
 
-    setMessages([...messages, message])
-    setNewMessage("")
-  }
+    setMessages([...messages, message]);
+    setNewMessage("");
+  };
 
   return (
     <div className="flex flex-col h-full overflow-auto hide-scrollbar">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={contact?.avatar} alt={contactName} />
-            <AvatarFallback>
-              {contactName
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-            </AvatarFallback>
+            <AvatarImage src={"contact?.avatar"} />
+            <AvatarFallback>{"contactName"}</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">{contactName}</h3>
+            <h3 className="font-medium">{"contactName"}</h3>
             <p className="text-sm text-green-600">Active Now</p>
           </div>
         </div>
@@ -48,7 +62,11 @@ export default function ChatWindow({ contactName }) {
         </Button> */}
       </div>
 
-      <MessageList messages={messages} contactName={contactName} contactAvatar={contact?.avatar} />
+      <MessageList
+        messages={"messages"}
+        contactName={"contactName"}
+        contactAvatar={"contact?.avatar"}
+      />
 
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center gap-2">
@@ -72,6 +90,5 @@ export default function ChatWindow({ contactName }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

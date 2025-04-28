@@ -10,33 +10,25 @@ export const CourseContext = createContext();
 export const CourseProvider = ({ children }) => {
   const [courseLoading, setCourseLoading] = useState(false);
   const { user } = useContext(GlobalContext);
-  const [course, setCourse] = useState({
+  let [course, setCourse] = useState({
     basics: {},
     chapters: [],
-    createdby: user?._id
+    createdby: user?._id,
   });
 
-  console.log(course, "course");
+// <<<<<<< Messages
+//   // console.log(course, "course");
+// =======
+//   // const uploadCourse = async () => {
+// >>>>>>> keshaUpdates-23/4
 
-  const getCourse = async () => {
-    try {
-      setCourseLoading(true);
-      const res = await axiosInstance.post("course/create", course);
-      toast.success(res.data.message);
-      setCourseLoading(false);
-    } catch (error) {
-      console.error(error);
-      toast.error(res.data.message);
-      setCourseLoading(false);
-    }
-  };
+//   // };
 
   return (
     <CourseContext.Provider
       value={{
         course,
         setCourse,
-        getCourse,
         courseLoading,
         setCourseLoading,
       }}
