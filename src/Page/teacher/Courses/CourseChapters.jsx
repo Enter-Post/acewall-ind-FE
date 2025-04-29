@@ -71,10 +71,10 @@ export default function CoursesChapter() {
       toast.success(res.data.message);
       setCourseLoading(false);
       navigate("/teacher/courses");
-      course = {};
+      setCourse({});
     } catch (error) {
       console.error(error);
-      toast.error(res.data.message);
+      toast.error(error.data.message);
       setCourseLoading(false);
     }
   };

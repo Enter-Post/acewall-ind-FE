@@ -8,45 +8,65 @@ import { Button } from "@/components/ui/button";
 
 const Support = () => {
   return (
-    <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
-      <div className="space-y-8 flex justify-center items-center">
-        {/* Personal Information */}
-        <div className="space-y-6 w-full md:w-[50%]">
-          <div className="">
-            <h2 className="text-2xl font-bold text-foreground">Support</h2>
-          </div>
-          <div className="flex flex-col gap-5">
-            <div className="space-y-2">
-              <Label htmlFor="fullname" className="text-sm font-medium">
-                Full Name
-              </Label>
-              <Input id="firstName" placeholder="Enter your  Full Name" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type={"email"}
-                placeholder="Enter your Email"
-              />
-            </div>
-            <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-              <Label htmlFor="feedback" className="text-sm font-medium">
-                Feedback
-              </Label>
-              <Textarea id="feedback" placeholder="Feedback" />
-            </div>
-            <div>
-              <Button className={"bg-green-400 hover:bg-green-500"}>
-                Submit
-              </Button>
-            </div>
-          </div>
+    <div className="w-full max-w-2xl mx-auto  ">
+      <div className="bg-white dark:bg-muted  rounded-2xl p-8 space-y-8">
+        {/* Header */}
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold text-foreground ">Contact Support </h2>
+          <p className="mt-2 text-muted-foreground text-sm">
+            We're here to help. Please fill out the form and our team will get back to you soon.
+          </p>
         </div>
+
+        {/* Form */}
+        <form className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="fullname" className="text-sm font-medium text-muted-foreground">
+              Full Name
+            </Label>
+            <Input
+              id="firstName"
+              placeholder="Enter your full name"
+              className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/50 transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" required className="text-sm font-medium text-muted-foreground">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              className="w-full rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/50 transition"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="feedback" className="text-sm font-medium text-muted-foreground">
+              Feedback
+            </Label>
+            <Textarea
+              id="feedback"
+              placeholder="Write your feedback..."
+              className="w-full min-h-[120px] rounded-lg border border-input bg-background px-4 py-3 text-sm shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/50 transition resize-none"
+            />
+          </div>
+
+          {/* Button */}
+          <div className="pt-4">
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white hover:bg-primary/90 rounded-lg px-6 py-3 text-sm font-semibold shadow-md transition"
+            >
+              Submit
+            </Button>
+          </div>
+        </form>
       </div>
     </div>
+
   );
 };
 

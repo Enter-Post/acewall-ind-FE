@@ -21,9 +21,9 @@ const SelectCmp = ({ data, title, className }) => {
           <SelectValue placeholder={title} />
         </SelectTrigger>
         <SelectContent>
-          {data.map((item) => (
-            <SelectItem key={item.id} value={item.name}>
-              {item.name}
+          {data.map((item, index) => (
+            <SelectItem key={index} value={item}>
+              {item}
             </SelectItem>
           ))}
         </SelectContent>

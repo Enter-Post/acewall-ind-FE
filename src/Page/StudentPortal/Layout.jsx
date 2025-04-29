@@ -51,93 +51,9 @@ const sideBarTabs = [
     icon: <Target02Icon />,
     path: "/student/gradebook",
   },
-  // {
-  //   id: 10,
-  //   name: "Messages",
-  //   icon: <MessageCircleDashed />,
-  //   path: "/student/messages",
-  // },
+
 ];
 
-const topBarTabs = [
-  {
-    label: "MORE COURSE",
-    items: [
-      {
-        label: "History",
-        link: "/student/courses",
-        subItems: [
-          { label: "World History", link: "/student/courses" },
-          { label: "US History", link: "/student/courses" },
-          {
-            label: "African American History",
-            link: "/student/courses",
-          },
-          { label: "European History", link: "/student/courses" },
-          { label: "Government", link: "/student/courses" },
-        ],
-      },
-      {
-        label: "Physics",
-        link: "/student/courses",
-        subItems: [
-          { label: "Classical Mechanics", onClick: () => { } },
-          { label: "Electromagnetism", onClick: () => { } },
-          { label: "Thermodynamics", onClick: () => { } },
-          { label: "Quantum Mechanics", onClick: () => { } },
-          { label: "Relativity", onClick: () => { } },
-        ],
-      },
-      {
-        label: "Mathematics",
-        link: "/student/courses",
-        subItems: [
-          { label: "Algebra 1", link: "/student/courses" },
-          { label: "Algebra 2", link: "/student/courses" },
-          { label: "Pre-Algebra", link: "/student/courses" },
-          { label: "Geometry", link: "/student/courses" },
-          { label: "Pre-Calculus", link: "/student/courses" },
-          { label: "Trigonometry", link: "/student/courses" },
-          { label: "Calculus", link: "/student/courses" },
-        ],
-      },
-      {
-        label: "English",
-        link: "/student/courses",
-        subItems: [
-          { label: "American Literature", link: "/student/courses" },
-          { label: "World Literature", link: "/student/courses" },
-          { label: "British Literature", link: "/student/courses" },
-        ],
-      },
-      {
-        label: "Culinary Arts",
-        link: "/student/courses",
-        subItems: [
-          { label: "Baking", link: "/student/courses" },
-          { label: "Sauces", link: "/student/courses" },
-          { label: "Italian Cuisine", link: "/student/courses" },
-          { label: "French Cuisine", link: "/student/courses" },
-          { label: "Asian Cuisine", link: "/student/courses" },
-        ],
-      },
-      {
-        label: "Mental Wellness",
-        link: "/student/courses",
-
-        subItems: [
-          { label: "Breath Work", link: "/student/courses" },
-          { label: "Meditation/Yoga", link: "/student/courses" },
-        ],
-      },
-      {
-        label: "Engineering",
-        link: "/student/courses",
-        subItems: [{ label: "Audio Engineering", link: "/student/courses" }],
-      },
-    ],
-  },
-];
 
 export default function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -219,13 +135,13 @@ export default function Layout() {
                 MORE COURSES
               </Link>
               <Link
-                to="/support"
+                to="/student/support"
                 className="text-xs md:text-md lg:text-base font-medium text-gray-700"
               >
                 SUPPORT
               </Link>
               <Link
-                to="/contactUs"
+                to="/student/contactUs"
                 className="text-xs md:text-md lg:text-base font-medium text-gray-700"
               >
                 CONTACT US

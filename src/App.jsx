@@ -75,11 +75,11 @@ function App() {
     <>
       <ScrollToTop />
       <Routes>
-        <Route
+        <Route  
           element={
             <PublicRoute
               user={user}
-              redirectTo={user?.role === "teacher" ? "/teacher" : "/student"}
+              redirectTo={user?.role === "teacher" ? "/teacher" : "/student/mycourses"}
             />
           }
         >
@@ -109,8 +109,8 @@ function App() {
         {/* Student Routes */}
         <Route element={<PrivateRoute user={user} allowedRole="student" />}>
           <Route path="/student" element={<Layout />}>
-            <Route index element={<Deshboard />} />
             <Route path="mycourses" element={<Mycourses />}></Route>
+            <Route index element={<Deshboard />} />
             <Route
               path="myCourseDetail/:id"
               element={<MyCourseDetail />}
@@ -145,7 +145,7 @@ function App() {
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
-            <Route path="studentProfile" element={<StudentProfile />} />
+            <Route path="studentProfile/:id" element={<StudentProfile />} />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route

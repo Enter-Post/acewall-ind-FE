@@ -21,15 +21,20 @@ export default function MyCourseDetail() {
 
   const [expandedSections, setExpandedSections] = useState({});
 
+
+  function getYouTubeVideoId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
+
   const toggleSection = (title) => {
     setExpandedSections((prev) => ({
       ...prev,
       [title]: !prev[title],
     }));
   };
-  
-
-
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -68,57 +73,40 @@ export default function MyCourseDetail() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
       {/* Left side - Video and Content */}
       <div className="flex-1 overflow-auto">
-        <div className="p-6 border-b">
+        <div className="p-2 border-b">
           <h1 className="text-xl font-bold mb-2">
             {courseDetails.basics.courseTitle}
           </h1>
-          <div className="flex items-center mt-2">
-            {/* <div className="ml-auto flex items-center text-xs text-gray-500">
-              <span className="mx-4">Comments: 154</span>
-            </div> */}
-          </div>
-        </div>
-        {/* Video Player */}
-        <div className="relative bg-black">
-          <div className="aspect-video relative">
-            <img
-              src="/placeholder.svg?height=480&width=854"
-              alt="Course video"
-              className="w-full h-full object-cover"
-            />
-            {/* <div className="absolute inset-0 flex items-center justify-center">
-              <button
-                className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm"
-                onClick={togglePlay}
-              >
-                {isPlaying ? (
-                  <Pause className="w-6 h-6 text-white" />
-                ) : (
-                  <Play className="w-6 h-6 text-white ml-1" />
-                )}
-              </button>
-            </div> */}
-          </div>
 
-          {/* Video Controls */}
-          {/* <div className="flex items-center justify-between p-2 bg-black text-white">
-            <div className="flex items-center gap-2">
-              <button onClick={togglePlay}>
-                {isPlaying ? (
-                  <Pause className="w-4 h-4" />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
-              </button>
-              <span className="text-xs">1:25 / 9:15</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Volume2 className="w-4 h-4" />
-              <Square className="w-4 h-4" />
-              <Maximize2 className="w-4 h-4" />
-            </div>
-          </div> */}
         </div>
+        {courseDetails.chapters?.map((chapter) => (
+          <div key={chapter._id} className="mb-8">
+            {/* <h2 className="text-xl font-bold mb-4">{chapter.description}</h2> */}
+
+            {chapter.lessons?.map((lesson) => (
+              <div key={lesson._id} className="mb-6">
+                <h3 className="text-lg font-semibold mb-2"> Lesson: {  lesson.title}</h3>
+
+                {/* Video Player */}
+                {lesson.youtubeLinks ? (
+                  <div className="relative w-full h-0" style={{ paddingTop: "56.25%" }}>
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src={`https://www.youtube.com/embed/${getYouTubeVideoId(lesson.youtubeLinks)}`}
+                      frameBorder="0"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                ) : (
+                  <p>No YouTube link available</p>
+                )}
+              </div>
+            ))}
+          </div>
+        ))}
+
+
 
         {/* Course Title */}
 
@@ -303,7 +291,7 @@ export default function MyCourseDetail() {
 
       {/* Right side - Course Contents */}
       <div className="w-full lg:w-80 border-l bg-gray-50 overflow-auto max-h-screen hide-scrollbar">
-        
+
 
         <div className="max-h-[calc(100vh-64px)]">
           {courseDetails.chapters.map((chapter, chapterIndex) => (

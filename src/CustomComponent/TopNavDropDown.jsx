@@ -32,25 +32,9 @@ export function TopNavbarDropDown({ selected, setselected }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    // logout();
-    // checkAuth();
     logout();
     checkAuth();
     location.reload();
-    // setAuthLoading(true);
-    // await axiosInstance
-    //   .post("auth/logout")
-    //   .then((res) => {
-    //     console.log(res);
-    //     setAuthLoading(false);
-    //     toast.success(res.data.message);
-    //     navigate("/login");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setAuthLoading(false);
-    //     toast.error(err.response.data.message);
-    //   });
   };
 
   return (
@@ -69,11 +53,6 @@ export function TopNavbarDropDown({ selected, setselected }) {
           return (
             <DropdownMenuItem
               key={index}
-              onClick={() => setselected(tab.id)}
-              className={
-                selected == tab.id &&
-                "bg-green-500 hover:bg-green-600 text-white"
-              }
               asChild
             >
               <Link to={tab.path}>{tab.title}</Link>

@@ -11,10 +11,12 @@ export const GlobalProvider = ({ children }) => {
   const [Authloading, setAuthLoading] = useState(false);
   const [signUpdata, setSignupData] = useState({});
 
+  // console.log(user, "Global provider");
+
   const signup = async (completeData) => {
     setAuthLoading(true);
     await axiosInstance
-      .post("auth/register", completeData)
+      .post("auth/register" , completeData)
       .then((res) => {
         setUser(res.data.user);
         setAuthLoading(false);

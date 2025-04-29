@@ -6,11 +6,18 @@ import { Badge } from "@/components/ui/badge"
 import { Star, Users, BookOpen } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { GlobalContext } from "@/Context/GlobalProvider"
+import { Link } from "react-router-dom"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { AspectRatio } from "@radix-ui/react-aspect-ratio"
 
 export default function TeacherAccount() {
   const { user } = useContext(GlobalContext);
-
   const formatNumber = (num) => num?.toLocaleString();
+
+  const totalStudents = user?.courses?.reduce((acc, course) => {
+    return acc + (course.students?.length || 0);
+  }, 0) || 0;
+
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -53,13 +60,13 @@ export default function TeacherAccount() {
 
               <div className="flex items-center gap-1">
                 <Users className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{formatNumber(user?.students || 0)}</span>
+                <span className="font-medium">{formatNumber(totalStudents)}</span>
                 <span className="text-gray-500 text-sm">students</span>
               </div>
 
               <div className="flex items-center gap-1">
                 <BookOpen className="h-4 w-4 text-gray-500" />
-                <span className="font-medium">{user?.courses || 0}</span>
+                <span className="font-medium">{user?.courses?.length || 0}</span>
                 <span className="text-gray-500 text-sm">courses</span>
               </div>
             </div>
@@ -85,7 +92,7 @@ export default function TeacherAccount() {
       </div>
 
       {/* Tabs Section */}
-      <Tabs defaultValue="courses" className="mb-8">
+      {/* <Tabs defaultValue="courses" className="mb-8">
         <div className="border-b">
           <TabsList className="bg-transparent h-auto p-0 mb-[-1px]">
             <TabsTrigger value="courses" className={cn("px-6 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-green-500 font-medium")}>
@@ -97,16 +104,11 @@ export default function TeacherAccount() {
           </TabsList>
         </div>
 
-        <TabsContent value="courses" className="mt-6">
-          <div className="text-gray-500">Courses will be listed here</div>
-        </TabsContent>
+     
 
-        <TabsContent value="reviews" className="mt-6">
-          <div className="text-center py-12">
-            <h3 className="text-xl font-medium text-gray-500">Reviews will appear here</h3>
-          </div>
-        </TabsContent>
-      </Tabs>
+
+        
+      </Tabs> */}
     </div>
   );
 }
