@@ -7,14 +7,13 @@ import { useContext, useEffect, useState } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import oopsImage from "@/assets/oopsimage.png";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { MyCoursesCard } from "@/CustomComponent/Card";
 
 const CourseCards = () => {
   const [courses, setCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useContext(GlobalContext);
-
-  console.log(courses, "courses");
 
   const searching = searchQuery.trim() !== "";
 
@@ -26,8 +25,6 @@ const CourseCards = () => {
           params: { search: searchQuery },
         })
         .then((res) => {
-          console.log(res);
-
           setCourses(res.data.purchasedCourses);
           setLoading(false);
         })
@@ -78,8 +75,6 @@ const CourseCards = () => {
               </Button>
             </>
           ) : (
-
-
             <>
               <h1 className="text-2xl font-semibold text-muted-foreground">
                 Kickstart your learning journey
@@ -102,45 +97,9 @@ const CourseCards = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses?.map((course) => (
-            <Link key={course._id} to={`/student/myCourseDetail/${course._id}`}>
-              <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
-                <AspectRatio ratio={16 / 9}>
-                  <img
-                    src={course.basics.thumbnail || "/placeholder.svg"}
-                    alt={`${course.basics.thumbnail} image`}
-                    className="object-cover w-full h-full"
-                  />
-                </AspectRatio>
-                <CardHeader>
-                  <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-                    {course.basics.category?.title || "Development"}
-                  </div>
-                  <CardTitle className="flex justify-between flex-col gap-2">
-                    <span>{course.basics.courseTitle}</span>
-                    <span className="text-lg font-semibold text-green-500">
-                      ${course.basics.price}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      Teacher: {course.createdby?.firstName}{" "}
-                      {course.createdby?.middleName
-                        ? course.createdby.middleName + " "
-                        : ""}
-                      {course.createdby?.lastName}
-                    </p>{" "}
-                    <p className="text-sm text-muted-foreground">
-                      Language: {course.basics.language}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Chapters: {course.chapters.length}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+          {courses?.map((course, index) => (
+            <Link key={index} to={`/student/mycourses/${course._id}`}>
+              <MyCoursesCard course={course} />
             </Link>
           ))}
         </div>

@@ -14,7 +14,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Loader, Play, Users } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
@@ -28,7 +33,17 @@ export default function TeacherCourseDetails() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
+  const [openLessons, setOpenLessons] = useState({});
+
+  const toggleLesson = (lessonId) => {
+    setOpenLessons((prev) => ({
+      ...prev,
+      [lessonId]: !prev[lessonId],
+    }));
+  };
+
   const handleDeleteCourse = async () => {
+
     try {
       await axiosInstance.delete(`/course/delete/${id}`);
       setConfirmOpen(false);
@@ -51,6 +66,7 @@ export default function TeacherCourseDetails() {
         .get(`course/get/${id}`)
         .then((res) => {
           setCourse(res.data.course);
+          console.log(res);
         })
         .catch((err) => {
           console.log(err);
@@ -133,118 +149,7 @@ export default function TeacherCourseDetails() {
             label="Category"
             bgColor="bg-orange-50"
           />
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <div onClick={() => setOpen(true)}>
-                <StatCard
-                  icon={<Play className="h-5 w-5 text-orange-500" />}
-                  value={course.chapters?.length || 0}
-                  label="Chapters"
-                  bgColor="bg-orange-50"
-                />
-              </div>
-            </DialogTrigger>
 
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="text-xl font-bold">
-                  Course Chapters & Lessons
-                </DialogTitle>
-                <DialogDescription className="text-sm text-muted-foreground mt-1">
-                  This course includes <strong>{course.chapters.length}</strong>{" "}
-                  chapters and{" "}
-                  <strong>
-                    {course.chapters.reduce(
-                      (total, chapter) =>
-                        total + (chapter.lessons?.length || 0),
-                      0
-                    )}
-                  </strong>{" "}
-                  lessons.
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="mt-6 space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                {course.chapters.map((chapter, index) => (
-                  <div
-                    key={index}
-                    className="rounded-2xl border bg-white shadow-md p-4 hover:shadow-lg transition-all"
-                  >
-                    <button
-                      onClick={() =>
-                        setOpenChapter(openChapter === index ? null : index)
-                      }
-                      className="w-full flex justify-between items-center text-left group"
-                    >
-                      <span className="text-md font-semibold  ">
-                        Chapter {index + 1}: {chapter.title}
-                      </span>
-                      <span className="text-sm text-gray-500 hover:underline whitespace-nowrap">
-                        {openChapter === index ? "Hide" : "Show"} Lessons
-                      </span>
-                    </button>
-
-                    {openChapter === index && (
-                      <div className="mt-4 space-y-4">
-                        {chapter.lessons?.length > 0 ? (
-                          chapter.lessons.map((lesson, i) => (
-                            <div
-                              key={i}
-                              className="border-t pt-4 pl-2 border-gray-200 bg-gray-50 rounded-lg p-3"
-                            >
-                              <div className="font-medium text-base ">
-                                Lesson {i + 1}: {lesson.title}
-                              </div>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {lesson.description ||
-                                  "No description available."}
-                              </p>
-
-                              {/* Assignments */}
-                              {lesson.assignments?.length > 0 ? (
-                                <div className="mt-3 space-y-2">
-                                  <p className="font-semibold text-sm text-gray-800">
-                                    Assignments:
-                                  </p>
-                                  {lesson.assignments.map(
-                                    (assignment, aIndex) => (
-                                      <div
-                                        key={aIndex}
-                                        className="bg-white border border-green-100 p-3 rounded-md shadow-sm"
-                                      >
-                                        <p className="font-semibold text-green-700">
-                                          {assignment.title}
-                                        </p>
-                                        <p className="text-sm text-gray-700">
-                                          {assignment.details ||
-                                            "No details provided."}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                          {assignment.dueDate || "No due date"}
-                                        </p>
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              ) : (
-                                <p className="italic text-sm text-muted-foreground mt-2">
-                                  No assignments for this lesson.
-                                </p>
-                              )}
-                            </div>
-                          ))
-                        ) : (
-                          <p className="italic text-sm text-muted-foreground">
-                            No lessons in this chapter.
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </DialogContent>
-          </Dialog>
 
           <StatCard
             icon={<Play className="h-5 w-5 text-orange-500" />}
@@ -265,6 +170,152 @@ export default function TeacherCourseDetails() {
           />
         </div>
 
+
+        {/* chapter detail */}
+
+
+
+
+        <Accordion type="multiple" className="w-full space-y-4">
+          {course?.chapters.map((chapter, chapterIndex) => (
+            <AccordionItem
+              key={chapter._id}
+              value={`chapter-${chapterIndex}`}
+              className="border rounded-xl overflow-hidden shadow-sm"
+            >
+              <AccordionTrigger className="text-left text-lg font-semibold px-6 py-3  hover:bg-gray-50 transition-all">
+                Chapter {chapterIndex + 1}: {chapter.title}
+              </AccordionTrigger>
+
+              <AccordionContent className="px-6 pb-6 space-y-4 bg-white">
+                <p className="text-sm text-gray-700 leading-relaxed">{chapter.description}</p>
+
+                {/* Chapter Assessments */}
+                {Array.isArray(chapter.assessment) && chapter.assessment.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="font-semibold text-base text-gray-900">Chapter Assessment</p>
+                    {chapter.assessment.map((assess, aIdx) => (
+                      <div key={aIdx} className="pl-4 border-l-2 border-orange-400">
+                        <p className="text-sm text-gray-700 mb-1">{assess.description}</p>
+                        {assess.pdfFiles?.map((pdf, i) => (
+                          <a
+                            key={i}
+                            href={pdf}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 text-sm hover:underline block"
+                          >
+                            View Assessment PDF {i + 1}
+                          </a>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Lessons */}
+                {chapter.lessons?.length > 0 && (
+                  <div className="space-y-3">
+                    <p className="font-semibold text-base text-gray-900">Lessons</p>
+                    {chapter.lessons.map((lesson, lessonIndex) => (
+                      <div
+                        key={lesson._id}
+                        className="border rounded-md p-4 bg-gray-50 shadow-sm"
+                      >
+                        <div
+                          onClick={() => toggleLesson(lesson._id)}
+                          className="flex justify-between items-center cursor-pointer"
+                        >
+                          <p className="text-sm font-medium text-gray-800">
+                            Lesson {lessonIndex + 1}: {lesson.title}
+                          </p>
+                          <span className="text-blue-500 text-sm">
+                            {openLessons[lesson._id] ? "Hide" : "Show"} Details
+                          </span>
+                        </div>
+
+                        {openLessons[lesson._id] && (
+                          <div className="mt-3 space-y-2">
+                            <p className="text-sm text-gray-600">
+                              {lesson.description || "No description available."}
+                            </p>
+
+                            {/* PDFs */}
+                            {lesson.pdfFiles?.map((pdf, i) => (
+                              <a
+                                key={i}
+                                href={pdf}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 text-sm hover:underline block"
+                              >
+                                View Lesson PDF {i + 1}
+                              </a>
+                            ))}
+
+                            {lesson.youtubeLinks && (
+                              <a
+                                href={lesson.youtubeLinks}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 text-sm hover:underline block"
+                              >
+                                Watch on YouTube
+                              </a>
+                            )}
+
+                            {lesson.otherLink && (
+                              <a
+                                href={lesson.otherLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 text-sm hover:underline block"
+                              >
+                                Additional Resource
+                              </a>
+                            )}
+
+                            {/* Lesson Assessment */}
+                            {Array.isArray(lesson.lessonAssessment) &&
+                              lesson.lessonAssessment.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  <p className="font-semibold text-sm">Lesson Assessment:</p>
+                                  {lesson.lessonAssessment.map((assess, idx) => (
+                                    <div key={idx} className="pl-4 border-l-2 border-green-400">
+                                      <p className="text-sm text-gray-700 mb-1">
+                                        {assess.description}
+                                      </p>
+                                      {assess.pdfFiles?.map((pdf, j) => (
+                                        <a
+                                          key={j}
+                                          href={pdf}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 text-sm hover:underline block"
+                                        >
+                                          View Assessment PDF {j + 1}
+                                        </a>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+
+
+
+
+
+
         {/* Rating */}
         <div className="mt-8">
           <h3 className="text-lg font-medium mb-4">Overall Course Rating</h3>
@@ -278,11 +329,10 @@ export default function TeacherCourseDetails() {
                   {[1, 2, 3, 4, 5].map((star, index) => (
                     <svg
                       key={index}
-                      className={`w-6 h-6 ${
-                        index + 1 <= Math.floor(course.averageRating || 5)
-                          ? "text-orange-400"
-                          : "text-gray-300"
-                      }`}
+                      className={`w-6 h-6 ${index + 1 <= Math.floor(course.averageRating || 5)
+                        ? "text-orange-400"
+                        : "text-gray-300"
+                        }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -302,6 +352,7 @@ export default function TeacherCourseDetails() {
           </div>
         </div>
       </div>
+
       <div className="flex mt-10 justify-end space-x-2">
         {/* Delete Confirmation Modal */}
         <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
@@ -347,8 +398,10 @@ export default function TeacherCourseDetails() {
         </Dialog>
       </div>
     </div>
+
   );
 }
+
 
 function StatCard({ icon, value, label, bgColor }) {
   return (

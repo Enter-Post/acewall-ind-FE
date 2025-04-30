@@ -47,7 +47,8 @@ const AllCourses = () => {
       <div className="flex flex-col pb-5 gap-2">
         <div>
           <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-            My Courses
+            
+            All Courses
           </p>
         </div>
         <SearchBox query={searchQuery} setQuery={setSearchQuery} />

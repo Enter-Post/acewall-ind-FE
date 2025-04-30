@@ -1,6 +1,6 @@
 import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import { ArrowRight, School } from "lucide-react";
+import { ArrowRight, BookOpen, Clock, School, Mail, MapPin, Calendar } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -8,56 +8,13 @@ import {
   StudentProfileCourseCard,
   StudentProfileStatCard,
 } from "@/CustomComponent/Card";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 export default function StudentProfile() {
   // Sample data for courses
   const { id } = useParams();
   const [studentInfo, setStudentInfo] = useState();
   const [loading, setLoading] = useState(false);
-  const courses = [
-    {
-      id: 1,
-      title: "Premiere Pro CC for Beginners: Video Editing in Premiere",
-      progress: 50,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Group%20521-Q7snN9c0Q3XyBaUZLPzecKMEWytMg1.png",
-    },
-    {
-      id: 2,
-      title: "Premiere Pro CC for Beginners: Video Editing in Premiere",
-      progress: 50,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Group%20521-Q7snN9c0Q3XyBaUZLPzecKMEWytMg1.png",
-    },
-    {
-      id: 3,
-      title: "Premiere Pro CC for Beginners: Video Editing in Premiere",
-      progress: 50,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Group%20521-Q7snN9c0Q3XyBaUZLPzecKMEWytMg1.png",
-    },
-    {
-      id: 4,
-      title: "Premiere Pro CC for Beginners: Video Editing in Premiere",
-      progress: 50,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Group%20521-Q7snN9c0Q3XyBaUZLPzecKMEWytMg1.png",
-    },
-    {
-      id: 5,
-      title: "Premiere Pro CC for Beginners: Video Editing in Premiere",
-      progress: 50,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Group%20521-Q7snN9c0Q3XyBaUZLPzecKMEWytMg1.png",
-    },
-    {
-      id: 6,
-      title: "Premiere Pro CC for Beginners: Video Editing in Premiere",
-      progress: 50,
-      image:
-        "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Group%20521-Q7snN9c0Q3XyBaUZLPzecKMEWytMg1.png",
-    },
-  ];
 
   useEffect(() => {
     const getUser = async () => {
@@ -78,46 +35,76 @@ export default function StudentProfile() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-white rounded-xl shadow-md">
       {/* Profile Section */}
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-20 h-20 rounded-full overflow-hidden bg-[#d65db1]">
-          <img
+      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
+
+        <Avatar className="w-24 h-24 ring-3 ring-gray-500 rounded-full shadow-sm">
+          <AvatarImage
             src={studentInfo?.profileImg}
-            alt="Student Profile"
-            className="w-full h-full object-cover"
+            alt={studentInfo?.firstName}
+            className="rounded-full object-cover"
           />
-        </div>
-        <div className="flex gap-1">
-          <p className="text-2xl font-bold text-gray-800">
-            {studentInfo?.firstName}
-          </p>
-          {studentInfo?.middleName && (
-            <p className="text-2xl font-bold text-gray-800">
-              studentInfo?.firstName
-            </p>
-          )}
-          <p className="text-2xl font-bold text-gray-800">
-            {studentInfo?.lastName}
-          </p>
+          <AvatarFallback className="bg-gray-200 text-gray-600 text-xl font-semibold flex items-center justify-center">
+            {studentInfo?.firstName[0]}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="flex flex-col justify-center text-center md:text-left">
+          <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-2 gap-y-1">
+            <p className="text-2xl font-bold text-gray-800">{studentInfo?.firstName}</p>
+            {studentInfo?.middleName && (
+              <p className="text-2xl font-bold text-gray-800">{studentInfo?.middleName}</p>
+            )}
+            <p className="text-2xl font-bold text-gray-800">{studentInfo?.lastName}</p>
+          </div>
+
+          <div className="mt-3 space-y-1 text-sm text-gray-600">
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <Mail className="w-4 h-4 text-gray-500" />
+              <span>{studentInfo?.email}</span>
+            </div>
+
+            {/* <div className="flex items-center justify-center md:justify-start gap-2">
+              <MapPin className="w-4 h-4 text-gray-500" />
+              <span>
+                {studentInfo?.city || "City not provided"},{" "}
+                {studentInfo?.country || "Country not provided"}
+              </span>
+            </div> */}
+
+            <div className="flex items-center justify-center md:justify-start gap-2">
+              <Calendar className="w-4 h-4 text-gray-500" />
+              <span>Joined: {new Date(studentInfo?.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="flex items-center justify-center mb-10">
         <StudentProfileStatCard
+          className="max-w-xs"
           icon={<School />}
-          title={"Enrolled Courses"}
-          value={studentInfo?.purchasedCourse.length}
+          title="Enrolled Courses"
+          value={studentInfo?.purchasedCourse?.length || 0}
         />
       </div>
 
       {/* Course List */}
-      <div className="space-y-4">
-        {studentInfo?.purchasedCourse.map((course, index) => (
-          <StudentProfileCourseCard key={index} course={course} />
-        ))}
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">Enrolled Courses</h2>
+        <div className="flex flex-row gap-8 items-center flex-wrap justify-center md:justify-start ">
+
+          {studentInfo?.purchasedCourse?.map((course, index) => (
+            <StudentProfileCourseCard key={index} course={course} />
+          ))}
+         
+        </div>
       </div>
     </div>
+
+
+
   );
 }

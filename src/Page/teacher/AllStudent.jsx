@@ -2,198 +2,93 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 import { StudentCard } from "@/CustomComponent/Card";
 import SelectCmp from "@/CustomComponent/SelectCmp";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-const AllStudent = ({ totalCount }) => {
-  // const students = [
-  //   {
-  //     id: 1,
-  //     name: "Esther Howard",
-  //     email: "EstherHoward@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 50274,
-  //     joinedAt: "17 Aug, 2020",
-  //     courses: 12,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Cameron Williamson",
-  //     email: "CameronW@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 42158,
-  //     joinedAt: "23 Sep, 2020",
-  //     courses: 8,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Brooklyn Simmons",
-  //     email: "Brooklyn.S@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 35921,
-  //     joinedAt: "14 Oct, 2020",
-  //     courses: 15,
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Leslie Alexander",
-  //     email: "Leslie.Alexander@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 48732,
-  //     joinedAt: "5 Jul, 2020",
-  //     courses: 10,
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Dianne Russell",
-  //     email: "Dianne.R@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 39845,
-  //     joinedAt: "12 Nov, 2020",
-  //     courses: 7,
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "Jenny Wilson",
-  //     email: "JennyW@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 52103,
-  //     joinedAt: "30 Jun, 2020",
-  //     courses: 14,
-  //   },
-  //   {
-  //     id: 7,
-  //     name: "Kathryn Murphy",
-  //     email: "Kathryn.M@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 45678,
-  //     joinedAt: "8 Aug, 2020",
-  //     courses: 9,
-  //   },
-  //   {
-  //     id: 8,
-  //     name: "Cody Fisher",
-  //     email: "Cody.Fisher@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 38291,
-  //     joinedAt: "19 Sep, 2020",
-  //     courses: 11,
-  //   },
-  //   {
-  //     id: 9,
-  //     name: "Darrell Steward",
-  //     email: "Darrell.S@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 47123,
-  //     joinedAt: "25 Jul, 2020",
-  //     courses: 13,
-  //   },
-  //   {
-  //     id: 10,
-  //     name: "Robert Fox",
-  //     email: "Robert.Fox@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 41569,
-  //     joinedAt: "3 Oct, 2020",
-  //     courses: 6,
-  //   },
-  //   {
-  //     id: 11,
-  //     name: "Jacob Jones",
-  //     email: "Jacob.Jones@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 49823,
-  //     joinedAt: "15 Aug, 2020",
-  //     courses: 10,
-  //   },
-  //   {
-  //     id: 12,
-  //     name: "Theresa Webb",
-  //     email: "Theresa.W@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 36742,
-  //     joinedAt: "27 Sep, 2020",
-  //     courses: 8,
-  //   },
-  //   {
-  //     id: 13,
-  //     name: "Kristin Watson",
-  //     email: "Kristin.W@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 43215,
-  //     joinedAt: "9 Nov, 2020",
-  //     courses: 12,
-  //   },
-  //   {
-  //     id: 14,
-  //     name: "Courtney Henry",
-  //     email: "Courtney.H@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 51478,
-  //     joinedAt: "21 Jul, 2020",
-  //     courses: 15,
-  //   },
-  //   {
-  //     id: 15,
-  //     name: "Eleanor Pena",
-  //     email: "Eleanor.P@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 40367,
-  //     joinedAt: "4 Oct, 2020",
-  //     courses: 9,
-  //   },
-  //   {
-  //     id: 16,
-  //     name: "Devon Lane",
-  //     email: "Devon.Lane@gmail.com",
-  //     image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  //     students: 46982,
-  //     joinedAt: "16 Aug, 2020",
-  //     courses: 11,
-  //   },
-  // ];
-  const [students, setStudents] = useState();
-  const [loading, setLoading] = useState();
-  const { user, checkAuth } = useContext(GlobalContext);
-  const [selected, setSelected] = useState();
+const AllStudent = () => {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [teacherCourses, setTeacherCourses] = useState([]); // Added state for teacher's courses
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const { user } = useContext(GlobalContext);
 
+  // Fetch students and teacher's courses
   useEffect(() => {
-    const getCourses = async () => {
-      setLoading(true);
-      await axiosInstance
-        .get("/course/getpurchaseCourse")
-        .then((res) => {
-          console.log(res);
-          setStudents(res.data.users);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setLoading(false);
-          console.log(err);
-        });
+    const getData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch students (already purchased courses by users)
+        const studentRes = await axiosInstance.get("/course/getpurchaseCourse");
+        setStudents(studentRes.data.users || []);
+        console.log(studentRes ,"studentres");
+        
+        // Fetch teacher's courses
+        const teacherRes = await axiosInstance.get("/course/getMyCourses");
+        setTeacherCourses(teacherRes.data.courses || []);
+        console.log(teacherRes ,"teacherres");
+        
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load students. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
     };
-    getCourses();
+
+    getData();
   }, []);
+
+  // Extract course titles that belong to the teacher
+  const courseTitles = useMemo(() => {
+    return teacherCourses.map(course => course.basics.courseTitle);
+  }, [teacherCourses]);
+
+  // Filter students based on selected course
+  const filteredStudents = useMemo(() => {
+    if (!selectedCourse) return students;
+    return students.filter((student) =>
+      student.purchasedCourse?.some(
+        (course) => course.basics?.courseTitle === selectedCourse
+      )
+    );
+  }, [students, selectedCourse]);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">
         Students{" "}
         <span className="font-normal text-gray-500">
-          ({students?.length.toLocaleString()})
+          ({filteredStudents?.length.toLocaleString()})
         </span>
       </h1>
-      <div>
-        <SelectCmp data={user.courses} />{" "}
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {students?.map((student, index) => (
-          <Link key={index} to={`/teacher/studentProfile/${student._id}`}>
-            <StudentCard key={index} student={student} />
-          </Link>
-        ))}
-      </div>
+      {/* <div className="mb-6 max-w-xs">
+        <SelectCmp
+          data={courseTitles}
+          title="Filter by course title"
+          className="w-full"
+          value={selectedCourse} // Bind selectedCourse to the dropdown
+          onChange={setSelectedCourse}
+        />
+      </div> */}
+
+      {loading ? (
+        <div className="flex justify-center items-center space-x-2">
+          <div className="spinner"></div> {/* Add a spinner here */}
+          <p>Loading students...</p>
+        </div>
+      ) : filteredStudents.length === 0 ? (
+        <p>No students found. Please try selecting a different course.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredStudents.map((student, index) => (
+            <Link key={index} to={`/teacher/studentProfile/${student._id}`}>
+              <StudentCard student={student} />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -177,24 +177,39 @@ function CoursesCard({ course, link }) {
 }
 
 const StudentCard = ({ student }) => (
-  <Card className="overflow-hidden">
-    <CardContent className="p-6 flex flex-col items-center">
-      <Avatar className="w-24 h-24 mb-4">
-        <AvatarImage src={student.profileImg} alt={student.name} />
-        <AvatarFallback>{student.firstName}</AvatarFallback>
-      </Avatar>
-      <h3 className="text-lg font-semibold mb-1 text-center">
-        {student.firstName}
-      </h3>
-      <p className="text-sm text-gray-500 mb-4">{student.email}</p>
-      <div className="w-full grid grid-cols-2 gap-y-2 text-sm">
-        <span className="text-gray-500">Joined at</span>
-        <span className="text-right">{student.createdAt.split("T")[0]}</span>
-        {/* <span className="text-gray-500">Courses</span> */}
-        {/* <span className="text-right">{student.courses}</span> */}
+  <Card className="overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 bg-white">
+    <CardContent className="px-6 py-2 flex flex-col items-center gap-3">
+      <div className="relative">
+        <Avatar className="w-24 h-24 ring-3 ring-gray-500 shadow-sm">
+          <AvatarImage
+            src={student.profileImg}
+            alt={student.name}
+            className="rounded-full object-cover"
+          />
+          <AvatarFallback className="bg-gray-200 text-gray-600 text-xl font-semibold flex items-center justify-center">
+            {student.firstName[0]}
+          </AvatarFallback>
+        </Avatar>
       </div>
+
+      <div className="text-center">
+        <h3 className="text-xl font-bold text-gray-800">{student.firstName}</h3>
+        <p className="text-sm text-gray-500">{student.email}</p>
+      </div>
+
+      <div className="w-full grid grid-cols-2 gap-y-2 gap-x-4 text-sm mt-2">
+        <span className="text-gray-500">Joined</span>
+        <span className="text-right text-gray-700 font-medium">
+          {new Date(student.createdAt).toLocaleDateString()}
+        </span>
+
+      </div>
+
+      {/* Optional CTA */}
+      <Button className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 " >View Profile</Button>
     </CardContent>
   </Card>
+
 );
 
 const TransactionCard = ({ title, data }) => (
@@ -312,15 +327,15 @@ const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
 
 function StudentProfileCourseCard({ course }) {
   return (
-    <Card className="p-4 flex flex-col sm:flex-row items-center sm:items-center gap-4 shadow-sm">
-      <div className="w-full sm:w-40 h-24 rounded-md overflow-hidden shrink-0">
+    <Card className="p-4 flex flex-col items-center  gap-4 shadow-sm">
+      <div className="w-full sm:w-36 h-24 rounded-md overflow-hidden shrink-0">
         <img
           src={course.basics.thumbnail}
           alt="Course Thumbnail"
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="flex-1 flex flex-col sm:flex-row items-center sm:items-start justify-between w-full gap-4 ">
+      <div className="flex-1 flex justify-center flex-col sm:flex-row items-center sm:items-start justify-between w-full gap-4 ">
         <div className="text-center sm:text-left">
           <h3 className="font-bold text-gray-800">
             {course.basics.courseTitle}
@@ -333,39 +348,63 @@ function StudentProfileCourseCard({ course }) {
 
 function StudentProfileStatCard({ title, value, icon }) {
   return (
-    <Card className="p-6 flex items-center gap-4 shadow-sm">
+    <Card className="p-6 flex items-center w-full gap-4 shadow-sm">
       <div
         className={`w-14 h-14 rounded-full flex items-center justify-center`}
       >
         {icon}
-        {/* <svg
-          className="w-6 h-6 text-green-600"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            d="M12 7V12L15 15"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg> */}
       </div>
-      <div>
+      <div >
         <p className="text-gray-500">{title}</p>
         <p className="text-3xl font-bold text-center">{value}</p>
       </div>
     </Card>
   );
 }
+
+const MyCoursesCard = ({course}) => {
+  return (
+    <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
+      <AspectRatio ratio={16 / 9}>
+        <img
+          src={course.basics.thumbnail || "/placeholder.svg"}
+          alt={`${course.basics.thumbnail} image`}
+          className="object-cover w-full h-full"
+        />
+      </AspectRatio>
+      <CardHeader>
+        <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
+          {course.basics.category?.title || "Development"}
+        </div>
+        <CardTitle className="flex justify-between flex-col gap-2">
+          <span>{course.basics.courseTitle}</span>
+          <span className="text-lg font-semibold text-green-500">
+            ${course.basics.price}
+          </span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Teacher: {course.createdby?.firstName}{" "}
+            {course.createdby?.middleName
+              ? course.createdby.middleName + " "
+              : ""}
+            {course.createdby?.lastName}
+          </p>{" "}
+          <p className="text-sm text-muted-foreground">
+            Language: {course.basics.language}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Chapters: {course.chapters.length}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default Card;
 
 export {
   DeshBoardCard,
@@ -378,4 +417,5 @@ export {
   LandingPageCard,
   StudentProfileCourseCard,
   StudentProfileStatCard,
+  MyCoursesCard,
 };

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { CheckCircle2, ChevronDown, PlayCircle, Star, StarHalf } from "lucide-react";
+import { CheckCircle2, ChevronDown, Loader, PlayCircle, Star, StarHalf } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
@@ -45,8 +45,14 @@ const GeneralCourseDetail = () => {
 
   console.log("Course Details State:", courseDetails); // Debug the state value
 
-  if (loading) return <div className="p-6">Loading...</div>;
-  if (!courseDetails) return <div className="p-6 text-red-500">Course not found.</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-10">
+        <section className="flex justify-center items-center h-full w-full">
+          <Loader size={48} className="animate-spin text-primary" />
+        </section>
+      </div>
+    );  if (!courseDetails) return <div className="p-6 text-red-500">Course not found.</div>;
 
   return (
     <div className="flex min-h-screen">

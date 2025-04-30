@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./Page/StudentPortal/Layout";
 import Deshboard from "./Page/StudentPortal/Deshboard";
-import Mycourses from "./Page/StudentPortal/MyCourses";
+import Mycourses from "./Page/StudentPortal/Courses/MyCourses";
 import Assignment from "./Page/StudentPortal/Assignment";
 import Login from "./Page/Login";
 import Announcement from "./Page/StudentPortal/Announcement";
@@ -14,8 +14,8 @@ import MainLayout from "./Page/MainLayout";
 import Support from "./Page/Support";
 import LandingPage from "./Page/LandingPage";
 import Payment from "./Page/StudentPortal/Payment";
-import MyCourseDetail from "./Page/StudentPortal/MyCourseDetail";
 import Messages from "./Page/StudentPortal/Messages";
+
 
 import GeneralCourses from "./Page/GeneralCourses";
 import GeneralSupport from "./Page/GeneralSupport";
@@ -50,6 +50,10 @@ import { useEffect } from "react";
 import { GlobalContext } from "./Context/GlobalProvider";
 import { useContext } from "react";
 import { Loader } from "lucide-react";
+import LoadingLoader from "./CustomComponent/LoadingLoader";
+import MainDetailPage from "./Page/StudentPortal/Courses/MainDetailPage";
+import ChapterDetail from "./Page/StudentPortal/Courses/MyCourseDetail";
+import NotFoundPage from "./Page/NotFoundPage";
 
 function App() {
   const { checkAuth, user, Authloading, setAuthLoading } =
@@ -62,24 +66,20 @@ function App() {
   // const socket = io("http://localhost:5050");
 
   if (Authloading) {
-    return (
-      <div>
-        <section className="flex justify-center items-center h-screen w-screen">
-          <Loader size={48} className={"animate-spin"} />
-        </section>
-      </div>
-    );
+    return <LoadingLoader />;
   }
 
   return (
     <>
       <ScrollToTop />
       <Routes>
-        <Route  
+        <Route
           element={
             <PublicRoute
               user={user}
-              redirectTo={user?.role === "teacher" ? "/teacher" : "/student/mycourses"}
+              redirectTo={
+                user?.role === "teacher" ? "/teacher" : "/student/mycourses"
+              }
             />
           }
         >
@@ -99,6 +99,7 @@ function App() {
             <Route path="/about" element={<About />}></Route>
             <Route path="/Support" element={<GeneralSupport />}></Route>
             <Route path="/contactUs" element={<ContactUs />}></Route>
+            <Route path="/*" element={<NotFoundPage />} />
             <Route
               path="/AdditionalServices"
               element={<AdditionalServices />}
@@ -109,12 +110,13 @@ function App() {
         {/* Student Routes */}
         <Route element={<PrivateRoute user={user} allowedRole="student" />}>
           <Route path="/student" element={<Layout />}>
-            <Route path="mycourses" element={<Mycourses />}></Route>
+            <Route path="mycourses">
+              <Route index element={<Mycourses />} />
+              <Route path=":id" element={<MainDetailPage />} />
+              <Route path="chapter/:id" element={<ChapterDetail />} />
+            </Route>
             <Route index element={<Deshboard />} />
-            <Route
-              path="myCourseDetail/:id"
-              element={<MyCourseDetail />}
-            ></Route>
+
             <Route path="assignment" element={<Assignment />}></Route>
             <Route path="gradebook" element={<Gradebook />}></Route>
             <Route path="announcements" element={<Announcement />}></Route>

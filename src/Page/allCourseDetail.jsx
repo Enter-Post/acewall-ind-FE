@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import {
   CheckCircle2,
   ChevronDown,
+  Loader,
   PlayCircle,
   Star,
   StarHalf,
@@ -22,12 +23,27 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@radix-ui/react-collapsible";
+import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
+import { toast } from "sonner";
 
 // AllCoursesDetail Component
 const AllCoursesDetail = () => {
   const { id } = useParams(); // Grab the actual course ID from the URL
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const purchase = async () => {
+    await axiosInstance
+      .post("course/purchase", { course: courseDetails._id })
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response.data.error);
+      });
+  };
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -60,7 +76,14 @@ const AllCoursesDetail = () => {
 
   console.log("Course Details State:", courseDetails); // Debug the state value
 
-  if (loading) return <div className="p-6">Loading...</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center py-10">
+        <section className="flex justify-center items-center h-full w-full">
+          <Loader size={48} className="animate-spin text-primary" />
+        </section>
+      </div>
+    );
   if (!courseDetails)
     return <div className="p-6 text-red-500">Course not found.</div>;
 
@@ -68,7 +91,7 @@ const AllCoursesDetail = () => {
     <div className="flex flex-col lg:flex-row min-h-screen">
       <div className="grid lg:grid-cols-3 w-full  gap-2 ">
         <div className="lg:col-span-2 w-full ">
-          <div className=" border border-gray-200 px-2  overflow-hidden mb-6">
+          <div className="  px-2  overflow-hidden mb-6">
             <div className="p-2">
               <h1 className="text-3xl font-bold mb-2">
                 {courseDetails.basics.courseTitle}
@@ -96,14 +119,14 @@ const AllCoursesDetail = () => {
                 </div>
               </div>
             </div>
-            <div className="flex  flex-col items-center justify-center">
-              <div className="relative   aspect-video ">
+            <div className="flex  flex-col items-center justify-center ">
+              <div className="relative h-60 w-100 mx-auto">
                 <img
                   src={
                     courseDetails.basics.thumbnail || "/default-thumbnail.jpg"
-                  } // Fallback to default if thumbnail is not available
+                  }
                   alt="Course preview"
-                  className="w-full  shadow-md h-full object-cover"
+                  className="w-full rounded-md shadow-md h-full object-cover"
                 />
               </div>
 
@@ -179,7 +202,7 @@ const AllCoursesDetail = () => {
                 <TabsContent value="curriculum" className="p-6">
                   <Accordion type="curriculum" collapsible className="w-full">
                     {Array.isArray(courseDetails?.chapters) &&
-                    courseDetails.chapters.length > 0 ? (
+                      courseDetails.chapters.length > 0 ? (
                       courseDetails.chapters.map((chapter, index) => (
                         <AccordionItem key={index} value={`chapter-${index}`}>
                           <AccordionTrigger className="py-4 text-sm font-semibold flex justify-between items-center group">
@@ -190,7 +213,7 @@ const AllCoursesDetail = () => {
                           <AccordionContent>
                             <div className="space-y-4 pl-6">
                               {Array.isArray(chapter.lessons) &&
-                              chapter.lessons.length > 0 ? (
+                                chapter.lessons.length > 0 ? (
                                 chapter.lessons.map((lesson, i) => (
                                   <Collapsible key={i}>
                                     <CollapsibleTrigger className="w-full flex items-center justify-between text-left group bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200">
@@ -354,7 +377,7 @@ const AllCoursesDetail = () => {
                       </h3>
                       <div className="space-y-6">
                         {Array.isArray(courseDetails.reviews) &&
-                        courseDetails.reviews.length > 0 ? (
+                          courseDetails.reviews.length > 0 ? (
                           courseDetails.reviews.map((review, index) => (
                             <div
                               key={index}
@@ -397,8 +420,8 @@ const AllCoursesDetail = () => {
         </div>
 
         {/* Right Sidebar */}
-        <div className="md:col-span-1 ">
-          <div className=" border border-gray-200 roundedx-xl p-6 sticky top-20 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
+        <div className="md:col-span-1">
+          <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
             <div className="flex flex-col gap-6 mb-6">
               <div className="text-2xl text-green-600 font-extrabold flex items-center justify-between">
                 <span>Price:</span>
@@ -409,14 +432,13 @@ const AllCoursesDetail = () => {
                     <span>${courseDetails.basics.price}</span>
                   )
                 ) : (
-                  <span className="text-gray-500 text-lg">
-                    Price not available
-                  </span>
+                  <span className="text-gray-500 text-lg">Price not available</span>
                 )}
               </div>
-              <Button className="w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300">
+              {/* <Button className="w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300">
                 Add to cart
-              </Button>
+              </Button> */}
+              <PurchaseConfirmationModal purchase={purchase} />
             </div>
 
             <div className="space-y-4">
@@ -440,35 +462,35 @@ const AllCoursesDetail = () => {
               <div className="flex items-start gap-2 text-gray-700">
                 <CheckCircle2 size={18} className="mt-0.5" />
                 <span className="text-sm">
-                  Include{" "}
+                  Includes{" "}
                   {courseDetails.chapters
                     ? `${courseDetails.chapters.reduce(
-                        (acc, chapter) => acc + chapter.lessons.length,
-                        0
-                      )} Lessons `
+                      (acc, chapter) => acc + chapter.lessons.length,
+                      0
+                    )} Lessons`
                     : "No lessons included"}
                 </span>
               </div>
               <div className="flex items-start gap-2 text-gray-700">
                 <CheckCircle2 size={18} className="mt-0.5" />
                 <span className="text-sm">
-                  Include
-                  {courseDetails.level}{" "}
+                  Includes {courseDetails.level}{" "}
                   {Array.isArray(courseDetails.chapters)
                     ? `${courseDetails.chapters.reduce((total, chapter) => {
-                        return (
-                          total +
-                          (Array.isArray(chapter.assessment)
-                            ? chapter.assessment.length
-                            : 0)
-                        );
-                      }, 0)} Assessments`
+                      return (
+                        total +
+                        (Array.isArray(chapter.assessment)
+                          ? chapter.assessment.length
+                          : 0)
+                      );
+                    }, 0)} Assessments`
                     : "No assessments available"}
                 </span>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );

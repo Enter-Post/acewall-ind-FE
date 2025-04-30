@@ -4,6 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import React, { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '@/Context/GlobalProvider';
+import { axiosInstance } from '@/lib/AxiosInstance';
 
 const Account = () => {
   const { user } = useContext(GlobalContext);
@@ -37,17 +38,39 @@ const Account = () => {
   }, [user]);
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
+    const { name, value, id } = e.target;
     setUserData((prevData) => ({
       ...prevData,
-      [id]: value,
+      [name || id]: value,
     }));
   };
-  
-  const handleSave = () => {
-    console.log("Saved Data:", userData);
-    alert("Changes saved successfully!");
-    // ✨ Later you can call an API here to update the user profile
+
+
+  const handleSave = async () => {
+    // Log the entire user object to ensure it's available
+    console.log("User object:", user);
+
+    // Check if user._id exists before proceeding
+    if (user && user._id) {
+      try {
+        // Use the correct API URL
+        const response = await axiosInstance.put(`/auth/updateuser/${user._id}`, userData);
+
+        // Log the user ID for debugging
+        console.log("User ID:", user._id);
+
+        // Show success message
+        alert("Profile updated successfully!");
+        console.log("Server response:", response.data);
+      } catch (error) {
+        // Handle error
+        console.error("Failed to update profile:", error);
+        alert("Failed to update profile. Please try again.");
+      }
+    } else {
+      console.error("User ID not found");
+      alert("User ID is not available. Please try again later.");
+    }
   };
 
   return (
@@ -91,6 +114,70 @@ const Account = () => {
                 onChange={handleChange}
               />
             </div>
+
+          </div>
+        </section>
+        {/* Pronouns & Gender Selection */}
+        <section className="space-y-6">
+          <h3 className="text-lg font-semibold">Identity Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+
+            {/* Pronouns */}
+            <div className="space-y-2">
+              <Label className="block text-sm font-medium text-gray-900 dark:text-white">
+                Preferred Pronouns
+              </Label>
+              <div className="grid grid-cols-1 gap-2">
+                {["He/Him", "She/Her", "They/Them", "Others"].map((pronoun) => (
+                  <div key={pronoun} className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id={`pronoun-${pronoun.toLowerCase()}`}
+                      name="pronoun"
+                      value={pronoun.toLowerCase()}
+                      checked={userData.pronoun === pronoun.toLowerCase()}
+                      onChange={handleChange}
+                      className="w-4 h-4  accent-blue-600"
+                    />
+                    <label
+                      htmlFor={`pronoun-${pronoun.toLowerCase()}`}
+                      className="text-sm text-gray-900 dark:text-white"
+                    >
+                      {pronoun}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Gender */}
+            <div className="space-y-2">
+              <Label className="block text-sm font-medium text-gray-900 dark:text-white">
+                Gender Identity
+              </Label>
+              <div className="grid grid-cols-1 gap-2">
+                {["Male", "Female", "Non-binary", "Other"].map((gender) => (
+                  <div key={gender} className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      id={`gender-${gender.toLowerCase()}`}
+                      name="gender"
+                      value={gender.toLowerCase()}
+                      checked={userData.gender === gender.toLowerCase()}
+                      onChange={handleChange}
+                      className="w-4 h-4 accent-blue-600"
+                    />
+                    <label
+                      htmlFor={`gender-${gender.toLowerCase()}`}
+                      className="text-sm text-gray-900 dark:text-white"
+                    >
+                      {gender}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </section>
 
