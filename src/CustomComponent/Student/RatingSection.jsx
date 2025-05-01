@@ -62,7 +62,7 @@ const RatingSection = ({ course, id }) => {
               />
             ))}
           </div>
-          <span className="font-medium">{course.averageRating.toFixed(1)}</span>
+          <span className="font-medium">{course?.averageRating?.toFixed(1)}</span>
           <span className="text-gray-500">
             ({course.rating.length} ratings)
           </span>

@@ -60,284 +60,181 @@ export default function CourseOverview() {
   const averageRating =
     course.rating && course.rating.length > 0
       ? course.rating.reduce((sum, r) => sum + r.value, 0) /
-        course.rating.length
+      course.rating.length
       : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Course Info Section */}
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">
-              {course.basics.courseTitle}
-            </h1>
-            <p className="text-gray-600 mb-4">
-              {course.basics.courseDescription}
-            </p>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Course Header */}
+      <div className="space-y-6">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900">
+          {course.basics.courseTitle}
+        </h1>
 
-            <div className="flex items-center gap-4 mb-6">
-              <Badge
-                variant="outline"
-                className="bg-green-50 text-green-700 border-green-200"
-              >
-                {course.basics.category.title}
-              </Badge>
-              <Badge
-                variant="outline"
-                className="bg-blue-50 text-blue-700 border-blue-200"
-              >
-                {course.basics.language.charAt(0).toUpperCase() +
-                  course.basics.language.slice(1)}
-              </Badge>
-              <div className="flex items-center text-yellow-500">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    className={`h-4 w-4 ${
-                      star <= Math.round(course.averageRating) ? "fill-yellow-500" : ""
-                    }`}
-                  />
-                ))}
-                <span className="ml-2 text-gray-600 text-sm">
-                  ({course.rating.length}{" "}
-                  {course.rating.length === 1 ? "rating" : "ratings"})
-                </span>
-              </div>
-            </div>
+        <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+          {course.basics.courseDescription}
+        </p>
 
-            <div className="flex items-center gap-3 mb-6">
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={course.createdby.profileImg || "/placeholder.svg"}
-                  alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
-                />
-                <AvatarFallback>
-                  {course.createdby.firstName.charAt(0)}
-                  {course.createdby.lastName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium">
-                  {course.createdby.firstName} {course.createdby.lastName}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {course.createdby.pronouns}
-                </p>
-              </div>
-            </div>
+        {/* Tags and Info */}
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 mt-4">
+          {/* Category */}
+          <div className="flex items-center gap-2">
+            <h3 className="text-gray-600 text-sm font-semibold mb-1">Category</h3>
+            <Badge className="bg-green-100 text-green-800 text-sm border-none">
+              {course.basics.category.title}
+            </Badge>
           </div>
 
-          {/* Tabs for Course Content, Reviews, etc. */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
-            <TabsList className="grid grid-cols-3 bg-transparent border-b border-gray-200 w-full text-green-600">
-              <TabsTrigger
-                value="overview"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-green-500 rounded-none"
-              >
-                Overview
-              </TabsTrigger>
-              <TabsTrigger
-                value="content"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-green-500 rounded-none"
-              >
-                Content
-              </TabsTrigger>
-              <TabsTrigger
-                value="reviews"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-green-500 rounded-none"
-              >
-                Reviews
-              </TabsTrigger>
-            </TabsList>
-
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="pt-6">
-              {/* Teaching Points */}
-              <div className="space-y-4 mb-8">
-                <h2 className="text-2xl font-bold">What You'll Learn</h2>
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {course.basics.teachingPoints.map((point, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                      <span>{point.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Requirements */}
-              <div className="space-y-4">
-                <h2 className="text-2xl font-bold">Requirements</h2>
-                <ul className="space-y-2">
-                  {course.basics.requirements.map((req, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-gray-800 mt-2 flex-shrink-0" />
-                      <span>{req.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </TabsContent>
-
-            {/* Content Tab */}
-            <TabsContent value="content" className="pt-6">
-              <div className="space-y-6">
-                <div className="flex items-center gap-6 text-sm text-gray-600 mb-4">
-                  <div className="flex items-center gap-1">
-                    <BookOpen className="h-4 w-4" />
-                    <span>{course.chapters.length} Chapters</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    <span>Self-paced</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    <span>{course.student.length} Students</span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  {course.chapters.map((chapter, index) => (
-                    <Card key={chapter._id} className="border border-gray-200">
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg">
-                              Chapter {index + 1}: {chapter.title}
-                            </CardTitle>
-                            <CardDescription>
-                              {chapter.description}
-                            </CardDescription>
-                          </div>
-                          <Badge variant="outline" className="bg-gray-50">
-                            {chapter.lessons.length} Lessons
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <ul className="space-y-2">
-                          {chapter.lessons.map((lesson, lessonIndex) => (
-                            <li
-                              key={lessonIndex}
-                              className="flex items-center gap-2 text-sm"
-                            >
-                              <CheckCircle className="h-4 w-4 text-green-500" />
-                              <span>{lesson.title}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </CardContent>
-                      <CardFooter>
-                        <Link
-                          to={`/student/mycourses/chapter/${chapter._id}`}
-                          className="w-full"
-                        >
-                          <Button variant="outline" className="w-full">
-                            View Chapter
-                          </Button>
-                        </Link>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Reviews Tab */}
-            <TabsContent value="reviews" className="pt-6">
-              <div className="space-y-8">
-                {/* Rating Section */}
-                <RatingSection id={id} course={course} />
-
-                {/* Comments Section */}
-                <CommentSection id={id} />
-              </div>
-            </TabsContent>
-          </Tabs>
+          {/* Language */}
+          <div className="flex items-center gap-2">
+            <h3 className="text-gray-600 text-sm font-semibold mb-1">Language</h3>
+            <Badge className="bg-blue-100 text-blue-800 text-sm border-none capitalize">
+              {course.basics.language}
+            </Badge>
+          </div>
         </div>
 
-        {/* Course Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-8 space-y-6">
-            <Card className="border border-gray-200 overflow-hidden">
-              <div className="relative h-48 w-full">
-                <img
-                  src={course.basics.thumbnail || "/placeholder.svg"}
-                  alt={course.basics.courseTitle}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <CardContent className="p-6 space-y-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-3xl font-bold">
-                    ${course.basics.price}
-                  </span>
-                </div>
 
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  Continue Learning
-                </Button>
+        {/* Rating */}
+        <div className="flex items-center gap-2 text-yellow-500">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star
+              key={star}
+              className={`w-5 h-5 transition ${star <= Math.round(course.averageRating)
+                ? "fill-yellow-400"
+                : "fill-white"
+                }`}
+            />
+          ))}
+          <span className="text-sm text-gray-600">
+            ({course.rating.length}{" "}
+            {course.rating.length === 1 ? "rating" : "ratings"})
+          </span>
+        </div>
 
-                <div className="space-y-4 pt-4 border-t">
-                  <h3 className="font-semibold">This course includes:</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-center gap-2 text-sm">
-                      <BookOpen className="h-4 w-4 text-gray-500" />
-                      <span>{course.chapters.length} chapters</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle className="h-4 w-4 text-gray-500" />
-                      <span>Lifetime access</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <Users className="h-4 w-4 text-gray-500" />
-                      <span>Access on mobile and desktop</span>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Instructor</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={course.createdby.profileImg || "/placeholder.svg"}
-                      alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
-                    />
-                    <AvatarFallback>
-                      {course.createdby.firstName.charAt(0)}
-                      {course.createdby.lastName.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">
-                      {course.createdby.firstName} {course.createdby.lastName}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {course.createdby.pronouns}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-sm text-gray-600">
-                  <p>Email: {course.createdby.email}</p>
-                  <p>Courses: {course.createdby.courses.length}</p>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Instructor Info */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
+          <Avatar className="h-12 w-12">
+            <AvatarImage
+              src={course.createdby.profileImg || "/placeholder.svg"}
+              alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
+              className="ring-2 ring-black ring-offset-2"
+            />
+            <AvatarFallback>
+              {course.createdby.firstName.charAt(0)}
+              {course.createdby.lastName.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-semibold text-gray-800">
+              {course.createdby.firstName} {course.createdby.lastName}
+            </p>
+            <p className="text-sm text-gray-500">{course.createdby.email}</p>
           </div>
         </div>
       </div>
+
+      {/* Tabs */}
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full mt-12 bg-white z-10"
+      >
+        {/* Tab List */}
+        <TabsList className="flex flex-wrap justify-center gap-4 w-full  sm:gap-10  bg-white p-1 shadow-inner">
+          {["Overview", "Content", "Reviews"].map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab.toLowerCase()}
+              className="px-3 py-2 text-base font-medium  capitalize transition-all duration-300  
+              text-gray-700 hover:text-green-600 hover:bg-gray-50 
+              data-[state=active]:bg-gray-100 data-[state=active]:text-green-600 data-[state=active]:shadow-sm"
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {/* Overview */}
+        <TabsContent value="overview" className="py-8 space-y-10">
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">What You'll Learn</h2>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {course.basics.teachingPoints.map((point, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
+                  <span>{point.value}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Requirements</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {course.basics.requirements.map((req, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
+                  <span>{req.value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </TabsContent>
+
+        {/* Content */}
+        <TabsContent value="content" className="py-8 space-y-6">
+          <div className="space-y-4">
+            {course.chapters.map((chapter, index) => (
+              <Card
+                key={chapter._id}
+                className="border border-gray-200 shadow-sm hover:shadow-md transition"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-y-2">
+                    <div>
+                      <CardTitle className="text-lg font-semibold">
+                        Chapter {index + 1}: {chapter.title}
+                      </CardTitle>
+                      <CardDescription>{chapter.description}</CardDescription>
+                    </div>
+                    <Badge className="bg-gray-100 text-gray-800 self-start">
+                      {chapter.lessons.length} Lessons
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <ul className="space-y-2">
+                    {chapter.lessons.map((lesson, idx) => (
+                      <li key={idx} className="flex items-center gap-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        <span>{lesson.title}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Link
+                    to={`/student/mycourses/chapter/${chapter._id}`}
+                    className="w-full"
+                  >
+                    <Button variant="outline" className="w-full">
+                      View Chapter
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* Reviews */}
+        <TabsContent value="reviews" className="py-8 space-y-8">
+          <RatingSection id={id} course={course} />
+          <CommentSection id={id} />
+        </TabsContent>
+      </Tabs>
     </div>
+
   );
 }

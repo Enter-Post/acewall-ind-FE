@@ -17,6 +17,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import LoadingLoader from "@/CustomComponent/LoadingLoader";
 
 export default function ChapterDetail() {
+  const [isLessonVisible, setIsLessonVisible] = useState(false);
   const { id } = useParams();
   const [chapter, setChapter] = useState(null);
   const [courseTitle, setCourseTitle] = useState("");
@@ -25,6 +26,12 @@ export default function ChapterDetail() {
   const [activeLesson, setActiveLesson] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
+
+  // Toggle the visibility of the lesson content
+  const toggleLessonVisibility = () => {
+    setIsLessonVisible((prevState) => !prevState);
+  };
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
@@ -71,17 +78,21 @@ export default function ChapterDetail() {
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
       {/* Left side - Video and Content */}
       <div className="flex-1 overflow-auto">
-        <div className="p-4 border-b flex items-center gap-2">
-          <Link to="/">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
+        <div className="p-5 border-b bg-white shadow-sm flex items-center gap-3 ">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-gray-600 hover:text-black"
+            onClick={() => window.history.back()}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <div>
-            <h1 className="text-xl font-bold">{courseTitle}</h1>
+            <h1 className="text-lg font-semibold text-gray-900">{courseTitle}</h1>
             <p className="text-sm text-gray-500">Chapter: {chapter.title}</p>
           </div>
         </div>
+
 
         {activeLesson && (
           <div className="mb-8">
@@ -91,271 +102,234 @@ export default function ChapterDetail() {
               </h3>
 
               {/* Video Player */}
-              {activeLesson.youtubeLinks ? (
-                <div
-                  className="relative w-full h-0"
-                  style={{ paddingTop: "56.25%" }}
-                >
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${getYouTubeVideoId(
-                      activeLesson.youtubeLinks
-                    )}`}
-                    frameBorder="0"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
+              {activeLesson?.youtubeLinks ? (
+                <div className="mt-6 flex  justify-center">
+                  <div className="w-full max-w-screen-md rounded-lg overflow-hidden shadow-md">
+                    <div className="aspect-video">
+                      <iframe
+                        className="w-full h-full"
+                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(activeLesson.youtubeLinks)}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Lesson Video"
+                      ></iframe>
+                    </div>
+                  </div>
                 </div>
               ) : (
-                <div className="p-4 bg-gray-100 text-center rounded-md mx-4">
-                  <p>No YouTube link available</p>
+                <div className="mt-6 p-6 bg-gray-100 text-center text-sm text-gray-500 rounded-md">
+                  No YouTube link available
                 </div>
               )}
+
             </div>
           </div>
         )}
 
         {/* Tabs */}
         <Tabs defaultValue="description" className="w-full p-5">
-          <TabsList className="grid grid-cols-3 bg-transparent border-b border-gray-200 w-full text-green-600">
-            <TabsTrigger
-              value="description"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-green-500 rounded-none"
-            >
-              Description
-            </TabsTrigger>
-            <TabsTrigger
-              value="files"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-green-500 rounded-none"
-            >
-              Attached Files
-            </TabsTrigger>
-            <TabsTrigger
-              value="instructor"
-              className="data-[state=active]:border-b-2 data-[state=active]:border-green-500 rounded-none"
-            >
-              Instructor
-            </TabsTrigger>
+          <TabsList className="flex flex-wrap justify-center gap-4 w-full  sm:gap-10  bg-white p-1 shadow-inner">
+            {["description", "files"].map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
+                className="px-3 py-2 text-base font-medium  capitalize transition-all duration-300 
+              text-gray-700 hover:text-green-600 hover:bg-gray-50 
+              data-[state=active]:bg-gray-100 data-[state=active]:text-green-600 data-[state=active]:shadow-sm"
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          {/* Description */}
-          <TabsContent value="description" className="p-6">
-            <div className="mb-4">
-              <h3 className="text-lg font-bold">{chapter.title}</h3>
-              <p className="text-gray-600 mt-4">{chapter.description}</p>
 
+          {/* Description */}
+          <TabsContent value="description" className="p-6 bg-white rounded-lg shadow-md">
+            <div className="space-y-6">
+              {/* Chapter Title and Description */}
+              <div>
+                <h3 className="text-xl font-semibold text-gray-800">{chapter.title}</h3>
+                <p className="text-gray-700 mt-4 text-sm">{chapter.description}</p>
+              </div>
+
+              {/* Active Lesson Toggle */}
               {activeLesson && (
-                <div className="mt-6 border-t pt-4">
-                  <h4 className="font-medium">
-                    Current Lesson: {activeLesson.title}
-                  </h4>
-                  <p className="text-gray-600 mt-2">
-                    {activeLesson.description}
-                  </p>
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={toggleLessonVisibility}
+                    className="text-xl font-semibold text-gray-800 w-full text-left flex justify-between items-center focus:outline-none"
+                  >
+                    <span>Current Lesson: <br /> {activeLesson.title}</span>
+                    <svg
+                      className={`w-5 h-5 transition-transform duration-200 ${isLessonVisible ? 'transform rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  {isLessonVisible && (
+                    <div className="text-gray-600 mt-3 text-sm">
+                      <p>{activeLesson.description}</p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           </TabsContent>
 
+
           {/* Files */}
-          <TabsContent value="files" className="p-6">
-            <div className="space-y-4">
-              {activeLesson &&
-              activeLesson.pdfFiles &&
-              activeLesson.pdfFiles.length > 0 ? (
-                activeLesson.pdfFiles.map((pdf, index) => (
-                  <a
-                    key={index}
-                    href={pdf}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center p-3 border rounded-md hover:bg-gray-50 transition-colors"
-                  >
-                    <FileText className="h-5 w-5 text-blue-500 mr-2" />
-                    <span className="text-blue-600">PDF {index + 1}</span>
-                  </a>
-                ))
+          <TabsContent value="files" className="p-6 bg-white rounded-lg shadow-lg">
+            <div className="space-y-6">
+              {/* PDF Files */}
+              {activeLesson && activeLesson.pdfFiles && activeLesson.pdfFiles.length > 0 ? (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-4">PDF Files</h3>
+                  {activeLesson.pdfFiles.map((pdf, index) => (
+                    <a
+                      key={index}
+                      href={pdf}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center p-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                    >
+                      <FileText className="h-5 w-5 text-blue-500 mr-3" />
+                      <span className="text-blue-600 text-sm">PDF {index + 1}</span>
+                    </a>
+                  ))}
+                </div>
               ) : (
                 <div className="text-sm text-gray-500">
                   No PDF files available for this lesson
                 </div>
               )}
 
-              {activeLesson &&
-                activeLesson.lessonAssessment &&
-                activeLesson.lessonAssessment.length > 0 && (
-                  <div className="mt-6 pt-6 border-t">
-                    <h3 className="font-medium mb-3">
-                      Lesson Assessment Materials
-                    </h3>
-                    {activeLesson.lessonAssessment.map((assessment, i) => (
-                      <div key={i} className="space-y-3">
-                        <h4 className="font-medium text-sm">
-                          {assessment.title}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          {assessment.description}
-                        </p>
+              {/* Lesson Assessment */}
+              {activeLesson && activeLesson.lessonAssessment && activeLesson.lessonAssessment.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-4">Lesson Assessment Materials</h3>
+                  {activeLesson.lessonAssessment.map((assessment, i) => (
+                    <div key={i} className="space-y-4">
+                      <h4 className="font-medium text-sm text-gray-800">{assessment.title}</h4>
+                      <p className="text-sm text-gray-600">{assessment.description}</p>
 
-                        {assessment.pdfFiles &&
-                          assessment.pdfFiles.length > 0 && (
-                            <div className="space-y-2 pl-2">
-                              {assessment.pdfFiles.map((pdf, pdfIndex) => (
-                                <a
-                                  key={pdfIndex}
-                                  href={pdf}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center p-2 border rounded-md hover:bg-gray-50 transition-colors"
-                                >
-                                  <FileText className="h-4 w-4 text-blue-500 mr-2" />
-                                  <span className="text-blue-600 text-sm">
-                                    Assessment PDF {pdfIndex + 1}
-                                  </span>
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      {assessment.pdfFiles && assessment.pdfFiles.length > 0 && (
+                        <div className="space-y-3 pl-4">
+                          {assessment.pdfFiles.map((pdf, pdfIndex) => (
+                            <a
+                              key={pdfIndex}
+                              href={pdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                            >
+                              <FileText className="h-4 w-4 text-blue-500 mr-3" />
+                              <span className="text-blue-600 text-sm">
+                                Assessment PDF {pdfIndex + 1}
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
 
-              {chapter.assessment && chapter.assessment.length > 0 && (
-                <div className="mt-6 pt-6 border-t">
-                  <h3 className="font-medium mb-3">Chapter Assessment</h3>
+              {/* Chapter Assessment */}
+              {chapter && chapter.assessment && chapter.assessment.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-4">Chapter Assessment</h3>
                   {chapter.assessment.map((assessment, i) => (
-                    <div key={i} className="space-y-2">
-                      <h4 className="font-medium text-sm">
-                        {assessment.title}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {assessment.description}
-                      </p>
+                    <div key={i} className="space-y-4">
+                      <h4 className="font-medium text-sm text-gray-800">{assessment.title}</h4>
+                      <p className="text-sm text-gray-600">{assessment.description}</p>
 
-                      {assessment.pdfFiles &&
-                        assessment.pdfFiles.length > 0 && (
-                          <div className="space-y-2 pl-2">
-                            {assessment.pdfFiles.map((pdf, pdfIndex) => (
-                              <a
-                                key={pdfIndex}
-                                href={pdf}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center p-2 border rounded-md hover:bg-gray-50 transition-colors"
-                              >
-                                <FileText className="h-4 w-4 text-blue-500 mr-2" />
-                                <span className="text-blue-600 text-sm">
-                                  Chapter Assessment PDF {pdfIndex + 1}
-                                </span>
-                              </a>
-                            ))}
-                          </div>
-                        )}
+                      {assessment.pdfFiles && assessment.pdfFiles.length > 0 && (
+                        <div className="space-y-3 pl-4">
+                          {assessment.pdfFiles.map((pdf, pdfIndex) => (
+                            <a
+                              key={pdfIndex}
+                              href={pdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                            >
+                              <FileText className="h-4 w-4 text-blue-500 mr-3" />
+                              <span className="text-blue-600 text-sm">
+                                Chapter Assessment PDF {pdfIndex + 1}
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </TabsContent>
-
-          {/* Instructor */}
-          <TabsContent value="instructor" className="p-6">
-            {instructor ? (
-              <div className="flex items-start gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage
-                    src={instructor.profileImg || "/placeholder.svg"}
-                    alt={`${instructor.firstName} ${instructor.lastName}`}
-                  />
-                  <AvatarFallback>
-                    {instructor.firstName?.charAt(0)}
-                    {instructor.lastName?.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="text-lg font-bold">
-                    {instructor.firstName} {instructor.lastName}
-                  </h3>
-                  <p className="text-sm text-gray-500">{instructor.pronouns}</p>
-
-                  <div className="flex items-center gap-2 mt-2">
-                    <Star
-                      size={16}
-                      className="text-yellow-400 fill-yellow-400"
-                    />
-                    <span className="text-sm font-medium">Instructor</span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <PlayCircle size={16} className="text-gray-500" />
-                    <span className="text-sm text-gray-500">
-                      {instructor.courses?.length || 0} Courses
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-700 mt-4">
-                    Email: {instructor.email}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-6 text-gray-500">
-                Instructor information not available
-              </div>
-            )}
-          </TabsContent>
         </Tabs>
       </div>
 
       {/* Right side - Course Contents */}
       <div className="w-full lg:w-80 border-l bg-gray-50 overflow-auto max-h-screen">
-        <div className="p-4 border-b">
-          <h2 className="font-medium">Chapter Content</h2>
+        {/* Header */}
+        <div className="p-4 border-b bg-white ">
+          <h2 className="text-sm font-semibold text-gray-700">Chapter Content</h2>
         </div>
-        <div className="max-h-[calc(100vh-64px)]">
+
+        {/* Chapter Toggle Section */}
+        <div className="max-h-[calc(100vh-64px)] overflow-y-auto">
           <div className="border-b">
             <button
-              className="flex items-center justify-between w-full p-4 text-left"
+              className="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 transition"
               onClick={() => toggleSection(chapter.title)}
             >
-              {expandedSections[chapter.title] ? (
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-gray-400" />
-              )}
-              <span className="flex-1 ml-2 font-medium text-sm">
-                {chapter.title}
-              </span>
-              <span className="text-xs text-gray-500">
-                {chapter.lessons.length} lessons
-              </span>
+              <div className="flex items-center gap-2">
+                {expandedSections[chapter.title] ? (
+                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                ) : (
+                  <ChevronRight className="w-4 h-4 text-gray-500" />
+                )}
+                <span className="text-sm font-medium text-gray-800">{chapter.title}</span>
+              </div>
+              <span className="text-xs text-gray-500">{chapter.lessons.length} lessons</span>
             </button>
+
             {(expandedSections[chapter.title] || true) && (
-              <div className="pl-10 pr-4 pb-2">
-                {chapter.lessons.map((lesson, lessonIndex) => (
-                  <button
-                    key={lessonIndex}
-                    className={`py-2 px-2 flex items-center text-sm w-full text-left rounded-md ${
-                      activeLesson && activeLesson._id === lesson._id
-                        ? "bg-green-50 text-green-700"
-                        : "hover:bg-gray-100"
-                    }`}
-                    onClick={() => setActiveLesson(lesson)}
-                  >
-                    <PlayCircle
-                      className={`h-4 w-4 mr-2 ${
-                        activeLesson && activeLesson._id === lesson._id
-                          ? "text-green-500"
-                          : "text-gray-400"
-                      }`}
-                    />
-                    <span>{lesson.title}</span>
-                  </button>
-                ))}
+              <div className="pl-6 pr-4 pb-2">
+                {chapter.lessons.map((lesson, lessonIndex) => {
+                  const isActive = activeLesson && activeLesson._id === lesson._id;
+                  return (
+                    <button
+                      key={lessonIndex}
+                      onClick={() => setActiveLesson(lesson)}
+                      className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-sm transition 
+                  ${isActive ? "bg-green-100 text-green-700 font-medium" : "hover:bg-gray-100 text-gray-700"}`}
+                    >
+                      <PlayCircle
+                        className={`h-4 w-4 ${isActive ? "text-green-500" : "text-gray-400"}`}
+                      />
+                      <span>{lesson.title}</span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
         </div>
       </div>
+
     </div>
   );
 }

@@ -74,7 +74,7 @@ export default function CoursesChapter() {
       setCourse({});
     } catch (error) {
       console.error(error);
-      toast.error(error.data.message);
+      toast.error(error.response?.data?.message || "An error occurred");
       setCourseLoading(false);
     }
   };

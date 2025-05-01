@@ -1,14 +1,61 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { LayoutDashboard, BookOpen, FileText, Bell, GraduationCap, MessageSquare, Users, Search } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useEffect, useState } from "react";
+import {
+  LayoutDashboard,
+  BookOpen,
+  FileText,
+  Bell,
+  GraduationCap,
+  MessageSquare,
+  Users,
+  Search,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 export default function TeacherDashboard() {
-  const [timeFilter, setTimeFilter] = useState("today")
+  const [courses, setCourses] = useState();
+  const [students, setStudents] = useState();
+
+  console.log(courses);
+
+  ///courses
+  useEffect(() => {
+    const getTeacherCourse = async () => {
+      await axiosInstance("/course/getindividualcourse")
+        .then((res) => {
+          setCourses(res.data.courses);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getTeacherCourse();
+  }, []);
+
+  //students
+  useEffect(() => {
+    const getTeacherCourse = async () => {
+      await axiosInstance("/course/getpurchaseCourse")
+        .then((res) => {
+          setStudents(res.data.users);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+    getTeacherCourse();
+  }, []);
 
   const metrics = [
     {
@@ -35,7 +82,7 @@ export default function TeacherDashboard() {
     },
     {
       title: "Courses",
-      value: "60",
+      value: courses?.length,
       icon: (
         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
           <BookOpen size={16} className="text-green-600" />
@@ -44,78 +91,54 @@ export default function TeacherDashboard() {
     },
     {
       title: "Students",
-      value: "600",
+      value: students?.length,
       icon: (
         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
           <Users size={16} className="text-green-600" />
         </div>
       ),
     },
-    {
-      title: "Messages",
-      value: "30",
-      icon: (
-        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-          <MessageSquare size={16} className="text-green-600" />
-        </div>
-      ),
-    },
-  ]
-
-  const topSellers = [
-    {
-      title: "Revolutionize how you build the web...",
-      categories: ["E-commerce", "Marketplace"],
-      image: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      title: "Revolutionize how you build the web...",
-      categories: ["E-commerce", "Marketplace"],
-      image: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      title: "Revolutionize how you build the web...",
-      categories: ["E-commerce", "Marketplace"],
-      image: "/placeholder.svg?height=40&width=40",
-    },
-  ]
+    // {
+    //   title: "Messages",
+    //   value: "30",
+    //   icon: (
+    //     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+    //       <MessageSquare size={16} className="text-green-600" />
+    //     </div>
+    //   ),
+    // },
+  ];
 
   const recentActivity = Array(3).fill({
     user: "Kevin",
     action: "comments on your lecture",
-    target: 'What is ux 2021 UI/UX design with figma',
+    target: "What is ux 2021 UI/UX design with figma",
     time: "Just now",
-  })
+  });
 
   const recentSales = Array(3).fill({
     user: "Kevin",
     action: "purchased on your lecture",
-    target: 'What is ux 2021 UI/UX design with figma',
+    target: "What is ux 2021 UI/UX design with figma",
     time: "Just now",
-  })
-
-  const recentCourses = Array(3).fill({
-    title: "Revolutionize how you build the web...",
-    categories: ["E-commerce", "Marketplace"],
-    image: "/placeholder.svg?height=40&width=40",
-  })
+  });
 
   return (
     <div className="min-h-screen">
-
-
-
-
       {/* Main Content */}
       <div className="">
-        <h1 className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">Dashboard</h1>
+        <h1 className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
+          Dashboard
+        </h1>
 
         {/* Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 ">
           {metrics.map((metric, i) => (
             <Card key={i}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
-                <CardTitle className="text-sm font-medium text-gray-500">{metric.title}</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">
+                  {metric.title}
+                </CardTitle>
                 {metric.icon}
               </CardHeader>
               <CardContent>
@@ -126,8 +149,6 @@ export default function TeacherDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-
           {/* Recent Activity */}
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -135,16 +156,22 @@ export default function TeacherDashboard() {
             </div>
             <div className="space-y-4">
               {recentActivity.map((activity, i) => (
-                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+                <div
+                  key={i}
+                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
+                >
                   <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
                     <MessageSquare size={16} />
                   </div>
                   <div>
                     <p className="text-sm">
-                      <span className="font-medium">{activity.user}</span> {activity.action}{" "}
+                      <span className="font-medium">{activity.user}</span>{" "}
+                      {activity.action}{" "}
                       <span className="text-gray-500">{activity.target}</span>
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {activity.time}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -158,41 +185,20 @@ export default function TeacherDashboard() {
             </div>
             <div className="space-y-4">
               {recentSales.map((sale, i) => (
-                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+                <div
+                  key={i}
+                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
+                >
                   <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
                     <MessageSquare size={16} />
                   </div>
                   <div>
                     <p className="text-sm">
-                      <span className="font-medium">{sale.user}</span> {sale.action}{" "}
+                      <span className="font-medium">{sale.user}</span>{" "}
+                      {sale.action}{" "}
                       <span className="text-gray-500">{sale.target}</span>
                     </p>
                     <p className="text-xs text-gray-500 mt-1">{sale.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Top Sellers */}
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Top Sellers</h2>
-            <div className="space-y-4">
-              {topSellers.map((course, i) => (
-                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
-                  <img
-                    src={course.image || "/placeholder.svg"}
-                    alt={course.title}
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                  <div>
-                    <h3 className="font-medium text-sm mb-1">{course.title}</h3>
-                    <div className="flex gap-2">
-                      {course.categories.map((category, j) => (
-                        <span key={j} className="text-xs text-gray-500">
-                          {category}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 </div>
               ))}
@@ -203,21 +209,24 @@ export default function TeacherDashboard() {
           <div>
             <h2 className="text-lg font-semibold mb-4">Recent Courses</h2>
             <div className="space-y-4">
-              {recentCourses.map((course, i) => (
-                <div key={i} className="flex items-start gap-4 bg-white p-4 rounded-lg border">
+              {courses?.slice(0, 3).map((course, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
+                >
                   <img
-                    src={course.image || "/placeholder.svg"}
-                    alt={course.title}
+                    src={course.basics.thumbnail || "/placeholder.svg"}
+                    alt={course.basics.courseTitle}
                     className="w-10 h-10 rounded-lg object-cover"
                   />
                   <div>
-                    <h3 className="font-medium text-sm mb-1">{course.title}</h3>
+                    <h3 className="font-medium text-sm mb-1">
+                      {course.basics.courseTitle}
+                    </h3>
                     <div className="flex gap-2">
-                      {course.categories.map((category, j) => (
-                        <span key={j} className="text-xs text-gray-500">
-                          {category}
-                        </span>
-                      ))}
+                      <span className="text-xs text-gray-500">
+                        {course?.basics?.category?.title}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -227,6 +236,5 @@ export default function TeacherDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
