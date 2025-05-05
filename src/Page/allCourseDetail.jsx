@@ -33,17 +33,14 @@ const AllCoursesDetail = () => {
   const [loading, setLoading] = useState(true);
 
   const purchase = async () => {
-    await axiosInstance
-      .post("course/purchase", { course: courseDetails._id })
-      .then((res) => {
-        console.log(res);
-        toast.success(res.data.message);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response.data.error);
-      });
-  };
+    try {
+      const res = await axiosInstance.post("course/purchase", { course: courseDetails._id });
+      window.location.href = res.data.url; // Redirects to Stripe Checkout
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response?.data?.error || "Purchase failed");
+    }
+  };  
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -102,8 +99,9 @@ const AllCoursesDetail = () => {
 
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center">
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="h-10 w-10 rounded-full">
                     <AvatarImage
+                    className=" rounded-full"
                       src={courseDetails.createdby.profileImg}
                       alt="Instructor"
                     />

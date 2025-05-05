@@ -16,7 +16,6 @@ import LandingPage from "./Page/LandingPage";
 import Payment from "./Page/StudentPortal/Payment";
 import Messages from "./Page/StudentPortal/Messages";
 
-
 import GeneralCourses from "./Page/GeneralCourses";
 import GeneralSupport from "./Page/GeneralSupport";
 import GeneralCoursesDetail from "./Page/GeneralCourseDetail";
@@ -44,8 +43,6 @@ import ContactUs from "./Page/ContactUs";
 import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
 
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
-import CreateCourse from "./Page/teacher/Courses/CreateCourses";
-import { Toaster } from "./components/ui/sonner";
 import { useEffect } from "react";
 import { GlobalContext } from "./Context/GlobalProvider";
 import { useContext } from "react";
@@ -54,20 +51,44 @@ import LoadingLoader from "./CustomComponent/LoadingLoader";
 import MainDetailPage from "./Page/StudentPortal/Courses/MainDetailPage";
 import ChapterDetail from "./Page/StudentPortal/Courses/MyCourseDetail";
 import NotFoundPage from "./Page/NotFoundPage";
+import { io } from "socket.io-client";
+import ChatWindow from "./CustomComponent/MessagesCmp.jsx/chat-window";
 
 function App() {
-  const { checkAuth, user, Authloading, setAuthLoading } =
+  const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
     useContext(GlobalContext);
 
   useEffect(() => {
     checkAuth();
   }, []);
 
-  // const socket = io("http://localhost:5050");
+  useEffect(() => {
+    return () => {
+      connectsocket();
+    };
+  }, [user]);
 
   if (Authloading) {
     return <LoadingLoader />;
   }
+
+  const connectsocket = () => {
+    console.log(user, "user");
+
+    const newSocket = io("http://localhost:5050", {
+      query: { userId: user?._id || "" },
+    });
+
+    setSocket(newSocket);
+
+    newSocket.on("getOnlineUsers", (usersIds) => {
+      setOnlineUser(usersIds);
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+    });
+  };
 
   return (
     <>
@@ -122,12 +143,16 @@ function App() {
             <Route path="announcements" element={<Announcement />}></Route>
             <Route path="account" element={<Account />}></Route>
             <Route path="support" element={<Support />} />
+            <Route path="ContactUs" element={<ContactUs />} />
             <Route path="courses">
               <Route index element={<AllCourses />} />
               <Route path="detail/:id" element={<AllCoursesDetail />} />
             </Route>
             <Route path="payment" element={<Payment />} />
-            <Route path="messages" element={<Messages />} />
+            <Route path="messages">
+              <Route index element={<Messages />} />
+              <Route path=":id" element={<ChatWindow />} />
+            </Route>
           </Route>
         </Route>
 
@@ -140,7 +165,7 @@ function App() {
               <Route path="detail" element={<EarningDetail />} />
             </Route>
             <Route path="account" element={<TeacherAccount />} />
-            <Route path="messages" element={<TeacherMessages />} />
+            {/* <Route path="messages" element={<TeacherMessages />} /> */}
             <Route path="assignment">
               <Route index element={<Teacherrassessment />} />
               <Route path="create" element={<CreateAssessmentPage />} />
@@ -148,6 +173,10 @@ function App() {
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
             <Route path="studentProfile/:id" element={<StudentProfile />} />
+            <Route path="messages">
+              <Route index element={<Messages />} />
+              <Route path=":id" element={<ChatWindow />} />
+            </Route>
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route

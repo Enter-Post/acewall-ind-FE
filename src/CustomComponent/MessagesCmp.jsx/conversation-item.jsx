@@ -14,16 +14,16 @@ export default function ConversationItem({ conversation, isActive, onClick }) {
     >
       <div className="relative">
         <Avatar className="h-12 w-12">
-          <AvatarImage src={conversation.profileImg} alt={conversation.firstName} />
+          <AvatarImage src={conversation.otherMember.profileImg} alt={conversation.otherMember.name} />
           <AvatarFallback>
-            {conversation.firstName}
+            {conversation.otherMember.name[0]}
           </AvatarFallback>
         </Avatar>
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-center">
-          <h3 className="font-medium text-sm">{conversation.firstName}</h3>
+          <h3 className="font-medium text-sm">{conversation.otherMember.name}</h3>
           {/* <span className="text-xs text-gray-500">{time}</span> */}
         </div>
         {/* <p className="text-sm text-gray-500 truncate">{message}</p> */}

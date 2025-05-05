@@ -16,41 +16,55 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
   return (
     <Card
       className={`bg-gray-100 border-0 my-auto py-0 gap-2 rounded h-full`}
-      style={{ height: height || "100%" }} // Ensuring both have the same height
+      style={{ height: height || "100%" }}
     >
       <CardHeader className="flex-row justify-between items-center bg-green-600 py-3 rounded">
-        <CardTitle className="text-lg text-white">{mainHeading}</CardTitle>
+        <CardTitle className="text-lg text-white ">{mainHeading}</CardTitle>
         <Link to={link} className="text-white text-xs">
           View All
         </Link>
       </CardHeader>
-      <CardContent className="p-0 overflow-auto">
-        <div className="divide-y">
-          {data?.map((item, index) => (
-            <div
-              key={index}
-              className="px-4 py-3 flex gap-10 items-center hover:font-medium hover:text-normal  transition-all duration-300 "
-            >
-              <div className="flex-1 ">
-                <Link to={link}>
-                  <p className="cursor-pointer font-semibold">{item.course}</p>
-                  <p className=" cursor-pointer">{item.title}</p>
-                </Link>
-              </div>
 
-              {(item.date || item.time) && (
-                <div className="text-xs text-gray-500">
-                  {item.date && (
+      <CardContent className="p-0 overflow-auto max-h-[390px]">
+        <div className="divide-y divide-gray-100">
+          {data?.length > 0 ? (
+            data.map((item, index) => (
+              <div
+                key={index}
+                className="px-6 py-4 flex items-start justify-between hover:bg-gray-50 transition"
+              >
+                <div className="flex-1">
+                  <Link to={link}>
+                    {item.basics?.courseTitle ? (
+                      <p className="font-semibold text-gray-800">
+                        {item.basics.courseTitle}
+                      </p>
+                    ) : (
+                      <>
+                        <p className="font-semibold text-gray-800">{item.course}</p>
+                        <p className="text-sm text-gray-600">{item.title}</p>
+                      </>
+                    )}
+                  </Link>
+                </div>
+
+                <div className="text-right text-xs text-gray-500 whitespace-nowrap">
+                  {item.date ? (
                     <p>{new Date(item.date).toLocaleDateString()}</p>
-                  )}
+                  ) : item.createdAt ? (
+                    <p>{new Date(item.createdAt).toLocaleDateString()}</p>
+                  ) : null}
                   {item.time && <p>{item.time}</p>}
                 </div>
-              )}
-            </div>
-          ))}
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-sm text-gray-500 py-10">No data available.</div>
+          )}
         </div>
       </CardContent>
     </Card>
+
   );
 }
 
@@ -201,6 +215,10 @@ const StudentCard = ({ student }) => (
         <span className="text-gray-500">Joined</span>
         <span className="text-right text-gray-700 font-medium">
           {new Date(student.createdAt).toLocaleDateString()}
+        </span>
+        <span className="text-gray-500">Courses</span>
+        <span className="text-right text-gray-700 font-medium">
+          {student?.purchasedCourse?.length || 0}
         </span>
 
       </div>
@@ -362,7 +380,7 @@ function StudentProfileStatCard({ title, value, icon }) {
   );
 }
 
-const MyCoursesCard = ({course}) => {
+const MyCoursesCard = ({ course }) => {
   return (
     <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
       <AspectRatio ratio={16 / 9}>
@@ -378,9 +396,9 @@ const MyCoursesCard = ({course}) => {
         </div>
         <CardTitle className="flex justify-between flex-col gap-2">
           <span>{course.basics.courseTitle}</span>
-          <span className="text-lg font-semibold text-green-500">
+          {/* <span className="text-lg font-semibold text-green-500">
             ${course.basics.price}
-          </span>
+          </span> */}
         </CardTitle>
       </CardHeader>
       <CardContent>

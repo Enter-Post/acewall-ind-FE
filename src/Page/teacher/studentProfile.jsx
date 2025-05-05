@@ -43,7 +43,7 @@ export default function StudentProfile() {
           <AvatarImage
             src={studentInfo?.profileImg}
             alt={studentInfo?.firstName}
-            className="rounded-full object-cover"
+            className="rounded-full h-24 object-cover"
           />
           <AvatarFallback className="bg-gray-200 text-gray-600 text-xl font-semibold flex items-center justify-center">
             {studentInfo?.firstName[0]}

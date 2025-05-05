@@ -9,7 +9,6 @@ import { CourseProvider } from "./Context/CoursesProvider";
 import { Toaster } from "./components/ui/sonner";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
     <GlobalProvider>
       <CourseProvider>
         <BrowserRouter>
@@ -19,5 +18,4 @@ createRoot(document.getElementById("root")).render(
         </BrowserRouter>
       </CourseProvider>
     </GlobalProvider>
-  </StrictMode>
 );

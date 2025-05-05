@@ -71,7 +71,7 @@ export default function CourseOverview() {
           {course.basics.courseTitle}
         </h1>
 
-        <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+        <p className="text-gray-600 text-base  leading-relaxed">
           {course.basics.courseDescription}
         </p>
 

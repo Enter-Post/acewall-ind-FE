@@ -108,16 +108,16 @@ const MainLayout = () => {
 
               <div className="flex gap-6">
                 <Link
-                  to="/Courses"
-                  className="text-xs md:text-md lg:text-base font-medium text-gray-700"
+                  to="/courses"
+                  className="text-xs md:text-sm lg:text-base font-semibold text-gray-800 hover:text-gray-900"
                 >
-                  MORE COURSES
+                  More Courses
                 </Link>
-                <Link to="/support" className="text-sm font-medium text-gray-700">
-                  SUPPORT
+                <Link to="/support" className="text-xs md:text-sm lg:text-base font-semibold text-gray-800 hover:text-gray-900">
+                  Support
                 </Link>
-                <Link to="/contactUs" className="text-sm font-medium text-gray-700">
-                  CONTACT US
+                <Link to="/contactUs" className="text-xs md:text-sm lg:text-base font-semibold text-gray-800 hover:text-gray-900">
+                  Contact Us
                 </Link>
               </div>
             </div>

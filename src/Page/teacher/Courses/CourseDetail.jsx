@@ -196,7 +196,12 @@ export default function TeacherCourseDetails() {
                     <p className="font-semibold text-base text-gray-900">Chapter Assessment</p>
                     {chapter.assessment.map((assess, aIdx) => (
                       <div key={aIdx} className="pl-4 border-l-2 border-orange-400">
-                        <p className="text-sm text-gray-700 mb-1">{assess.description}</p>
+                        <ul className="list-disc pl-4 mb-3">
+                          <li>
+                            <p className="text-base font-medium mb-3 text-gray-700">{assess.title}</p>
+                            <p className="text-sm text-gray-700">{assess.description}</p>
+                          </li>
+                        </ul>
                         {assess.pdfFiles?.map((pdf, i) => (
                           <a
                             key={i}
@@ -282,6 +287,9 @@ export default function TeacherCourseDetails() {
                                   <p className="font-semibold text-sm">Lesson Assessment:</p>
                                   {lesson.lessonAssessment.map((assess, idx) => (
                                     <div key={idx} className="pl-4 border-l-2 border-green-400">
+                                      <p className="text-sm font-medium text-gray-700 mb-3 ">
+                                        {assess.title}
+                                      </p>
                                       <p className="text-sm text-gray-700 mb-1">
                                         {assess.description}
                                       </p>

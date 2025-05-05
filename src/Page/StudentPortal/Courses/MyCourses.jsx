@@ -23,10 +23,13 @@ const CourseCards = () => {
       await axiosInstance
         .get(`/course/getMyCourses`, {
           params: { search: searchQuery },
+          
         })
         .then((res) => {
           setCourses(res.data.purchasedCourses);
+          console.log("API Response:", res.data)
           setLoading(false);
+
         })
         .catch((err) => {
           console.log(err);

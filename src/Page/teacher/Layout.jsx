@@ -58,12 +58,12 @@ const sideBarTabs = [
     icon: <Wallet />,
     path: "/teacher/wallet",
   },
-  // {
-  //   id: 12,
-  //   name: "Messages",
-  //   icon: <MessageCircleDashed />,
-  //   path: "/teacher/messages",
-  // },
+  {
+    id: 12,
+    name: "Messages",
+    icon: <MessageCircleDashed />,
+    path: "/teacher/messages",
+  },
   {
     id: 13,
     name: "Students",
@@ -83,27 +83,35 @@ export default function TeacherLayout() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [openDropdown, setOpenDropdown] = React.useState(false); // control visibility manually
+  const [openDropdown, setOpenDropdown] = React.useState(false);
+
+
+
+
+
   const handleSearch = async () => {
     if (!searchQuery.trim() || loading) return;
-  
+
     setLoading(true);
-    setOpenDropdown(true);
-  
+    setOpenDropdown(false); // Ensure dropdown is closed while loading
+
     try {
       const res = await axiosInstance.get("/course/getindividualcourse", {
         params: { search: searchQuery },
       });
-      console.log(res.data);
-      setDropdownCourses(res.data.courses || []);
+
+      const courses = res.data.courses || [];
+      setDropdownCourses(courses);
     } catch (error) {
       console.error("Search error:", error);
-      setDropdownCourses([]);
+      setDropdownCourses([]); // To show "No results found"
     } finally {
       setLoading(false);
+      setOpenDropdown(true); // ✅ Open dropdown only after data is ready
     }
   };
-  
+
+
 
 
 
@@ -137,42 +145,54 @@ export default function TeacherLayout() {
               className="w-40 h-auto cursor-pointer"
             />
           </Link>
-          {/* search dropdown */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                if (!e.target.value.trim()) {
-                  setDropdownCourses([]);
-                  setOpenDropdown(false);
-                }
-              }}
-              placeholder="Search courses and lessons"
-            />
-            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
+
+
+          {/* Search Dropdown */}
+          <div className="relative w-64 hidden md:flex flex-col">
+            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
               <DropdownMenuTrigger asChild>
-                <button
-                  onClick={handleSearch}
-                  className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
-                >
-                  <Search className="rounded-full" />
-                </button>
+                <div className="relative flex gap-2 w-full">
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (!e.target.value.trim()) {
+                        setDropdownCourses([]);
+                        setOpenDropdown(false);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSearch();
+                      }
+                    }}
+                    placeholder="Search courses and lessons"
+                    className="w-full pr-10 border border-gray-300 focus:ring-2 focus:ring-green-400 focus:border-transparent rounded-md transition-all"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
+                    aria-label="Search"
+                  >
+                    <Search className="w-4 h-4" />
+                  </button>
+                </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
+
+              <DropdownMenuContent className=" bg-white border  border-gray-200 shadow-md rounded-md mt-2 max-h-60 overflow-y-auto z-50 w-64">
                 {loading ? (
                   <DropdownMenuItem disabled>
                     <span className="text-sm text-gray-700">Searching...</span>
                   </DropdownMenuItem>
                 ) : dropdownCourses.length > 0 ? (
                   dropdownCourses.map((course) => (
-                    <DropdownMenuItem
-                      key={course._id}
-                      asChild
-                      onSelect={() => setOpenDropdown(false)} // optional: close dropdown on select
-                    >
-                      <Link to={`/teacher/courses/courseDetail/${course._id}`}>
+                    <DropdownMenuItem asChild key={course._id}>
+                      <Link
+                        to={`/teacher/courses/courseDetail/${course._id}`}
+                        onClick={() => setOpenDropdown(false)}
+                        className="w-full block text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 rounded"
+                      >
                         {course.basics?.courseTitle || "Untitled Course"}
                       </Link>
                     </DropdownMenuItem>
@@ -185,6 +205,8 @@ export default function TeacherLayout() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+
+
 
         </div>
       </header>

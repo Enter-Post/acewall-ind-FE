@@ -100,7 +100,7 @@ const GeneralCourses = () => {
                 key={course._id}
                 to={`/courses/detail/${course._id}`}
               >
-                <Card className=" pt-0 w-full h-full overflow-hidden cursor-pointer">
+                <Card className="h-[300px] pt-0 w-full overflow-hidden cursor-pointer">
                   <AspectRatio ratio={16 / 9}>
                     <img
                       src={course.basics.thumbnail || "/placeholder.svg"}

@@ -1,69 +1,88 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MoreHorizontal, Send, Edit } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getContactByName, messages as initialMessages } from "@/lib/data";
 import MessageList from "./messages-list";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { useParams } from "react-router-dom";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
-export default function ChatWindow({ activeConversation }) {
-  // const contact = getContactByName(contactName);
-  const [messages, setMessages] = useState();
+export default function ChatWindow() {
+  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chat, setChat] = useState();
 
-  console.log(activeConversation, "activeConversation");
+  const { user, socket } = useContext(GlobalContext);
+
+  const activeConversation = useParams().id;
+
+  const subscribeToMessages = () => {
+    socket.on("newMessage", (message) => {
+      setMessages([...messages, newMessage]);
+    });
+  };
+
+  const unsubscripteToMessages = () => {
+    socket.off("newMessage");
+  };
 
   useEffect(() => {
-    const getChats = async () => {
+    const getMessaages = async () => {
       await axiosInstance
-        .get(`/messeges/allmsg/${activeConversation}`)
+        .get(`/messeges/get/${activeConversation}`)
         .then((res) => {
-          console.log(res);
+          setMessages(res.data.messages);
+          // console.log(res.data);
         })
         .catch((err) => {
           console.log(err);
         });
     };
-    getChats();
-  }, [activeConversation]);
+    getMessaages();
+    subscribeToMessages();
+  }, [activeConversation, subscribeToMessages, unsubscripteToMessages]);
 
   // return;
-  const handleSendMessage = () => {
-    // if (!newMessage.trim()) return;
+  const handleSendMessage = async () => {
+    await axiosInstance
+      .post(`/messeges/create/${activeConversation}`, {
+        text: newMessage,
+      })
+      .then((res) => {
+        // console.log(res.data, "res.datares.data");
 
-    const message = {
-      id: `msg-${Date.now()}`,
-      sender: "me",
-      content: newMessage,
-      time: "now",
-      isNew: true,
-    };
+        setMessages([...messages, res.data.newMessage]);
+        setNewMessage("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-    setMessages([...messages, message]);
-    setNewMessage("");
+    /// real time functinality
+    socket.emit("sendMessage", {
+      senderId: user._id,
+      receiverId: activeConversation,
+      text: newMessage,
+    });
   };
 
   return (
-    <div className="flex flex-col h-full overflow-auto hide-scrollbar">
+    <div className="flex flex-col h-full overflow-auto hide-scrollbar border-red-600">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={"contact?.avatar"} />
+            <AvatarImage src={""} />
             <AvatarFallback>{"contactName"}</AvatarFallback>
           </Avatar>
           <div>
             <h3 className="font-medium">{"contactName"}</h3>
-            <p className="text-sm text-green-600">Active Now</p>
           </div>
         </div>
-        {/* <Button variant="ghost" size="icon">
-          <MoreHorizontal className="h-5 w-5" />
-        </Button> */}
       </div>
 
       <MessageList
-        messages={"messages"}
+        messages={messages}
         contactName={"contactName"}
         contactAvatar={"contact?.avatar"}
       />
@@ -71,7 +90,6 @@ export default function ChatWindow({ activeConversation }) {
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            {/* <Edit className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-600 h-5 w-5" /> */}
             <input
               type="text"
               placeholder="Type your message"

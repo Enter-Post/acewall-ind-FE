@@ -68,9 +68,10 @@ const GeneralCourseDetail = () => {
                   <p className="text-gray-600 text-sm mb-4">{courseDetails.basics.courseDescription}</p>
 
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center rounded-full">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
+                        className=" rounded-full"
                           src={courseDetails.createdby.profileImg}
                           alt="Instructor"
                         />

@@ -20,12 +20,16 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 
+const fileInstance = z
+  .instanceof(File)
+  .refine((file) => file.size <= 5 * 1024 * 1024, {
+    message: "File size must not exceed 5MB",
+  });
+
 const lessonAssessmentSchema = z.object({
-  title: z.string().min(5, "Assessment title must be at least 5 characters"),
-  description: z
-    .string()
-    .min(5, "Assessment description must be at least 5 characters"),
-  pdfFiles: z.any().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  pdfFiles: z.array(fileInstance).optional(),
 });
 
 const lessonSchema = z.object({
@@ -33,7 +37,7 @@ const lessonSchema = z.object({
   description: z.string().min(5, "Description must be at least 5 characters"),
   youtubeLinks: z.string().optional(),
   otherLink: z.string().optional(),
-  pdfFiles: z.any().optional(),
+  pdfFiles: z.array(fileInstance).optional(),
   lessonAssessment: lessonAssessmentSchema.optional(),
 });
 
@@ -167,6 +171,9 @@ const LessonDialog = ({ id }) => {
               onChange={(e) => handleLessonPDFChange(e)}
             />
           </div>
+          {errors.pdfFiles && (
+            <p className="text-red-500 text-sm">{errors.pdfFiles.message}</p>
+          )}
 
           <div className="border rounded-md p-4 bg-gray-50 space-y-2">
             <h4 className="font-semibold text-lg">Lesson Assessment</h4>
@@ -210,6 +217,11 @@ const LessonDialog = ({ id }) => {
                 accept="application/pdf"
                 onChange={(e) => handleAssessmentPDFChange(e)}
               />
+              {errors.lessonAssessment.pdfFiles[0] && (
+                <p className="text-red-500 text-sm">
+                  {errors.pdfFiles.message}
+                </p>
+              )}
             </div>
           </div>
 

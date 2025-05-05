@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RatingStars from "../RatingStars";
 import { Star } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
@@ -6,46 +6,71 @@ import { toast } from "sonner";
 
 const RatingSection = ({ course, id }) => {
   const [userRating, setUserRating] = useState(0);
+  const [hasRated, setHasRated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  console.log(userRating, "userRating");
+  // Fetch whether user has already rated this course
+  useEffect(() => {
+    const fetchUserRating = async () => {
+      try {
+        const res = await axiosInstance.get(`/rating/isRated/${id}`);
+        if (res.data.rating) {
+          setUserRating(res.data.star);
+          setHasRated(true);
+        }
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          toast.error("Error checking user rating");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserRating();
+  }, [id]);
 
   const handleRatingSubmit = async (rating) => {
-    await axiosInstance
-      .post(`/rating/create/${id}`, {
+    if (hasRated) {
+      toast.error("You have already rated this course.");
+      return;
+    }
+
+    try {
+      const res = await axiosInstance.post(`/rating/create/${id}`, {
         star: rating,
-      })
-      .then((res) => {
-        console.log(res);
-        toast.success(res.data.message);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response.data.message);
       });
-
-    setUserRating(rating);
+      toast.success(res.data.message);
+      setUserRating(rating);
+      setHasRated(true);
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response?.data?.message || "Failed to submit rating");
+    }
   };
-
-//   const averageRating =
-//     course.rating && course.rating.length > 0
-//       ? course.rating.reduce((sum, r) => sum + r.value, 0) /
-//         course.rating.length
-//       : 0;
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg">
       <h3 className="text-xl font-bold mb-4">Rate this course</h3>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <div className="flex items-center">
-          <RatingStars
-            rating={userRating}
-            setRating={handleRatingSubmit}
-            editable={true}
-          />
-        </div>
-        <p className="text-sm text-gray-500">
-          {userRating > 0 ? "Thanks for rating!" : "Click to rate"}
-        </p>
+        {loading ? (
+          <p className="text-gray-500">Loading...</p>
+        ) : hasRated ? (
+          <>
+          </>
+        ) : (
+          <>
+            <RatingStars
+              rating={userRating}
+              setRating={handleRatingSubmit}
+              editable={true}
+            />
+            <p className="text-sm text-gray-500">
+              {userRating > 0 ? "Thanks for rating!" : "Click to rate"}
+            </p>
+          </>
+        )}
       </div>
 
       <div className="mt-4">

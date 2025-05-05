@@ -33,24 +33,31 @@ const sideBarTabs = [
     icon: <DashboardCircleAddIcon />,
     path: "/student",
   },
-  {
-    id: 5,
-    name: "Announcements",
-    icon: <Megaphone02Icon />,
-    path: "/student/announcements",
+{
+    id: 12,
+    name: "Messages",
+    icon: <MessageCircleDashed />,
+    path: "/student/messages",
   },
-  {
-    id: 3,
-    name: "My Assignments",
-    icon: <AssignmentsIcon />,
-    path: "/student/assignment",
-  },
-  {
-    id: 4,
-    name: "Gradebook",
-    icon: <Target02Icon />,
-    path: "/student/gradebook",
-  },
+
+  // {
+  //   id: 5,
+  //   name: "Announcements",
+  //   icon: <Megaphone02Icon />,
+  //   path: "/student/announcements",
+  // },
+  // {
+  //   id: 3,
+  //   name: "My Assignments",
+  //   icon: <AssignmentsIcon />,
+  //   path: "/student/assignment",
+  // },
+  // {
+  //   id: 4,
+  //   name: "Gradebook",
+  //   icon: <Target02Icon />,
+  //   path: "/student/gradebook",
+  // },
 
 ];
 
@@ -61,29 +68,34 @@ export default function Layout() {
 
   const location = useLocation().pathname;
 
-   const [searchQuery, setSearchQuery] = React.useState("");
-    const [dropdownCourses, setDropdownCourses] = React.useState([]);
-    const [loading, setLoading] = React.useState(false);
-  
-    // Function to handle search on button click
-    const handleSearch = async () => {
-      if (!searchQuery.trim()) {
-        setDropdownCourses([]);
-        return;
-      }
-  
-      setLoading(true);
-      try {
-        const res = await axiosInstance.get("/course/get", {
-          params: { search: searchQuery },
-        });
-        setDropdownCourses(res.data.courses || []);
-      } catch (error) {
-        console.error("Search error:", error);
-        setDropdownCourses([]);
-      }
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [dropdownCourses, setDropdownCourses] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [openDropdown, setOpenDropdown] = React.useState(false);
+
+  // Function to handle search on button click
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || loading) return;
+
+    setLoading(true);
+    setOpenDropdown(false); // Close while fetching
+
+    try {
+      const res = await axiosInstance.get("/course/get", {
+        params: { search: searchQuery },
+      });
+
+      const courses = res.data.courses || [];
+      setDropdownCourses(courses);
+    } catch (error) {
+      console.error("Search error:", error);
+      setDropdownCourses([]);
+    } finally {
       setLoading(false);
-    };
+      setOpenDropdown(true); // Show dropdown after data is ready
+    }
+  };
+
 
 
   return (
@@ -118,15 +130,7 @@ export default function Layout() {
             />
           </Link>
           <div className="flex justify-between items-center">
-            {/* <div className="flex gap-5 text-xs md:text-md lg:text-base font-medium text-gray-700">
-              {topBarTabs.map((category, index) => (
-                <MultiLevelDropdown
-                  key={index}
-                  label={category.label}
-                  items={category.items}
-                />
-              ))}
-            </div> */}
+
             <div className="flex gap-6">
               <Link
                 to="/student/Courses"
@@ -141,7 +145,7 @@ export default function Layout() {
                 SUPPORT
               </Link>
               <Link
-                to="/student/contactUs"
+                to="/student/ContactUs"
                 className="text-xs md:text-md lg:text-base font-medium text-gray-700"
               >
                 CONTACT US
@@ -149,31 +153,44 @@ export default function Layout() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search courses and lessons"
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  onClick={handleSearch}
-                  className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
-                >
-                  <Search className="rounded-full" />
-                </button>
+          {/* Search Dropdown */}
+          <div className="relative w-64 hidden md:flex flex-col">
+          <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
+          <DropdownMenuTrigger asChild>
+                <div className="relative flex gap-2 w-full">
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSearch();
+                    }}
+                    placeholder="Search courses and lessons"
+                    className="w-full pr-10 border border-gray-300 focus:ring-2 focus:ring-green-400 focus:border-transparent rounded-md transition-all"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
+                    aria-label="Search"
+                  >
+                    <Search className="w-4 h-4" />
+                  </button>
+                </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 bg-white p-2 shadow-lg rounded-lg max-h-60 overflow-y-auto">
+
+              <DropdownMenuContent className="bg-white border border-gray-200 shadow-md rounded-md mt-2 max-h-60 overflow-y-auto z-50 w-64">
                 {loading ? (
                   <DropdownMenuItem disabled>
                     <span className="text-sm text-gray-700">Searching...</span>
                   </DropdownMenuItem>
                 ) : dropdownCourses.length > 0 ? (
                   dropdownCourses.map((course) => (
-                    <DropdownMenuItem key={course._id} asChild>
-                      <Link to={`/student/myCourseDetail/`}>
+                    <DropdownMenuItem asChild key={course._id}>
+                      <Link
+                        to={`/student/mycourses/${course._id}`}
+                        onClick={() => setOpenDropdown(false)}
+                        className="w-full block text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 rounded"
+                      >
                         {course.basics?.courseTitle || "Untitled Course"}
                       </Link>
                     </DropdownMenuItem>
@@ -196,15 +213,14 @@ export default function Layout() {
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
-              <Link to={"/student/account"} className={`w-10`}>
-                <Avatar>
-                  <AvatarImage
-                    className={`rounded-full `}
+            <Link to="/student/account" className="block">
+                <div className="h-12 w-12 rounded-full overflow-hidden">
+                  <img
                     src={user.profileImg}
-                    alt="@user"
+                    alt={user.firstName}
+                    className="h-full w-full object-cover rounded-full"
                   />
-                  <AvatarFallback>UN</AvatarFallback>
-                </Avatar>
+                </div>
               </Link>
               <div>
                 <p className="font-medium">{user.firstName}</p>

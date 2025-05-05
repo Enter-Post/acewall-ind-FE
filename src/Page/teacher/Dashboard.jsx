@@ -26,6 +26,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 export default function TeacherDashboard() {
   const [courses, setCourses] = useState();
   const [students, setStudents] = useState();
+  const [recentActivity, setRecentActivity] = useState([]);
 
   console.log(courses);
 
@@ -56,6 +57,33 @@ export default function TeacherDashboard() {
     };
     getTeacherCourse();
   }, []);
+
+  useEffect(() => {
+    const getRecentComments = async () => {
+      try {
+        const res = await axiosInstance.get("/comment/getTeacherAllCourseComments");
+        const comments = res.data.comments;
+
+        const formatted = comments.map((comment) => ({
+          user: "You",
+          action: "commented on",
+          target: comment.course?.basics?.courseTitle || "a course",
+          time: new Date(comment.createdAt).toLocaleString("en-US", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }),
+        }));
+
+        setRecentActivity(formatted);
+      } catch (err) {
+        console.error("Error fetching recent comments:", err);
+      }
+    };
+
+    getRecentComments();
+  }, []);
+
+
 
   const metrics = [
     {
@@ -98,23 +126,15 @@ export default function TeacherDashboard() {
         </div>
       ),
     },
-    // {
-    //   title: "Messages",
-    //   value: "30",
-    //   icon: (
-    //     <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-    //       <MessageSquare size={16} className="text-green-600" />
-    //     </div>
-    //   ),
-    // },
+
   ];
 
-  const recentActivity = Array(3).fill({
-    user: "Kevin",
-    action: "comments on your lecture",
-    target: "What is ux 2021 UI/UX design with figma",
-    time: "Just now",
-  });
+  // const recentActivity = Array(3).fill({
+  //   user: "Kevin",
+  //   action: "comments on your lecture",
+  //   target: "What is ux 2021 UI/UX design with figma",
+  //   time: "Just now",
+  // });
 
   const recentSales = Array(3).fill({
     user: "Kevin",
@@ -122,6 +142,8 @@ export default function TeacherDashboard() {
     target: "What is ux 2021 UI/UX design with figma",
     time: "Just now",
   });
+
+
 
   return (
     <div className="min-h-screen">
@@ -155,28 +177,30 @@ export default function TeacherDashboard() {
               <h2 className="text-lg font-semibold">Recent Activity</h2>
             </div>
             <div className="space-y-4">
-              {recentActivity.map((activity, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
-                >
-                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                    <MessageSquare size={16} />
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-4 bg-white p-4 rounded-lg border"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                      <MessageSquare size={16} />
+                    </div>
+                    <div>
+                      <p className="text-sm">
+                        <span className="font-medium">{activity.user}</span> {activity.action}{" "}
+                        <span className="text-gray-800 font-medium">{activity.target}</span>
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium">{activity.user}</span>{" "}
-                      {activity.action}{" "}
-                      <span className="text-gray-500">{activity.target}</span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No recent activity to show.</p>
+              )}
             </div>
           </div>
+
 
           {/* Recent Sales */}
           <div>

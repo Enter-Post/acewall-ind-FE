@@ -78,7 +78,7 @@ export default function ContactUs() {
               className="bg-green-600 p-2 rounded-full hover:bg-green-500 transition-colors"
             >
               <Mail size={20} />
-              <span className="sr-only">Email</span>
+              <span className="sr-only ">Email</span>
             </a>
             <a
               href="#"
@@ -120,9 +120,9 @@ export default function ContactUs() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Name*"
+              placeholder="John doe"
               required
-              className="border-gray-300 focus:border-green-500"
+              className="border-gray-300 focus:border-green-500 placeholder:text-white-100 "
             />
           </div>
 
@@ -132,9 +132,9 @@ export default function ContactUs() {
               value={formData.email}
               onChange={handleChange}
               type="email"
-              placeholder="Email Address*"
+              placeholder="johndoe001@gmail.com"
               required
-              className="border-gray-300 focus:border-green-500"
+              className="border-gray-300 focus:border-green-500 placeholder:text-white-100"
             />
           </div>
 
@@ -144,8 +144,8 @@ export default function ContactUs() {
               value={formData.phone}
               onChange={handleChange}
               type="tel"
-              placeholder="Phone"
-              className="border-gray-300 focus:border-green-500"
+              placeholder="(123) 456-7890"
+              className="border-gray-300 focus:border-green-500 placeholder:text-white-100"
             />
           </div>
 
@@ -154,9 +154,9 @@ export default function ContactUs() {
               name="subject"
               value={formData.subject}
               onChange={handleChange}
-              placeholder="Subject*"
+              placeholder="Chemistry"
               required
-              className="border-gray-300 focus:border-green-500"
+              className="border-gray-300 focus:border-green-500 placeholder:text-white-100"
             />
           </div>
 
@@ -167,7 +167,7 @@ export default function ContactUs() {
               onChange={handleChange}
               placeholder="Message*"
               required
-              className="min-h-[120px] border-gray-300 focus:border-green-500"
+              className="min-h-[120px] border-gray-300 focus:border-green-500 placeholder:text-white-100"
             />
           </div>
 {/* 

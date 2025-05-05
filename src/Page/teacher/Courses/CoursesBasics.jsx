@@ -21,8 +21,16 @@ import axios from "axios";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
 // Define the form schema with Zod
+
 const courseFormSchema = z.object({
-  thumbnail: z.any(),
+  thumbnail: z
+    .any()
+    .refine((file) => file instanceof File, {
+      message: "Thumbnail is required",
+    })
+    .refine((file) => file.size <= 5 * 1024 * 1024, {
+      message: "File size must be less than 5MB",
+    }),
   courseTitle: z
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })

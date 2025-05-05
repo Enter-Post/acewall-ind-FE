@@ -3,6 +3,8 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import axios from "axios";
 import { createContext, useState } from "react";
 import { toast } from "sonner";
+import { io } from "socket.io-client";
+import { set } from "date-fns";
 
 export const GlobalContext = createContext();
 
@@ -10,17 +12,30 @@ export const GlobalProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [Authloading, setAuthLoading] = useState(false);
   const [signUpdata, setSignupData] = useState({});
+  const [socket, setSocket] = useState(null);
+  const [onlineUser, setOnlineUser] = useState([]);
 
   // console.log(user, "Global provider");
+  // console.log(onlineUser, "onlineUser");
+
+  // console.log(socket, "Socket in global provider");
+
+  const disconnectsocket = () => {
+    if (socket && socket.connected) {
+      socket.disconnect();
+      console.log("Socket disconnected");
+      setSocket(null);
+    }
+  };
 
   const signup = async (completeData) => {
     setAuthLoading(true);
     await axiosInstance
-      .post("auth/register" , completeData)
+      .post("auth/register", completeData)
       .then((res) => {
         setUser(res.data.user);
-        setAuthLoading(false);
         toast.success(res.data.message);
+        setAuthLoading(false);
       })
       .catch((error) => {
         setAuthLoading(false);
@@ -66,6 +81,7 @@ export const GlobalProvider = ({ children }) => {
         console.log(res);
         checkAuth();
         setAuthLoading(false);
+        disconnectsocket();
         toast.success(res.data.message);
       })
       .catch((err) => {
@@ -87,6 +103,9 @@ export const GlobalProvider = ({ children }) => {
         user,
         Authloading,
         setAuthLoading,
+        socket,
+        setSocket,
+        setOnlineUser
       }}
     >
       {children}

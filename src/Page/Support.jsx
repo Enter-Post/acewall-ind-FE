@@ -58,7 +58,7 @@ const Support = () => {
           <div className="pt-4">
             <Button
               type="submit"
-              className="w-full bg-primary text-white hover:bg-primary/90 rounded-lg px-6 py-3 text-sm font-semibold shadow-md transition"
+              className="w-full text-white  uppercase bg-green-500 hover:bg-green-600 rounded-lg px-6 py-3 text-sm font-semibold shadow-md transition"
             >
               Submit
             </Button>
