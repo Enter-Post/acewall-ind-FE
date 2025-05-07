@@ -40,24 +40,19 @@ const sideBarTabs = [
     icon: <BadgePlus />,
     path: "/teacher/courses/createCourses",
   },
-  // {
-  //   id: 3,
-  //   name: "Assessments",
-  //   icon: <AssignmentsIcon />,
-  //   path: "/teacher/assignment",
-  // },
-  // {
-  //   id: 5,
-  //   name: "Announcements",
-  //   icon: <Megaphone02Icon />,
-  //   path: "/teacher/announcements",
-  // },
   {
-    id: 11,
-    name: "Wallet",
-    icon: <Wallet />,
-    path: "/teacher/wallet",
+    id: 3,
+    name: "Assessments",
+    icon: <AssignmentsIcon />,
+    path: "/teacher/assignment",
   },
+  {
+    id: 5,
+    name: "Announcements",
+    icon: <Megaphone02Icon />,
+    path: "/teacher/announcements",
+  },
+ 
   {
     id: 12,
     name: "Messages",
