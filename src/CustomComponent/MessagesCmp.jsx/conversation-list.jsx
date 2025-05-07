@@ -12,7 +12,8 @@ export default function ConversationList({
   setActiveConversation,
 }) {
   const [conversations, setConversations] = useState();
-  const { user } = useContext(GlobalContext);
+  const { user, currentConversation, setCurrentConversation } =
+    useContext(GlobalContext);
 
   console.log(conversations, "conversations");
 
@@ -34,25 +35,33 @@ export default function ConversationList({
   };
 
   return (
-    <div className="border-r border-gray-200 flex flex-col h-full overflow-auto hide-scrollbar">
-      <div className="overflow-y-auto flex-1">
-        {conversations?.map((conversation) => (
-          <Link
-            to={
-              user.role === "student"
-                ? `/student/messages/${conversation.conversationId}`
-                : `/teacher/messages/${conversation.conversationId}`
-            }
-            key={conversation._id}
-          >
-            <ConversationItem
+    <div className="flex flex-col h-full overflow-auto hide-scrollbar p-4 items-center">
+
+      {conversations && conversations.length > 0 ? (
+        <div className="overflow-y-auto gap-3 flex flex-wrap">
+          {conversations.map((conversation) => (
+            <Link
+              onClick={() => setCurrentConversation(conversation)}
+              to={
+                user.role === "student"
+                  ? `/student/messages/${conversation.conversationId}`
+                  : `/teacher/messages/${conversation.conversationId}`
+              }
               key={conversation._id}
-              conversation={conversation}
-              isActive={conversation.name === activeConversation}
-            />
-          </Link>
-        ))}
-      </div>
+            >
+              <ConversationItem
+                conversation={conversation}
+                // isActive={conversation.name === activeConversation}
+              />
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-gray-500 mt-10">
+          No conversations found.
+        </div>
+      )}
     </div>
   );
+  
 }

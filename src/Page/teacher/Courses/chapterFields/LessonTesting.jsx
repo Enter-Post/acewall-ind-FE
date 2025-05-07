@@ -217,7 +217,7 @@ const LessonDialog = ({ id }) => {
                 accept="application/pdf"
                 onChange={(e) => handleAssessmentPDFChange(e)}
               />
-              {errors.lessonAssessment.pdfFiles[0] && (
+              {errors?.lessonAssessment?.pdfFiles[0] && (
                 <p className="text-red-500 text-sm">
                   {errors.pdfFiles.message}
                 </p>

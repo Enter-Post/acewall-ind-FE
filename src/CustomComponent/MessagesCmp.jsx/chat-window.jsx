@@ -13,7 +13,7 @@ export default function ChatWindow() {
   const [newMessage, setNewMessage] = useState("");
   const [chat, setChat] = useState();
 
-  const { user, socket } = useContext(GlobalContext);
+  const { user, socket, currentConversation } = useContext(GlobalContext);
 
   const activeConversation = useParams().id;
 
@@ -72,11 +72,11 @@ export default function ChatWindow() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={""} />
-            <AvatarFallback>{"contactName"}</AvatarFallback>
+            <AvatarImage src={currentConversation?.otherMember.profileImg} />
+            <AvatarFallback>{currentConversation?.otherMember.name}</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">{"contactName"}</h3>
+            <h3 className="font-medium">{currentConversation?.otherMember.name}</h3>
           </div>
         </div>
       </div>

@@ -175,7 +175,7 @@ export default function TeacherLayout() {
                     className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
                     aria-label="Search"
                   >
-                    <Search className="w-4 h-4" />
+                    <Search className="w-5 h-5" />
                   </button>
                 </div>
               </DropdownMenuTrigger>

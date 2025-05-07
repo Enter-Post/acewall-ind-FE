@@ -23,7 +23,6 @@ import TeacherDashboard from "./Page/teacher/Dashboard";
 import TeacherLayout from "./Page/teacher/Layout";
 import Earning from "./Page/teacher/Earning/Earning";
 import TeacherAccount from "./Page/teacher/Account";
-import TeacherMessages from "./Page/teacher/Messages";
 import Teacherrassessment from "./Page/teacher/TeacherAssignment";
 import TeacherAnnoucement from "./Page/teacher/TeacherAnnoucement";
 import AllStudent from "./Page/teacher/AllStudent";
@@ -43,7 +42,7 @@ import ContactUs from "./Page/ContactUs";
 import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
 
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { GlobalContext } from "./Context/GlobalProvider";
 import { useContext } from "react";
 import { Loader } from "lucide-react";

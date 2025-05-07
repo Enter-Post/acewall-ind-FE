@@ -23,17 +23,28 @@ const formSchema = z.object({
   homeAddress: z.string().min(1, "Home address is required"),
   mailingAddress: z.string().optional(),
   documents: z
-    .array(z.any())
+    .array(
+      z
+        .instanceof(File)
+        .refine(
+          (file) => file.type === "application/pdf",
+          "Only PDF files are allowed"
+        )
+    )
     .max(10, "You can upload up to 10 PDF files")
     .optional(),
 });
 
 const Account = () => {
   const { user } = useContext(GlobalContext);
+  console.log(user, "user");
+
   const [previewImage, setPreviewImage] = useState(
     user?.profileImg || "/placeholder.svg"
   );
   const [selectedImage, setSelectedImage] = useState(null);
+
+  console.log(selectedImage, "selectedImg");
 
   // Initialize React Hook Form with Zod resolver
   const {
@@ -42,6 +53,7 @@ const Account = () => {
     setValue,
     control,
     formState: { errors },
+    watch
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,6 +75,8 @@ const Account = () => {
     name: "documents",
   });
 
+  const documents = watch("documents");
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     console.log(file);
@@ -75,6 +89,11 @@ const Account = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleDocumentChange = (e, index) => {
+    const files = Array.from(e.target.files); // Convert FileList to an array
+    setValue(`documents.${index}`, files[0]); // Set the specific file in the documents array
   };
 
   // Populate form with user data when available
@@ -108,8 +127,6 @@ const Account = () => {
     if (selectedImage) {
       formData.append("profileImg", selectedImage); // Append the selected image
     }
-
-    console.log(document.data, "document.data");
 
     if (data.documents && data.documents.length > 0) {
       data.documents.forEach((file) => {
@@ -350,55 +367,80 @@ const Account = () => {
                 />
               </div>
             </div>
+
+
           </section>
 
           {/* Documents Upload */}
-          {/* <section className="space-y-6">
+          <section className="space-y-6">
             <h3 className="text-lg font-semibold">
               Upload Documents (PDF only)
             </h3>
-            <div className="space-y-2">
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-2">
-                  <Input
-                    type="file"
-                    accept="application/pdf"
-                    {...register(`documents.${index}`)}
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => remove(index)}
-                    size="icon"
-                  >
-                    <Minus size={16} />
-                  </Button>
-                </div>
-              ))}
-              {fields.length < 10 && (
-                <Button
+            {fields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-4 mb-4">
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => handleDocumentChange(e, index)} // Handle document change
+                  className="flex-1"
+                />
+                <button
                   type="button"
-                  variant="outline"
-                  onClick={() => append(null)}
-                  className="flex items-center gap-2"
+                  onClick={() => remove(index)}
+                  className="text-red-600 hover:text-red-800"
                 >
-                  <Plus size={16} />
-                  Add Document
-                </Button>
-              )}
-              {errors.documents && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.documents.message}
-                </p>
+                  <Minus size={16} />
+                </button>
+              </div>
+            ))}
+            {fields.length < 10 && (
+              <button
+                type="button"
+                onClick={() => append(null)}
+                className="flex items-center text-blue-600 hover:text-blue-800"
+              >
+                <Plus size={16} className="mr-2" /> Add Another PDF
+              </button>
+            )}
+            {errors.documents && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.documents.message}
+              </p>
+            )}
+          </section>
+
+          <section className="mt-6">
+            <h2 className="text-lg font-semibold mb-2">Uploaded Documents</h2>
+            <div className="space-y-3">
+              {user?.documents?.length > 0 ? (
+                user.documents.map((doc, index) => (
+                  <div
+                    key={doc._id || index}
+                    className="flex items-center justify-between p-2 border rounded-md shadow-sm bg-white"
+                  >
+                    <a
+                      href={doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Document   {index + 1}
+                    </a>
+                    
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No documents uploaded.</p>
               )}
             </div>
-          </section> */}
+          </section>
 
           {/* Save Button */}
           <div className="flex justify-end">
             <Button
               type="submit"
               className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
+              onClick={() => window.location.reload()}
             >
               Save Changes
             </Button>

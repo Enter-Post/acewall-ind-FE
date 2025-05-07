@@ -47,7 +47,7 @@ const AllCourses = () => {
       <div className="flex flex-col pb-5 gap-2">
         <div>
           <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-            
+
             All Courses
           </p>
         </div>
@@ -142,25 +142,39 @@ const AllCourses = () => {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
                 {allCourses.map((course) => (
                   <Link key={course._id}
                     to={`/student/courses/detail/${course._id}`}            >
-                    <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
+                    <Card className="pb-6 pt-0 w-full h-full overflow-hidden cursor-pointer">
                       <AspectRatio ratio={16 / 9}>
                         <img
                           src={course.basics.thumbnail || "/placeholder.svg"}
                           alt={`${course.basics.thumbnail} image`}
                           className="object-cover w-full h-full"
                         />
-                      </AspectRatio>  
-                      <CardHeader>
-                        <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-                          {course.basics.category?.title || "Development"}
+                      </AspectRatio>
+                      <CardHeader >
+                        <div className="flex justify-between items-center">
+                          <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium h-fit w-fit px-2">
+                            {course.basics.category?.title || "Development"}
+                          </div>
+                          <div className="uppercase text-orange-500  text-xs font-bold  h-fit  mb-2 w-fit px-2">
+                            {course.averageRating >=4.7 ? (
+
+                              <span>
+                                <span className="font-bold text-xs text-green-500 ">Top Rated</span> :{" "}
+                                {course.averageRating.toFixed(1)}
+                              </span>
+                            ) : (
+                              course.averageRating > 0 ? course.averageRating.toFixed(1) : "0.0"
+                            )}
+                          </div>
                         </div>
+
                         <CardTitle className="flex justify-between flex-col gap-2">
-                          <span>{course.basics.courseTitle}</span>
-                          <span className="text-lg font-semibold text-green-500">${course.basics.price}</span>
+                          <span className="text-md font-bold leading-tight">{course.basics.courseTitle}</span>
+                          <span className="text-md font-semibold text-green-500">${course.basics.price}</span>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>

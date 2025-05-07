@@ -44,7 +44,7 @@ const GeneralCourses = () => {
     <section className="    ">
       <div>
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white ">
-          My Courses
+          All Courses
         </p>
       </div>
       <div className="px-10">
@@ -100,7 +100,7 @@ const GeneralCourses = () => {
                 key={course._id}
                 to={`/courses/detail/${course._id}`}
               >
-                <Card className="h-[300px] pt-0 w-full overflow-hidden cursor-pointer">
+                <Card className="h-full pt-0 w-full overflow-hidden cursor-pointer">
                   <AspectRatio ratio={16 / 9}>
                     <img
                       src={course.basics.thumbnail || "/placeholder.svg"}
@@ -109,8 +109,21 @@ const GeneralCourses = () => {
                     />
                   </AspectRatio>
                   <CardHeader>
-                    <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-                      {course.basics.category?.title || "Developments"}
+                    <div className="flex justify-between items-center">
+                      <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium h-fit w-fit px-2">
+                        {course.basics.category?.title || "Development"}
+                      </div>
+                      <div className="uppercase text-orange-500  text-xs font-bold  h-fit  mb-2 w-fit px-2">
+                        {course.averageRating >= 4.7 ? (
+
+                          <span>
+                            <span className="font-bold text-xs text-green-500 ">Top Rated</span> :{" "}
+                            {course.averageRating.toFixed(1)}
+                          </span>
+                        ) : (
+                          course.averageRating > 0 ? course.averageRating.toFixed(1) : "0.0"
+                        )}
+                      </div>
                     </div>
                     <CardTitle>{course.basics.courseTitle}</CardTitle>
                     <p className="text-xs">

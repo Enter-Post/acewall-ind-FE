@@ -33,13 +33,24 @@ const AllCoursesDetail = () => {
   const [loading, setLoading] = useState(true);
 
   const purchase = async () => {
-    try {
-      const res = await axiosInstance.post("course/purchase", { course: courseDetails._id });
-      window.location.href = res.data.url; // Redirects to Stripe Checkout
-    } catch (err) {
+    await axiosInstance
+    .post("course/purchase", { course: courseDetails._id })
+    .then((res) => {
+      console.log(res);
+      toast.success(res.data.message);
+    })
+    .catch((err) => {
       console.log(err);
-      toast.error(err.response?.data?.error || "Purchase failed");
-    }
+      toast.error(err.response.data.error);
+    });
+
+    // try {
+    //   const res = await axiosInstance.post("course/purchase", { course: courseDetails._id });
+    //   window.location.href = res.data.url; // Redirects to Stripe Checkout
+    // } catch (err) {
+    //   console.log(err);
+    //   toast.error(err.response?.data?.error || "Purchase failed");
+    // }
   };  
 
   useEffect(() => {

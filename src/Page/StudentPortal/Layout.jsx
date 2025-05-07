@@ -33,7 +33,7 @@ const sideBarTabs = [
     icon: <DashboardCircleAddIcon />,
     path: "/student",
   },
-{
+  {
     id: 12,
     name: "Messages",
     icon: <MessageCircleDashed />,
@@ -155,9 +155,9 @@ export default function Layout() {
 
           {/* Search Dropdown */}
           <div className="relative w-64 hidden md:flex flex-col">
-          <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
-          <DropdownMenuTrigger asChild>
-                <div className="relative flex gap-2 w-full">
+            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
+              <DropdownMenuTrigger asChild>
+                <div className="relative flex gap-6 w-full">
                   <Input
                     type="text"
                     value={searchQuery}
@@ -173,7 +173,7 @@ export default function Layout() {
                     className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2 transition-colors"
                     aria-label="Search"
                   >
-                    <Search className="w-4 h-4" />
+                    <Search className="w-5 h-5" />
                   </button>
                 </div>
               </DropdownMenuTrigger>
@@ -213,7 +213,7 @@ export default function Layout() {
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
-            <Link to="/student/account" className="block">
+              <Link to="/student/account" className="block">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
                   <img
                     src={user.profileImg}

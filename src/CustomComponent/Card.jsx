@@ -403,13 +403,13 @@ const MyCoursesCard = ({ course }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">
+          {/* <p className="text-sm text-muted-foreground">
             Teacher: {course.createdby?.firstName}{" "}
             {course.createdby?.middleName
               ? course.createdby.middleName + " "
               : ""}
             {course.createdby?.lastName}
-          </p>{" "}
+          </p>{" "} */}
           <p className="text-sm text-muted-foreground">
             Language: {course.basics.language}
           </p>

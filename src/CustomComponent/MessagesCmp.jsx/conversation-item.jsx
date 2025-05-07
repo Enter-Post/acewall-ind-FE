@@ -7,29 +7,27 @@ export default function ConversationItem({ conversation, isActive, onClick }) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 transition-colors",
-        isActive && "bg-green-50",
+
+        "flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2  shadow-sm  cursor-pointer transition-all hover:shadow-md hover:bg-gray-50",
+        isActive && "bg-green-50 border-green-200 shadow-md"
       )}
       onClick={onClick}
-    >
-      <div className="relative">
-        <Avatar className="h-12 w-12">
-          <AvatarImage src={conversation.otherMember.profileImg} alt={conversation.otherMember.name} />
-          <AvatarFallback>
-            {conversation.otherMember.name[0]}
-          </AvatarFallback>
-        </Avatar>
-      </div>
+      >
+      <Avatar className="h-16 w-16 flex items-center justify-center rounded-full border-2 border-green-200">
+        <AvatarImage
+          src={conversation.otherMember.profileImg}
+          alt={conversation.otherMember.name}
+          className="w-full h-full bg-cover rounded-full"
+        />
+        <AvatarFallback className="text-green-500 font-bold">
+          {conversation.otherMember.name[0]}
+        </AvatarFallback>
+      </Avatar>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-center">
-          <h3 className="font-medium text-sm">{conversation.otherMember.name}</h3>
-          {/* <span className="text-xs text-gray-500">{time}</span> */}
-        </div>
-        {/* <p className="text-sm text-gray-500 truncate">{message}</p> */}
-      </div>
+      <h3 className="text-md font-medium text-gray-800 text-center truncate w-full">
+        {conversation.otherMember.name}
+      </h3>
 
-      {/* {unread && <div className="h-2 w-2 rounded-full bg-orange-500" />} */}
     </div>
   )
 }

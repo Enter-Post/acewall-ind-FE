@@ -14,11 +14,12 @@ export const GlobalProvider = ({ children }) => {
   const [signUpdata, setSignupData] = useState({});
   const [socket, setSocket] = useState(null);
   const [onlineUser, setOnlineUser] = useState([]);
+  const [currentConversation, setCurrentConversation] = useState(null);
 
   // console.log(user, "Global provider");
   // console.log(onlineUser, "onlineUser");
 
-  // console.log(socket, "Socket in global provider");
+  console.log(currentConversation, "currentConversation");
 
   const disconnectsocket = () => {
     if (socket && socket.connected) {
@@ -105,7 +106,9 @@ export const GlobalProvider = ({ children }) => {
         setAuthLoading,
         socket,
         setSocket,
-        setOnlineUser
+        setOnlineUser,
+        currentConversation,
+        setCurrentConversation,
       }}
     >
       {children}

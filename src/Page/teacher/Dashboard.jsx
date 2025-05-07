@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   LayoutDashboard,
   BookOpen,
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 export default function TeacherDashboard() {
   const [courses, setCourses] = useState();
@@ -29,6 +30,8 @@ export default function TeacherDashboard() {
   const [recentActivity, setRecentActivity] = useState([]);
 
   console.log(courses);
+  const { user } = useContext(GlobalContext)
+  const teacherId = user._id
 
   ///courses
   useEffect(() => {
@@ -61,11 +64,11 @@ export default function TeacherDashboard() {
   useEffect(() => {
     const getRecentComments = async () => {
       try {
-        const res = await axiosInstance.get("/comment/getTeacherAllCourseComments");
+        const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
         const comments = res.data.comments;
 
         const formatted = comments.map((comment) => ({
-          user: "You",
+          user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
           action: "commented on",
           target: comment.course?.basics?.courseTitle || "a course",
           time: new Date(comment.createdAt).toLocaleString("en-US", {
@@ -172,6 +175,7 @@ export default function TeacherDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Recent Activity */}
+
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Recent Activity</h2>
@@ -203,7 +207,7 @@ export default function TeacherDashboard() {
 
 
           {/* Recent Sales */}
-          <div>
+          {/* <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Recent Sales</h2>
             </div>
@@ -227,7 +231,7 @@ export default function TeacherDashboard() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Recent Courses */}
           <div>

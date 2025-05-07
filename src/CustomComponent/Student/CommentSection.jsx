@@ -85,12 +85,26 @@ const CommentSection = ({ id }) => {
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">
-                      {comment?.createdby?.firstName} {comment?.user?.lastName}
-                    </p>
-                    <span className="text-xs text-gray-500">
-                      {comment?.updatedAt}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">
+                        {comment?.createdby?.firstName} {comment?.createdby?.lastName}
+                      </p>
+                      {comment?.createdby?.role && (
+                        <span
+                          className={`text-[10px] uppercase px-2 py-0.5 rounded-full ${comment.createdby.role === "admin"
+                            ? "bg-red-600 text-white"
+                            : comment.createdby.role === "teacher"
+                              ? "bg-blue-600 text-white"
+                              : "bg-green-600 text-white"
+                            }`}
+                        >
+                          {comment.createdby.role}
+                        </span>
+                      )}
+                      <span className="text-xs text-gray-500">{new Date(comment?.updatedAt).toLocaleDateString()}</span>
+
+
+                    </div>
                   </div>
                   <p className="mt-1 text-gray-700">{comment?.text}</p>
                 </div>

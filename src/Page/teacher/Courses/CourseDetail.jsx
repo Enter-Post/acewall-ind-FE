@@ -23,9 +23,10 @@ import {
 import { Loader, Play, Users } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
+import CommentSection from "@/CustomComponent/Student/CommentSection";
 
 export default function TeacherCourseDetails() {
-  const { id } = useParams();
+  const { id } = useParams() || { id: "68115952b4991f70a28c486f" }; // Default ID or from URL
   const [course, setCourse] = useState(null);
   const [open, setOpen] = useState(false);
   const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
@@ -130,6 +131,50 @@ export default function TeacherCourseDetails() {
                 <div className="text-sm text-muted-foreground">
                   Course Price
                 </div>
+              </div>
+              <div className="flex mt-10 justify-end space-x-2">
+                {/* Delete Confirmation Modal */}
+                <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150"
+                      onClick={() => setConfirmOpen(true)}
+                    >
+                      Delete Course
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Are you sure?</DialogTitle>
+                      <p className="text-sm text-muted-foreground">
+                        This will permanently delete the course and all related data.
+                        Are you sure?
+                      </p>
+                    </DialogHeader>
+                    <DialogFooter className="mt-4 flex flex-col-reverse justify-end gap-2">
+                      <Button
+                        className="bg-red-600 text-white hover:bg-red-700"
+                        onClick={handleDeleteCourse}
+                      >
+                        Yes, Delete
+                      </Button>
+                      <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+                        Cancel
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
+                {/* ✅ Success Confirmation Modal */}
+                <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+                  <DialogContent className="flex flex-col items-center justify-center text-center">
+                    <CheckCircle className="w-12 h-12 text-green-500" />
+                    <h3 className="text-lg font-semibold mt-2">
+                      Course deleted successfully!
+                    </h3>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
@@ -331,22 +376,36 @@ export default function TeacherCourseDetails() {
             {course.rating && course.rating.length > 0 ? (
               <>
                 <div className="text-5xl font-semibold mb-4">
-                  {course.averageRating || "4.8"}
+                  {/* Format the averageRating to 1 decimal place */}
+                  {(course.averageRating || 4.8).toFixed(1)}
                 </div>
                 <div className="flex items-center gap-1 mb-2">
-                  {[1, 2, 3, 4, 5].map((star, index) => (
-                    <svg
-                      key={index}
-                      className={`w-6 h-6 ${index + 1 <= Math.floor(course.averageRating || 5)
-                        ? "text-orange-400"
-                        : "text-gray-300"
-                        }`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
+                  {[1, 2, 3, 4, 5].map((star, index) => {
+                    const fullStar = index + 1 <= Math.floor(course.averageRating || 5);
+                    const halfStar =
+                      index + 1 === Math.floor(course.averageRating || 5) + 0.5;
+                    return (
+                      <svg
+                        key={index}
+                        className={`w-6 h-6 ${fullStar
+                          ? "text-orange-400"
+                          : halfStar
+                            ? "text-yellow-500"
+                            : "text-gray-300"
+                          }`}
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          d={
+                            halfStar
+                              ? "M10 2L8.618 6.268L4 7.618L7.09 10.118L6 14L10 11.5L14 14L12.91 10.118L16"
+                              : "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                          }
+                        />
+                      </svg>
+                    );
+                  })}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Course Rating
@@ -358,53 +417,13 @@ export default function TeacherCourseDetails() {
               </div>
             )}
           </div>
+
         </div>
       </div>
+      <CommentSection id={id} />
 
-      <div className="flex mt-10 justify-end space-x-2">
-        {/* Delete Confirmation Modal */}
-        <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150"
-              onClick={() => setConfirmOpen(true)}
-            >
-              Delete Course
-            </Button>
-          </DialogTrigger>
 
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Are you sure?</DialogTitle>
-              <p className="text-sm text-muted-foreground">
-                This will permanently delete the course and all related data.
-                Are you sure?
-              </p>
-            </DialogHeader>
-            <DialogFooter className="mt-4 flex flex-col-reverse justify-end gap-2">
-              <Button
-                className="bg-red-600 text-white hover:bg-red-700"
-                onClick={handleDeleteCourse}
-              >
-                Yes, Delete
-              </Button>
-              <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-                Cancel
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
 
-        {/* ✅ Success Confirmation Modal */}
-        <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-          <DialogContent className="flex flex-col items-center justify-center text-center">
-            <CheckCircle className="w-12 h-12 text-green-500" />
-            <h3 className="text-lg font-semibold mt-2">
-              Course deleted successfully!
-            </h3>
-          </DialogContent>
-        </Dialog>
-      </div>
     </div>
 
   );

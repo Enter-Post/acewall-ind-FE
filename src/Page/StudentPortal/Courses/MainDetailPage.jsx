@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ export default function CourseOverview() {
 
   console.log(course, "course");
 
+  const Navigate = useNavigate();
+
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
@@ -44,6 +46,22 @@ export default function CourseOverview() {
     getCourseDetails();
   }, [id]);
 
+  // console.log(course.createdby._id, "course");
+
+  const handleConversation = async () => {
+    await axiosInstance
+      .post("conversation/create", {
+        memberId: course?.createdby._id,
+      })
+      .then((res) => {
+        console.log(res);
+        Navigate("/student/messages");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -57,11 +75,11 @@ export default function CourseOverview() {
   }
 
   // Calculate average rating
-  const averageRating =
-    course.rating && course.rating.length > 0
-      ? course.rating.reduce((sum, r) => sum + r.value, 0) /
-      course.rating.length
-      : 0;
+  // const averageRating =
+  //   course.rating && course.rating.length > 0
+  //     ? course.rating.reduce((sum, r) => sum + r.value, 0) /
+  //       course.rating.length
+  //     : 0;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -79,7 +97,9 @@ export default function CourseOverview() {
         <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 mt-4">
           {/* Category */}
           <div className="flex items-center gap-2">
-            <h3 className="text-gray-600 text-sm font-semibold mb-1">Category</h3>
+            <h3 className="text-gray-600 text-sm font-semibold mb-1">
+              Category
+            </h3>
             <Badge className="bg-green-100 text-green-800 text-sm border-none">
               {course.basics.category.title}
             </Badge>
@@ -87,23 +107,25 @@ export default function CourseOverview() {
 
           {/* Language */}
           <div className="flex items-center gap-2">
-            <h3 className="text-gray-600 text-sm font-semibold mb-1">Language</h3>
+            <h3 className="text-gray-600 text-sm font-semibold mb-1">
+              Language
+            </h3>
             <Badge className="bg-blue-100 text-blue-800 text-sm border-none capitalize">
               {course.basics.language}
             </Badge>
           </div>
         </div>
 
-
         {/* Rating */}
         <div className="flex items-center gap-2 text-yellow-500">
           {[1, 2, 3, 4, 5].map((star) => (
             <Star
               key={star}
-              className={`w-5 h-5 transition ${star <= Math.round(course.averageRating)
-                ? "fill-yellow-400"
-                : "fill-white"
-                }`}
+              className={`w-5 h-5 transition ${
+                star <= Math.round(course.averageRating)
+                  ? "fill-yellow-400"
+                  : "fill-white"
+              }`}
             />
           ))}
           <span className="text-sm text-gray-600">
@@ -113,25 +135,35 @@ export default function CourseOverview() {
         </div>
 
         {/* Instructor Info */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
-          <Avatar className="h-12 w-12">
-            <AvatarImage
-              src={course.createdby.profileImg || "/placeholder.svg"}
-              alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
-              className="ring-2 ring-black ring-offset-2"
-            />
-            <AvatarFallback>
-              {course.createdby.firstName.charAt(0)}
-              {course.createdby.lastName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-semibold text-gray-800">
-              {course.createdby.firstName} {course.createdby.lastName}
-            </p>
-            <p className="text-sm text-gray-500">{course.createdby.email}</p>
+        <section className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
+            <Avatar className="h-12 w-12">
+              <AvatarImage
+                src={course.createdby.profileImg || "/placeholder.svg"}
+                alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
+                className="ring-2 ring-black ring-offset-2"
+              />
+              <AvatarFallback>
+                {course.createdby.firstName.charAt(0)}
+                {course.createdby.lastName.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-semibold text-gray-800">
+                {course.createdby.firstName} {course.createdby.lastName}
+              </p>
+              <p className="text-sm text-gray-500">{course.createdby.email}</p>
+            </div>
           </div>
-        </div>
+          <div>
+            <Button
+              className="bg-green-500"
+              onClick={() => handleConversation()}
+            >
+              Message
+            </Button>
+          </div>
+        </section>
       </div>
 
       {/* Tabs */}
@@ -235,6 +267,5 @@ export default function CourseOverview() {
         </TabsContent>
       </Tabs>
     </div>
-
   );
 }

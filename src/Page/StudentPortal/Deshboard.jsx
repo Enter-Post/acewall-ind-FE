@@ -95,11 +95,11 @@ const Deshboard = () => {
             height={"h-[390px]"}
             link={"announcements"}
           /> */}
-          <Assignment
+          {/* <Assignment
             width
             mainHeading="Assignments Due"
             data={AssignmentDue}
-          />
+          /> */}
           <DeshBoardCard
             mainHeading="My courses"
             data={courses}

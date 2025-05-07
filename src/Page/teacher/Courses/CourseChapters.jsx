@@ -93,7 +93,7 @@ export default function CoursesChapter() {
         </div>
       </section>
       <div className="rounded-lg ">
-        {course?.chapters.length === 0 ? (
+        {course?.chapters?.length === 0 ? (
           <p>No Chapters Available</p>
         ) : (
           course.chapters?.map((chapter, index) => (
