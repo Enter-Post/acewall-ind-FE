@@ -29,16 +29,16 @@ export default function PurchaseConfirmationModal({ purchase }) {
           }
           variant="default"
         >
-          Purchase Course
+          Enroll Now
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-green-600">
-            <CheckCircle2 className="h-5 w-5" /> Confirm Your Purchase
+          <DialogTitle className="flex items-center gap-2 text-green-400">
+            <CheckCircle2 className="h-5 w-5" /> Enroll in Course
           </DialogTitle>
           <DialogDescription>
-            Please Confirm the Purchase. <br /> Do you want to continue?
+             Click below to enroll and get started for free.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -46,7 +46,7 @@ export default function PurchaseConfirmationModal({ purchase }) {
             Cancel
           </Button>
           <Button variant="default" onClick={handleConfirm}>
-            Confirm Purchase
+            Enroll Now
           </Button>
         </DialogFooter>
       </DialogContent>

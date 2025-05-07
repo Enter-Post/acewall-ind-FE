@@ -34,15 +34,15 @@ const AllCoursesDetail = () => {
 
   const purchase = async () => {
     await axiosInstance
-    .post("course/purchase", { course: courseDetails._id })
-    .then((res) => {
-      console.log(res);
-      toast.success(res.data.message);
-    })
-    .catch((err) => {
-      console.log(err);
-      toast.error(err.response.data.error);
-    });
+      .post("course/purchase", { course: courseDetails._id })
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response.data.error);
+      });
 
     // try {
     //   const res = await axiosInstance.post("course/purchase", { course: courseDetails._id });
@@ -51,7 +51,7 @@ const AllCoursesDetail = () => {
     //   console.log(err);
     //   toast.error(err.response?.data?.error || "Purchase failed");
     // }
-  };  
+  };
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -112,7 +112,7 @@ const AllCoursesDetail = () => {
                 <div className="flex items-center">
                   <Avatar className="h-10 w-10 rounded-full">
                     <AvatarImage
-                    className=" rounded-full"
+                      className=" rounded-full"
                       src={courseDetails.createdby.profileImg}
                       alt="Instructor"
                     />
@@ -405,9 +405,7 @@ const AllCoursesDetail = () => {
                                     {review.student}
                                   </div>
                                   <div className="flex items-center gap-2 mt-1">
-                                    {/* {[...Array(review.rating)].map((_, i) => (
-                  <Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />
-                ))} */}
+                                    
                                   </div>
                                   <p className="text-sm mt-2">
                                     {review.comment}
@@ -432,21 +430,8 @@ const AllCoursesDetail = () => {
         <div className="md:col-span-1">
           <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
             <div className="flex flex-col gap-6 mb-6">
-              <div className="text-2xl text-green-600 font-extrabold flex items-center justify-between">
-                <span>Price:</span>
-                {courseDetails.basics?.price ? (
-                  courseDetails.basics.price.discounted !== undefined ? (
-                    <span>${courseDetails.price.discounted}</span>
-                  ) : (
-                    <span>${courseDetails.basics.price}</span>
-                  )
-                ) : (
-                  <span className="text-gray-500 text-lg">Price not available</span>
-                )}
-              </div>
-              {/* <Button className="w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300">
-                Add to cart
-              </Button> */}
+
+
               <PurchaseConfirmationModal purchase={purchase} />
             </div>
 
