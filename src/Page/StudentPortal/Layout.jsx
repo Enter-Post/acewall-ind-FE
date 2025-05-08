@@ -33,31 +33,32 @@ const sideBarTabs = [
     icon: <DashboardCircleAddIcon />,
     path: "/student",
   },
+
+
+  {
+    id: 5,
+    name: "Announcements",
+    icon: <Megaphone02Icon />,
+    path: "/student/announcements",
+  },
+  {
+    id: 3,
+    name: "My Assignments",
+    icon: <AssignmentsIcon />,
+    path: "/student/assignment",
+  },
+  {
+    id: 4,
+    name: "Gradebook",
+    icon: <Target02Icon />,
+    path: "/student/gradebook",
+  },
   {
     id: 12,
     name: "Messages",
     icon: <MessageCircleDashed />,
     path: "/student/messages",
   },
-
-  // {
-  //   id: 5,
-  //   name: "Announcements",
-  //   icon: <Megaphone02Icon />,
-  //   path: "/student/announcements",
-  // },
-  // {
-  //   id: 3,
-  //   name: "My Assignments",
-  //   icon: <AssignmentsIcon />,
-  //   path: "/student/assignment",
-  // },
-  // {
-  //   id: 4,
-  //   name: "Gradebook",
-  //   icon: <Target02Icon />,
-  //   path: "/student/gradebook",
-  // },
 
 ];
 

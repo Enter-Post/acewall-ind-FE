@@ -170,7 +170,7 @@ const LandingPage = () => {
                 )}
               />
               {errors.role && (
-                <p className="text-red-500 text-xs">{errors.role.message}</p>
+                <p className="text-red-500 text-xs">Please enter the role</p>
               )}
             </div>
 

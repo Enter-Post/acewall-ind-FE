@@ -89,28 +89,7 @@ export default function TeacherDashboard() {
 
 
   const metrics = [
-    {
-      title: "Sales",
-      value: "$5,600",
-      icon: (
-        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-green-600"
-          >
-            <path d="M18.5 6.5a3 3 0 0 0-4.242 0L12 8.757l-2.257-2.257a3 3 0 0 0-4.242 4.242L12 17.243l6.5-6.5a3 3 0 0 0 0-4.242z" />
-          </svg>
-        </div>
-      ),
-    },
+    
     {
       title: "Courses",
       value: courses?.length,

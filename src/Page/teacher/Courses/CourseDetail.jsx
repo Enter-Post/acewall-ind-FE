@@ -106,7 +106,7 @@ export default function TeacherCourseDetails() {
 
           <div className="md:col-span-2 space-y-6">
             <div className="space-y-1">
-              <div className="flex justify-between text-sm text-muted-foreground">
+              <div className="flex justify-between text-sm mb-2 text-muted-foreground">
                 <span>
                   Uploaded: {course.createdAt?.split("T")[0] || "N/A"}
                 </span>
@@ -123,15 +123,7 @@ export default function TeacherCourseDetails() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="text-xl uppercase text-green-500 font-bold">
-                  ${course.basics.price || "N/A"}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Course Price
-                </div>
-              </div>
+              
               <div className="flex mt-10 justify-end space-x-2">
                 {/* Delete Confirmation Modal */}
                 <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
@@ -176,7 +168,6 @@ export default function TeacherCourseDetails() {
                   </DialogContent>
                 </Dialog>
               </div>
-            </div>
           </div>
         </div>
 
@@ -370,7 +361,7 @@ export default function TeacherCourseDetails() {
 
 
         {/* Rating */}
-        <div className="mt-8">
+        <div className="my-10 ">
           <h3 className="text-lg font-medium mb-4">Overall Course Rating</h3>
           <div className="bg-green-50 p-8 rounded-lg flex flex-col items-center">
             {course.rating && course.rating.length > 0 ? (
@@ -420,7 +411,8 @@ export default function TeacherCourseDetails() {
 
         </div>
       </div>
-      <CommentSection id={id} />
+
+      <CommentSection id={id}  />
 
 
 

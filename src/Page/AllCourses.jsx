@@ -155,26 +155,10 @@ const AllCourses = () => {
                         />
                       </AspectRatio>
                       <CardHeader >
-                        <div className="flex justify-between items-center">
-                          <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium h-fit w-fit px-2">
-                            {course.basics.category?.title || "Development"}
-                          </div>
-                          <div className="uppercase text-orange-500  text-xs font-bold  h-fit  mb-2 w-fit px-2">
-                            {course.averageRating >=4.7 ? (
-
-                              <span>
-                                <span className="font-bold text-xs text-green-500 ">Top Rated</span> :{" "}
-                                {course.averageRating.toFixed(1)}
-                              </span>
-                            ) : (
-                              course.averageRating > 0 ? course.averageRating.toFixed(1) : "0.0"
-                            )}
-                          </div>
-                        </div>
+                       
 
                         <CardTitle className="flex justify-between flex-col gap-2">
                           <span className="text-md font-bold leading-tight">{course.basics.courseTitle}</span>
-                          <span className="text-md font-semibold text-green-500">${course.basics.price}</span>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
