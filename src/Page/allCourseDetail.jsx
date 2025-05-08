@@ -44,13 +44,7 @@ const AllCoursesDetail = () => {
         toast.error(err.response.data.error);
       });
 
-    // try {
-    //   const res = await axiosInstance.post("course/purchase", { course: courseDetails._id });
-    //   window.location.href = res.data.url; // Redirects to Stripe Checkout
-    // } catch (err) {
-    //   console.log(err);
-    //   toast.error(err.response?.data?.error || "Purchase failed");
-    // }
+
   };
 
   useEffect(() => {
@@ -311,46 +305,50 @@ const AllCoursesDetail = () => {
 
                 {/* instructor */}
                 <TabsContent value="instructor" className="p-6">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-16 w-16">
+                  <div className="flex flex-col sm:flex-row items-start gap-6">
+                    <Avatar className="h-20 w-20 shadow-md ring-2 ring-black ring-offset-2">
                       <AvatarImage
-                        src={courseDetails.createdby.profileImage}
+                        src={courseDetails.createdby.profileImg}
                         alt="Instructor"
+                        className="object-cover"
                       />
-                      {/* <AvatarFallback>VS</AvatarFallback> */}
+                      <AvatarFallback className="text-lg font-semibold">
+                        {courseDetails.createdby.firstName?.charAt(0)}
+                        {courseDetails.createdby.lastName?.charAt(0)}
+                      </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <h3 className="text-lg font-bold">
+
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-900">
                         {courseDetails.createdby.firstName}{" "}
                         {courseDetails.createdby.middleName}{" "}
                         {courseDetails.createdby.lastName}
                       </h3>
 
-                      <div className="flex items-center gap-2 mt-2">
-                        <Star
-                          size={16}
-                          className="text-yellow-400 fill-yellow-400"
-                        />
-                        {/* <span className="text-sm font-medium">
-                              {courseDetails.createdby.rating} Instructor Rating
-                            </span> */}
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mt-2">
+                        <span>{courseDetails.createdby.gender}</span>
+                        <span>·</span>
+                        <span>{courseDetails.createdby.pronouns}</span>
+                        <span>·</span>
+                        <span className="truncate max-w-[200px]">{courseDetails.createdby.email}</span>
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        {/* <User size={16} className="text-gray-500" /> */}
-                        {/* <span className="text-sm text-gray-500">
-                              {courseDetails.instructor.students} Students
-                            </span> */}
+
+                      <div className="flex items-center gap-2 mt-3 text-gray-500 text-sm">
+                        <PlayCircle size={18} className="text-indigo-500" />
+                        <span>
+                          {courseDetails.createdby.courses?.length || 0}{" "}
+                          {courseDetails.createdby.courses?.length === 1 ? "Course" : "Courses"}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <PlayCircle size={16} className="text-gray-500" />
-                        <span className="text-sm text-gray-500">5 Courses</span>
-                      </div>
-                      <p className="text-sm text-gray-700 mt-4">
-                        {courseDetails.createdby.bio}
+
+                      <p className="text-gray-700 text-sm mt-4 leading-relaxed">
+                        {courseDetails.createdby.Bio || "No bio provided."}
                       </p>
                     </div>
                   </div>
                 </TabsContent>
+
+
 
                 {/* reviews */}
                 <TabsContent value="reviews" className="p-6">
@@ -393,7 +391,7 @@ const AllCoursesDetail = () => {
                               className="border-b border-gray-200 pb-6"
                             >
                               <div className="flex items-start gap-4">
-                                <Avatar className="h-10 w-10">
+                                <Avatar className="h-30 w-30">
                                   <AvatarImage
                                     src={`/placeholder.svg?height=40&width=40&text=S${index}`}
                                     alt="Student"
@@ -405,7 +403,7 @@ const AllCoursesDetail = () => {
                                     {review.student}
                                   </div>
                                   <div className="flex items-center gap-2 mt-1">
-                                    
+
                                   </div>
                                   <p className="text-sm mt-2">
                                     {review.comment}

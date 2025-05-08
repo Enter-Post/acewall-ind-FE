@@ -74,12 +74,6 @@ export default function CourseOverview() {
     return <div className="p-6 text-center">Course not found.</div>;
   }
 
-  // Calculate average rating
-  // const averageRating =
-  //   course.rating && course.rating.length > 0
-  //     ? course.rating.reduce((sum, r) => sum + r.value, 0) /
-  //       course.rating.length
-  //     : 0;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -116,24 +110,7 @@ export default function CourseOverview() {
           </div>
         </div>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2 text-yellow-500">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star
-              key={star}
-              className={`w-5 h-5 transition ${
-                star <= Math.round(course.averageRating)
-                  ? "fill-yellow-400"
-                  : "fill-white"
-              }`}
-            />
-          ))}
-          <span className="text-sm text-gray-600">
-            ({course.rating.length}{" "}
-            {course.rating.length === 1 ? "rating" : "ratings"})
-          </span>
-        </div>
-
+      
         {/* Instructor Info */}
         <section className="flex items-center justify-between">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
