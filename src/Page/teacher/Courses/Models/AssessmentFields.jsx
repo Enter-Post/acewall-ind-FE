@@ -89,13 +89,13 @@ export function AssessmentDialog({ id }) {
   //   };
 
   const onSubmit = (data) => {
-    // Add the assessment to the correct chapter
+    // Add the Assessment to the correct chapter
     setCourse((prev) => {
       const updatedChapters = (prev.chapters || []).map((chapter) => {
         if (chapter.id === id) {
           return {
             ...chapter,
-            assessment: data,
+            Assessment: data,
           };
         }
         return chapter;
@@ -123,7 +123,7 @@ export function AssessmentDialog({ id }) {
           <DialogHeader>
             <DialogTitle>Add New Assessment</DialogTitle>
             <DialogDescription>
-              Create an assessment with title, description, and PDF files.
+              Create an Assessment with title, description, and PDF files.
             </DialogDescription>
           </DialogHeader>
 

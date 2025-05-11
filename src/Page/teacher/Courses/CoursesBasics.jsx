@@ -19,6 +19,8 @@ import { CourseContext } from "@/Context/CoursesProvider";
 import CategorySelect from "@/CustomComponent/CreateCourse/CategorySelect";
 import axios from "axios";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { toast } from "sonner";
 
 // Define the form schema with Zod
 
@@ -69,12 +71,6 @@ const courseFormSchema = z.object({
       })
     )
     .min(1, { message: "Add at least one requirement" }),
-  price: z
-    .string()
-    .min(1, { message: "Price is required" })
-    .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-      message: "Price must be a non-negative number",
-    }),
 });
 
 export default function CoursesBasis() {
@@ -103,7 +99,6 @@ export default function CoursesBasis() {
       courseDescription: "",
       teachingPoints: [{ value: "" }],
       requirements: [{ value: "" }],
-      price: "",
     },
   });
 
@@ -144,46 +139,34 @@ export default function CoursesBasis() {
     }
   };
 
-  // Handle thumbnail change
-  // const handleThumbnailChange = async (e) => {
-  //   setLoading(true);
-  //   const file = e.target.files?.[0];
-  //   if (!file) return;
-  //   if (file) {
-  //     const file = event.target.files[0];
-  //     const data = new FormData();
-  //     data.append("file", file);
-  //     data.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
-  //     data.append("cloud_name", import.meta.env.VITE_CLOUD_NAME);
+  const onSubmit = async (data) => {
+    console.log(data.thumbnail, "thumbnail");
+    const formData = new FormData();
+    setLoading(true);
 
-  //     const res = await axios.post(
-  //       `https://api.cloudinary.com/v1_1/${
-  //         import.meta.env.VITE_CLOUD_NAME
-  //       }/image/upload`,
-  //       data
-  //     );
-  //     // console.log(res.data.url, "cloudnary");
-  //     setLoading(false);
+    formData.append("thumbnail", data.thumbnail);
+    formData.append("courseTitle", data.courseTitle);
+    formData.append("category", data.category);
+    formData.append("language", data.language);
+    formData.append("courseDescription", data.courseDescription);
+    formData.append("teachingPoints", JSON.stringify(data.teachingPoints));
+    formData.append("requirements", JSON.stringify(data.requirements));
 
-  //     setValue("thumbnail", res.data.url, { shouldValidate: true });
-  //     setThumbnailPreview(URL.createObjectURL(file)); // for preview
-  //   }
-  // };
-
-  // Handle form submission
-
-  const onSubmit = (data) => {
-    console.log(data, "data in onSubmit");
-
-    if (data) {
-      navigate("/teacher/courses/createCourses/addchapters");
-      setCourse({
-        ...course,
-        basics: data,
-        // chapters: [], createdby: user._id
+    await axiosInstance
+      .post("/course/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        console.log(res, "res");
+        toast.success(res.data.message);
+        navigate("/teacher/courses");
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response.data.message);
+        setLoading(false);
       });
-      console.log(course, "data");
-    }
   };
 
   return (
@@ -309,26 +292,6 @@ export default function CoursesBasis() {
               {errors.courseDescription && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.courseDescription.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="price" className="block mb-2">
-                Price (in USD)
-              </Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="e.g. 19.99"
-                className="bg-gray-50"
-                {...register("price")}
-              />
-              {errors.price && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.price.message}
                 </p>
               )}
             </div>

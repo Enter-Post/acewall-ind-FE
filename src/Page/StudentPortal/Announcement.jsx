@@ -1,63 +1,62 @@
-import { AnnouncementCard, DeshBoardCard } from "@/CustomComponent/Card";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { AnnouncementCard } from "@/CustomComponent/Card";
+import oopsImage from "@/assets/oopsimage.png";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 const Announcement = () => {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const announcements = [
-    {
-      id: 1,
-      title: "Assignment Submission Deadline Extended",
-      course: "Web Development",
-      date: "2025-02-20",
-      time: "14:30",
-      message:
-        "The submission deadline for the 'Responsive Website Design' assignment has been extended to 2025-03-05. Please ensure all work is submitted by this date.",
-    },
-    {
-      id: 2,
-      title: "New Course: Advanced Graphic Design",
-      course: "Graphic Designing",
-      date: "2025-02-15",
-      time: "10:00",
-      message:
-        "We are excited to announce a new course, 'Advanced Graphic Design,' starting from 2025-03-01. Enroll now to deepen your skills in graphic design!",
-    },
-    {
-      id: 3,
-      title: "Digital Marketing Project Guidelines",
-      course: "Digital Marketing",
-      date: "2025-02-18",
-      time: "16:45",
-      message:
-        "Please refer to the updated project guidelines for the 'Develop a Marketing Strategy' assignment. The new guidelines include additional resources and examples.",
-    },
-    {
-      id: 4,
-      title: "Guest Lecture on UX/UI Design",
-      course: "Graphic Designing",
-      date: "2025-02-22",
-      time: "10:00",
-      message:
-        "Join us for a guest lecture on UX/UI Design by industry expert Jane Doe. The lecture will be held on 2025-02-28 at 10:00 AM. Don't miss it!",
-    },
-    {
-      id: 5,
-      title: "Mid-Term Exams Schedule",
-      course: "Web Development",
-      date: "2025-02-17",
-      time: "09:15",
-      message:
-        "The mid-term exams for the Web Development course are scheduled from 2025-03-10 to 2025-03-15. Please check the course portal for the detailed exam timetable.",
-    },
-  ];
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/announcement/getAll");
+        setAnnouncements(response.data.announcements || []);
+      } catch (error) {
+        console.error("Error fetching announcements:", error);
+        setAnnouncements([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  return  (
-    <div>
-      <div className="overflow-hidden ">
-        <AnnouncementCard mainHeading={"Announcement"} data={announcements} />
+    fetchAnnouncements();
+  }, []);
+
+  return (
+    <section className="p-3 md:p-0">
+      <div className="flex flex-col pb-5 gap-5 mb-10">
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+          Announcements
+        </p>
       </div>
-    </div>
-  );  
+
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <p className="text-lg text-muted-foreground">Loading announcements...</p>
+        </div>
+      ) : announcements.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center px-4">
+          <h1 className="text-2xl font-semibold text-muted-foreground">
+            No announcements available
+          </h1>
+          <p className="text-lg text-muted-foreground mt-2">
+            When announcements are posted, they will appear here.
+          </p>
+          <img
+            src={oopsImage}
+            alt="No announcements"
+            className="w-full max-w-md h-80 object-contain mt-6"
+          />
+        </div>
+      ) : (
+        <div className="overflow-hidden">
+          <AnnouncementCard mainHeading={"Latest Announcements"} data={announcements} />
+        </div>
+      )}
+    </section>
+  );
 };
 
 export default Announcement;

@@ -10,7 +10,7 @@ import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
 import { Input } from "../../components/ui/input";
 import { DashboardCircleAddIcon } from "@/assets/Icons/deshboard";
 import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
-import { AssignmentsIcon } from "@/assets/Icons/AssignmentIcon";
+import { AssessmentIcon } from "@/assets/Icons/AssignmentIcon";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
 import { Target02Icon } from "@/assets/Icons/grades";
 import Footer from "@/CustomComponent/Footer";
@@ -19,6 +19,7 @@ import { useContext } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import MoreCoursesDropdown from "@/CustomComponent/MoreCoursesDropdown";
 
 const sideBarTabs = [
   {
@@ -43,8 +44,8 @@ const sideBarTabs = [
   },
   {
     id: 3,
-    name: "My Assignments",
-    icon: <AssignmentsIcon />,
+    name: "My Assessment",
+    icon: <AssessmentIcon />,
     path: "/student/assignment",
   },
   {
@@ -133,12 +134,8 @@ export default function Layout() {
           <div className="flex justify-between items-center">
 
             <div className="flex gap-6">
-              <Link
-                to="/student/Courses"
-                className="text-xs md:text-md lg:text-base font-medium text-gray-700"
-              >
-                MORE COURSES
-              </Link>
+              <MoreCoursesDropdown />
+
               <Link
                 to="/student/support"
                 className="text-xs md:text-md lg:text-base font-medium text-gray-700"

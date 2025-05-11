@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronDown, ChevronRight, Upload, FileText } from "lucide-react";
 
-const initialAssignments = [
+const initialAssessment = [
   {
     id: "1",
     title: "Essay on Climate Change",
@@ -49,13 +49,13 @@ const initialAssignments = [
   },
 ];
 
-const tableHead = ["Assignment Name", "Course", "Due Date", "Status"];
+const tableHead = ["Assessment Name", "Course", "Due Date", "Status"];
 const Assignment = () => {
   const [search, setSearch] = useState("");
-  const [assignments, setAssignments] = useState(initialAssignments);
+  const [Assessment, setAssessment] = useState(initialAssessment);
   const [expandedAssignmentId, setExpandedAssignmentId] = useState(null);
 
-  const filteredAssignments = assignments.filter((assignment) =>
+  const filteredAssessment = Assessment.filter((assignment) =>
     assignment.title.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -73,12 +73,12 @@ const Assignment = () => {
     <div className="">
       <div className="">
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
-          Assignments
+        Assessment
         </p>
       </div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Search assignments..."
+          placeholder="Search Assessment..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
@@ -98,7 +98,7 @@ const Assignment = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAssignments.map((assignment) => (
+              {filteredAssessment.map((assignment) => (
                 <>
                   <TableRow
                     key={assignment.id}
@@ -178,7 +178,7 @@ const Assignment = () => {
                                 }
                               >
                                 <Upload className="h-4 w-4 mr-2" />
-                                Add Assignment
+                                Add Assessment
                               </Button>
                             </div>
                           )}
@@ -188,10 +188,10 @@ const Assignment = () => {
                   )}
                 </>
               ))}
-              {filteredAssignments.length === 0 && (
+              {filteredAssessment.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center">
-                    No assignments found.
+                    No Assessment found.
                   </TableCell>
                 </TableRow>
               )}

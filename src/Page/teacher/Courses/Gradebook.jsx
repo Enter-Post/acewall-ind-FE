@@ -107,7 +107,7 @@ export default function TeacherGradebook() {
       gradingMethod: "points-based",
       minimumPassingGrade: "60%",
       categories: [
-        { name: "Assignments", weight: 40 },
+        { name: "Assessment", weight: 40 },
         { name: "Final Project", weight: 40 },
       ],
       gradingScale: [
@@ -219,7 +219,7 @@ export default function TeacherGradebook() {
             <div className="flex items-center">
               <span className="text-lg font-semibold mr-4">70</span>
               <span className="text-gray-500 italic">
-                Auto-calculated based on assignments, quizzes
+                Auto-calculated based on Assessment, quizzes
               </span>
             </div>
           </div>

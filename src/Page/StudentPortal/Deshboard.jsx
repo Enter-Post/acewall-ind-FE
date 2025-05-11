@@ -19,43 +19,43 @@ const Deshboard = () => {
     },
   ];
 
- 
-  //   {
-  //     id: 1,
-  //     title: "Assignment Submission Deadline Extended",
-  //     course: "Web Development",
-  //     date: "25-jan-2025",
-  //     time: "02:50",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "New Course: Advanced Graphic Design",
-  //     course: "Graphic Designing",
-  //     date: "25-jan-2025",
-  //     time: "02:50",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Digital Marketing Project Guidelines",
-  //     course: "Digital Marketing",
-  //     date: "25-jan-2025",
-  //     time: "02:50",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Guest Lecture on UX/UI Design",
-  //     course: "Graphic Designing",
-  //     date: "25-jan-2025",
-  //     time: "02:50",
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Mid-Term Exams Schedule",
-  //     course: "Web Development",
-  //     date: "25-jan-2025",
-  //     time: "02:50",
-  //   },
-  // ];
+  const announcements = [
+    {
+      id: 1,
+      title: "Assignment Submission Deadline Extended",
+      course: "Web Development",
+      date: "25-jan-2025",
+      time: "02:50",
+    },
+    {
+      id: 2,
+      title: "New Course: Advanced Graphic Design",
+      course: "Graphic Designing",
+      date: "25-jan-2025",
+      time: "02:50",
+    },
+    {
+      id: 3,
+      title: "Digital Marketing Project Guidelines",
+      course: "Digital Marketing",
+      date: "25-jan-2025",
+      time: "02:50",
+    },
+    {
+      id: 4,
+      title: "Guest Lecture on UX/UI Design",
+      course: "Graphic Designing",
+      date: "25-jan-2025",
+      time: "02:50",
+    },
+    {
+      id: 5,
+      title: "Mid-Term Exams Schedule",
+      course: "Web Development",
+      date: "25-jan-2025",
+      time: "02:50",
+    },
+  ];
 
   useEffect(() => {
     const getCourses = async () => {
@@ -87,19 +87,20 @@ const Deshboard = () => {
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
           Dashboard
         </p>
-        <div className="grid sm:grid-cols-1 lg:grid-cols-2 grid-rows-1 gap-4">
-          {/* <DeshBoardCard
+        <div className="grid sm:grid-cols-1 lg:grid-cols-2 grid-rows-1 gap-6 ">
+          <DeshBoardCard
             mainHeading="Announcements"
             data={announcements}
             width="max-w-1/2"
-            height={"h-[390px]"}
+            height={"h-auto"}
             link={"announcements"}
-          /> */}
-          {/* <Assignment
+          />
+          <Assignment
             width
-            mainHeading="Assignments Due"
+            mainHeading="Assessment Due"
+
             data={AssignmentDue}
-          /> */}
+          />
           <DeshBoardCard
             mainHeading="My courses"
             data={courses}

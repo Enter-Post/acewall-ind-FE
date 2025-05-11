@@ -23,7 +23,7 @@ export default function CourseConfirmationModal({ submit, chapters }) {
           disabled={
             chapters.length === 0 ||
             !chapters[0].lessons ||
-            !chapters[0].assessment
+            !chapters[0].Assessment
           }
           className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white"
         >

@@ -16,7 +16,6 @@ const CategorySelect = ({ register, errors }) => {
       await axiosInstance
         .get("category/get")
         .then((res) => {
-          console.log(res);
           setCategories(res.data.categories);
         })
         .catch((err) => {
@@ -44,7 +43,6 @@ const CategorySelect = ({ register, errors }) => {
           {categories?.map((value, index) => {
             return (
               <SelectItem key={value._id} value={value._id}>
-                {console.log(value.title)}
                 {value.title}
               </SelectItem>
             );

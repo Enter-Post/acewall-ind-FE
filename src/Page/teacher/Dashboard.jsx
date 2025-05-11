@@ -61,30 +61,30 @@ export default function TeacherDashboard() {
     getTeacherCourse();
   }, []);
 
-  useEffect(() => {
-    const getRecentComments = async () => {
-      try {
-        const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
-        const comments = res.data.comments;
+  // useEffect(() => {
+  //   const getRecentComments = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
+  //       const comments = res.data.comments;
 
-        const formatted = comments.map((comment) => ({
-          user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
-          action: "commented on",
-          target: comment.course?.basics?.courseTitle || "a course",
-          time: new Date(comment.createdAt).toLocaleString("en-US", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          }),
-        }));
+  //       const formatted = comments.map((comment) => ({
+  //         user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
+  //         action: "commented on",
+  //         target: comment.course?.basics?.courseTitle || "a course",
+  //         time: new Date(comment.createdAt).toLocaleString("en-US", {
+  //           dateStyle: "medium",
+  //           timeStyle: "short",
+  //         }),
+  //       }));
 
-        setRecentActivity(formatted);
-      } catch (err) {
-        console.error("Error fetching recent comments:", err);
-      }
-    };
+  //       setRecentActivity(formatted);
+  //     } catch (err) {
+  //       console.error("Error fetching recent comments:", err);
+  //     }
+  //   };
 
-    getRecentComments();
-  }, []);
+  //   getRecentComments();
+  // }, []);
 
 
 
@@ -126,6 +126,7 @@ export default function TeacherDashboard() {
   });
 
 
+  return
 
   return (
     <div className="min-h-screen">
@@ -222,13 +223,13 @@ export default function TeacherDashboard() {
                   className="flex items-start gap-4 bg-white p-4 rounded-lg border"
                 >
                   <img
-                    src={course.basics.thumbnail || "/placeholder.svg"}
-                    alt={course.basics.courseTitle}
+                    src={course?.basics?.thumbnail || "/placeholder.svg"}
+                    alt={course?.basics?.courseTitle}
                     className="w-10 h-10 rounded-lg object-cover"
                   />
                   <div>
                     <h3 className="font-medium text-sm mb-1">
-                      {course.basics.courseTitle}
+                      {course?.basics.courseTitle}
                     </h3>
                     <div className="flex gap-2">
                       <span className="text-xs text-gray-500">

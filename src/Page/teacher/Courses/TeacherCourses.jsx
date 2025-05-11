@@ -21,9 +21,12 @@ const TeacherCourses = () => {
     const delayDebounce = setTimeout(() => {
       const getCourses = async () => {
         try {
-          const response = await axiosInstance.get("/course/getindividualcourse", {
-            params: { search: searchQuery },
-          });
+          const response = await axiosInstance.get(
+            "/course/getindividualcourse",
+            {
+              params: { search: searchQuery },
+            }
+          );
           setAllCourses(response.data.courses);
         } catch (error) {
           console.error("Error fetching courses:", error);
@@ -34,10 +37,10 @@ const TeacherCourses = () => {
       };
       getCourses();
     }, 2000); // 500ms delay
-  
+
     return () => clearTimeout(delayDebounce); // cleanup
-  }, [searchQuery]);
-  
+  }, [searchQuery]);
+
   return (
     <section className="p-3 md:p-0">
       <div className="flex flex-col pb-5 gap-5">
@@ -121,16 +124,16 @@ const TeacherCourses = () => {
               <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
                 <AspectRatio ratio={16 / 9}>
                   <img
-                    src={course.basics.thumbnail || "/placeholder.svg"}
-                    alt={`${course.thumbnail} image`}
+                    src={course.thumbnail.url || "/placeholder.svg"}
+                    alt={`${course.thumbnail.file} image`}
                     className="object-cover w-full h-full"
                   />
                 </AspectRatio>
                 <CardHeader>
                   <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-                    {course.basics.category?.title || "Developments"}
+                    {course.category?.title || "Developments"}
                   </div>
-                  <CardTitle>{course.basics.courseTitle}</CardTitle>
+                  <CardTitle>{course.courseTitle}</CardTitle>
                   <p className="text-xs">
                     Teacher: {course.createdby?.firstName}
                   </p>
@@ -138,7 +141,7 @@ const TeacherCourses = () => {
                 <CardContent>
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      Language: {course.basics.language}
+                      Language: {course.language}
                     </p>
                   </div>
                 </CardContent>

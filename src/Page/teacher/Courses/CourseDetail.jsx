@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
 import {
   Dialog,
   DialogFooter,
@@ -12,25 +11,23 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import { Loader, Play, Users } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
+import DeleteCourseModal from "@/CustomComponent/CreateCourse/DeleteCourseModal";
+import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
+import ChapterDetail from "@/CustomComponent/CreateCourse/ChapterDetail";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams() || { id: "68115952b4991f70a28c486f" }; // Default ID or from URL
   const [course, setCourse] = useState(null);
   const [open, setOpen] = useState(false);
   const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
-
+  const [loadingChapters, setLoadingChapters] = useState(true);
+  const [chapters, setChapters] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -41,24 +38,6 @@ export default function TeacherCourseDetails() {
       ...prev,
       [lessonId]: !prev[lessonId],
     }));
-  };
-
-  const handleDeleteCourse = async () => {
-
-    try {
-      await axiosInstance.delete(`/course/delete/${id}`);
-      setConfirmOpen(false);
-      setSuccessOpen(true);
-
-      // Wait 2 seconds before redirecting
-      setTimeout(() => {
-        setSuccessOpen(false);
-        window.location.href = "/teacher/courses";
-      }, 2000);
-    } catch (error) {
-      console.error("Error deleting course:", error);
-      alert("Failed to delete course.");
-    }
   };
 
   useEffect(() => {
@@ -96,7 +75,7 @@ export default function TeacherCourseDetails() {
           <div className="md:col-span-1">
             <img
               src={
-                course.basics.thumbnail ||
+                course.thumbnail.url ||
                 "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
               }
               alt="Course thumbnail"
@@ -115,59 +94,32 @@ export default function TeacherCourseDetails() {
                 </span>
               </div>
               <h2 className="text-2xl uppercase font-semibold">
-                {course.basics.courseTitle || "Course Title"}
+                {course.courseTitle || "Course Title"}
               </h2>
               <p className="text-muted-foreground">
-                {course.basics.courseDescription ||
-                  "Course description goes here..."}
+                {course.courseDescription || "Course description goes here..."}
               </p>
             </div>
 
-              
-              <div className="flex mt-10 justify-end space-x-2">
-                {/* Delete Confirmation Modal */}
-                <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150"
-                      onClick={() => setConfirmOpen(true)}
-                    >
-                      Delete Course
-                    </Button>
-                  </DialogTrigger>
+            <div className="flex mt-10 justify-end space-x-2">
+              {/* Delete Confirmation Modal */}
+              <DeleteCourseModal
+                confirmOpen={confirmOpen}
+                setConfirmOpen={setConfirmOpen}
+                id={id}
+                setSuccessOpen={setSuccessOpen}
+              />
 
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Are you sure?</DialogTitle>
-                      <p className="text-sm text-muted-foreground">
-                        This will permanently delete the course and all related data.
-                        Are you sure?
-                      </p>
-                    </DialogHeader>
-                    <DialogFooter className="mt-4 flex flex-col-reverse justify-end gap-2">
-                      <Button
-                        className="bg-red-600 text-white hover:bg-red-700"
-                        onClick={handleDeleteCourse}
-                      >
-                        Yes, Delete
-                      </Button>
-                      <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-                        Cancel
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-
-                {/* ✅ Success Confirmation Modal */}
-                <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-                  <DialogContent className="flex flex-col items-center justify-center text-center">
-                    <CheckCircle className="w-12 h-12 text-green-500" />
-                    <h3 className="text-lg font-semibold mt-2">
-                      Course deleted successfully!
-                    </h3>
-                  </DialogContent>
-                </Dialog>
-              </div>
+              {/* ✅ Success Confirmation Modal */}
+              <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+                <DialogContent className="flex flex-col items-center justify-center text-center">
+                  <CheckCircle className="w-12 h-12 text-green-500" />
+                  <h3 className="text-lg font-semibold mt-2">
+                    Course deleted successfully!
+                  </h3>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
 
@@ -175,22 +127,21 @@ export default function TeacherCourseDetails() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard
             icon={<Play className="h-5 w-5  text-orange-500" />}
-            value={course.basics.language?.toUpperCase()}
+            value={course.language?.toUpperCase()}
             label="Language"
             bgColor="bg-orange-50"
           />
           <StatCard
             icon={<Play className="h-5 w-5 text-orange-500" />}
-            value={course.basics.category.title?.toUpperCase()}
+            value={course.category?.title?.toUpperCase()}
             label="Category"
             bgColor="bg-orange-50"
           />
 
-
           <StatCard
             icon={<Play className="h-5 w-5 text-orange-500" />}
             value={
-              course.chapters.reduce(
+              course.chapters?.reduce(
                 (total, chapter) => total + chapter.lessons?.length,
                 0
               ) || 0
@@ -200,190 +151,48 @@ export default function TeacherCourseDetails() {
           />
           <StatCard
             icon={<Users className="h-5 w-5 text-rose-500" />}
-            value={course.student.length}
+            value={course.student?.length}
             label="Students Enrolled"
             bgColor="bg-rose-50"
           />
         </div>
 
+        <section>
+          <ChapterCreationModal courseId={id} setChapters={setChapters} />
+        </section>
 
         {/* chapter detail */}
-
-
-
-
-        <Accordion type="multiple" className="w-full space-y-4">
-          {course?.chapters.map((chapter, chapterIndex) => (
-            <AccordionItem
-              key={chapter._id}
-              value={`chapter-${chapterIndex}`}
-              className="border rounded-xl overflow-hidden shadow-sm"
-            >
-              <AccordionTrigger className="text-left text-lg font-semibold px-6 py-3  hover:bg-gray-50 transition-all">
-                Chapter {chapterIndex + 1}: {chapter.title}
-              </AccordionTrigger>
-
-              <AccordionContent className="px-6 pb-6 space-y-4 bg-white">
-                <p className="text-sm text-gray-700 leading-relaxed">{chapter.description}</p>
-
-                {/* Chapter Assessments */}
-                {Array.isArray(chapter.assessment) && chapter.assessment.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="font-semibold text-base text-gray-900">Chapter Assessment</p>
-                    {chapter.assessment.map((assess, aIdx) => (
-                      <div key={aIdx} className="pl-4 border-l-2 border-orange-400">
-                        <ul className="list-disc pl-4 mb-3">
-                          <li>
-                            <p className="text-base font-medium mb-3 text-gray-700">{assess.title}</p>
-                            <p className="text-sm text-gray-700">{assess.description}</p>
-                          </li>
-                        </ul>
-                        {assess.pdfFiles?.map((pdf, i) => (
-                          <a
-                            key={i}
-                            href={pdf}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 text-sm hover:underline block"
-                          >
-                            View Assessment PDF {i + 1}
-                          </a>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Lessons */}
-                {chapter.lessons?.length > 0 && (
-                  <div className="space-y-3">
-                    <p className="font-semibold text-base text-gray-900">Lessons</p>
-                    {chapter.lessons.map((lesson, lessonIndex) => (
-                      <div
-                        key={lesson._id}
-                        className="border rounded-md p-4 bg-gray-50 shadow-sm"
-                      >
-                        <div
-                          onClick={() => toggleLesson(lesson._id)}
-                          className="flex justify-between items-center cursor-pointer"
-                        >
-                          <p className="text-sm font-medium text-gray-800">
-                            Lesson {lessonIndex + 1}: {lesson.title}
-                          </p>
-                          <span className="text-blue-500 text-sm">
-                            {openLessons[lesson._id] ? "Hide" : "Show"} Details
-                          </span>
-                        </div>
-
-                        {openLessons[lesson._id] && (
-                          <div className="mt-3 space-y-2">
-                            <p className="text-sm text-gray-600">
-                              {lesson.description || "No description available."}
-                            </p>
-
-                            {/* PDFs */}
-                            {lesson.pdfFiles?.map((pdf, i) => (
-                              <a
-                                key={i}
-                                href={pdf}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 text-sm hover:underline block"
-                              >
-                                View Lesson PDF {i + 1}
-                              </a>
-                            ))}
-
-                            {lesson.youtubeLinks && (
-                              <a
-                                href={lesson.youtubeLinks}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 text-sm hover:underline block"
-                              >
-                                Watch on YouTube
-                              </a>
-                            )}
-
-                            {lesson.otherLink && (
-                              <a
-                                href={lesson.otherLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 text-sm hover:underline block"
-                              >
-                                Additional Resource
-                              </a>
-                            )}
-
-                            {/* Lesson Assessment */}
-                            {Array.isArray(lesson.lessonAssessment) &&
-                              lesson.lessonAssessment.length > 0 && (
-                                <div className="mt-2 space-y-1">
-                                  <p className="font-semibold text-sm">Lesson Assessment:</p>
-                                  {lesson.lessonAssessment.map((assess, idx) => (
-                                    <div key={idx} className="pl-4 border-l-2 border-green-400">
-                                      <p className="text-sm font-medium text-gray-700 mb-3 ">
-                                        {assess.title}
-                                      </p>
-                                      <p className="text-sm text-gray-700 mb-1">
-                                        {assess.description}
-                                      </p>
-                                      {assess.pdfFiles?.map((pdf, j) => (
-                                        <a
-                                          key={j}
-                                          href={pdf}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="text-blue-600 text-sm hover:underline block"
-                                        >
-                                          View Assessment PDF {j + 1}
-                                        </a>
-                                      ))}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-
-
-
-
-
+        <ChapterDetail
+          courseId={id}
+          chapters={chapters}
+          setChapters={setChapters}
+        />
 
         {/* Rating */}
-        <div className="my-10 ">
+        {/* <div className="my-10 ">
           <h3 className="text-lg font-medium mb-4">Overall Course Rating</h3>
           <div className="bg-green-50 p-8 rounded-lg flex flex-col items-center">
             {course.rating && course.rating.length > 0 ? (
               <>
                 <div className="text-5xl font-semibold mb-4">
-                  {/* Format the averageRating to 1 decimal place */}
                   {(course.averageRating || 4.8).toFixed(1)}
                 </div>
                 <div className="flex items-center gap-1 mb-2">
                   {[1, 2, 3, 4, 5].map((star, index) => {
-                    const fullStar = index + 1 <= Math.floor(course.averageRating || 5);
+                    const fullStar =
+                      index + 1 <= Math.floor(course.averageRating || 5);
                     const halfStar =
                       index + 1 === Math.floor(course.averageRating || 5) + 0.5;
                     return (
                       <svg
                         key={index}
-                        className={`w-6 h-6 ${fullStar
-                          ? "text-orange-400"
-                          : halfStar
+                        className={`w-6 h-6 ${
+                          fullStar
+                            ? "text-orange-400"
+                            : halfStar
                             ? "text-yellow-500"
                             : "text-gray-300"
-                          }`}
+                        }`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -408,19 +217,13 @@ export default function TeacherCourseDetails() {
               </div>
             )}
           </div>
-
-        </div>
+        </div> */}
       </div>
 
-      <CommentSection id={id}  />
-
-
-
+      <CommentSection id={id} />
     </div>
-
   );
 }
-
 
 function StatCard({ icon, value, label, bgColor }) {
   return (

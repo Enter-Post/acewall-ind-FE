@@ -13,7 +13,6 @@ import AllCoursesDetail from "./Page/allCourseDetail";
 import MainLayout from "./Page/MainLayout";
 import Support from "./Page/Support";
 import LandingPage from "./Page/LandingPage";
-import Payment from "./Page/StudentPortal/Payment";
 import Messages from "./Page/StudentPortal/Messages";
 
 import GeneralCourses from "./Page/GeneralCourses";
@@ -22,7 +21,7 @@ import GeneralCoursesDetail from "./Page/GeneralCourseDetail";
 import TeacherDashboard from "./Page/teacher/Dashboard";
 import TeacherLayout from "./Page/teacher/Layout";
 import TeacherAccount from "./Page/teacher/Account";
-import Teacherrassessment from "./Page/teacher/TeacherAssignment";
+import TeacherrAssessment from "./Page/teacher/TeacherAssignment";
 import TeacherAnnoucement from "./Page/teacher/TeacherAnnoucement";
 import AllStudent from "./Page/teacher/AllStudent";
 import StudentProfile from "./Page/teacher/studentProfile";
@@ -145,7 +144,6 @@ function App() {
               <Route index element={<AllCourses />} />
               <Route path="detail/:id" element={<AllCoursesDetail />} />
             </Route>
-            <Route path="payment" element={<Payment />} />
             <Route path="messages">
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />
@@ -160,7 +158,7 @@ function App() {
             <Route path="account" element={<TeacherAccount />} />
             {/* <Route path="messages" element={<TeacherMessages />} /> */}
             <Route path="assignment">
-              <Route index element={<Teacherrassessment />} />
+              <Route index element={<TeacherrAssessment />} />
               <Route path="create" element={<CreateAssessmentPage />} />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
@@ -178,7 +176,7 @@ function App() {
               />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
-                <Route path="addchapters" element={<CoursesChapter />} />
+                <Route path="addChapter/:id" element={<CoursesChapter />} />
                 <Route path="gradebook" element={<TeacherGradebook />} />
               </Route>
             </Route>

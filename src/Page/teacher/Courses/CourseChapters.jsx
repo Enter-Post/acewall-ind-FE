@@ -29,8 +29,8 @@ import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterMod
 import { CourseContext } from "@/Context/CoursesProvider";
 import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
 import CourseConfirmationModal from "@/CustomComponent/CreateCourse/CourseConfirmationModal";
-import LessonDialog from "./chapterFields/LessonTesting";
-import { AssessmentDialog } from "./chapterFields/AssessmentFields";
+import LessonDialog from "../../../CustomComponent/CreateCourse/LessonModal";
+import { AssessmentDialog } from "./Models/AssessmentFields";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 
@@ -41,14 +41,6 @@ export default function CoursesChapter() {
     useContext(CourseContext);
 
   console.log(course, "course");
-
-  useEffect(() => {
-    const isEmptyBasics = Object.keys(course.basics).length === 0;
-
-    if (isEmptyBasics) {
-      navigate("/teacher/courses/createCourses", { replace: true });
-    }
-  }, []);
 
   const handleDeleteChapter = (chapterId) => {
     console.log(chapterId, "chapterId");
@@ -112,7 +104,7 @@ export default function CoursesChapter() {
                     </span>
                     <div className="flex gap-2">
                       <LessonDialog id={chapter.id} />
-                      {!chapter.assessment && (
+                      {!chapter.Assessment && (
                         <AssessmentDialog id={chapter.id} />
                       )}
 
@@ -211,12 +203,12 @@ export default function CoursesChapter() {
                       </div>
                     ))}
 
-                    {chapter.assessment && (
+                    {chapter.Assessment && (
                       <div
                         key={index}
                         className="flex flex-col border-b last:border-b-0 p-4 space-y-2"
                       >
-                        {/* assessment Header */}
+                        {/* Assessment Header */}
                         <h2 className="text-xl font-bold text-primary mb-2">
                           Assessments
                         </h2>
@@ -227,8 +219,8 @@ export default function CoursesChapter() {
                             Title:
                           </span>{" "}
                           <span className="text-gray-800">
-                            {chapter?.assessment?.title ? (
-                              chapter.assessment.title
+                            {chapter?.Assessment?.title ? (
+                              chapter.Assessment.title
                             ) : (
                               <span className="italic text-gray-500">
                                 Title is not available.
@@ -243,8 +235,8 @@ export default function CoursesChapter() {
                             Description:
                           </span>{" "}
                           <span className="text-gray-800">
-                            {chapter?.assessment?.description?.trim() ? (
-                              chapter.assessment.description
+                            {chapter?.Assessment?.description?.trim() ? (
+                              chapter.Assessment.description
                             ) : (
                               <span className="italic text-gray-500">
                                 Description is not available.
@@ -258,9 +250,9 @@ export default function CoursesChapter() {
                           <span className="font-medium text-gray-700">
                             PDFs:
                           </span>
-                          {chapter?.assessment?.pdfFiles?.length > 0 ? (
+                          {chapter?.Assessment?.pdfFiles?.length > 0 ? (
                             <ul className="list-disc list-inside text-sm text-blue-600 mt-1">
-                              {chapter.assessment.pdfFiles.map((pdf, idx) => (
+                              {chapter.Assessment.pdfFiles.map((pdf, idx) => (
                                 <li key={idx}>
                                   <a
                                     href={pdf.url}

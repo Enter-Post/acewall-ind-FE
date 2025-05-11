@@ -16,6 +16,7 @@ const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   middleName: z.string().optional(),
   lastName: z.string().min(1, "Last name is required"),
+  Bio: z.string().min(1, "write your bio").max(200, "write your bio"),
   pronoun: z.string().optional(),
   gender: z.string().optional(),
   email: z.string().email("Invalid email address"),
@@ -64,6 +65,7 @@ const Account = () => {
       gender: "",
       email: "",
       phone: "",
+      Bio: "",
       homeAddress: "",
       mailingAddress: "",
       documents: [],
@@ -101,6 +103,7 @@ const Account = () => {
     setValue("firstName", user.firstName || "");
     setValue("middleName", user.middleName || "");
     setValue("lastName", user.lastName || "");
+    setValue("Bio", user.Bio || "");
     setValue("pronoun", user.pronouns || "");
     setValue("gender", user.gender || "");
     setValue("email", user.email || "");
@@ -117,6 +120,7 @@ const Account = () => {
     formData.append("firstName", data.firstName);
     formData.append("middleName", data.middleName);
     formData.append("lastName", data.lastName);
+    formData.append("Bio", data.Bio);
     formData.append("pronoun", data.pronoun);
     formData.append("gender", data.gender);
     formData.append("email", data.email);
@@ -162,14 +166,14 @@ const Account = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <section className="space-y-6">
           <h3 className="text-lg font-semibold">Profile Image</h3>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-full">
             <img
               src={previewImage}
               alt="Profile Image"
-              className="w-24 h-24 rounded-full object-cover"
+              className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover"
             />
-            <div>
-              <Label htmlFor="profileImg" className="block">
+            <div className="text-center md:text-left"> {/* Center text on smaller screens */}
+            <Label htmlFor="profileImg" className="block">
                 Upload New Image
               </Label>
               <Input
@@ -232,7 +236,24 @@ const Account = () => {
               </div>
             </div>
           </section>
-
+          {/* Bio Field */}
+          <section className="space-y-6">
+            <h3 className="text-lg font-semibold">Bio</h3>
+            <div className="space-y-2">
+              <Label htmlFor="Bio" className="text-sm font-medium">Tell us about yourself</Label>
+              <Textarea
+                id="Bio"
+                rows={5}
+                placeholder="Write a short Bio..."
+                {...register("Bio")}
+              />
+              {errors.Bio && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.Bio.message}
+                </p>
+              )}
+            </div>
+          </section>
           {/* Pronouns & Gender Selection */}
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Identity Information</h3>

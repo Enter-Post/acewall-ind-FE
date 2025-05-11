@@ -16,6 +16,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { CourseContext } from "@/Context/CoursesProvider";
 import axios from "axios";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { toast } from "sonner";
 
 // Zod Schema (no array)
 const chapterSchema = z.object({
@@ -23,7 +25,7 @@ const chapterSchema = z.object({
   description: z.string().min(5, "Chapter description is required"),
 });
 
-export default function ChapterCreationModal() {
+export default function ChapterCreationModal({ courseId, setChapters }) {
   const [isOpen, setIsOpen] = useState(false);
   const { course, setCourse } = useContext(CourseContext);
 
@@ -42,17 +44,22 @@ export default function ChapterCreationModal() {
     },
   });
 
-  const onSubmit = (data) => {
-    const newChapter = {
-      id: new Date().getMilliseconds(),
-      title: data.title,
-      description: data.description,
-    };
+  const onSubmit = async (data) => {
+    const formdata = new FormData();
+    formdata.append("title", data.title);
+    formdata.append("description", data.description);
 
-    setCourse((prev) => ({
-      ...prev,
-      chapters: [...(prev.chapters || []), newChapter],
-    }));
+    await axiosInstance
+      .post(`/chapter/create/${courseId}`, formdata)
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.message);
+        setChapters((prev) => [...prev, res.data.chapter]);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response.data.message);
+      });
 
     reset();
     setIsOpen(false);
@@ -91,7 +98,7 @@ export default function ChapterCreationModal() {
               </p>
             )}
           </div>
-          
+
           {/* Footer */}
           <DialogFooter className="justify-between">
             <Button variant="outline" onClick={() => setIsOpen(false)}>

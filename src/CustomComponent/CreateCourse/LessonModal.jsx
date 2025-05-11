@@ -19,6 +19,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 const fileInstance = z
   .instanceof(File)
@@ -26,28 +27,16 @@ const fileInstance = z
     message: "File size must not exceed 5MB",
   });
 
-const lessonAssessmentSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  pdfFiles: z.array(fileInstance).optional(),
-});
-
 const lessonSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(5, "Description must be at least 5 characters"),
   youtubeLinks: z.string().optional(),
   otherLink: z.string().optional(),
   pdfFiles: z.array(fileInstance).optional(),
-  lessonAssessment: lessonAssessmentSchema.optional(),
 });
 
-const LessonDialog = ({ id }) => {
-  const { course, setCourse } = useContext(CourseContext);
+const LessonModal = ({ chapterID }) => {
   const [open, setOpen] = useState(false);
-  //   const [lessonPdf, setLessonPdf] = useState();
-  //   const [assessmentPdf, assessementPdf] = useState();
-
-  console.log(course, "course in lesson");
 
   const {
     register,
@@ -63,11 +52,6 @@ const LessonDialog = ({ id }) => {
       youtubeLinks: "",
       otherLink: "",
       pdfFiles: [],
-      lessonAssessment: {
-        title: "",
-        description: "",
-        pdfFiles: [],
-      },
     },
   });
 
@@ -77,30 +61,31 @@ const LessonDialog = ({ id }) => {
     console.log(filesArray);
   };
 
-  const handleAssessmentPDFChange = (e) => {
-    const filesArray = Array.from(e.target.files);
-    setValue("lessonAssessment.pdfFiles", filesArray);
-    console.log(filesArray);
-  };
-
   console.log(errors, "errors");
 
-  const onSubmit = (data) => {
-    setCourse((prev) => {
-      const updatedChapters = prev.chapters.map((chapter) => {
-        if (chapter.id === id) {
-          return {
-            ...chapter,
-            lessons: [...(chapter.lessons || []), data],
-          };
-        }
-        return chapter;
-      });
-      return {
-        ...prev,
-        chapters: updatedChapters,
-      };
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("youtubeLinks", data.youtubeLinks);
+    formData.append("otherLink", data.otherLink);
+    formData.append("chapter", chapterID);
+    data.pdfFiles.forEach((file) => {
+      formData.append("pdfFiles", file);
     });
+
+    await axiosInstance
+      .post(`/lesson/create`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
     reset();
     setOpen(false);
   };
@@ -174,57 +159,6 @@ const LessonDialog = ({ id }) => {
           {errors.pdfFiles && (
             <p className="text-red-500 text-sm">{errors.pdfFiles.message}</p>
           )}
-
-          <div className="border rounded-md p-4 bg-gray-50 space-y-2">
-            <h4 className="font-semibold text-lg">Lesson Assessment</h4>
-
-            <div>
-              <Label htmlFor="assessmentTitle">Assessment Title</Label>
-              <Input
-                id="assessmentTitle"
-                placeholder="Assessment Title"
-                {...register("lessonAssessment.title")}
-              />
-              {errors.lessonAssessment?.title && (
-                <p className="text-red-500 text-sm">
-                  {errors.lessonAssessment.title.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="assessmentDescription">
-                Assessment Description
-              </Label>
-              <Textarea
-                id="assessmentDescription"
-                placeholder="Assessment Description"
-                {...register("lessonAssessment.description")}
-              />
-              {errors.lessonAssessment?.description && (
-                <p className="text-red-500 text-sm">
-                  {errors.lessonAssessment.description.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="assessmentPdf">Assessment PDF Files</Label>
-              <Input
-                id="assessmentPdf"
-                type="file"
-                multiple
-                accept="application/pdf"
-                onChange={(e) => handleAssessmentPDFChange(e)}
-              />
-              {errors?.lessonAssessment?.pdfFiles[0] && (
-                <p className="text-red-500 text-sm">
-                  {errors.pdfFiles.message}
-                </p>
-              )}
-            </div>
-          </div>
-
           <DialogFooter>
             <Button
               type="button"
@@ -241,4 +175,4 @@ const LessonDialog = ({ id }) => {
   );
 };
 
-export default LessonDialog;
+export default LessonModal;

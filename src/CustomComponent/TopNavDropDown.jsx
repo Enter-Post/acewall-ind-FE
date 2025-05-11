@@ -22,11 +22,7 @@ export function TopNavbarDropDown({ selected, setselected }) {
       title: "Account",
       path: "/student/account",
     },
-    {
-      id: 10,
-      title: "Payment",
-      path: "/student/payment",
-    },
+    
   ];
 
   const navigate = useNavigate();

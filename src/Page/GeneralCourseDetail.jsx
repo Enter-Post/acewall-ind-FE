@@ -52,7 +52,7 @@ const GeneralCourseDetail = () => {
           <Loader size={48} className="animate-spin text-primary" />
         </section>
       </div>
-    );  if (!courseDetails) return <div className="p-6 text-red-500">Course not found.</div>;
+    ); if (!courseDetails) return <div className="p-6 text-red-500">Course not found.</div>;
 
   return (
     <div className="flex min-h-screen">
@@ -71,7 +71,7 @@ const GeneralCourseDetail = () => {
                     <div className="flex items-center rounded-full">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
-                        className=" rounded-full"
+                          className=" rounded-full"
                           src={courseDetails.createdby.profileImg}
                           alt="Instructor"
                         />
@@ -243,10 +243,10 @@ const GeneralCourseDetail = () => {
                                   )}
                                 </div>
 
-                                {Array.isArray(chapter.assessment) && chapter.assessment.length > 0 && (
+                                {Array.isArray(chapter.Assessment) && chapter.Assessment.length > 0 && (
                                   <div className="mt-6 border-t pt-4 space-y-2 pl-6">
                                     <div className="text-sm font-medium text-gray-700">Assessment</div>
-                                    {chapter.assessment.map((assess, j) => (
+                                    {chapter.Assessment.map((assess, j) => (
                                       <div key={j} className="text-sm text-gray-600">
                                         {assess.title} — <span className="italic">{assess.description}</span>
                                       </div>
@@ -265,13 +265,16 @@ const GeneralCourseDetail = () => {
                     {/* instructor */}
                     <TabsContent value="instructor" className="p-6">
                       <div className="flex items-start gap-4">
-                        <Avatar className="h-16 w-16">
+                        <Avatar className="h-20 w-20 shadow-md ring-green-500 ring-3 rounded-full">
                           <AvatarImage
-
-                            src={courseDetails.createdby.profileImage}
+                            src={courseDetails.createdby.profileImg}
                             alt="Instructor"
+                            className="object-cover rounded-full"
                           />
-                          {/* <AvatarFallback>VS</AvatarFallback> */}
+                          <AvatarFallback className="text-lg font-semibold">
+                            {courseDetails.createdby.firstName?.charAt(0)}
+                            {courseDetails.createdby.lastName?.charAt(0)}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <h3 className="text-lg font-bold">
@@ -427,9 +430,9 @@ const GeneralCourseDetail = () => {
                       {courseDetails.level}  {
                         Array.isArray(courseDetails.chapters)
                           ? `${courseDetails.chapters.reduce((total, chapter) => {
-                            return total + (Array.isArray(chapter.assessment) ? chapter.assessment.length : 0);
+                            return total + (Array.isArray(chapter.Assessment) ? chapter.Assessment.length : 0);
                           }, 0)} Assessments`
-                          : "No assessments available"
+                          : "No Assessments available"
                       }
                     </span>
                   </div>

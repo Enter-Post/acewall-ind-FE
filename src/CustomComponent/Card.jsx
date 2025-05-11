@@ -31,7 +31,7 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
             data.map((item, index) => (
               <div
                 key={index}
-                className="px-6 py-4 flex items-start justify-between hover:bg-gray-50 transition"
+                className="px-6 py-4 flex items-start justify-between  transition"
               >
                 <div className="flex-1">
                   <Link to={link}>
@@ -75,7 +75,7 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
       style={{ height: height || "100%" }} // Same height as DeshBoardCard
     >
       <CardHeader className="flex-row justify-between items-center bg-green-600 py-3 rounded">
-        <CardTitle className="text-lg text-white">Assignments Due</CardTitle>
+        <CardTitle className="text-lg text-white">Assessment Due</CardTitle>
         <Link to="assignment" className="text-white text-xs">
           View All
         </Link>
@@ -86,14 +86,14 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
             {data.map((assignment, index) => (
               <div key={index} className="p-4">
                 <div className="flex justify-between">
-                  <h3 className="hover:font-semibold transition-all duration-300 cursor-pointer">
+                  <h3 className="hover:font-semibold font-semibold transition-all duration-300 cursor-pointer">
                     {assignment.course}
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     Due: {assignment.dueDate}
                   </p>
                 </div>
-                <p className="text-muted-foreground text-sm mt-2 hover:font-semibold transition-all duration-300 cursor-pointer">
+                <p className="text-muted-foreground text-sm mt-2  transition-all duration-300 cursor-pointer">
                   {assignment.Assignment}
                 </p>
               </div>

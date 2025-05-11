@@ -217,14 +217,14 @@ export default function ChapterDetail() {
               {activeLesson && activeLesson.lessonAssessment && activeLesson.lessonAssessment.length > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Lesson Assessment Materials</h3>
-                  {activeLesson.lessonAssessment.map((assessment, i) => (
+                  {activeLesson.lessonAssessment.map((Assessment, i) => (
                     <div key={i} className="space-y-4">
-                      <h4 className="font-medium text-sm text-gray-800">{assessment.title}</h4>
-                      <p className="text-sm text-gray-600">{assessment.description}</p>
+                      <h4 className="font-medium text-sm text-gray-800">{Assessment.title}</h4>
+                      <p className="text-sm text-gray-600">{Assessment.description}</p>
 
-                      {assessment.pdfFiles && assessment.pdfFiles.length > 0 && (
+                      {Assessment.pdfFiles && Assessment.pdfFiles.length > 0 && (
                         <div className="space-y-3 pl-4">
-                          {assessment.pdfFiles.map((pdf, pdfIndex) => (
+                          {Assessment.pdfFiles.map((pdf, pdfIndex) => (
                             <a
                               key={pdfIndex}
                               href={pdf}
@@ -246,17 +246,17 @@ export default function ChapterDetail() {
               )}
 
               {/* Chapter Assessment */}
-              {chapter && chapter.assessment && chapter.assessment.length > 0 && (
+              {chapter && chapter.Assessment && chapter.Assessment.length > 0 && (
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Chapter Assessment</h3>
-                  {chapter.assessment.map((assessment, i) => (
+                  {chapter.Assessment.map((Assessment, i) => (
                     <div key={i} className="space-y-4">
-                      <h4 className="font-medium text-sm text-gray-800">{assessment.title}</h4>
-                      <p className="text-sm text-gray-600">{assessment.description}</p>
+                      <h4 className="font-medium text-sm text-gray-800">{Assessment.title}</h4>
+                      <p className="text-sm text-gray-600">{Assessment.description}</p>
 
-                      {assessment.pdfFiles && assessment.pdfFiles.length > 0 && (
+                      {Assessment.pdfFiles && Assessment.pdfFiles.length > 0 && (
                         <div className="space-y-3 pl-4">
-                          {assessment.pdfFiles.map((pdf, pdfIndex) => (
+                          {Assessment.pdfFiles.map((pdf, pdfIndex) => (
                             <a
                               key={pdfIndex}
                               href={pdf}

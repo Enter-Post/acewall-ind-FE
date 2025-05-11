@@ -15,6 +15,8 @@ export const GlobalProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUser, setOnlineUser] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
+  const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
+
 
   // console.log(user, "Global provider");
   // console.log(onlineUser, "onlineUser");
@@ -91,6 +93,9 @@ export const GlobalProvider = ({ children }) => {
         toast.error(err.response.data.message);
       });
   };
+   
+  console.log("Selected Subcategory ID:", selectedSubcategoryId);
+
 
   return (
     <GlobalContext.Provider
@@ -109,6 +114,9 @@ export const GlobalProvider = ({ children }) => {
         setOnlineUser,
         currentConversation,
         setCurrentConversation,
+        selectedSubcategoryId,          
+        setSelectedSubcategoryId,   
+        
       }}
     >
       {children}

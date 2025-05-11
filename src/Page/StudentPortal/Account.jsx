@@ -128,13 +128,13 @@ const Account = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <section className="space-y-6">
           <h3 className="text-lg font-semibold">Profile Image</h3>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-full">
             <img
               src={previewImage}
               alt="Profile Preview"
-              className="w-24 h-24 rounded-full object-cover"
+              className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover" // Adjust image size for responsiveness
             />
-            <div>
+            <div className="text-center md:text-left"> {/* Center text on smaller screens */}
               <Label htmlFor="profileImg" className="block">
                 Upload New Image
               </Label>
@@ -147,6 +147,7 @@ const Account = () => {
               />
             </div>
           </div>
+
         </section>
 
         <div className="space-y-8">

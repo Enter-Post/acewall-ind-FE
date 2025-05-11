@@ -17,7 +17,7 @@ import { TeacherTopNavbarDropDown } from "@/CustomComponent/TeacherTopNavDropDow
 import { Input } from "../../components/ui/input";
 import { DashboardCircleAddIcon } from "@/assets/Icons/deshboard";
 import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
-import { AssignmentsIcon } from "@/assets/Icons/AssignmentIcon";
+import { AssessmentIcon } from "@/assets/Icons/AssignmentIcon";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
 import Footer from "@/CustomComponent/Footer";
 import { useContext } from "react";
@@ -43,7 +43,7 @@ const sideBarTabs = [
   {
     id: 3,
     name: "Assessments",
-    icon: <AssignmentsIcon />,
+    icon: <AssessmentIcon />,
     path: "/teacher/assignment",
   },
   {

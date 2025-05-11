@@ -114,11 +114,11 @@ export default function CourseOverview() {
         {/* Instructor Info */}
         <section className="flex items-center justify-between">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-12 w-12 rounded-full">
               <AvatarImage
                 src={course.createdby.profileImg || "/placeholder.svg"}
                 alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
-                className="ring-2 ring-black ring-offset-2"
+                className="ring-2 ring-black ring-offset-2 rounded-full "
               />
               <AvatarFallback>
                 {course.createdby.firstName.charAt(0)}

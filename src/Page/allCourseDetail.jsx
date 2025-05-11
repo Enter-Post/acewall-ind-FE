@@ -273,13 +273,13 @@ const AllCoursesDetail = () => {
                               )}
                             </div>
 
-                            {Array.isArray(chapter.assessment) &&
-                              chapter.assessment.length > 0 && (
+                            {Array.isArray(chapter.Assessment) &&
+                              chapter.Assessment.length > 0 && (
                                 <div className="mt-6 border-t pt-4 space-y-2 pl-6">
                                   <div className="text-sm font-medium text-gray-700">
                                     Assessment
                                   </div>
-                                  {chapter.assessment.map((assess, j) => (
+                                  {chapter.Assessment.map((assess, j) => (
                                     <div
                                       key={j}
                                       className="text-sm text-gray-600"
@@ -306,11 +306,11 @@ const AllCoursesDetail = () => {
                 {/* instructor */}
                 <TabsContent value="instructor" className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
-                    <Avatar className="h-20 w-20 shadow-md ring-2 ring-black ring-offset-2">
+                    <Avatar className="h-20 w-20 shadow-md ring-green-500 ring-3 rounded-full">
                       <AvatarImage
                         src={courseDetails.createdby.profileImg}
                         alt="Instructor"
-                        className="object-cover"
+                        className="object-cover rounded-full"
                       />
                       <AvatarFallback className="text-lg font-semibold">
                         {courseDetails.createdby.firstName?.charAt(0)}
@@ -471,12 +471,12 @@ const AllCoursesDetail = () => {
                     ? `${courseDetails.chapters.reduce((total, chapter) => {
                       return (
                         total +
-                        (Array.isArray(chapter.assessment)
-                          ? chapter.assessment.length
+                        (Array.isArray(chapter.Assessment)
+                          ? chapter.Assessment.length
                           : 0)
                       );
                     }, 0)} Assessments`
-                    : "No assessments available"}
+                    : "No Assessments available"}
                 </span>
               </div>
             </div>

@@ -14,7 +14,7 @@ const subjectsData = [
   {
     id: "env-sci",
     subject: "Environmental Science 101",
-    assignments: [
+    Assessment: [
       { id: "env-1", title: "Essay on Climate Change", chapter: 1, marks: 100, obtMarks: 80 },
       { id: "env-2", title: "Research on Renewable Energy", chapter: 2, marks: 100, obtMarks: 85 },
       { id: "env-3", title: "Ecosystem Analysis", chapter: 3, marks: 100, obtMarks: 90 },
@@ -28,7 +28,7 @@ const subjectsData = [
   {
     id: "calc",
     subject: "Calculus II",
-    assignments: [
+    Assessment: [
       { id: "calc-1", title: "Math Assignment 1", chapter: 1, marks: 100, obtMarks: 75 },
       { id: "calc-2", title: "Math Assignment 2", chapter: 2, marks: 100, obtMarks: 82 },
       { id: "calc-3", title: "Math Assignment 3", chapter: 3, marks: 100, obtMarks: 78 },
@@ -42,7 +42,7 @@ const subjectsData = [
   {
     id: "hist",
     subject: "World History",
-    assignments: [
+    Assessment: [
       { id: "hist-1", title: "History Essay", chapter: 1, marks: 100, obtMarks: 88 },
       { id: "hist-2", title: "History Presentation", chapter: 2, marks: 100, obtMarks: 92 },
       { id: "hist-3", title: "Historical Analysis", chapter: 3, marks: 100, obtMarks: 85 },
@@ -62,8 +62,8 @@ export default function Gradebook() {
 
   // Calculate average for each subject
   const subjectsWithAverage = subjectsData.map((subject) => {
-    const totalMarks = subject.assignments.reduce((sum, assignment) => sum + assignment.marks, 0)
-    const totalObtained = subject.assignments.reduce((sum, assignment) => sum + assignment.obtMarks, 0)
+    const totalMarks = subject.Assessment.reduce((sum, assignment) => sum + assignment.marks, 0)
+    const totalObtained = subject.Assessment.reduce((sum, assignment) => sum + assignment.obtMarks, 0)
     const average = (totalObtained / totalMarks) * 100
 
     // Determine grade
@@ -82,12 +82,12 @@ export default function Gradebook() {
 
   // Calculate Overall GPA
   const overallTotalMarks = subjectsData.reduce(
-    (sum, subject) => sum + subject.assignments.reduce((sum, assignment) => sum + assignment.marks, 0),
+    (sum, subject) => sum + subject.Assessment.reduce((sum, assignment) => sum + assignment.marks, 0),
     0,
   )
 
   const overallObtainedMarks = subjectsData.reduce(
-    (sum, subject) => sum + subject.assignments.reduce((sum, assignment) => sum + assignment.obtMarks, 0),
+    (sum, subject) => sum + subject.Assessment.reduce((sum, assignment) => sum + assignment.obtMarks, 0),
     0,
   )
 
@@ -104,7 +104,7 @@ export default function Gradebook() {
   const filteredSubjects = subjectsWithAverage.filter(
     (subject) =>
       subject.subject.toLowerCase().includes(search.toLowerCase()) ||
-      subject.assignments.some((assignment) => assignment.title.toLowerCase().includes(search.toLowerCase())),
+      subject.Assessment.some((assignment) => assignment.title.toLowerCase().includes(search.toLowerCase())),
   )
 
   const toggleSubjectExpand = (id) => {
@@ -146,11 +146,11 @@ export default function Gradebook() {
         </CardContent>
       </Card>
 
-      {/* Subjects and Assignments Table */}
+      {/* Subjects and Assessment Table */}
       <div className="">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Search subjects or assignments..."
+            placeholder="Search subjects or Assessment..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
@@ -205,7 +205,7 @@ export default function Gradebook() {
                     <TableRow className="bg-muted/50">
                       <TableCell colSpan={4} className="p-0">
                         <div className="p-4 space-y-6">
-                          <AssessmentTable title="Assignments" items={subject.assignments} />
+                          <AssessmentTable title="Assessment" items={subject.Assessment} />
                           <AssessmentTable title="Quizzes" items={subject.quizzes} />
                           <AssessmentTable title="Final Exam" items={subject.finalTest} isFinal={true} />
                         </div>
@@ -217,7 +217,7 @@ export default function Gradebook() {
               {filteredSubjects.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-6">
-                    No subjects or assignments found matching your search.
+                    No subjects or Assessment found matching your search.
                   </TableCell>
                 </TableRow>
               )}

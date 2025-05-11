@@ -34,8 +34,8 @@ export default function TeacherAssessment() {
       </div>
 
       <div className="space-y-6">
-        <AssessmentSection title="Current Assessments" assessments={currentAssessments} expanded={currentExpanded} setExpanded={setCurrentExpanded} />
-        <AssessmentSection title="Completed Assessments" assessments={completedAssessments} expanded={completedExpanded} setExpanded={setCompletedExpanded} />
+        <AssessmentSection title="Current Assessments" Assessments={currentAssessments} expanded={currentExpanded} setExpanded={setCurrentExpanded} />
+        <AssessmentSection title="Completed Assessments" Assessments={completedAssessments} expanded={completedExpanded} setExpanded={setCompletedExpanded} />
       </div>
     </div>
   );
