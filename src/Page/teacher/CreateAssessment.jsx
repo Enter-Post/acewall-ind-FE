@@ -1,7 +1,9 @@
+"use client";
+
 import { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import JoditEditor from "jodit-react";
 import {
   Form,
   FormControl,
@@ -20,50 +27,76 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Card, CardContent } from "@/components/ui/card";
-import JoditEditor from "jodit-react";
-
-// // Dynamically import Jodit Editor to avoid SSR issues
-// const JoditEditor = dynamic(() => import("jodit-react"), {
-//   ssr: false,
-//   loading: () => <p>Loading editor...</p>,
-// });
+import { toast } from "sonner";
 
 // Define the form schema with Zod
+const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
+
+const baseQuestionSchema = z.object({
+  type: z.enum(["mcq", "truefalse", "qa"], {
+    required_error: "Please select a question type",
+  }),
+  question: z
+    .string()
+    .min(5, { message: "Question must be at least 5 characters" }),
+  id: z.number(),
+});
+
+const mcqQuestionSchema = baseQuestionSchema.extend({
+  type: z.literal("mcq"),
+  options: z
+    .array(optionSchema)
+    .min(2, { message: "At least 2 options are required" }),
+  correctAnswer: z
+    .string()
+    .min(1, { message: "Please select the correct answer" }),
+});
+
+const trueFalseQuestionSchema = baseQuestionSchema.extend({
+  type: z.literal("truefalse"),
+  correctAnswer: z.enum(["true", "false"], {
+    required_error: "Please select the correct answer",
+  }),
+});
+
+const qaQuestionSchema = baseQuestionSchema.extend({
+  type: z.literal("qa"),
+  correctAnswer: z
+    .string()
+    .min(1, { message: "Please provide a model answer" }),
+});
+
+const questionSchema = z.discriminatedUnion("type", [
+  mcqQuestionSchema,
+  trueFalseQuestionSchema,
+  qaQuestionSchema,
+]);
+
 const formSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
   description: z
     .string()
     .min(10, { message: "Description must be at least 10 characters" }),
-  chapter: z.string({ required_error: "Please select a chapter" }),
-  lesson: z.string({ required_error: "Please select a lesson" }),
-  assessmentType: z.enum(["truefalse", "mcq"], {
-    required_error: "Please select an assessment type",
-  }),
-  question: z
-    .string()
-    .min(5, { message: "Question must be at least 5 characters" }),
-  // Conditionally validate based on assessment type
-  correctAnswer: z.string().optional(),
-  options: z.array(z.string()).optional(),
+  course: z.string().min(1, { message: "Please select a course" }),
+  chapter: z.string().min(1, { message: "Please select a chapter" }),
+  lesson: z.string().min(1, { message: "Please select a lesson" }),
+  questions: z
+    .array(questionSchema)
+    .min(1, { message: "At least one question is required" }),
 });
-
-// Define the type based on the schema
 
 export default function CreateAssessmentPage() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [editorConfig] = useState({
     readonly: false,
-    height: 300,
+    height: 200,
     toolbar: true,
     uploader: {
       insertImageAsBase64URI: true,
     },
   });
 
-  // Initialize the form
+  // Initialize the form with react-hook-form and zod resolver
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,22 +104,47 @@ export default function CreateAssessmentPage() {
       description: "",
       chapter: "",
       lesson: "",
-      assessmentType: "mcq",
-      question: "",
-      correctAnswer: "",
-      options: ["", "", "", ""],
+      questions: [
+        {
+          type: "mcq",
+          question: "",
+          options: ["", "", "", ""],
+          correctAnswer: "",
+          id: Date.now(),
+        },
+      ],
     },
   });
 
-  const assessmentType = form.watch("assessmentType");
+  console.log(form.formState.errors, "form");
 
-  // Handle file changes
+  // Use fieldArray to handle the dynamic questions array
+  const { fields, append, remove, move } = useFieldArray({
+    control: form.control,
+    name: "questions",
+  });
+
   const handleFileChange = (e) => {
     if (!e.target.files) return;
 
-    const newFiles = Array.from(e.target.files).filter(
-      (file) => file.type === "application/pdf"
-    );
+    const newFiles = Array.from(e.target.files).filter((file) => {
+      const isValidType =
+        file.type === "application/pdf" ||
+        file.type === "application/msword" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB in bytes
+
+      if (!isValidType) {
+        toast.error(`File type must be PDF, DOC, or DOCX.`);
+      }
+
+      if (!isValidSize) {
+        toast.error(`File exceeds the 5MB size limit.`);
+      }
+
+      return isValidType && isValidSize;
+    });
 
     setSelectedFiles((prevFiles) => {
       const fileNames = new Set(prevFiles.map((f) => f.name));
@@ -97,24 +155,58 @@ export default function CreateAssessmentPage() {
     e.target.value = "";
   };
 
-  // Handle form submission
+  const addQuestion = () => {
+    append({
+      type: "mcq",
+      question: "",
+      options: ["", "", "", ""],
+      correctAnswer: "",
+      id: Date.now(),
+    });
+  };
+
+  const removeQuestion = (index) => {
+    if (fields.length <= 1) return;
+    remove(index);
+  };
+
+  const moveQuestion = (index, direction) => {
+    if (
+      (direction === "up" && index === 0) ||
+      (direction === "down" && index === fields.length - 1)
+    ) {
+      return;
+    }
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    move(index, newIndex);
+  };
+
+  const addOption = (questionIndex) => {
+    const currentOptions =
+      form.getValues(`questions.${questionIndex}.options`) || [];
+    form.setValue(`questions.${questionIndex}.options`, [
+      ...currentOptions,
+      "",
+    ]);
+  };
+
+  const removeOption = (questionIndex, optionIndex) => {
+    const currentOptions =
+      form.getValues(`questions.${questionIndex}.options`) || [];
+    if (currentOptions.length <= 2) return;
+
+    const newOptions = [...currentOptions];
+    newOptions.splice(optionIndex, 1);
+    form.setValue(`questions.${questionIndex}.options`, newOptions);
+  };
+
   const onSubmit = (data) => {
-    // Combine form data with files
-    const formData = {
+    const finalFormData = {
       ...data,
       files: selectedFiles,
     };
-
-    console.log("Form submitted:", formData);
-    // Here you would typically send the data to your API
-  };
-
-  // Handle option changes for MCQ
-  const handleOptionChange = (index, value) => {
-    const currentOptions = form.getValues("options") || ["", "", "", ""];
-    const newOptions = [...currentOptions];
-    newOptions[index] = value;
-    form.setValue("options", newOptions, { shouldValidate: true });
+    console.log("Form submitted:", finalFormData);
+    // Here you would typically send the data to your backend
   };
 
   return (
@@ -150,7 +242,7 @@ export default function CreateAssessmentPage() {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter Assessment description and instructions"
+                      placeholder="Enter description and instructions"
                       {...field}
                     />
                   </FormControl>
@@ -167,11 +259,32 @@ export default function CreateAssessmentPage() {
               name="chapter"
               render={({ field }) => (
                 <FormItem>
+                  <FormLabel>Course</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="chapter1">Course 1</SelectItem>
+                      <SelectItem value="chapter2">Course 2</SelectItem>
+                      <SelectItem value="chapter3">Course 3</SelectItem>
+                      <SelectItem value="chapter4">Course 4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="chapter"
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>Chapter</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a chapter" />
@@ -195,10 +308,7 @@ export default function CreateAssessmentPage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Lesson</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a lesson" />
@@ -217,164 +327,308 @@ export default function CreateAssessmentPage() {
             />
           </div>
 
-          {/* Assessment Type Selection */}
-          <FormField
-            control={form.control}
-            name="assessmentType"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Assessment Type</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="truefalse" />
-                      </FormControl>
-                      <FormLabel className="font-normal">True/False</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
-                      <FormControl>
-                        <RadioGroupItem value="mcq" />
-                      </FormControl>
-                      <FormLabel className="font-normal">
-                        Multiple Choice
-                      </FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Questions Section */}
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Questions</h3>
+              <Button
+                type="button"
+                onClick={addQuestion}
+                variant="outline"
+                className="flex items-center gap-1"
+              >
+                <Plus size={16} /> Add Question
+              </Button>
+            </div>
 
-          {/* Question Editor */}
-          <FormField
-            control={form.control}
-            name="question"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Question</FormLabel>
-                <FormControl>
-                  <div className="border rounded-md">
-                    <JoditEditor
-                      value={field.value}
-                      config={editorConfig}
-                      onBlur={field.onChange}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Conditional Answer Fields */}
-          {assessmentType === "truefalse" && (
-            <FormField
-              control={form.control}
-              name="correctAnswer"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Correct Answer</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex space-x-4"
-                    >
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="true" />
-                        </FormControl>
-                        <FormLabel className="font-normal">True</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="false" />
-                        </FormControl>
-                        <FormLabel className="font-normal">False</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-
-          {assessmentType === "mcq" && (
-            <Card>
-              <CardContent className="pt-6">
-                <FormLabel className="mb-4 block">Answer Options</FormLabel>
-                <div className="space-y-4">
-                  {[0, 1, 2, 3].map((index) => (
-                    <div
-                      key={index}
-                      className="grid grid-cols-[auto_1fr] gap-4 items-center"
-                    >
-                      <RadioGroup
-                        value={form.getValues("correctAnswer")}
-                        onValueChange={(value) =>
-                          form.setValue("correctAnswer", value)
-                        }
-                        className="flex"
+            {fields.map((question, questionIndex) => (
+              <Card key={question.id} className="relative">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-base">
+                      Question {questionIndex + 1}
+                    </CardTitle>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveQuestion(questionIndex, "up")}
+                        disabled={questionIndex === 0}
+                        className="h-8 w-8 p-0"
                       >
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value={index.toString()} />
-                          </FormControl>
-                        </FormItem>
-                      </RadioGroup>
-                      <div className="border rounded-md">
-                        <JoditEditor
-                          value={(form.getValues("options") || [])[index] || ""}
-                          config={{ ...editorConfig, height: 100 }}
-                          onBlur={(content) =>
-                            handleOptionChange(index, content)
-                          }
-                        />
-                      </div>
+                        <ChevronUp size={16} />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => moveQuestion(questionIndex, "down")}
+                        disabled={questionIndex === fields.length - 1}
+                        className="h-8 w-8 p-0"
+                      >
+                        <ChevronDown size={16} />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeQuestion(questionIndex)}
+                        disabled={fields.length <= 1}
+                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Question Type */}
+                  <FormField
+                    control={form.control}
+                    name={`questions.${questionIndex}.type`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Question Type</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="mcq">Multiple Choice</SelectItem>
+                            <SelectItem value="truefalse">
+                              True/False
+                            </SelectItem>
+                            <SelectItem value="qa">
+                              Question & Answer
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-          /* PDF and DOC Upload Section */}
-                <div className="space-y-4 mt-6">
-                <Label htmlFor="fileUpload">Upload PDF(s) or DOC(s)</Label>
-                <Input
-                  id="fileUpload"
-                  type="file"
-                  accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  multiple
-                  onChange={handleFileChange}
-                  className="bg-gray-50"
-                />
+                  {/* Question Content */}
+                  <FormField
+                    control={form.control}
+                    name={`questions.${questionIndex}.question`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Question</FormLabel>
+                        <FormControl>
+                          <div className="border rounded-md">
+                            <JoditEditor
+                              value={field.value}
+                              config={editorConfig}
+                              onBlur={field.onChange}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {selectedFiles.length > 0 && (
-                  <ul className="text-sm text-green-600 space-y-1 mt-2">
-                  {selectedFiles.map((file, index) => (
-                    <li key={index}>📄 {file.name}</li>
-                  ))}
-                  </ul>
-                )}
-                </div>
+                  {/* Question-specific answer fields */}
+                  {form.watch(`questions.${questionIndex}.type`) ===
+                    "truefalse" && (
+                    <FormField
+                      control={form.control}
+                      name={`questions.${questionIndex}.correctAnswer`}
+                      render={({ field }) => (
+                        <FormItem className="space-y-3">
+                          <FormLabel>Correct Answer</FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              value={field.value}
+                              className="flex space-x-4"
+                            >
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem
+                                  value="true"
+                                  id={`true-${question.id}`}
+                                />
+                                <Label
+                                  htmlFor={`true-${question.id}`}
+                                  className="font-normal"
+                                >
+                                  True
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem
+                                  value="false"
+                                  id={`false-${question.id}`}
+                                />
+                                <Label
+                                  htmlFor={`false-${question.id}`}
+                                  className="font-normal"
+                                >
+                                  False
+                                </Label>
+                              </div>
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
-                {/* Action Buttons */}
-          <div className="flex space-x-2 pt-4">
-            <Button type="submit" className="bg-green-500 hover:bg-green-600">
-              Save Assessment
-            </Button>
-            <Button type="button" variant="secondary">
-              Back
-            </Button>
+                  {form.watch(`questions.${questionIndex}.type`) === "mcq" && (
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <Label>Answer Options</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addOption(questionIndex)}
+                          className="h-7 text-xs"
+                        >
+                          Add Option
+                        </Button>
+                      </div>
+                      <div className="space-y-3">
+                        {form
+                          .watch(`questions.${questionIndex}.options`)
+                          ?.map((option, optionIndex) => (
+                            <div
+                              key={optionIndex}
+                              className="flex items-center gap-3"
+                            >
+                              <FormField
+                                control={form.control}
+                                name={`questions.${questionIndex}.correctAnswer`}
+                                render={({ field }) => (
+                                  <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                      <RadioGroup
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        className="flex"
+                                      >
+                                        <div className="flex items-center space-x-2">
+                                          <RadioGroupItem
+                                            value={optionIndex.toString()}
+                                            id={`option-${question.id}-${optionIndex}`}
+                                          />
+                                        </div>
+                                      </RadioGroup>
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name={`questions.${questionIndex}.options.${optionIndex}`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1 space-y-0">
+                                    <FormControl>
+                                      <Input
+                                        placeholder={`Option ${
+                                          optionIndex + 1
+                                        }`}
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  removeOption(questionIndex, optionIndex)
+                                }
+                                disabled={
+                                  form.watch(
+                                    `questions.${questionIndex}.options`
+                                  ).length <= 2
+                                }
+                                className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                              >
+                                <Trash2 size={16} />
+                              </Button>
+                            </div>
+                          ))}
+                      </div>
+                      <FormMessage>
+                        {
+                          form.formState.errors.questions?.[questionIndex]
+                            ?.options?.message
+                        }
+                      </FormMessage>
+                    </div>
+                  )}
+
+                  {form.watch(`questions.${questionIndex}.type`) === "qa" && (
+                    <FormField
+                      control={form.control}
+                      name={`questions.${questionIndex}.correctAnswer`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Model Answer (for teacher reference)
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Enter the expected answer"
+                              {...field}
+                              rows={4}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+            {form.formState.errors.questions?.message && (
+              <p className="text-sm font-medium text-destructive">
+                {form.formState.errors.questions.message}
+              </p>
+            )}
           </div>
+
+          {/* PDF and DOC Upload Section */}
+          <div className="space-y-4 mt-6">
+            <Label htmlFor="fileUpload">Upload PDF or DOC files</Label>
+            <Input
+              id="fileUpload"
+              type="file"
+              accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              multiple
+              onChange={handleFileChange}
+            />
+            {selectedFiles.length > 0 && (
+              <div>
+                <Label>Selected Files:</Label>
+                <ul className="text-sm text-gray-700 mt-2 space-y-1">
+                  {selectedFiles.map((file, index) => (
+                    <li key={index} className="flex items-center">
+                      <span className="truncate">{file.name}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <Button type="submit" className="mt-6">
+            Submit Assessment
+          </Button>
         </form>
       </Form>
     </div>
