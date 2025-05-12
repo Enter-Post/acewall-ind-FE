@@ -125,19 +125,33 @@ export default function CoursesBasis() {
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
-    console.log(file);
+    if (!file) return;
 
-    setValue("thumbnail", file);
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setThumbnailPreview(reader.result); // This will be the Base64 image data
-      };
-
-      reader.readAsDataURL(file); // Read file as Base64 URL
+    // ✅ Validate MIME type for JPEG and PNG only
+    const allowedTypes = ["image/jpeg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPEG and PNG image files are allowed.");
+      return;
     }
+
+    // ✅ Validate file size (max 2MB)
+    const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSizeInBytes) {
+      alert("Image size must be less than 2MB.");
+      return;
+    }
+
+    // ✅ Set file in form state
+    setValue("thumbnail", file);
+
+    // ✅ Preview image
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setThumbnailPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
+
 
   const onSubmit = async (data) => {
     console.log(data.thumbnail, "thumbnail");
@@ -179,11 +193,13 @@ export default function CoursesBasis() {
               <Label htmlFor="thumbnail" className="block mb-2">
                 Thumbnail
               </Label>
+
               {errors?.thumbnail && (
                 <p className="text-xs text-red-600">
                   {errors.thumbnail.message}
                 </p>
               )}
+
               <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
                 {thumbnailPreview ? (
                   <div className="relative">
@@ -198,26 +214,27 @@ export default function CoursesBasis() {
                         variant="secondary"
                         size="sm"
                         className="bg-white hover:bg-gray-100 text-red-500"
-                        onClick={() => setThumbnailPreview(null)}
+                        onClick={() => {
+                          setThumbnailPreview(null);
+                          setValue("thumbnail", null); // Reset form value
+                        }}
                       >
                         Remove
                       </Button>
                     </div>
                   </div>
                 ) : loading ? (
-                  <div>
-                    <section className="flex justify-center items-center">
-                      <Loader size={48} className={"animate-spin"} />
-                    </section>
-                  </div>
+                  <section className="flex justify-center items-center h-[300px]">
+                    <Loader size={48} className="animate-spin" />
+                  </section>
                 ) : (
                   <div className="flex items-center justify-center h-[300px]">
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg, image/png"
                       className="hidden"
                       id="thumbnailInput"
-                      onChange={(e) => handleThumbnailChange(e)}
+                      onChange={handleThumbnailChange}
                     />
                     <label htmlFor="thumbnailInput">
                       <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
@@ -229,6 +246,7 @@ export default function CoursesBasis() {
                 )}
               </div>
             </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -303,7 +321,7 @@ export default function CoursesBasis() {
 
           <div className="mb-8">
             <h3 className="text-lg font-medium mb-4">
-              What you will teach in this course
+              What you will teach in this course <span className="text-gray-500 text-xs">(max 6)</span>
             </h3>
 
             {teachingPointsFields.map((field, index) => (
@@ -313,7 +331,7 @@ export default function CoursesBasis() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <div className=" flex flex-2 gap-2 w-[100%]">
+                <div className="flex flex-2 gap-2 w-[100%]">
                   <Input
                     {...register(`teachingPoints.${index}.value`)}
                     placeholder="What you will teach in this course... "
@@ -336,9 +354,8 @@ export default function CoursesBasis() {
 
                 <input
                   type="text"
-                  value={`${
-                    watch(`teachingPoints.${index}.value`)?.length || 0
-                  }/120`}
+                  value={`${watch(`teachingPoints.${index}.value`)?.length || 0
+                    }/120`}
                   readOnly
                   className="text-sm text-gray-500 bg-transparent border-none"
                 />
@@ -354,8 +371,9 @@ export default function CoursesBasis() {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => appendTeachingPoint({ value: "" })}
+              onClick={() => teachingPointsFields.length < 6 && appendTeachingPoint({ value: "" })}
               className="mt-2"
+              disabled={teachingPointsFields.length >= 6} // Disable if there are 6 items
             >
               Add Teaching Point
             </Button>
@@ -368,7 +386,7 @@ export default function CoursesBasis() {
           </div>
 
           <div className="mt-8">
-            <h3 className="text-lg font-medium mb-4">Course Requirements</h3>
+            <h3 className="text-lg font-medium mb-4">Course Requirements <span className="text-gray-500 text-xs">(max 6)</span></h3>
 
             {requirementsFields.map((field, index) => (
               <div key={field.id} className="mb-4">
@@ -397,6 +415,7 @@ export default function CoursesBasis() {
                     </Button>
                   )}
                 </div>
+
                 {errors.requirements?.[index]?.value && (
                   <p className="text-xs text-red-500 mt-1">
                     {errors.requirements[index]?.value?.message}
@@ -409,8 +428,9 @@ export default function CoursesBasis() {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => appendRequirement({ value: "" })}
+              onClick={() => requirementsFields.length < 6 && appendRequirement({ value: "" })}
               className="mt-2"
+              disabled={requirementsFields.length >= 6} // Disable if there are 6 items
             >
               Add Requirement
             </Button>
@@ -421,6 +441,7 @@ export default function CoursesBasis() {
               </p>
             )}
           </div>
+
         </section>
 
         <div className="flex justify-end gap-4 mt-10">
