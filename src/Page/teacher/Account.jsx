@@ -16,8 +16,8 @@ const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   middleName: z.string().optional(),
   lastName: z.string().min(1, "Last name is required"),
-  Bio: z.string().min(1, "write your bio").max(200, "write your bio"),
-  pronoun: z.string().optional(),
+  Bio: z.string().min(1, "write your bio").max(300, "write your bio"),
+  pronouns: z.string().optional(),
   gender: z.string().optional(),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
@@ -61,7 +61,7 @@ const Account = () => {
       firstName: "",
       middleName: "",
       lastName: "",
-      pronoun: "",
+      pronouns: "",
       gender: "",
       email: "",
       phone: "",
@@ -81,17 +81,32 @@ const Account = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log(file);
+    if (!file) return;
 
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewImage(reader.result); // Set the preview image
-      };
-      reader.readAsDataURL(file);
+    // Validate MIME type
+    if (!file.type.startsWith("image/")) {
+      alert("Only image files are allowed.");
+      return;
     }
+
+    // ✅ Validate file size (limit to 1MB)
+    const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSizeInBytes) {
+      alert("Image size must be less than 1MB.");
+      return;
+    }
+
+    setSelectedImage(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewImage(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
+
+
+
 
   const handleDocumentChange = (e, index) => {
     const files = Array.from(e.target.files); // Convert FileList to an array
@@ -104,7 +119,7 @@ const Account = () => {
     setValue("middleName", user.middleName || "");
     setValue("lastName", user.lastName || "");
     setValue("Bio", user.Bio || "");
-    setValue("pronoun", user.pronouns || "");
+    setValue("pronouns", user.pronouns || "");
     setValue("gender", user.gender || "");
     setValue("email", user.email || "");
     setValue("phone", user.phone || "");
@@ -121,7 +136,7 @@ const Account = () => {
     formData.append("middleName", data.middleName);
     formData.append("lastName", data.lastName);
     formData.append("Bio", data.Bio);
-    formData.append("pronoun", data.pronoun);
+    formData.append("pronouns", data.pronouns);
     formData.append("gender", data.gender);
     formData.append("email", data.email);
     formData.append("phone", data.phone);
@@ -173,7 +188,7 @@ const Account = () => {
               className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover"
             />
             <div className="text-center md:text-left"> {/* Center text on smaller screens */}
-            <Label htmlFor="profileImg" className="block">
+              <Label htmlFor="profileImg" className="block">
                 Upload New Image
               </Label>
               <Input
@@ -245,15 +260,20 @@ const Account = () => {
                 id="Bio"
                 rows={5}
                 placeholder="Write a short Bio..."
+                maxLength={300} 
                 {...register("Bio")}
               />
-              {errors.Bio && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.Bio.message}
-                </p>
-              )}
+
+              {/* Character count */}
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{watch("Bio")?.length || 0}/300 characters</span>
+                {errors.Bio && (
+                  <span className="text-red-500">{errors.Bio.message}</span>
+                )}
+              </div>
             </div>
           </section>
+
           {/* Pronouns & Gender Selection */}
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Identity Information</h3>
@@ -265,23 +285,23 @@ const Account = () => {
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
                   {["He/Him", "She/Her", "They/Them", "Others"].map(
-                    (pronoun) => (
+                    (pronouns) => (
                       <div
-                        key={pronoun}
+                        key={pronouns}
                         className="flex items-center space-x-2"
                       >
                         <input
                           type="radio"
-                          id={`pronoun-${pronoun.toLowerCase()}`}
-                          value={pronoun.toLowerCase()}
-                          {...register("pronoun")}
+                          id={`pronouns-${pronouns.toLowerCase()}`}
+                          value={pronouns.toLowerCase()}
+                          {...register("pronouns")}
                           className="w-4 h-4 accent-blue-600"
                         />
                         <label
-                          htmlFor={`pronoun-${pronoun.toLowerCase()}`}
+                          htmlFor={`pronouns-${pronouns.toLowerCase()}`}
                           className="text-sm text-gray-900 dark:text-white"
                         >
-                          {pronoun}
+                          {pronouns}
                         </label>
                       </div>
                     )

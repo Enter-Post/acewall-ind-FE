@@ -34,14 +34,14 @@ export function AssessmentUploadDialog() {
   return (
     <Dialog open={showNewDialog} onOpenChange={setShowNewDialog}>
       <DialogTrigger asChild>
-      <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-green-600 flex items-center gap-1"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Assessment
-                </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-green-600 flex items-center gap-1"
+        >
+          <Plus className="h-4 w-4" />
+          Add Assessment
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -118,7 +118,7 @@ export function AssessmentUploadDialog() {
             </div>
 
             <div className="items-center gap-2">
-            <Label htmlFor="file">File</Label>
+              <Label htmlFor="file">File</Label>
               <Input
                 id="file"
                 type="file"

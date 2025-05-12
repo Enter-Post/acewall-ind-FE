@@ -12,32 +12,30 @@ import { Button } from "@/components/ui/button";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 import LoadingLoader from "../LoadingLoader";
-import { Loader } from "lucide-react";
+import { Loader, Trash2 } from "lucide-react";
 
-export function ChapterDeleteConfirmationModal({ chapterID, fetchChapters }) {
+export function DeleteModal({
+  chapterID,
+  deleteFunc
+}) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleDeleteChapter = () => {
-    setLoading(true);
-    axiosInstance
-      .delete(`chapter/${chapterID}`)
-      .then((res) => {
-        setLoading(false);
-        toast.success(res.data.message);
-        fetchChapters();
-      })
-      .catch((err) => {
-        setLoading(false);
-        console.log(err);
-        toast.error(err.response.data.message);
-      });
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete chapter</Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 text-gray-500 hover:text-red-600"
+          onClick={(e) => {
+            e.stopPropagation();
+            /* Open delete confirmation */
+          }}
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          <span className="sr-only">Delete</span>
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -50,7 +48,7 @@ export function ChapterDeleteConfirmationModal({ chapterID, fetchChapters }) {
           <Button variant="ghost" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={handleDeleteChapter}>
+          <Button variant="destructive" onClick={deleteFunc}>
             {loading ? <Loader className="animate-spin" /> : "Confirm Delete"}
           </Button>
         </DialogFooter>

@@ -25,7 +25,11 @@ const chapterSchema = z.object({
   description: z.string().min(5, "Chapter description is required"),
 });
 
-export default function ChapterCreationModal({ courseId, setChapters }) {
+export default function ChapterCreationModal({
+  courseId,
+  setChapters,
+  fetchCourseDetail,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const { course, setCourse } = useContext(CourseContext);
 
@@ -52,9 +56,10 @@ export default function ChapterCreationModal({ courseId, setChapters }) {
     await axiosInstance
       .post(`/chapter/create/${courseId}`, formdata)
       .then((res) => {
-        console.log(res);
         toast.success(res.data.message);
-        setChapters((prev) => [...prev, res.data.chapter]);
+        // setChapters((prev) => [...prev, res.data.chapter]);
+        fetchCourseDetail();
+        setIsOpen(false);
       })
       .catch((err) => {
         console.log(err);
@@ -62,7 +67,7 @@ export default function ChapterCreationModal({ courseId, setChapters }) {
       });
 
     reset();
-    setIsOpen(false);
+    // setIsOpen(false);
   };
 
   return (

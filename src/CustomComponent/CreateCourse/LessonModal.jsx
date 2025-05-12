@@ -17,9 +17,12 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 const fileInstance = z
   .instanceof(File)
@@ -28,14 +31,51 @@ const fileInstance = z
   });
 
 const lessonSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
-  description: z.string().min(5, "Description must be at least 5 characters"),
-  youtubeLinks: z.string().optional(),
-  otherLink: z.string().optional(),
-  pdfFiles: z.array(fileInstance).optional(),
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(100, "Title must be less than 100 characters"),
+
+  description: z
+    .string()
+    .min(5, "Description must be at least 5 characters")
+    .max(200, "Description must be less than 200 characters"),
+
+ youtubeLinks: z
+    .string()
+    .trim()
+    .transform((val) => (val === "" ? undefined : val))
+    .optional()
+    .refine(
+      (val) =>
+        !val ||
+        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(val),
+      {
+        message: "Must be a valid YouTube link",
+      }
+    ),
+  otherLink: z
+    .string()
+    .trim()
+    .transform((val) => (val === "" ? undefined : val))
+    .optional()
+    .refine((val) => !val || /^https?:\/\/.+$/.test(val), {
+      message: "Must be a valid URL",
+    }),
+
+  pdfFiles: z
+    .array(fileInstance)
+    .optional()
+    .refine(
+      (arr) =>
+        arr.every(
+          (file) => file instanceof File && file.size <= 5 * 1024 * 1024
+        ),
+      { message: "All uploaded files must be PDF files and less than 5MB" }
+    ),
 });
 
-const LessonModal = ({ chapterID }) => {
+const LessonModal = ({ chapterID, fetchCourseDetail }) => {
   const [open, setOpen] = useState(false);
 
   const {
@@ -56,14 +96,20 @@ const LessonModal = ({ chapterID }) => {
   });
 
   const handleLessonPDFChange = (e) => {
-    const filesArray = Array.from(e.target.files);
-    setValue("pdfFiles", filesArray);
-    console.log(filesArray);
+    const filesArray = Array.from(e.target.files || []);
+    setValue("pdfFiles", filesArray, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   console.log(errors, "errors");
 
   const onSubmit = async (data) => {
+    if (!data.youtubeLinks) data.youtubeLinks = undefined;
+    if (!data.otherLink) data.otherLink = undefined;
+    console.log(data, "Lesson Data");
+    console.log(data.otherLink, "otherLink");
     const formData = new FormData();
 
     formData.append("title", data.title);
@@ -75,29 +121,46 @@ const LessonModal = ({ chapterID }) => {
       formData.append("pdfFiles", file);
     });
 
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value} form data`);
+    }
+
     await axiosInstance
       .post(`/lesson/create`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
         console.log(res);
+        fetchCourseDetail();
+        setOpen(false);
+        toast.success(res.data.message);
+        reset();
       })
       .catch((err) => {
         console.log(err);
+        toast.error(err.response.data.message);
       });
-
-    reset();
-    setOpen(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Add New Lesson</Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50 ml-auto"
+        >
+          <Plus className="h-4 w-4" />
+          Add Lesson
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] h-[80dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Lesson</DialogTitle>
+          <DialogDescription>
+            Fill in the lesson details below. You can leave optional fields
+            empty.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -135,6 +198,11 @@ const LessonModal = ({ chapterID }) => {
               placeholder="YouTube URLs"
               {...register("youtubeLinks")}
             />
+            {errors.youtubeLinks && (
+              <p className="text-red-500 text-sm">
+                {errors.youtubeLinks.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -144,6 +212,9 @@ const LessonModal = ({ chapterID }) => {
               placeholder="Other URLs"
               {...register("otherLink")}
             />
+            {errors.otherLink && (
+              <p className="text-red-500 text-sm">{errors.otherLink.message}</p>
+            )}
           </div>
 
           <div>
@@ -153,17 +224,23 @@ const LessonModal = ({ chapterID }) => {
               type="file"
               multiple
               accept="application/pdf"
-              onChange={(e) => handleLessonPDFChange(e)}
+              onChange={handleLessonPDFChange}
             />
+            {errors.pdfFiles && (
+              <p className="text-red-500 text-sm">
+                {errors?.pdfFiles?.message}
+              </p>
+            )}
           </div>
-          {errors.pdfFiles && (
-            <p className="text-red-500 text-sm">{errors.pdfFiles.message}</p>
-          )}
+
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                reset();
+              }}
             >
               Cancel
             </Button>

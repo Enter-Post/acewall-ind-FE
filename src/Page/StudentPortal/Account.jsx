@@ -17,7 +17,7 @@ const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   middleName: z.string().optional(),
   lastName: z.string().min(1, "Last name is required"),
-  pronoun: z.string().optional(),
+  pronouns: z.string().optional(),
   gender: z.string().optional(),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
@@ -45,7 +45,7 @@ const Account = () => {
       firstName: "",
       middleName: "",
       lastName: "",
-      pronoun: "",
+      pronouns: "",
       gender: "",
       email: "",
       phone: "",
@@ -59,7 +59,7 @@ const Account = () => {
     setValue("firstName", user.firstName || "");
     setValue("middleName", user.middleName || "");
     setValue("lastName", user.lastName || "");
-    setValue("pronoun", user.pronouns || "");
+    setValue("pronouns", user.pronouns || "");
     setValue("gender", user.gender || "");
     setValue("email", user.email || "");
     setValue("phone", user.phone || "");
@@ -70,15 +70,30 @@ const Account = () => {
   // Handle image change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewImage(reader.result); // Set the preview image
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // Validate MIME type
+    if (!file.type.startsWith("image/")) {
+      alert("Only image files are allowed.");
+      return;
     }
+
+    // ✅ Validate file size (limit to 1MB)
+    const maxSizeInBytes = 1 * 1024 * 1024; // 1MB
+    if (file.size > maxSizeInBytes) {
+      alert("Image size must be less than 1MB.");
+      return;
+    }
+
+    setSelectedImage(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewImage(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
+
 
   // Form submission handler
   const onSubmit = async (data) => {
@@ -86,7 +101,7 @@ const Account = () => {
     formData.append("firstName", data.firstName);
     formData.append("middleName", data.middleName);
     formData.append("lastName", data.lastName);
-    formData.append("pronoun", data.pronoun);
+    formData.append("pronouns", data.pronouns);
     formData.append("gender", data.gender);
     formData.append("email", data.email);
     formData.append("phone", data.phone);
@@ -209,29 +224,63 @@ const Account = () => {
                 <Label className="block text-sm font-medium text-gray-900 dark:text-white">
                   Preferred Pronouns
                 </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others"].map(
-                    (pronoun) => (
-                      <div
-                        key={pronoun}
-                        className="flex items-center space-x-2"
-                      >
-                        <input
-                          type="radio"
-                          id={`pronoun-${pronoun.toLowerCase()}`}
-                          value={pronoun.toLowerCase()}
-                          {...register("pronoun")}
-                          className="w-4 h-4 accent-blue-600"
-                        />
-                        <label
-                          htmlFor={`pronoun-${pronoun.toLowerCase()}`}
-                          className="text-sm text-gray-900 dark:text-white"
-                        >
-                          {pronoun}
-                        </label>
-                      </div>
-                    )
-                  )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Pronouns */}
+                  <div className="space-y-2">
+                    <Label className="block text-sm font-medium text-gray-900 dark:text-white">
+                      Preferred Pronouns
+                    </Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {["He/Him", "She/Her", "They/Them", "Others"].map(
+                        (pronouns) => (
+                          <div
+                            key={pronouns}
+                            className="flex items-center space-x-2"
+                          >
+                            <input
+                              type="radio"
+                              id={`pronouns-${pronouns.toLowerCase()}`}
+                              value={pronouns.toLowerCase()}
+                              {...register("pronouns")}
+                              className="w-4 h-4 accent-blue-600"
+                            />
+                            <label
+                              htmlFor={`pronouns-${pronouns.toLowerCase()}`}
+                              className="text-sm text-gray-900 dark:text-white"
+                            >
+                              {pronouns}
+                            </label>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Gender */}
+                  <div className="space-y-2">
+                    <Label className="block text-sm font-medium text-gray-900 dark:text-white">
+                      Gender Identity
+                    </Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      {["Male", "Female", "Non-binary", "Other"].map((gender) => (
+                        <div key={gender} className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id={`gender-${gender.toLowerCase()}`}
+                            value={gender.toLowerCase()}
+                            {...register("gender")}
+                            className="w-4 h-4 accent-blue-600"
+                          />
+                          <label
+                            htmlFor={`gender-${gender.toLowerCase()}`}
+                            className="text-sm text-gray-900 dark:text-white"
+                          >
+                            {gender}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 

@@ -27,7 +27,6 @@ export default function TeacherCourseDetails() {
   const [open, setOpen] = useState(false);
   const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
   const [loadingChapters, setLoadingChapters] = useState(true);
-  const [chapters, setChapters] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
@@ -40,19 +39,20 @@ export default function TeacherCourseDetails() {
     }));
   };
 
+  const fetchCourseDetail = async () => {
+    await axiosInstance
+      .get(`course/details/${id}`)
+      .then((res) => {
+        setCourse(res.data.course);
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // Set the course data in state
+  };
+
   useEffect(() => {
-    const fetchCourseDetail = async () => {
-      await axiosInstance
-        .get(`course/get/${id}`)
-        .then((res) => {
-          setCourse(res.data.course);
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      // Set the course data in state
-    };
     fetchCourseDetail();
   }, [id]); // Added id as a dependency to refetch when the id changes
 
@@ -158,14 +158,17 @@ export default function TeacherCourseDetails() {
         </div>
 
         <section>
-          <ChapterCreationModal courseId={id} setChapters={setChapters} />
+          <ChapterCreationModal
+            courseId={id}
+            fetchCourseDetail={fetchCourseDetail}
+          />
         </section>
 
         {/* chapter detail */}
         <ChapterDetail
           courseId={id}
-          chapters={chapters}
-          setChapters={setChapters}
+          chapters={course.chapters}
+          fetchCourseDetail={fetchCourseDetail}
         />
 
         {/* Rating */}
