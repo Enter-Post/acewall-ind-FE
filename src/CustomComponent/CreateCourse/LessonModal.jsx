@@ -223,7 +223,7 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
               id="lessonPdf"
               type="file"
               multiple
-              accept="application/pdf"
+              accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               onChange={handleLessonPDFChange}
             />
             {errors.pdfFiles && (

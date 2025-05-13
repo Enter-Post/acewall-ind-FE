@@ -106,6 +106,7 @@ export default function TeacherCourseDetails() {
               <DeleteCourseModal
                 confirmOpen={confirmOpen}
                 setConfirmOpen={setConfirmOpen}
+                fetchCourseDetail={fetchCourseDetail}
                 id={id}
                 setSuccessOpen={setSuccessOpen}
               />

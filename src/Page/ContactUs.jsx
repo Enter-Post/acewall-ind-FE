@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Facebook, Twitter, Instagram, Youtube } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ContactUs() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function ContactUs() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!captchaValue) {
-      alert("Please verify that you are not a robot");
+      toast.error("Please verify that you are not a robot");
       return;
     }
 

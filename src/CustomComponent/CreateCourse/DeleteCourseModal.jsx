@@ -10,14 +10,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { toast } from "sonner";
 
 const DeleteCourseModal = ({
   confirmOpen,
   setConfirmOpen,
   id,
   setSuccessOpen,
+  fetchCourseDetail,
 }) => {
-  const handleDeleteCourse = async () => {
+  const handleDeleteCourse = async ({ fetchCourseDetail }) => {
     try {
       await axiosInstance.delete(`/course/delete/${id}`);
       setConfirmOpen(false);
@@ -27,10 +29,11 @@ const DeleteCourseModal = ({
       setTimeout(() => {
         setSuccessOpen(false);
         window.location.href = "/teacher/courses";
+        fetchCourseDetail();
       }, 2000);
     } catch (error) {
       console.error("Error deleting course:", error);
-      alert("Failed to delete course.");
+      toast.error("Failed to delete course.");
     }
   };
 
