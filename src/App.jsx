@@ -159,7 +159,7 @@ function App() {
             {/* <Route path="messages" element={<TeacherMessages />} /> */}
             <Route path="assignment">
               <Route index element={<TeacherrAssessment />} />
-              <Route path="create" element={<CreateAssessmentPage />} />
+              <Route path="create/:type/:id" element={<CreateAssessmentPage />} />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
@@ -17,10 +17,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { CourseContext } from "@/Context/CoursesProvider";
 import CategorySelect from "@/CustomComponent/CreateCourse/CategorySelect";
-import axios from "axios";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
+import SubCategorySelect from "@/CustomComponent/CreateCourse/subCategorySelect";
 
 // Define the form schema with Zod
 
@@ -30,15 +30,19 @@ const courseFormSchema = z.object({
     .refine((file) => file instanceof File, {
       message: "Thumbnail is required",
     })
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
+    .refine((file) => !!file && file.size <= 5 * 1024 * 1024, {
       message: "File size must be less than 5MB",
     }),
+
   courseTitle: z
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
     .max(100, { message: "Course title must be less than 100 characters" }),
   category: z.string({
     required_error: "Please select a category",
+  }),
+  subcategory: z.string({
+    required_error: "Please select a subcategory",
   }),
   language: z.string({
     required_error: "Please select a language",
@@ -77,11 +81,40 @@ export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [description, setDescription] = useState("");
+
   const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
-  // Initialize the form with React Hook Form
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedsubCategory, setSubSelectedCategory] = useState("");
 
-  // console.log(thumbnail, "thumbnail");
+
+  useEffect(() => {
+    axiosInstance.get("subcategory/get")
+      .then(res => {
+        console.log("subcategroy", res.data);
+      })
+      .catch(err => {
+        console.error("Failed to fetch categories:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    axiosInstance.get("category/get")
+      .then(res => {
+        console.log("category", res.data);
+      })
+      .catch(err => {
+        console.error("Failed to fetch categories:", err);
+      });
+  }, []);
+
+
+
+
+  useEffect(() => {
+    setDescription(watch("courseDescription") || "");
+  }, []);
 
   const {
     register,
@@ -95,6 +128,7 @@ export default function CoursesBasis() {
     defaultValues: {
       courseTitle: "",
       category: "",
+      subcategory: "",
       language: "",
       courseDescription: "",
       teachingPoints: [{ value: "" }],
@@ -154,13 +188,13 @@ export default function CoursesBasis() {
 
 
   const onSubmit = async (data) => {
-    console.log(data.thumbnail, "thumbnail");
     const formData = new FormData();
     setLoading(true);
 
     formData.append("thumbnail", data.thumbnail);
     formData.append("courseTitle", data.courseTitle);
     formData.append("category", data.category);
+    formData.append("subcategory", data.subcategory);
     formData.append("language", data.language);
     formData.append("courseDescription", data.courseDescription);
     formData.append("teachingPoints", JSON.stringify(data.teachingPoints));
@@ -193,9 +227,10 @@ export default function CoursesBasis() {
               <Label htmlFor="thumbnail" className="block mb-2">
                 Thumbnail
               </Label>
-
+              <div className={` p-1 w-full max-w-md ${errors.thumbnail ? "border-red-500" : "border-gray-300"
+                }`}></div>
               {errors?.thumbnail && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-red-500 mt-1">
                   {errors.thumbnail.message}
                 </p>
               )}
@@ -255,7 +290,7 @@ export default function CoursesBasis() {
                 </Label>
                 <Input
                   id="courseTitle"
-                  className="bg-gray-50"
+                  className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""}`}
                   {...register("courseTitle")}
                 />
                 {errors.courseTitle && (
@@ -266,7 +301,17 @@ export default function CoursesBasis() {
               </div>
 
               {/* Category */}
-              <CategorySelect register={register} errors={errors} />
+              <CategorySelect
+                register={register}
+                errors={errors}
+                onCategoryChange={(value) => setSelectedCategory(value)}
+              />
+
+              <SubCategorySelect
+                register={register}
+                errors={errors}
+                selectedCategory={selectedCategory}
+              />
             </div>
 
             <div>
@@ -304,15 +349,26 @@ export default function CoursesBasis() {
               </Label>
               <Textarea
                 id="courseDescription"
-                className="min-h-[100px] bg-gray-50"
-                {...register("courseDescription")}
+                className={`min-h-[100px] bg-gray-50  ${errors.courseTitle ? "border border-red-500" : ""}`}
+                maxLength={500}
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  setValue("courseDescription", e.target.value, {
+                    shouldValidate: true,
+                  });
+                }}
               />
+              <div className="text-sm text-gray-500 mt-1">
+                {description.length}/500 characters
+              </div>
               {errors.courseDescription && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.courseDescription.message}
                 </p>
               )}
             </div>
+
           </div>
 
           <div className="mt-10 mb-6">
@@ -335,7 +391,7 @@ export default function CoursesBasis() {
                   <Input
                     {...register(`teachingPoints.${index}.value`)}
                     placeholder="What you will teach in this course... "
-                    className="pr-16 bg-gray-50 w-full relative "
+                    className={'pr-16 bg-gray-50 w-full relative  ${errors.courseTitle ? "border border-red-500" : ""} '}
                     maxLength={120}
                   />
 
@@ -355,10 +411,10 @@ export default function CoursesBasis() {
                 <input
                   type="text"
                   value={`${watch(`teachingPoints.${index}.value`)?.length || 0
-                    }/120`}
+                    }/100`}
                   readOnly
-                  className="text-sm text-gray-500 bg-transparent border-none"
-                />
+                  className={`pr-16 bg-gray-50 w-full relative ${errors.teachingPoints?.[index]?.value ? "border border-red-500" : ""
+                    }`} />
                 {errors.teachingPoints?.[index]?.value && (
                   <p className="text-xs text-red-500 mt-1">
                     {errors.teachingPoints[index]?.value?.message}
@@ -399,8 +455,8 @@ export default function CoursesBasis() {
                   <Input
                     {...register(`requirements.${index}.value`)}
                     placeholder="What is your course requirement..."
-                    className="pr-16 bg-gray-50 w-full relative "
-                    maxLength={120}
+                    className={`pr-16 bg-gray-50 w-full relative ${errors.teachingPoints?.[index]?.value ? "border border-red-500" : ""
+                      }`} maxLength={120}
                   />
 
                   {requirementsFields.length > 1 && (
@@ -453,3 +509,4 @@ export default function CoursesBasis() {
     </div>
   );
 }
+

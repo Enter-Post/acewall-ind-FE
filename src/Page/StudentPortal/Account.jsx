@@ -96,40 +96,39 @@ const Account = () => {
 
 
   // Form submission handler
-  const onSubmit = async (data) => {
-    const formData = new FormData();
-    formData.append("firstName", data.firstName);
-    formData.append("middleName", data.middleName);
-    formData.append("lastName", data.lastName);
-    formData.append("pronouns", data.pronouns);
-    formData.append("gender", data.gender);
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-    formData.append("homeAddress", data.homeAddress);
-    formData.append("mailingAddress", data.mailingAddress);
+const onSubmit = async (data) => {
+  const formData = new FormData();
+  formData.append("firstName", data.firstName);
+  formData.append("middleName", data.middleName);
+  formData.append("lastName", data.lastName);
+  formData.append("pronouns", data.pronouns);
+  formData.append("gender", data.gender);
+  formData.append("email", data.email);
+  formData.append("phone", data.phone);
+  formData.append("homeAddress", data.homeAddress);
+  formData.append("mailingAddress", data.mailingAddress);
 
-    if (selectedImage) {
-      formData.append("profileImg", selectedImage); // Append the selected image
-    }
-    // for (let [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value} form data`);
-    // }
+  if (selectedImage) {
+    formData.append("profileImg", selectedImage); // Append the selected image
+  }
 
-    console.log(formData, "formData");
+  try {
+    // Make the PUT request to update user details
+    const response = await axiosInstance.put(`/auth/updateuser`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("Server response:", response.data);
 
-    await axiosInstance
-      .put(`/auth/updateuser`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+    // ✅ Refresh the page after successful update
+    window.location.reload();
+  } catch (error) {
+    // Handle any errors that occur during the request
+    console.error("Failed to update profile:", error);
+  }
+};
+
 
   return (
     <div className="w-full mx-auto p-4 sm:p-6 space-y-8">

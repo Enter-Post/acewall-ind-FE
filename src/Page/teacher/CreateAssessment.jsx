@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -28,6 +28,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { useParams } from "react-router-dom";
 
 // Define the form schema with Zod
 const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
@@ -39,7 +41,6 @@ const baseQuestionSchema = z.object({
   question: z
     .string()
     .min(5, { message: "Question must be at least 5 characters" }),
-  id: z.number(),
 });
 
 const mcqQuestionSchema = baseQuestionSchema.extend({
@@ -77,9 +78,6 @@ const formSchema = z.object({
   description: z
     .string()
     .min(10, { message: "Description must be at least 10 characters" }),
-  course: z.string().min(1, { message: "Please select a course" }),
-  chapter: z.string().min(1, { message: "Please select a chapter" }),
-  lesson: z.string().min(1, { message: "Please select a lesson" }),
   questions: z
     .array(questionSchema)
     .min(1, { message: "At least one question is required" }),
@@ -87,6 +85,10 @@ const formSchema = z.object({
 
 export default function CreateAssessmentPage() {
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const params = useParams();
+
   const [editorConfig] = useState({
     readonly: false,
     height: 200,
@@ -103,6 +105,7 @@ export default function CreateAssessmentPage() {
       title: "",
       description: "",
       chapter: "",
+      course: "",
       lesson: "",
       questions: [
         {
@@ -110,11 +113,16 @@ export default function CreateAssessmentPage() {
           question: "",
           options: ["", "", "", ""],
           correctAnswer: "",
-          id: Date.now(),
         },
       ],
     },
   });
+
+  const submitting = form.formState.isSubmitting;
+
+  if(submitting) {
+    toast.loading("Submitting...");
+  }
 
   console.log(form.formState.errors, "form");
 
@@ -200,13 +208,29 @@ export default function CreateAssessmentPage() {
     form.setValue(`questions.${questionIndex}.options`, newOptions);
   };
 
-  const onSubmit = (data) => {
-    const finalFormData = {
-      ...data,
-      files: selectedFiles,
-    };
-    console.log("Form submitted:", finalFormData);
-    // Here you would typically send the data to your backend
+  const onSubmit = async (data) => {
+    console.log(selectedFiles, "selectedFiles");
+    console.log("ma chal raha ho");
+
+    const formdata = new FormData();
+    formdata.append("title", data.title);
+    formdata.append("description", data.description);
+    formdata.append(params.type, params.id);
+    formdata.append("questions", JSON.stringify(data.questions));
+    selectedFiles.forEach((file) => {
+      formdata.append("files", file);
+    });
+
+    await axiosInstance
+      .post("assessment/create", formdata, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -246,81 +270,6 @@ export default function CreateAssessmentPage() {
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Chapter and Lesson Selection */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="chapter"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Course</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a course" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="chapter1">Course 1</SelectItem>
-                      <SelectItem value="chapter2">Course 2</SelectItem>
-                      <SelectItem value="chapter3">Course 3</SelectItem>
-                      <SelectItem value="chapter4">Course 4</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="chapter"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Chapter</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a chapter" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="chapter1">Chapter 1</SelectItem>
-                      <SelectItem value="chapter2">Chapter 2</SelectItem>
-                      <SelectItem value="chapter3">Chapter 3</SelectItem>
-                      <SelectItem value="chapter4">Chapter 4</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="lesson"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Lesson</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a lesson" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="lesson1">Lesson 1</SelectItem>
-                      <SelectItem value="lesson2">Lesson 2</SelectItem>
-                      <SelectItem value="lesson3">Lesson 3</SelectItem>
-                      <SelectItem value="lesson4">Lesson 4</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

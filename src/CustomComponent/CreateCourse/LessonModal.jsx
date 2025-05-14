@@ -1,15 +1,9 @@
 "use client";
 
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { CourseContext } from "@/Context/CoursesProvider";
 import {
   Dialog,
   DialogContent,
@@ -19,40 +13,33 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Plus, Trash } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
-const fileInstance = z
+// Zod schema
+const pdfFileSchema = z
   .instanceof(File)
-  .refine((file) => file.size <= 5 * 1024 * 1024, {
-    message: "File size must not exceed 5MB",
+  .refine((file) => file.type === "application/pdf", {
+    message: "Only PDF files are allowed",
   });
 
 const lessonSchema = z.object({
-  title: z
-    .string()
-    .min(5, "Title must be at least 5 characters")
-    .max(100, "Title must be less than 100 characters"),
-
-  description: z
-    .string()
-    .min(5, "Description must be at least 5 characters")
-    .max(200, "Description must be less than 200 characters"),
-
- youtubeLinks: z
+  title: z.string().min(5).max(100),
+  description: z.string().min(5).max(200),
+  youtubeLinks: z
     .string()
     .trim()
     .transform((val) => (val === "" ? undefined : val))
     .optional()
     .refine(
       (val) =>
-        !val ||
-        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(val),
-      {
-        message: "Must be a valid YouTube link",
-      }
+        !val || /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(val),
+      { message: "Must be a valid YouTube link" }
     ),
   otherLink: z
     .string()
@@ -62,21 +49,24 @@ const lessonSchema = z.object({
     .refine((val) => !val || /^https?:\/\/.+$/.test(val), {
       message: "Must be a valid URL",
     }),
-
   pdfFiles: z
-    .array(fileInstance)
-    .optional()
+    .array(pdfFileSchema)
+    .min(1, { message: "At least one PDF is required" })
     .refine(
-      (arr) =>
-        arr.every(
-          (file) => file instanceof File && file.size <= 5 * 1024 * 1024
-        ),
-      { message: "All uploaded files must be PDF files and less than 5MB" }
+      (files) =>
+        files.reduce((acc, file) => acc + (file?.size || 0), 0) <= 5 * 1024 * 1024,
+      {
+        message: "Total file size must not exceed 5MB",
+      }
     ),
 });
 
 const LessonModal = ({ chapterID, fetchCourseDetail }) => {
   const [open, setOpen] = useState(false);
+  const [pdfInputs, setPdfInputs] = useState([null]);
+  const [totalSize, setTotalSize] = useState(0); 
+  const [loading, setLoading] = useState(false);
+
 
   const {
     register,
@@ -95,52 +85,80 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
     },
   });
 
-  const handleLessonPDFChange = (e) => {
-    const filesArray = Array.from(e.target.files || []);
-    setValue("pdfFiles", filesArray, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-  };
+  const calculateTotalSize = (files) =>
+    files.reduce((acc, f) => acc + (f?.size || 0), 0);
 
-  console.log(errors, "errors");
+  const handleFileChange = (index, file) => {
+    if (!file) return;
 
-  const onSubmit = async (data) => {
-    if (!data.youtubeLinks) data.youtubeLinks = undefined;
-    if (!data.otherLink) data.otherLink = undefined;
-    console.log(data, "Lesson Data");
-    console.log(data.otherLink, "otherLink");
-    const formData = new FormData();
-
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("youtubeLinks", data.youtubeLinks);
-    formData.append("otherLink", data.otherLink);
-    formData.append("chapter", chapterID);
-    data.pdfFiles.forEach((file) => {
-      formData.append("pdfFiles", file);
-    });
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value} form data`);
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed");
+      return;
     }
 
-    await axiosInstance
-      .post(`/lesson/create`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => {
-        console.log(res);
-        fetchCourseDetail();
-        setOpen(false);
-        toast.success(res.data.message);
-        reset();
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response.data.message);
-      });
+    const updated = [...pdfInputs];
+    updated[index] = file;
+
+    const newSize = calculateTotalSize(updated);
+    if (newSize > 5 * 1024 * 1024) {
+      toast.error("Total file size exceeds 5MB");
+      return;
+    }
+
+    setPdfInputs(updated);
+    setTotalSize(newSize);
+    setValue("pdfFiles", updated.filter(Boolean), { shouldValidate: true });
   };
+
+  const handleAddField = () => {
+    const currentTotal = calculateTotalSize(pdfInputs);
+    if (currentTotal >= 5 * 1024 * 1024) {
+      toast.error("Cannot add more files. 5MB limit reached.");
+      return;
+    }
+    setPdfInputs((prev) => [...prev, null]);
+  };
+
+  const handleRemoveField = (index) => {
+    const updated = [...pdfInputs];
+    updated.splice(index, 1);
+    const newSize = calculateTotalSize(updated);
+    setPdfInputs(updated);
+    setTotalSize(newSize);
+    setValue("pdfFiles", updated.filter(Boolean), { shouldValidate: true });
+  };
+
+  const onSubmit = async (data) => {
+  setLoading(true); // prevent multiple submissions
+
+  const formData = new FormData();
+  formData.append("title", data.title);
+  formData.append("description", data.description);
+  formData.append("youtubeLinks", data.youtubeLinks || "");
+  formData.append("otherLink", data.otherLink || "");
+  formData.append("chapter", chapterID);
+
+  pdfInputs.filter(Boolean).forEach((file) => {
+    formData.append("pdfFiles", file);
+  });
+
+  try {
+    const res = await axiosInstance.post("/lesson/create", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    toast.success(res.data.message);
+    fetchCourseDetail();
+    reset();
+    setPdfInputs([null]);
+    setTotalSize(0);
+    setOpen(false);
+  } catch (err) {
+    toast.error(err?.response?.data?.message || "Something went wrong");
+  } finally {
+    setLoading(false); // allow future submissions
+  }
+};
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -158,78 +176,80 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
         <DialogHeader>
           <DialogTitle>Add Lesson</DialogTitle>
           <DialogDescription>
-            Fill in the lesson details below. You can leave optional fields
-            empty.
+            Fill in the lesson details. Upload only PDF files, max 5MB total.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <Label htmlFor="title">Lesson Title</Label>
-            <Input
-              id="title"
-              placeholder="Lesson Title"
-              {...register("title")}
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title.message}</p>
-            )}
+            <Input id="title" {...register("title")} />
+            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
           </div>
 
           <div>
             <Label htmlFor="description">Lesson Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Lesson Description"
-              className="w-full"
-              {...register("description")}
-            />
+            <Textarea id="description" {...register("description")} />
             {errors.description && (
-              <p className="text-red-500 text-sm">
-                {errors.description.message}
-              </p>
+              <p className="text-red-500 text-sm">{errors.description.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="youtubeLinks">YouTube Links</Label>
-            <Input
-              id="youtubeLinks"
-              placeholder="YouTube URLs"
-              {...register("youtubeLinks")}
-            />
+            <Label htmlFor="youtubeLinks">YouTube Link</Label>
+            <Input id="youtubeLinks" {...register("youtubeLinks")} />
             {errors.youtubeLinks && (
-              <p className="text-red-500 text-sm">
-                {errors.youtubeLinks.message}
-              </p>
+              <p className="text-red-500 text-sm">{errors.youtubeLinks.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="otherLink">Other Links</Label>
-            <Input
-              id="otherLink"
-              placeholder="Other URLs"
-              {...register("otherLink")}
-            />
+            <Label htmlFor="otherLink">Other Link</Label>
+            <Input id="otherLink" {...register("otherLink")} />
             {errors.otherLink && (
               <p className="text-red-500 text-sm">{errors.otherLink.message}</p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="lessonPdf">Lesson PDF Files</Label>
-            <Input
-              id="lessonPdf"
-              type="file"
-              multiple
-              accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-              onChange={handleLessonPDFChange}
-            />
+            <Label>Lesson PDF Files</Label>
+            {pdfInputs.map((file, index) => (
+              <div key={index} className="flex items-center gap-2 mt-2">
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => handleFileChange(index, e.target.files?.[0])}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemoveField(index)}
+                  disabled={pdfInputs.length === 1}
+                  className="text-red-500"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={handleAddField}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Another File
+            </Button>
+
+            <p className="text-gray-600 text-sm mt-1">
+              Total size: {(totalSize / 1024 / 1024).toFixed(2)} MB / 5 MB
+            </p>
+
             {errors.pdfFiles && (
-              <p className="text-red-500 text-sm">
-                {errors?.pdfFiles?.message}
-              </p>
+              <p className="text-red-500 text-sm mt-2">{errors.pdfFiles.message}</p>
             )}
           </div>
 
@@ -238,13 +258,18 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
               type="button"
               variant="outline"
               onClick={() => {
-                setOpen(false);
                 reset();
+                setPdfInputs([null]);
+                setTotalSize(0);
+                setOpen(false);
               }}
             >
               Cancel
             </Button>
-            <Button type="submit">Save Lesson</Button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save Lesson"}
+            </Button>
+
           </DialogFooter>
         </form>
       </DialogContent>

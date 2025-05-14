@@ -25,6 +25,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { DeleteModal } from "./DeleteModal";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { Link } from "react-router-dom";
 
 const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
   const [openLessons, setOpenLessons] = useState({});
@@ -124,10 +125,17 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                       chapterID={chapter._id}
                       fetchCourseDetail={fetchCourseDetail}
                     />
+                    <Link
+                      to={`/teacher/assignment/create/chapter/${chapter._id}`}
+                    >
+                      <Button variant="outline" className="text-green-600">
+                        + Add Assessment
+                      </Button>
+                    </Link>
                   </div>
 
-                  {Array.isArray(chapter.assessment) &&
-                    chapter.assessment.length > 0 && (
+                  {Array.isArray(chapter.chapterAssessments) &&
+                    chapter.chapterAssessments.length > 0 && (
                       <Card>
                         <CardHeader className="py-3">
                           <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -137,7 +145,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="py-2">
-                          {chapter.assessment.map((assess, aIdx) => (
+                          {chapter.chapterAssessments.map((assess, aIdx) => (
                             <div
                               key={aIdx}
                               className="pl-4 border-l-2 border-orange-400 mb-4 last:mb-0"
@@ -171,9 +179,9 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                 </p>
                               </div>
 
-                              {assess.pdfFiles?.length > 0 && (
+                              {assess?.files?.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                  {assess.pdfFiles.map((pdf, i) => (
+                                  {assess?.files?.map((pdf, i) => (
                                     <div
                                       key={i}
                                       className="flex items-center gap-2"
@@ -206,115 +214,129 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                       </h3>
 
                       {chapter.lessons.map((lesson, lessonIndex) => (
-                        <Card key={lesson._id} className="overflow-hidden">
-                          <div
-                            className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                            onClick={() => toggleLesson(lesson._id)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                Lesson {lessonIndex + 1}
-                              </span>
-                              <h4 className="font-medium text-gray-800">
-                                {lesson.title}
-                              </h4>
+                        <section key={lesson._id}>
+                          <Card className="overflow-hidden">
+                            <div
+                              className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                              onClick={() => toggleLesson(lesson._id)}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                  Lesson {lessonIndex + 1}
+                                </span>
+                                <h4 className="font-medium text-gray-800">
+                                  {lesson.title}
+                                </h4>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-8 text-gray-500 hover:text-blue-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Open edit lesson modal
+                                  }}
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                  <span className="sr-only">Edit</span>
+                                </Button>
+                                <DeleteModal
+                                  deleteFunc={() =>
+                                    handleDeleteLesson(lesson._id)
+                                  }
+                                />
+
+                                <Link
+                                  to={`/teacher/assignment/create/lesson/${lesson._id}`}
+                                >
+                                  <Button
+                                    variant="outline"
+                                    className="text-green-600 text-xs"
+                                  >
+                                    + Add Assessment
+                                  </Button>
+                                </Link>
+
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="gap-1 ml-2"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleLesson(lesson._id);
+                                  }}
+                                >
+                                  {openLessons[lesson._id] ? (
+                                    <ChevronUp className="h-4 w-4" />
+                                  ) : (
+                                    <ChevronDown className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 text-gray-500 hover:text-blue-600"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Open edit lesson modal
-                                }}
-                              >
-                                <Pencil className="h-3.5 w-3.5" />
-                                <span className="sr-only">Edit</span>
-                              </Button>
-                              <DeleteModal
-                                deleteFunc={() =>
-                                  handleDeleteLesson(lesson._id)
-                                }
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="gap-1 ml-2"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  toggleLesson(lesson._id);
-                                }}
-                              >
-                                {openLessons[lesson._id] ? (
-                                  <ChevronUp className="h-4 w-4" />
-                                ) : (
-                                  <ChevronDown className="h-4 w-4" />
+
+                            {openLessons[lesson._id] && (
+                              <CardContent className="border-t pt-4">
+                                {lesson.description && (
+                                  <p className="text-sm text-gray-600 mb-4">
+                                    {lesson.description}
+                                  </p>
                                 )}
-                              </Button>
-                            </div>
-                          </div>
 
-                          {openLessons[lesson._id] && (
-                            <CardContent className="border-t pt-4">
-                              {lesson.description && (
-                                <p className="text-sm text-gray-600 mb-4">
-                                  {lesson.description}
-                                </p>
-                              )}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-3">
+                                    <h5 className="text-sm font-semibold text-gray-700">
+                                      Resources
+                                    </h5>
+                                    <div className="flex flex-wrap gap-2">
+                                      {lesson.pdfFiles?.map(
+                                        (pdf, i) =>
+                                          pdf?.url &&
+                                          pdf?.filename && (
+                                            <a
+                                              key={i}
+                                              href={pdf.url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
+                                            >
+                                              <FileText className="h-4 w-4" />
+                                              {pdf.filename}
+                                            </a>
+                                          )
+                                      )}
+                                    </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-3">
-                                  <h5 className="text-sm font-semibold text-gray-700">
-                                    Resources
-                                  </h5>
-                                  <div className="flex flex-wrap gap-2">
-                                    {lesson.pdfFiles?.map(
-                                      (pdf, i) =>
-                                        pdf?.url &&
-                                        pdf?.filename && (
-                                          <a
-                                            key={i}
-                                            href={pdf.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                          >
-                                            <FileText className="h-4 w-4" />
-                                            {pdf.filename}
-                                          </a>
-                                        )
+                                    {lesson.youtubeLinks && (
+                                      <a
+                                        href={lesson.youtubeLinks}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-red-600 hover:bg-red-50 transition-colors"
+                                      >
+                                        <Youtube className="h-4 w-4" />
+                                        Watch on YouTube
+                                      </a>
+                                    )}
+
+                                    {lesson.otherLink && (
+                                      <a
+                                        href={lesson.otherLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
+                                      >
+                                        <Link2 className="h-4 w-4" />
+                                        Visit Link
+                                      </a>
                                     )}
                                   </div>
-
-                                  {lesson.youtubeLinks && (
-                                    <a
-                                      href={lesson.youtubeLinks}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                    >
-                                      <Youtube className="h-4 w-4" />
-                                      Watch on YouTube
-                                    </a>
-                                  )}
-
-                                  {lesson.otherLink && (
-                                    <a
-                                      href={lesson.otherLink}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                    >
-                                      <Link2 className="h-4 w-4" />
-                                      Visit Link
-                                    </a>
-                                  )}
                                 </div>
-                              </div>
-                            </CardContent>
-                          )}
-                        </Card>
+                              </CardContent>
+                            )}
+                          </Card>
+                        </section>
                       ))}
                     </div>
                   )}

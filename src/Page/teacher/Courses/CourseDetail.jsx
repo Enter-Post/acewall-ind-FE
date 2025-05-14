@@ -173,7 +173,7 @@ export default function TeacherCourseDetails() {
         />
 
         {/* Rating */}
-        {/* <div className="my-10 ">
+        <div className="my-10 ">
           <h3 className="text-lg font-medium mb-4">Overall Course Rating</h3>
           <div className="bg-green-50 p-8 rounded-lg flex flex-col items-center">
             {course.rating && course.rating.length > 0 ? (
@@ -221,7 +221,7 @@ export default function TeacherCourseDetails() {
               </div>
             )}
           </div>
-        </div> */}
+        </div>
       </div>
 
       <CommentSection id={id} />

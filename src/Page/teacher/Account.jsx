@@ -144,17 +144,13 @@ const Account = () => {
     formData.append("mailingAddress", data.mailingAddress);
 
     if (selectedImage) {
-      formData.append("profileImg", selectedImage); // Append the selected image
+      formData.append("profileImg", selectedImage);
     }
 
     if (data.documents && data.documents.length > 0) {
       data.documents.forEach((file) => {
         formData.append("documents", file);
       });
-    }
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value} form data`);
     }
 
     try {
@@ -164,10 +160,14 @@ const Account = () => {
         },
       });
       console.log("Server response:", response.data);
+
+      // ✅ Refresh the page after successful update
+      window.location.reload();
     } catch (error) {
       console.error("Failed to update profile:", error);
     }
   };
+
 
   return (
     <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
@@ -260,7 +260,7 @@ const Account = () => {
                 id="Bio"
                 rows={5}
                 placeholder="Write a short Bio..."
-                maxLength={300} 
+                maxLength={300}
                 {...register("Bio")}
               />
 
