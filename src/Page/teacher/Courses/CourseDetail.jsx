@@ -20,6 +20,7 @@ import CommentSection from "@/CustomComponent/Student/CommentSection";
 import DeleteCourseModal from "@/CustomComponent/CreateCourse/DeleteCourseModal";
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
 import ChapterDetail from "@/CustomComponent/CreateCourse/ChapterDetail";
+import { FinalCourseAssessmentCard } from "@/CustomComponent/CreateCourse/FinalCourseAssessmentCard";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams() || { id: "68115952b4991f70a28c486f" }; // Default ID or from URL
@@ -157,13 +158,28 @@ export default function TeacherCourseDetails() {
             bgColor="bg-rose-50"
           />
         </div>
+        <div className="flex justify-between items-center">
+          <section>
+            <ChapterCreationModal
+              courseId={id}
+              fetchCourseDetail={fetchCourseDetail}
+            />
+          </section>
 
-        <section>
-          <ChapterCreationModal
-            courseId={id}
-            fetchCourseDetail={fetchCourseDetail}
-          />
-        </section>
+          <div className="space-y-4">
+            {/* Add Final Assessment Button */}
+            <div>
+              <Link to={`/teacher/assignment/create/course/${course._id}`}>
+                <Button variant="outline" className="text-green-600">
+                  + Add Assessment
+                </Button>
+              </Link>
+            </div>
+
+
+          </div>
+
+        </div>
 
         {/* chapter detail */}
         <ChapterDetail
@@ -172,6 +188,11 @@ export default function TeacherCourseDetails() {
           fetchCourseDetail={fetchCourseDetail}
         />
 
+        {/* Final Assessment Cards */}
+        {Array.isArray(course.finalAssessments) &&
+          course.finalAssessments.map((assessment, index) => (
+            <FinalCourseAssessmentCard key={index} assessment={assessment} />
+          ))}
         {/* Rating */}
         <div className="my-10 ">
           <h3 className="text-lg font-medium mb-4">Overall Course Rating</h3>
@@ -190,13 +211,12 @@ export default function TeacherCourseDetails() {
                     return (
                       <svg
                         key={index}
-                        className={`w-6 h-6 ${
-                          fullStar
-                            ? "text-orange-400"
-                            : halfStar
+                        className={`w-6 h-6 ${fullStar
+                          ? "text-orange-400"
+                          : halfStar
                             ? "text-yellow-500"
                             : "text-gray-300"
-                        }`}
+                          }`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >

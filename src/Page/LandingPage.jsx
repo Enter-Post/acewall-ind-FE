@@ -14,6 +14,8 @@ import Footer from "@/CustomComponent/Footer";
 import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { toast } from "sonner";
 
 const cardData = [
   {
@@ -89,11 +91,21 @@ const LandingPage = () => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-    if (data) {
+  const onSubmit = async (data) => {
+    try {
+      const res = await axiosInstance.post("auth/check-existence", {
+        email: data.email,
+      });
+
       setSignupData({ ...data });
       navigate("/signup");
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        toast.error("User with this email already exists.");
+      } else {
+        console.error("API error:", error);
+        toast.error("Something went wrong. Please try again later.");
+      }
     }
   };
 

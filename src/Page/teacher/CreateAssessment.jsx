@@ -17,7 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Plus, ChevronDown, ChevronUp, ArrowLeft, ChevronLeft } from "lucide-react";
 import JoditEditor from "jodit-react";
 import {
   Form,
@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 // Define the form schema with Zod
 const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
@@ -84,6 +84,7 @@ const formSchema = z.object({
 });
 
 export default function CreateAssessmentPage() {
+  const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -120,7 +121,7 @@ export default function CreateAssessmentPage() {
 
   const submitting = form.formState.isSubmitting;
 
-  if(submitting) {
+  if (submitting) {
     toast.loading("Submitting...");
   }
 
@@ -140,7 +141,7 @@ export default function CreateAssessmentPage() {
         file.type === "application/pdf" ||
         file.type === "application/msword" ||
         file.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB in bytes
 
       if (!isValidType) {
@@ -235,6 +236,19 @@ export default function CreateAssessmentPage() {
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg max-w-4xl">
+      {/* Back Button */}
+      <div className="mb-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2"
+        >
+          <ChevronLeft  className="h-4 w-4" />
+          
+        </Button>
+      </div>
+
       <h2 className="text-2xl font-bold mb-4">Create New Assessment</h2>
       <p className="text-gray-600 mb-6">
         Upload a new Assessment for students.
@@ -387,49 +401,49 @@ export default function CreateAssessmentPage() {
                   {/* Question-specific answer fields */}
                   {form.watch(`questions.${questionIndex}.type`) ===
                     "truefalse" && (
-                    <FormField
-                      control={form.control}
-                      name={`questions.${questionIndex}.correctAnswer`}
-                      render={({ field }) => (
-                        <FormItem className="space-y-3">
-                          <FormLabel>Correct Answer</FormLabel>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={field.onChange}
-                              value={field.value}
-                              className="flex space-x-4"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="true"
-                                  id={`true-${question.id}`}
-                                />
-                                <Label
-                                  htmlFor={`true-${question.id}`}
-                                  className="font-normal"
-                                >
-                                  True
-                                </Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="false"
-                                  id={`false-${question.id}`}
-                                />
-                                <Label
-                                  htmlFor={`false-${question.id}`}
-                                  className="font-normal"
-                                >
-                                  False
-                                </Label>
-                              </div>
-                            </RadioGroup>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                      <FormField
+                        control={form.control}
+                        name={`questions.${questionIndex}.correctAnswer`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel>Correct Answer</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                className="flex space-x-4"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="true"
+                                    id={`true-${question.id}`}
+                                  />
+                                  <Label
+                                    htmlFor={`true-${question.id}`}
+                                    className="font-normal"
+                                  >
+                                    True
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="false"
+                                    id={`false-${question.id}`}
+                                  />
+                                  <Label
+                                    htmlFor={`false-${question.id}`}
+                                    className="font-normal"
+                                  >
+                                    False
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
                   {form.watch(`questions.${questionIndex}.type`) === "mcq" && (
                     <div className="space-y-3">
@@ -482,9 +496,8 @@ export default function CreateAssessmentPage() {
                                   <FormItem className="flex-1 space-y-0">
                                     <FormControl>
                                       <Input
-                                        placeholder={`Option ${
-                                          optionIndex + 1
-                                        }`}
+                                        placeholder={`Option ${optionIndex + 1
+                                          }`}
                                         {...field}
                                       />
                                     </FormControl>
