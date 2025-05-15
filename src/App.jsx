@@ -140,7 +140,7 @@ function App() {
             <Route path="account" element={<Account />}></Route>
             <Route path="support" element={<Support />} />
             <Route path="ContactUs" element={<ContactUs />} />
-            <Route path="courses">
+            <Route path="courses/:subcategoryId">
               <Route index element={<AllCourses />} />
               <Route path="detail/:id" element={<AllCoursesDetail />} />
             </Route>
@@ -159,7 +159,10 @@ function App() {
             {/* <Route path="messages" element={<TeacherMessages />} /> */}
             <Route path="assignment">
               <Route index element={<TeacherrAssessment />} />
-              <Route path="create/:type/:id" element={<CreateAssessmentPage />} />
+              <Route
+                path="create/:type/:id"
+                element={<CreateAssessmentPage />}
+              />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />

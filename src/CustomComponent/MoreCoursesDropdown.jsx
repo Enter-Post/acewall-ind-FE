@@ -10,7 +10,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
 const MoreCoursesDropdown = () => {
@@ -39,7 +39,9 @@ const MoreCoursesDropdown = () => {
     if (subCategoriesMap[categoryId]) return; // Already fetched
 
     try {
-      const response = await axiosInstance.get(`/category/subcategories/${categoryId}`);
+      const response = await axiosInstance.get(
+        `/category/subcategories/${categoryId}`
+      );
       if (response.data?.subcategories) {
         setSubCategoriesMap((prev) => ({
           ...prev,
@@ -54,8 +56,10 @@ const MoreCoursesDropdown = () => {
   };
 
   const handleNavigate = (categoryId, subcategoryId) => {
+    console.log(subcategoryId, "subcategoryId");
+
     setSelectedSubcategoryId(subcategoryId);
-    navigate(`/courses/${categoryId}/${subcategoryId}`);
+    navigate(`/student/courses/${subcategoryId}`);
   };
 
   return (
@@ -74,7 +78,9 @@ const MoreCoursesDropdown = () => {
         {categories.length > 0 ? (
           categories.map((category) => (
             <DropdownMenuSub key={category._id}>
-              <DropdownMenuSubTrigger onMouseEnter={() => fetchSubcategories(category._id)}>
+              <DropdownMenuSubTrigger
+                onMouseEnter={() => fetchSubcategories(category._id)}
+              >
                 {category.title}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
@@ -82,13 +88,14 @@ const MoreCoursesDropdown = () => {
                   <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
                 ) : subCategoriesMap[category._id].length > 0 ? (
                   subCategoriesMap[category._id].map((sub) => (
-                    <DropdownMenuItem
-                      key={sub._id}
-                      onClick={() => handleNavigate(category._id, sub._id)}
-                      className="cursor-pointer"
-                    >
-                      {sub.title}
-                    </DropdownMenuItem>
+                    <Link to={`/student/courses/${sub._id}`}>
+                      <DropdownMenuItem
+                        key={sub._id}
+                        className="cursor-pointer"
+                      >
+                        {sub.title}
+                      </DropdownMenuItem>
+                    </Link>
                   ))
                 ) : (
                   <DropdownMenuItem disabled>No subcategories</DropdownMenuItem>
@@ -105,4 +112,3 @@ const MoreCoursesDropdown = () => {
 };
 
 export default MoreCoursesDropdown;
-  
