@@ -38,7 +38,6 @@ export default function AnnouncementDialog({ open, onOpenChange }) {
   const { user } = useContext(GlobalContext);
   const [allCourses, setAllCourses] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -71,31 +70,24 @@ export default function AnnouncementDialog({ open, onOpenChange }) {
     getCourses();
   }, []);
 
-  const handleSubmit = async () => {
-    if (isSubmitting || !title || !course || !message || !user?._id) return;
+  const onSubmit = async (data) => {
+    if (!user?._id) return;
 
     const payload = {
-      title,
-      message,
-      courseId: course,
+      ...data,
       teacherId: user._id,
     };
 
-    setIsSubmitting(true);
     try {
-      await axiosInstance.post("/announcements/createannouncement", payload);
-
-      // Notify parent about new announcement creation to refresh list
-      if (onCreated) onCreated();
-
-      // Reset form fields
-      setTitle("");
-      setCourse("");
-      setMessage("");
+      const res = await axiosInstance.post(
+        "/announcements/createannouncement",
+        payload
+      );
+      console.log("Announcement created:", res.data);
+      onOpenChange(false);
+      reset(); // Clear the form
     } catch (err) {
       console.error("Error creating announcement:", err);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -161,25 +153,26 @@ export default function AnnouncementDialog({ open, onOpenChange }) {
             )}
           </div>
 
-          <Textarea
-            id="message"
-            placeholder="Enter announcement message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button
-            className="bg-green-500 hover:bg-green-600"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Creating..." : "Create Announcement"}
-          </Button>
-        </DialogFooter>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                reset();
+                onOpenChange(false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-green-500 hover:bg-green-600"
+            >
+              {isSubmitting ? "Creating..." : "Create"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );
