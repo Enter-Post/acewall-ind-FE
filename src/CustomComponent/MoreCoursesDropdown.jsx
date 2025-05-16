@@ -76,8 +76,8 @@ const MoreCoursesDropdown = () => {
 
       <DropdownMenuContent className="grid grid-row-8 gap-2">
         {categories.length > 0 ? (
-          categories.map((category) => (
-            <DropdownMenuSub key={category._id}>
+          categories.map((category, index) => (
+            <DropdownMenuSub key={index}>
               <DropdownMenuSubTrigger
                 onMouseEnter={() => fetchSubcategories(category._id)}
               >

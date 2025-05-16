@@ -93,9 +93,6 @@ export const GlobalProvider = ({ children }) => {
         toast.error(err.response.data.message);
       });
   };
-   
-  console.log("Selected Subcategory ID:", selectedSubcategoryId);
-
 
   return (
     <GlobalContext.Provider

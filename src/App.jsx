@@ -69,8 +69,6 @@ function App() {
   }
 
   const connectsocket = () => {
-    console.log(user, "user");
-
     const newSocket = io("http://localhost:5050", {
       query: { userId: user?._id || "" },
     });
@@ -133,17 +131,14 @@ function App() {
               <Route path="chapter/:id" element={<ChapterDetail />} />
             </Route>
             <Route index element={<Deshboard />} />
-
             <Route path="assignment" element={<Assignment />}></Route>
             <Route path="gradebook" element={<Gradebook />}></Route>
             <Route path="announcements" element={<Announcement />}></Route>
             <Route path="account" element={<Account />}></Route>
             <Route path="support" element={<Support />} />
             <Route path="ContactUs" element={<ContactUs />} />
-            <Route path="courses/:subcategoryId">
-              <Route index element={<AllCourses />} />
-              <Route path="detail/:id" element={<AllCoursesDetail />} />
-            </Route>
+            <Route path="courses/:subcategoryId" element={<AllCourses />} />
+            <Route path="course/detail/:id" element={<AllCoursesDetail />} />
             <Route path="messages">
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />

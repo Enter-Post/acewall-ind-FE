@@ -3,18 +3,18 @@ import SearchBox from "@/CustomComponent/SearchBox";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
 const AllCourses = () => {
-
   const [allCourses, setAllCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useContext(GlobalContext);
+  const { subcategoryId } = useParams();
 
   const searching = searchQuery.trim() !== "";
 
@@ -22,32 +22,31 @@ const AllCourses = () => {
     setLoading(true);
     const delayDebounce = setTimeout(() => {
       const getCourses = async () => {
-        try {
-          const response = await axiosInstance.get("/course/get", {
+        await axiosInstance
+          .get(`/course/${subcategoryId}`, {
             params: { search: searchQuery },
+          })
+          .then((res) => {
+            setAllCourses(res.data.courses);
+            console.log(res, "res");
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err, "error");
+            setLoading(false);
           });
-          console.log("API Response:", response.data);
-          setAllCourses(response.data.courses);
-        } catch (error) {
-          console.error("Error fetching courses:", error);
-          setAllCourses([]);
-        } finally {
-          setLoading(false);
-        }
       };
       getCourses();
     }, 2000); // 500ms delay
 
     return () => clearTimeout(delayDebounce); // cleanup
-  }, [searchQuery]);
-
+  }, [searchQuery, subcategoryId]);
 
   return (
     <section className="p-3 md:p-0">
       <div className="flex flex-col pb-5 gap-2">
         <div>
           <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-
             All Courses
           </p>
         </div>
@@ -96,11 +95,7 @@ const AllCourses = () => {
         </div>
       ) : (
         <section className="    ">
-
           <div className="px-10">
-
-
-
             {loading ? (
               <div className="flex justify-center items-center py-10 ">
                 <section className="flex justify-center items-center h-full w-full">
@@ -144,32 +139,41 @@ const AllCourses = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
                 {allCourses.map((course) => (
-                  <Link key={course._id}
-                    to={`/student/courses/detail/${course._id}`}            >
+                  <Link
+                    key={course._id}
+                    to={`/student/course/detail/${course._id}`}
+                  >
                     <Card className="pb-6 pt-0 w-full h-full overflow-hidden cursor-pointer">
                       <AspectRatio ratio={16 / 9}>
                         <img
-                          src={course.basics.thumbnail || "/placeholder.svg"}
-                          alt={`${course.basics.thumbnail} image`}
+                          src={course?.thumbnail?.url || "/placeholder.svg"}
+                          alt={`${course?.thumbnail?.filename} image`}
                           className="object-cover w-full h-full"
                         />
                       </AspectRatio>
-                      <CardHeader >
-                       
-
+                      <CardHeader>
                         <CardTitle className="flex justify-between flex-col gap-2">
-                          <span className="text-md font-bold leading-tight">{course.basics.courseTitle}</span>
+                          <span className="text-md font-bold leading-tight">
+                            {course.courseTitle}
+                          </span>
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <img src={course.createdby?.profileImg} className="w-5 h-5 rounded-full" alt="" />
+                            <p className="text-sm text-muted-foreground">
+                              {course.createdby?.firstName}{" "}
+                              {course.createdby?.middleName
+                                ? course.createdby.middleName + " "
+                                : ""}
+                              {course.createdby?.lastName}
+                            </p>
+                          </div>
+
                           <p className="text-sm text-muted-foreground">
-                            Teacher: {course.createdby?.firstName}{" "}
-                            {course.createdby?.middleName ? course.createdby.middleName + " " : ""}
-                            {course.createdby?.lastName}
+                            Language: {course?.language}
                           </p>
-                          <p className="text-sm text-muted-foreground">Language: {course.basics.language}</p>
-                          <p className="text-sm text-muted-foreground">Chapters: {course.chapters.length}</p>
                         </div>
                       </CardContent>
                     </Card>

@@ -27,7 +27,7 @@
           })
           .then((res) => {
             setCourses(res.data.purchasedCourses);
-            console.log("API Response:", res.data)
+            // console.log("API Response:", res.data)
             setLoading(false);
 
           })

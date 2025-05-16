@@ -21,7 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export function FinalCourseAssessmentCard({ assessment }) {
+export function FinalCourseAssessmentCard({ assessment ,handleDeleteAssessment  }) {
   if (!assessment) return null;
 
   return (
@@ -146,14 +146,16 @@ export function FinalCourseAssessmentCard({ assessment }) {
                 </DialogContent>
               </Dialog>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 text-gray-500 hover:text-red-600"
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Delete</span>
-              </Button>
+           <Button
+  variant="ghost"
+  size="sm"
+  className="h-8 text-gray-500 hover:text-red-600"
+  onClick={() => handleDeleteAssessment(assessment._id)}
+>
+  <Trash2 className="h-4 w-4" />
+  <span className="sr-only">Delete</span>
+</Button>
+
             </div>
           </div>
 

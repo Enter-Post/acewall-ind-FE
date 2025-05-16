@@ -74,10 +74,14 @@ const questionSchema = z.discriminatedUnion("type", [
 ]);
 
 const formSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters" }),
+  title: z
+    .string()
+    .min(3, { message: "Title must be at least 3 characters" })
+    .max(120, { message: "Title cannot exceed 120 characters" }),
   description: z
     .string()
-    .min(10, { message: "Description must be at least 10 characters" }),
+    .min(10, { message: "Description must be at least 10 characters" })
+    .max(1000, { message: "Description cannot exceed 1000 characters" }),
   questions: z
     .array(questionSchema)
     .min(1, { message: "At least one question is required" }),
@@ -87,9 +91,9 @@ export default function CreateAssessmentPage() {
   const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const params = useParams();
-
+  const TITLE_LIMIT = 120;
+  const DESC_LIMIT = 1000;
   const [editorConfig] = useState({
     readonly: false,
     height: 200,
@@ -119,11 +123,7 @@ export default function CreateAssessmentPage() {
     },
   });
 
-  const submitting = form.formState.isSubmitting;
 
-  if (submitting) {
-    toast.loading("Submitting...");
-  }
 
   console.log(form.formState.errors, "form");
 
@@ -134,34 +134,22 @@ export default function CreateAssessmentPage() {
   });
 
   const handleFileChange = (e) => {
-    if (!e.target.files) return;
+    const files = Array.from(e.target.files);
 
-    const newFiles = Array.from(e.target.files).filter((file) => {
+    const validFiles = files.filter((file) => {
       const isValidType =
         file.type === "application/pdf" ||
-        file.type === "application/msword" ||
         file.type ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB in bytes
-
-      if (!isValidType) {
-        toast.error(`File type must be PDF, DOC, or DOCX.`);
-      }
-
-      if (!isValidSize) {
-        toast.error(`File exceeds the 5MB size limit.`);
-      }
-
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       return isValidType && isValidSize;
     });
 
-    setSelectedFiles((prevFiles) => {
-      const fileNames = new Set(prevFiles.map((f) => f.name));
-      const uniqueNewFiles = newFiles.filter((f) => !fileNames.has(f.name));
-      return [...prevFiles, ...uniqueNewFiles];
-    });
+    if (validFiles.length !== files.length) {
+      toast.error("Some files were invalid or too large.");
+    }
 
-    e.target.value = "";
+    setSelectedFiles(validFiles);
   };
 
   const addQuestion = () => {
@@ -210,29 +198,47 @@ export default function CreateAssessmentPage() {
   };
 
   const onSubmit = async (data) => {
-    console.log(selectedFiles, "selectedFiles");
-    console.log("ma chal raha ho");
+    const toastId = toast.loading("Creating assessment...");
 
-    const formdata = new FormData();
-    formdata.append("title", data.title);
-    formdata.append("description", data.description);
-    formdata.append(params.type, params.id);
-    formdata.append("questions", JSON.stringify(data.questions));
-    selectedFiles.forEach((file) => {
-      formdata.append("files", file);
-    });
+    try {
+      const formData = new FormData();
 
-    await axiosInstance
-      .post("assessment/create", formdata, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
+      // Append basic fields
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+
+      // Dynamically append chapter/lesson ID (e.g., chapter: 1234 or lesson: 1234)
+      formData.append(params.type, params.id); // assuming params.type is either 'chapter' or 'lesson'
+
+      // Append questions as a JSON string
+      formData.append("questions", JSON.stringify(data.questions));
+
+      // Append multiple files to the same field name "files"
+      if (selectedFiles.length > 0) {
+        selectedFiles.forEach((file) => {
+          formData.append("files", file); // key must match backend field
+        });
+      }
+
+      // Submit the multipart form data
+      const res = await axiosInstance.post("assessment/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      toast.success("Assessment created successfully!", { id: toastId });
+      navigate(-1);
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to create assessment",
+        { id: toastId }
+      );
+      console.error("Assessment creation error:", error);
+    }
   };
+
+
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg max-w-4xl">
@@ -244,8 +250,8 @@ export default function CreateAssessmentPage() {
           onClick={() => navigate(-1)}
           className="flex items-center gap-2"
         >
-          <ChevronLeft  className="h-4 w-4" />
-          
+          <ChevronLeft className="h-4 w-4" />
+
         </Button>
       </div>
 
@@ -258,6 +264,7 @@ export default function CreateAssessmentPage() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information */}
           <div className="grid gap-4">
+            {/* Title Field */}
             <FormField
               control={form.control}
               name="title"
@@ -265,13 +272,26 @@ export default function CreateAssessmentPage() {
                 <FormItem>
                   <FormLabel>Assessment Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter Assessment title" {...field} />
+                    <Input
+                      {...field}
+                      maxLength={TITLE_LIMIT}
+                      onChange={(e) => {
+                        if (e.target.value.length <= TITLE_LIMIT) {
+                          field.onChange(e);
+                        }
+                      }}
+                      placeholder="Enter Assessment title"
+                    />
                   </FormControl>
+                  <div className="text-sm text-muted-foreground text-right">
+                    {field.value.length}/{TITLE_LIMIT}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Description Field */}
             <FormField
               control={form.control}
               name="description"
@@ -280,10 +300,19 @@ export default function CreateAssessmentPage() {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter description and instructions"
                       {...field}
+                      maxLength={DESC_LIMIT}
+                      onChange={(e) => {
+                        if (e.target.value.length <= DESC_LIMIT) {
+                          field.onChange(e);
+                        }
+                      }}
+                      placeholder="Enter description and instructions"
                     />
                   </FormControl>
+                  <div className="text-sm text-muted-foreground text-right">
+                    {field.value.length}/{DESC_LIMIT}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -292,17 +321,7 @@ export default function CreateAssessmentPage() {
 
           {/* Questions Section */}
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Questions</h3>
-              <Button
-                type="button"
-                onClick={addQuestion}
-                variant="outline"
-                className="flex items-center gap-1"
-              >
-                <Plus size={16} /> Add Question
-              </Button>
-            </div>
+
 
             {fields.map((question, questionIndex) => (
               <Card key={question.id} className="relative">
@@ -454,19 +473,26 @@ export default function CreateAssessmentPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => addOption(questionIndex)}
+                          disabled={
+                            (form.watch(`questions.${questionIndex}.options`) || []).length >= 4
+                          }
                           className="h-7 text-xs"
                         >
                           Add Option
                         </Button>
                       </div>
+
+                      {(form.watch(`questions.${questionIndex}.options`) || []).length >= 4 && (
+                        <p className="text-xs text-muted-foreground">
+                          Maximum of 4 options allowed.
+                        </p>
+                      )}
+
                       <div className="space-y-3">
                         {form
                           .watch(`questions.${questionIndex}.options`)
                           ?.map((option, optionIndex) => (
-                            <div
-                              key={optionIndex}
-                              className="flex items-center gap-3"
-                            >
+                            <div key={optionIndex} className="flex items-center gap-3">
                               <FormField
                                 control={form.control}
                                 name={`questions.${questionIndex}.correctAnswer`}
@@ -481,7 +507,7 @@ export default function CreateAssessmentPage() {
                                         <div className="flex items-center space-x-2">
                                           <RadioGroupItem
                                             value={optionIndex.toString()}
-                                            id={`option-${question.id}-${optionIndex}`}
+                                            id={`option-${questionIndex}-${optionIndex}`}
                                           />
                                         </div>
                                       </RadioGroup>
@@ -496,8 +522,7 @@ export default function CreateAssessmentPage() {
                                   <FormItem className="flex-1 space-y-0">
                                     <FormControl>
                                       <Input
-                                        placeholder={`Option ${optionIndex + 1
-                                          }`}
+                                        placeholder={`Option ${optionIndex + 1}`}
                                         {...field}
                                       />
                                     </FormControl>
@@ -508,13 +533,9 @@ export default function CreateAssessmentPage() {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() =>
-                                  removeOption(questionIndex, optionIndex)
-                                }
+                                onClick={() => removeOption(questionIndex, optionIndex)}
                                 disabled={
-                                  form.watch(
-                                    `questions.${questionIndex}.options`
-                                  ).length <= 2
+                                  form.watch(`questions.${questionIndex}.options`).length <= 2
                                 }
                                 className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
                               >
@@ -523,6 +544,7 @@ export default function CreateAssessmentPage() {
                             </div>
                           ))}
                       </div>
+
                       <FormMessage>
                         {
                           form.formState.errors.questions?.[questionIndex]
@@ -532,27 +554,43 @@ export default function CreateAssessmentPage() {
                     </div>
                   )}
 
+
                   {form.watch(`questions.${questionIndex}.type`) === "qa" && (
                     <FormField
                       control={form.control}
                       name={`questions.${questionIndex}.correctAnswer`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Model Answer (for teacher reference)
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Enter the expected answer"
-                              {...field}
-                              rows={4}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field }) => {
+                        // Track character length locally
+                        const charCount = field.value?.length || 0;
+                        const maxChars = 200;
+
+                        return (
+                          <FormItem>
+                            <FormLabel>Model Answer (for teacher reference)</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Enter the expected answer"
+                                {...field}
+                                rows={4}
+                                maxLength={maxChars}
+                                onChange={(e) => {
+                                  // Update value with max length enforcement
+                                  if (e.target.value.length <= maxChars) {
+                                    field.onChange(e);
+                                  }
+                                }}
+                              />
+                            </FormControl>
+                            <div className="text-sm text-muted-foreground mt-1">
+                              {charCount} / {maxChars} characters
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
                     />
                   )}
+
                 </CardContent>
               </Card>
             ))}
@@ -561,36 +599,70 @@ export default function CreateAssessmentPage() {
                 {form.formState.errors.questions.message}
               </p>
             )}
+
           </div>
 
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">Questions</h3>
+            <Button
+              type="button"
+              onClick={addQuestion}
+              variant="outline"
+              className="flex items-center gap-1"
+            >
+              <Plus size={16} /> Add Question
+            </Button>
+          </div>
           {/* PDF and DOC Upload Section */}
           <div className="space-y-4 mt-6">
-            <Label htmlFor="fileUpload">Upload PDF or DOC files</Label>
+            <Label htmlFor="fileUpload">Upload PDF or DOCX file</Label>
             <Input
               id="fileUpload"
               type="file"
-              accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               multiple
+              accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
               onChange={handleFileChange}
             />
             {selectedFiles.length > 0 && (
               <div>
                 <Label>Selected Files:</Label>
-                <ul className="text-sm text-gray-700 mt-2 space-y-1">
-                  {selectedFiles.map((file, index) => (
-                    <li key={index} className="flex items-center">
-                      <span className="truncate">{file.name}</span>
-                    </li>
+                <div className="space-y-4 mt-2">
+                  {selectedFiles.map((file, idx) => (
+                    <div key={idx} className="border p-3 rounded">
+                      <p className="text-sm text-gray-700 truncate">{file.name}</p>
+
+                      {file.type === "application/pdf" ? (
+                        <iframe
+                          src={URL.createObjectURL(file)}
+                          title={`PDF Preview ${idx}`}
+                          className="w-full h-64 border rounded mt-2"
+                        />
+                      ) : (
+                        <a
+                          href={URL.createObjectURL(file)}
+                          download={file.name}
+                          className="text-blue-600 underline mt-2 inline-block"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Download/View DOCX
+                        </a>
+                      )}
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
+
           </div>
 
-          {/* Submit Button */}
-          <Button type="submit" className="mt-6">
-            Submit Assessment
+
+
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "Submitting..." : "Submit Assessment"}
           </Button>
+
+
         </form>
       </Form>
     </div>

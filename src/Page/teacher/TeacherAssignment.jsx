@@ -25,11 +25,7 @@ export default function TeacherAssessment() {
       <div className="flex flex-col mb-2 justify-between">
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Assessments</p>
         <div className="flex justify-end">
-          <Link to="/teacher/assignment/create">
-            <Button variant="ghost" className="text-green-600">
-              + Add New
-            </Button>
-          </Link>
+         
         </div>
       </div>
 

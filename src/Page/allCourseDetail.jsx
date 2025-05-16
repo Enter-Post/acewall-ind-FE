@@ -43,37 +43,25 @@ const AllCoursesDetail = () => {
         console.log(err);
         toast.error(err.response.data.error);
       });
-
-
   };
 
   useEffect(() => {
     const getCourseDetails = async () => {
-      try {
-        console.log("Fetching course with ID:", id); // Verify the ID
-        const response = await axiosInstance.get(`/course/get/${id}`);
-
-        console.log("API Response:", response.data); // Check the response format
-
-        if (response.data?.course) {
-          setCourseDetails(response.data.course);
-        } else {
-          console.error("No course found in response");
+      setLoading(true);
+      await axiosInstance
+        .get(`/course/get/${id}`)
+        .then((res) => {
+          setCourseDetails(res.data.course);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
           setCourseDetails(null);
-        }
-      } catch (error) {
-        console.error("Error fetching course:", error);
-        setCourseDetails(null);
-      } finally {
-        setLoading(false);
-      }
+          setLoading(false);
+        });
     };
 
-    const timer = setTimeout(() => {
-      if (id) getCourseDetails();
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    getCourseDetails();
   }, [id]);
 
   console.log("Course Details State:", courseDetails); // Debug the state value
@@ -96,10 +84,10 @@ const AllCoursesDetail = () => {
           <div className="  px-2  overflow-hidden mb-6">
             <div className="p-2">
               <h1 className="text-3xl font-bold mb-2">
-                {courseDetails.basics.courseTitle}
+                {courseDetails.courseTitle}
               </h1>
               <p className="text-gray-600 text-sm mb-4">
-                {courseDetails.basics.courseDescription}
+                {courseDetails.courseDescription}
               </p>
 
               <div className="flex items-center gap-4 mb-4">
@@ -125,9 +113,7 @@ const AllCoursesDetail = () => {
             <div className="flex  flex-col items-center justify-center ">
               <div className="relative h-60 w-100 mx-auto">
                 <img
-                  src={
-                    courseDetails.basics.thumbnail || "/default-thumbnail.jpg"
-                  }
+                  src={courseDetails.thumbnail.url || "/default-thumbnail.jpg"}
                   alt="Course preview"
                   className="w-full rounded-md shadow-md h-full object-cover"
                 />
@@ -165,15 +151,15 @@ const AllCoursesDetail = () => {
                 <TabsContent value="overview" className="p-2">
                   <h2 className="text-lg font-bold mb-4">Description</h2>
                   <p className="text-gray-600 text-sm mb-4">
-                    {courseDetails.basics.courseDescription}
+                    {courseDetails.courseDescription}
                   </p>
 
                   <h2 className="text-lg font-bold mt-8 mb-4">
                     What you will learn in this course
                   </h2>
                   <div className="grid md:grid-cols-2 gap-4">
-                    {Array.isArray(courseDetails?.basics.teachingPoints) &&
-                      courseDetails.basics.teachingPoints.map((item, index) => (
+                    {Array.isArray(courseDetails?.teachingPoints) &&
+                      courseDetails.teachingPoints.map((item, index) => (
                         <div key={index} className="flex items-start gap-2">
                           <CheckCircle2
                             size={20}
@@ -188,8 +174,8 @@ const AllCoursesDetail = () => {
                     Course requirements{" "}
                   </h2>
                   <div className="grid md:grid-cols-2 gap-4">
-                    {Array.isArray(courseDetails?.basics.requirements) &&
-                      courseDetails.basics.requirements.map((item, index) => (
+                    {Array.isArray(courseDetails?.requirements) &&
+                      courseDetails.requirements.map((item, index) => (
                         <div key={index} className="flex items-start gap-2">
                           <CheckCircle2
                             size={20}
@@ -205,7 +191,7 @@ const AllCoursesDetail = () => {
                 <TabsContent value="curriculum" className="p-6">
                   <Accordion type="curriculum" collapsible className="w-full">
                     {Array.isArray(courseDetails?.chapters) &&
-                      courseDetails.chapters.length > 0 ? (
+                    courseDetails.chapters.length > 0 ? (
                       courseDetails.chapters.map((chapter, index) => (
                         <AccordionItem key={index} value={`chapter-${index}`}>
                           <AccordionTrigger className="py-4 text-sm font-semibold flex justify-between items-center group">
@@ -214,9 +200,15 @@ const AllCoursesDetail = () => {
                           </AccordionTrigger>
 
                           <AccordionContent>
+                            <div className="my-2 flex flex-col gap-2">
+                              <span className="font-bold">Description</span>
+                              <span className="text-sm text-gray-700">
+                                {chapter.description}
+                              </span>
+                            </div>
                             <div className="space-y-4 pl-6">
                               {Array.isArray(chapter.lessons) &&
-                                chapter.lessons.length > 0 ? (
+                              chapter.lessons.length > 0 ? (
                                 chapter.lessons.map((lesson, i) => (
                                   <Collapsible key={i}>
                                     <CollapsibleTrigger className="w-full flex items-center justify-between text-left group bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200">
@@ -229,7 +221,7 @@ const AllCoursesDetail = () => {
                                     </CollapsibleTrigger>
 
                                     <CollapsibleContent className="mt-3 rounded-lg bg-gray-50 border border-gray-200 p-4 shadow-inner space-y-3">
-                                      <span className="font-bold  ">
+                                      <span className="font-bold">
                                         Description
                                       </span>
                                       {lesson.description && (
@@ -330,14 +322,18 @@ const AllCoursesDetail = () => {
                         <span>·</span>
                         <span>{courseDetails.createdby.pronouns}</span>
                         <span>·</span>
-                        <span className="truncate max-w-[200px]">{courseDetails.createdby.email}</span>
+                        <span className="truncate max-w-[200px]">
+                          {courseDetails.createdby.email}
+                        </span>
                       </div>
 
                       <div className="flex items-center gap-2 mt-3 text-gray-500 text-sm">
                         <PlayCircle size={18} className="text-indigo-500" />
                         <span>
                           {courseDetails.createdby.courses?.length || 0}{" "}
-                          {courseDetails.createdby.courses?.length === 1 ? "Course" : "Courses"}
+                          {courseDetails.createdby.courses?.length === 1
+                            ? "Course"
+                            : "Courses"}
                         </span>
                       </div>
 
@@ -347,8 +343,6 @@ const AllCoursesDetail = () => {
                     </div>
                   </div>
                 </TabsContent>
-
-
 
                 {/* reviews */}
                 <TabsContent value="reviews" className="p-6">
@@ -384,7 +378,7 @@ const AllCoursesDetail = () => {
                       </h3>
                       <div className="space-y-6">
                         {Array.isArray(courseDetails.reviews) &&
-                          courseDetails.reviews.length > 0 ? (
+                        courseDetails.reviews.length > 0 ? (
                           courseDetails.reviews.map((review, index) => (
                             <div
                               key={index}
@@ -402,9 +396,7 @@ const AllCoursesDetail = () => {
                                   <div className="font-medium">
                                     {review.student}
                                   </div>
-                                  <div className="flex items-center gap-2 mt-1">
-
-                                  </div>
+                                  <div className="flex items-center gap-2 mt-1"></div>
                                   <p className="text-sm mt-2">
                                     {review.comment}
                                   </p>
@@ -428,8 +420,6 @@ const AllCoursesDetail = () => {
         <div className="md:col-span-1">
           <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
             <div className="flex flex-col gap-6 mb-6">
-
-
               <PurchaseConfirmationModal purchase={purchase} />
             </div>
 
@@ -457,9 +447,9 @@ const AllCoursesDetail = () => {
                   Includes{" "}
                   {courseDetails.chapters
                     ? `${courseDetails.chapters.reduce(
-                      (acc, chapter) => acc + chapter.lessons.length,
-                      0
-                    )} Lessons`
+                        (acc, chapter) => acc + chapter.lessons.length,
+                        0
+                      )} Lessons`
                     : "No lessons included"}
                 </span>
               </div>
@@ -469,20 +459,19 @@ const AllCoursesDetail = () => {
                   Includes {courseDetails.level}{" "}
                   {Array.isArray(courseDetails.chapters)
                     ? `${courseDetails.chapters.reduce((total, chapter) => {
-                      return (
-                        total +
-                        (Array.isArray(chapter.Assessment)
-                          ? chapter.Assessment.length
-                          : 0)
-                      );
-                    }, 0)} Assessments`
+                        return (
+                          total +
+                          (Array.isArray(chapter.Assessment)
+                            ? chapter.Assessment.length
+                            : 0)
+                        );
+                      }, 0)} Assessments`
                     : "No Assessments available"}
                 </span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

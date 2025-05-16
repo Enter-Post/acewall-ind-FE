@@ -38,8 +38,12 @@ const lessonSchema = z.object({
     .optional()
     .refine(
       (val) =>
-        !val || /^https:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(val),
-      { message: "Must be a valid YouTube link" }
+        !val ||
+        /^https:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}(&.+)?$/
+          .test(val),
+      {
+        message: "Enter a valid YouTube video link",
+      }
     ),
   otherLink: z
     .string()
@@ -64,8 +68,13 @@ const lessonSchema = z.object({
 const LessonModal = ({ chapterID, fetchCourseDetail }) => {
   const [open, setOpen] = useState(false);
   const [pdfInputs, setPdfInputs] = useState([null]);
-  const [totalSize, setTotalSize] = useState(0); 
+  const [totalSize, setTotalSize] = useState(0);
   const [loading, setLoading] = useState(false);
+  const MAX_TITLE_LENGTH = 100;
+  const MAX_DESCRIPTION_LENGTH = 200;
+
+  const [titleValue, setTitleValue] = useState("");
+  const [descValue, setDescValue] = useState("");
 
 
   const {
@@ -129,35 +138,35 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
   };
 
   const onSubmit = async (data) => {
-  setLoading(true); // prevent multiple submissions
+    setLoading(true); // prevent multiple submissions
 
-  const formData = new FormData();
-  formData.append("title", data.title);
-  formData.append("description", data.description);
-  formData.append("youtubeLinks", data.youtubeLinks || "");
-  formData.append("otherLink", data.otherLink || "");
-  formData.append("chapter", chapterID);
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    formData.append("youtubeLinks", data.youtubeLinks || "");
+    formData.append("otherLink", data.otherLink || "");
+    formData.append("chapter", chapterID);
 
-  pdfInputs.filter(Boolean).forEach((file) => {
-    formData.append("pdfFiles", file);
-  });
-
-  try {
-    const res = await axiosInstance.post("/lesson/create", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+    pdfInputs.filter(Boolean).forEach((file) => {
+      formData.append("pdfFiles", file);
     });
-    toast.success(res.data.message);
-    fetchCourseDetail();
-    reset();
-    setPdfInputs([null]);
-    setTotalSize(0);
-    setOpen(false);
-  } catch (err) {
-    toast.error(err?.response?.data?.message || "Something went wrong");
-  } finally {
-    setLoading(false); // allow future submissions
-  }
-};
+
+    try {
+      const res = await axiosInstance.post("/lesson/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success(res.data.message);
+      fetchCourseDetail();
+      reset();
+      setPdfInputs([null]);
+      setTotalSize(0);
+      setOpen(false);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false); // allow future submissions
+    }
+  };
 
 
   return (
@@ -183,16 +192,43 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <Label htmlFor="title">Lesson Title</Label>
-            <Input id="title" {...register("title")} />
+            <Input
+              id="title"
+              {...register("title")}
+              value={titleValue}
+              maxLength={MAX_TITLE_LENGTH}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_TITLE_LENGTH) {
+                  setTitleValue(e.target.value);
+                  setValue("title", e.target.value); // sync with react-hook-form
+                }
+              }}
+            />
+            <div className="text-sm text-muted-foreground text-right">
+              {titleValue.length}/{MAX_TITLE_LENGTH}
+            </div>
             {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
           </div>
 
           <div>
             <Label htmlFor="description">Lesson Description</Label>
-            <Textarea id="description" {...register("description")} />
-            {errors.description && (
-              <p className="text-red-500 text-sm">{errors.description.message}</p>
-            )}
+            <Textarea
+              id="description"
+              {...register("description")}
+              value={descValue}
+              maxLength={MAX_DESCRIPTION_LENGTH}
+              onChange={(e) => {
+                if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
+                  setDescValue(e.target.value);
+                  setValue("description", e.target.value);
+                }
+              }}
+              rows={4}
+            />
+            <div className="text-sm text-muted-foreground text-right">
+              {descValue.length}/{MAX_DESCRIPTION_LENGTH}
+            </div>
+            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
           </div>
 
           <div>

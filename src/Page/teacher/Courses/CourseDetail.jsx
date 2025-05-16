@@ -21,6 +21,7 @@ import DeleteCourseModal from "@/CustomComponent/CreateCourse/DeleteCourseModal"
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
 import ChapterDetail from "@/CustomComponent/CreateCourse/ChapterDetail";
 import { FinalCourseAssessmentCard } from "@/CustomComponent/CreateCourse/FinalCourseAssessmentCard";
+import { toast } from "sonner";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams() || { id: "68115952b4991f70a28c486f" }; // Default ID or from URL
@@ -30,6 +31,7 @@ export default function TeacherCourseDetails() {
   const [loadingChapters, setLoadingChapters] = useState(true);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [openLessons, setOpenLessons] = useState({});
 
@@ -39,7 +41,20 @@ export default function TeacherCourseDetails() {
       [lessonId]: !prev[lessonId],
     }));
   };
-
+  const handleDeleteAssessment = (assessmentID) => {
+    setLoading(true);
+    axiosInstance
+      .delete(`/assessment/delete/${assessmentID}`)
+      .then((res) => {
+        setLoading(false);
+        toast.success(res.data.message);
+        fetchCourseDetail();
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err.response?.data?.message || "Error deleting assessment");
+      });
+  };// Delete Assessment
   const fetchCourseDetail = async () => {
     await axiosInstance
       .get(`course/details/${id}`)
@@ -190,9 +205,14 @@ export default function TeacherCourseDetails() {
 
         {/* Final Assessment Cards */}
         {Array.isArray(course.finalAssessments) &&
-          course.finalAssessments.map((assessment, index) => (
-            <FinalCourseAssessmentCard key={index} assessment={assessment} />
+          course.finalAssessments.map((assessment) => (
+            <FinalCourseAssessmentCard
+              key={assessment._id}  // Use unique id as key
+              assessment={assessment}
+              handleDeleteAssessment={handleDeleteAssessment}
+            />
           ))}
+
         {/* Rating */}
         <div className="my-10 ">
           <h3 className="text-lg font-medium mb-4">Overall Course Rating</h3>

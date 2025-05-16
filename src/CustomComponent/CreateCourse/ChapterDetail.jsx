@@ -64,6 +64,20 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
         toast.error(err.response?.data?.message || "Error deleting chapter");
       });
   };
+  const handleDeleteAssessment = (assessmentID) => {
+    setLoading(true);
+    axiosInstance
+      .delete(`/assessment/delete/${assessmentID}`)
+      .then((res) => {
+        setLoading(false);
+        toast.success(res.data.message);
+        fetchCourseDetail();
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err.response?.data?.message || "Error deleting assessment");
+      });
+  };
 
   const handleDeleteLesson = (lessonID) => {
     setLoading(true);
@@ -117,14 +131,14 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                   </p>
 
                   <div className="flex items-center gap-4">
-                    <Button
+                    {/* <Button
                       variant="outline"
                       size="sm"
                       className="flex items-center gap-2 border-orange-200 text-orange-700 hover:bg-orange-50"
                     >
                       <Pencil className="h-4 w-4" />
                       Edit Chapter
-                    </Button>
+                    </Button> */}
 
                     <DeleteModal
                       deleteFunc={() => handleDeleteChapter(chapter._id)}
@@ -191,21 +205,26 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                             <div>
                                               <h4 className="text-sm font-semibold text-gray-600 mb-2">Files</h4>
                                               <div className="flex flex-wrap gap-2">
-                                                {assess.files.map((file, i) => (
-                                                  <a
-                                                    key={i}
-                                                    href={file}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                                  >
-                                                    <FileText className="h-4 w-4" />
-                                                    PDF {i + 1}
-                                                  </a>
-                                                ))}
+                                                {assess.files
+                                                  .filter((file) =>
+                                                    /\.(pdf|docx)$/i.test(file.filename) // ✅ check extension from filename
+                                                  )
+                                                  .map((file, i) => (
+                                                    <a
+                                                      key={file._id || i}
+                                                      href={file.url} // ✅ use the actual URL
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
+                                                    >
+                                                      <FileText className="h-4 w-4" />
+                                                      {file.filename}
+                                                    </a>
+                                                  ))}
                                               </div>
                                             </div>
                                           )}
+
 
                                           {assess.questions?.length > 0 && (
                                             <Accordion type="multiple" className="w-full">
@@ -273,14 +292,9 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                     </Dialog>
 
 
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-8 text-gray-500 hover:text-red-600"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                      <span className="sr-only">Delete</span>
-                                    </Button>
+                                    <DeleteModal
+                                      deleteFunc={() => handleDeleteAssessment(assess._id)}
+                                    />
                                   </div>
                                 </div>
 
@@ -315,7 +329,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                 <h4 className="font-medium text-gray-800">{lesson.title}</h4>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Button
+                                {/* <Button
                                   variant="ghost"
                                   size="sm"
                                   className="h-8 text-gray-500 hover:text-blue-600"
@@ -326,7 +340,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                 >
                                   <Pencil className="h-3.5 w-3.5" />
                                   <span className="sr-only">Edit</span>
-                                </Button>
+                                </Button> */}
                                 <DeleteModal deleteFunc={() => handleDeleteLesson(lesson._id)} />
                                 <Link to={`/teacher/assignment/create/lesson/${lesson._id}`}>
                                   <Button variant="outline" className="text-green-600 text-xs">

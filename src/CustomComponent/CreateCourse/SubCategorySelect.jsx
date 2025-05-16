@@ -52,10 +52,10 @@ const SubCategorySelect = ({ register, errors, selectedCategory }) => {
           ))}
         </SelectContent>
       </Select>
-      <input type="hidden" {...register("subCategory")} />
-      {errors?.subCategory && (
+      <input type="hidden" {...register("subcategory")} />
+      {errors?.subcategory && (
         <p className="text-xs text-red-500 mt-1">
-          {errors.subCategory.message}
+          {errors.subcategory.message}
         </p>
       )}
     </div>

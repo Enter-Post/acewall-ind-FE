@@ -3,7 +3,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown } from "lucide-react";
 import AnnouncementCard from "../Announcement/AnnouncementCard";
 
-export default function AnnouncementList({ title, announcements }) {
+export default function AnnouncementList({ title, announcements, onDelete }) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -30,8 +30,11 @@ export default function AnnouncementList({ title, announcements }) {
               </thead>
               <tbody>
                 {announcements.map((announcement) => (
-                  <AnnouncementCard key={announcement.id} announcement={announcement} />
-                ))}
+                  <AnnouncementCard
+                    key={announcement._id}
+                    announcement={announcement}
+                    onDelete={onDelete}
+                  />))}
               </tbody>
             </table>
           </div>
