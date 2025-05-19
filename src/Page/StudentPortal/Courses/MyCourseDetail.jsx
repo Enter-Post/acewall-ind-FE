@@ -15,18 +15,20 @@ import {
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import LoadingLoader from "@/CustomComponent/LoadingLoader";
+import DescriptionTablist from "@/CustomComponent/Student/Course/DescriptionTablist";
+import FileTablist from "@/CustomComponent/Student/Course/FileTablist";
+import AssessmentTablist from "@/CustomComponent/Student/Course/AssessmentTablist";
 
 export default function ChapterDetail() {
   const [isLessonVisible, setIsLessonVisible] = useState(false);
-  const { id } = useParams();
-  const [chapter, setChapter] = useState(null);
+  const { chapterId } = useParams();
   const [courseTitle, setCourseTitle] = useState("");
   const [instructor, setInstructor] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
   const [activeLesson, setActiveLesson] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
+  const [chapter, setChapter] = useState(null);
 
   // Toggle the visibility of the lesson content
   const toggleLessonVisibility = () => {
@@ -36,9 +38,9 @@ export default function ChapterDetail() {
     const getCourseDetails = async () => {
       setLoading(true);
       await axiosInstance
-        .get(`/course/get/chapter/${id}`)
+        .get(`/enrollment/getChapter/${chapterId}`)
         .then((res) => {
-          setChapter(res.data.chapter);
+          setChapter(res.data.chapterDetails);
           setLoading(false);
         })
         .catch((err) => {
@@ -46,7 +48,7 @@ export default function ChapterDetail() {
         });
     };
     getCourseDetails();
-  }, [id]);
+  }, [chapterId]);
 
   function getYouTubeVideoId(url) {
     const regExp =
@@ -88,11 +90,12 @@ export default function ChapterDetail() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-semibold text-gray-900">{courseTitle}</h1>
+            <h1 className="text-lg font-semibold text-gray-900">
+              {courseTitle}
+            </h1>
             <p className="text-sm text-gray-500">Chapter: {chapter.title}</p>
           </div>
         </div>
-
 
         {activeLesson && (
           <div className="mb-8">
@@ -108,7 +111,9 @@ export default function ChapterDetail() {
                     <div className="aspect-video">
                       <iframe
                         className="w-full h-full"
-                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(activeLesson.youtubeLinks)}`}
+                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(
+                          activeLesson.youtubeLinks
+                        )}`}
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -122,7 +127,6 @@ export default function ChapterDetail() {
                   No YouTube link available
                 </div>
               )}
-
             </div>
           </div>
         )}
@@ -130,7 +134,7 @@ export default function ChapterDetail() {
         {/* Tabs */}
         <Tabs defaultValue="description" className="w-full p-5">
           <TabsList className="flex flex-wrap justify-center gap-4 w-full  sm:gap-10  bg-white p-1 shadow-inner">
-            {["description", "files"].map((tab) => (
+            {["description", "files", "Assessments"].map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
@@ -143,141 +147,22 @@ export default function ChapterDetail() {
             ))}
           </TabsList>
 
-
           {/* Description */}
-          <TabsContent value="description" className="p-6 bg-white rounded-lg shadow-md">
-            <div className="space-y-6">
-              {/* Chapter Title and Description */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800">{chapter.title}</h3>
-                <p className="text-gray-700 mt-4 text-sm">{chapter.description}</p>
-              </div>
-
-              {/* Active Lesson Toggle */}
-              {activeLesson && (
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <button
-                    onClick={toggleLessonVisibility}
-                    className="text-xl font-semibold text-gray-800 w-full text-left flex justify-between items-center focus:outline-none"
-                  >
-                    <span>Current Lesson: <br /> {activeLesson.title}</span>
-                    <svg
-                      className={`w-5 h-5 transition-transform duration-200 ${isLessonVisible ? 'transform rotate-180' : ''}`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </button>
-                  {isLessonVisible && (
-                    <div className="text-gray-600 mt-3 text-sm">
-                      <p>{activeLesson.description}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
+          <DescriptionTablist
+            chapter={chapter}
+            activeLesson={activeLesson}
+            isLessonVisible={isLessonVisible}
+            toggleLessonVisibility={toggleLessonVisibility}
+          />
 
           {/* Files */}
-          <TabsContent value="files" className="p-6 bg-white rounded-lg shadow-lg">
-            <div className="space-y-6">
-              {/* PDF Files */}
-              {activeLesson && activeLesson.pdfFiles && activeLesson.pdfFiles.length > 0 ? (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-4">PDF Files</h3>
-                  {activeLesson.pdfFiles.map((pdf, index) => (
-                    <a
-                      key={index}
-                      href={pdf}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center p-4 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                    >
-                      <FileText className="h-5 w-5 text-blue-500 mr-3" />
-                      <span className="text-blue-600 text-sm">PDF {index + 1}</span>
-                    </a>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-sm text-gray-500">
-                  No PDF files available for this lesson
-                </div>
-              )}
+          <FileTablist activeLesson={activeLesson} chapter={chapter} />
 
-              {/* Lesson Assessment */}
-              {activeLesson && activeLesson.lessonAssessment && activeLesson.lessonAssessment.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-4">Lesson Assessment Materials</h3>
-                  {activeLesson.lessonAssessment.map((Assessment, i) => (
-                    <div key={i} className="space-y-4">
-                      <h4 className="font-medium text-sm text-gray-800">{Assessment.title}</h4>
-                      <p className="text-sm text-gray-600">{Assessment.description}</p>
-
-                      {Assessment.pdfFiles && Assessment.pdfFiles.length > 0 && (
-                        <div className="space-y-3 pl-4">
-                          {Assessment.pdfFiles.map((pdf, pdfIndex) => (
-                            <a
-                              key={pdfIndex}
-                              href={pdf}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                            >
-                              <FileText className="h-4 w-4 text-blue-500 mr-3" />
-                              <span className="text-blue-600 text-sm">
-                                Assessment PDF {pdfIndex + 1}
-                              </span>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Chapter Assessment */}
-              {chapter && chapter.Assessment && chapter.Assessment.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-700 mb-4">Chapter Assessment</h3>
-                  {chapter.Assessment.map((Assessment, i) => (
-                    <div key={i} className="space-y-4">
-                      <h4 className="font-medium text-sm text-gray-800">{Assessment.title}</h4>
-                      <p className="text-sm text-gray-600">{Assessment.description}</p>
-
-                      {Assessment.pdfFiles && Assessment.pdfFiles.length > 0 && (
-                        <div className="space-y-3 pl-4">
-                          {Assessment.pdfFiles.map((pdf, pdfIndex) => (
-                            <a
-                              key={pdfIndex}
-                              href={pdf}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center p-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-                            >
-                              <FileText className="h-4 w-4 text-blue-500 mr-3" />
-                              <span className="text-blue-600 text-sm">
-                                Chapter Assessment PDF {pdfIndex + 1}
-                              </span>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
+          {/* Assessment */}
+          <AssessmentTablist
+            chapter={chapter}
+            lessonAssessments={activeLesson?.lessonAssessments}
+          />
         </Tabs>
       </div>
 
@@ -285,7 +170,9 @@ export default function ChapterDetail() {
       <div className="w-full lg:w-80 border-l bg-gray-50 overflow-auto max-h-screen">
         {/* Header */}
         <div className="p-4 border-b bg-white ">
-          <h2 className="text-sm font-semibold text-gray-700">Chapter Content</h2>
+          <h2 className="text-sm font-semibold text-gray-700">
+            Chapter Content
+          </h2>
         </div>
 
         {/* Chapter Toggle Section */}
@@ -301,24 +188,35 @@ export default function ChapterDetail() {
                 ) : (
                   <ChevronRight className="w-4 h-4 text-gray-500" />
                 )}
-                <span className="text-sm font-medium text-gray-800">{chapter.title}</span>
+                <span className="text-sm font-medium text-gray-800">
+                  {chapter.title}
+                </span>
               </div>
-              <span className="text-xs text-gray-500">{chapter.lessons.length} lessons</span>
+              <span className="text-xs text-gray-500">
+                {chapter.lessons.length} lessons
+              </span>
             </button>
 
             {(expandedSections[chapter.title] || true) && (
               <div className="pl-6 pr-4 pb-2">
                 {chapter.lessons.map((lesson, lessonIndex) => {
-                  const isActive = activeLesson && activeLesson._id === lesson._id;
+                  const isActive =
+                    activeLesson && activeLesson._id === lesson._id;
                   return (
                     <button
                       key={lessonIndex}
                       onClick={() => setActiveLesson(lesson)}
                       className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-sm transition 
-                  ${isActive ? "bg-green-100 text-green-700 font-medium" : "hover:bg-gray-100 text-gray-700"}`}
+                  ${
+                    isActive
+                      ? "bg-green-100 text-green-700 font-medium"
+                      : "hover:bg-gray-100 text-gray-700"
+                  }`}
                     >
                       <PlayCircle
-                        className={`h-4 w-4 ${isActive ? "text-green-500" : "text-gray-400"}`}
+                        className={`h-4 w-4 ${
+                          isActive ? "text-green-500" : "text-gray-400"
+                        }`}
                       />
                       <span>{lesson.title}</span>
                     </button>
@@ -329,7 +227,6 @@ export default function ChapterDetail() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

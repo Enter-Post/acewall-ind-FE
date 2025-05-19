@@ -153,7 +153,7 @@ const AllCourses = () => {
                       </AspectRatio>
                       <CardHeader>
                         <CardTitle className="flex justify-between flex-col gap-2">
-                          <span className="text-md font-bold leading-tight">
+                          <span className="text-md font-bold leading-tight capitalize">
                             {course.courseTitle}
                           </span>
                         </CardTitle>
@@ -171,7 +171,7 @@ const AllCourses = () => {
                             </p>
                           </div>
 
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground capitalize">
                             Language: {course?.language}
                           </p>
                         </div>

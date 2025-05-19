@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,7 +17,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, Plus, ChevronDown, ChevronUp, ArrowLeft, ChevronLeft } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+} from "lucide-react";
 import JoditEditor from "jodit-react";
 import {
   Form,
@@ -30,6 +36,7 @@ import {
 import { toast } from "sonner";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
+import DueDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
 
 // Define the form schema with Zod
 const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
@@ -47,10 +54,12 @@ const mcqQuestionSchema = baseQuestionSchema.extend({
   type: z.literal("mcq"),
   options: z
     .array(optionSchema)
-    .min(2, { message: "At least 2 options are required" }),
+    .min(2, { message: "At least 2 options are required" })
+    .max(4, { message: "Maximum 4 options are allowed" }),
   correctAnswer: z
     .string()
     .min(1, { message: "Please select the correct answer" }),
+  points: z.number().min(0, { message: "Points must be at least 0" }),
 });
 
 const trueFalseQuestionSchema = baseQuestionSchema.extend({
@@ -58,6 +67,7 @@ const trueFalseQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z.enum(["true", "false"], {
     required_error: "Please select the correct answer",
   }),
+  points: z.number().min(0, { message: "Points must be at least 0" }),
 });
 
 const qaQuestionSchema = baseQuestionSchema.extend({
@@ -65,6 +75,7 @@ const qaQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z
     .string()
     .min(1, { message: "Please provide a model answer" }),
+  points: z.number().min(0, { message: "Points must be at least 0" }),
 });
 
 const questionSchema = z.discriminatedUnion("type", [
@@ -85,12 +96,19 @@ const formSchema = z.object({
   questions: z
     .array(questionSchema)
     .min(1, { message: "At least one question is required" }),
+  dueDate: z.object({
+    date: z.string().min(1, { message: "Please select a date" }),
+    time: z.string().min(1, { message: "Please select a time" }),
+    dateTime: z
+      .string()
+      .min(1, { message: "Selected time must be in the future" })
+      .nullable(),
+  }),
 });
 
 export default function CreateAssessmentPage() {
   const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
   const params = useParams();
   const TITLE_LIMIT = 120;
   const DESC_LIMIT = 1000;
@@ -102,6 +120,11 @@ export default function CreateAssessmentPage() {
       insertImageAsBase64URI: true,
     },
   });
+
+  // Add this near the top of the component, after the useState declarations
+  const handleOptionChange = useCallback((e, field) => {
+    field.onChange(e.target.value);
+  }, []);
 
   // Initialize the form with react-hook-form and zod resolver
   const form = useForm({
@@ -117,13 +140,17 @@ export default function CreateAssessmentPage() {
           type: "mcq",
           question: "",
           options: ["", "", "", ""],
+          points: 0,
           correctAnswer: "",
         },
       ],
+      dueDate: {
+        date: "",
+        time: "",
+        dateTime: null,
+      },
     },
   });
-
-
 
   console.log(form.formState.errors, "form");
 
@@ -132,7 +159,6 @@ export default function CreateAssessmentPage() {
     control: form.control,
     name: "questions",
   });
-
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
 
@@ -140,7 +166,7 @@ export default function CreateAssessmentPage() {
       const isValidType =
         file.type === "application/pdf" ||
         file.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       return isValidType && isValidSize;
     });
@@ -158,7 +184,6 @@ export default function CreateAssessmentPage() {
       question: "",
       options: ["", "", "", ""],
       correctAnswer: "",
-      id: Date.now(),
     });
   };
 
@@ -181,64 +206,64 @@ export default function CreateAssessmentPage() {
   const addOption = (questionIndex) => {
     const currentOptions =
       form.getValues(`questions.${questionIndex}.options`) || [];
-    form.setValue(`questions.${questionIndex}.options`, [
-      ...currentOptions,
-      "",
-    ]);
+    // Only add if less than 4 options
+    if (currentOptions.length < 4) {
+      form.setValue(`questions.${questionIndex}.options`, [
+        ...currentOptions,
+        "",
+      ]);
+    }
   };
 
   const removeOption = (questionIndex, optionIndex) => {
     const currentOptions =
       form.getValues(`questions.${questionIndex}.options`) || [];
-    if (currentOptions.length <= 2) return;
-
-    const newOptions = [...currentOptions];
-    newOptions.splice(optionIndex, 1);
-    form.setValue(`questions.${questionIndex}.options`, newOptions);
+    // Only remove if more than 2 options
+    if (currentOptions.length > 2) {
+      const newOptions = [...currentOptions];
+      newOptions.splice(optionIndex, 1);
+      form.setValue(`questions.${questionIndex}.options`, newOptions);
+    }
   };
 
   const onSubmit = async (data) => {
     const toastId = toast.loading("Creating assessment...");
+    console.log(data, "data");
 
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("description", data.description);
+    if (data.dueDate.dateTime) {
+      formData.append("dueDate", data.dueDate.dateTime);
+    }
+    formData.append(params.type, params.id);
+    formData.append("questions", JSON.stringify(data.questions));
+    if (selectedFiles.length > 0) {
+      selectedFiles.forEach((file) => {
+        formData.append("files", file); // key must match backend field
+      });
+    }
 
-      // Append basic fields
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-
-      // Dynamically append chapter/lesson ID (e.g., chapter: 1234 or lesson: 1234)
-      formData.append(params.type, params.id); // assuming params.type is either 'chapter' or 'lesson'
-
-      // Append questions as a JSON string
-      formData.append("questions", JSON.stringify(data.questions));
-
-      // Append multiple files to the same field name "files"
-      if (selectedFiles.length > 0) {
-        selectedFiles.forEach((file) => {
-          formData.append("files", file); // key must match backend field
-        });
-      }
-
-      // Submit the multipart form data
-      const res = await axiosInstance.post("assessment/create", formData, {
+    await axiosInstance
+      .post("assessment/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+      })
+      .then((res) => {
+        toast.success(res.data.message, { id: toastId });
+        navigate(-1);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(
+          err?.response?.data?.message || "Failed to create assessment",
+          { id: toastId }
+        );
       });
-
-      toast.success("Assessment created successfully!", { id: toastId });
-      navigate(-1);
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message || "Failed to create assessment",
-        { id: toastId }
-      );
-      console.error("Assessment creation error:", error);
-    }
   };
 
-
+  const { watch, control, formState } = form;
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg max-w-4xl">
@@ -251,7 +276,6 @@ export default function CreateAssessmentPage() {
           className="flex items-center gap-2"
         >
           <ChevronLeft className="h-4 w-4" />
-
         </Button>
       </div>
 
@@ -319,107 +343,134 @@ export default function CreateAssessmentPage() {
             />
           </div>
 
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Due Date</h3>
+            <DueDatePicker name="dueDate" />
+          </div>
+
           {/* Questions Section */}
           <div className="space-y-6">
-
-
-            {fields.map((question, questionIndex) => (
-              <Card key={question.id} className="relative">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-base">
-                      Question {questionIndex + 1}
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => moveQuestion(questionIndex, "up")}
-                        disabled={questionIndex === 0}
-                        className="h-8 w-8 p-0"
-                      >
-                        <ChevronUp size={16} />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => moveQuestion(questionIndex, "down")}
-                        disabled={questionIndex === fields.length - 1}
-                        className="h-8 w-8 p-0"
-                      >
-                        <ChevronDown size={16} />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeQuestion(questionIndex)}
-                        disabled={fields.length <= 1}
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Question Type */}
-                  <FormField
-                    control={form.control}
-                    name={`questions.${questionIndex}.type`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Question Type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
+            {fields.map((question, questionIndex) => {
+              return (
+                <Card key={question.id} className="relative">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-base">
+                        Question {questionIndex + 1}
+                      </CardTitle>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveQuestion(questionIndex, "up")}
+                          disabled={questionIndex === 0}
+                          className="h-8 w-8 p-0"
                         >
+                          <ChevronUp size={16} />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveQuestion(questionIndex, "down")}
+                          disabled={questionIndex === fields.length - 1}
+                          className="h-8 w-8 p-0"
+                        >
+                          <ChevronDown size={16} />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeQuestion(questionIndex)}
+                          disabled={fields.length <= 1}
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Question Type */}
+                    <FormField
+                      control={form.control}
+                      name={`questions.${questionIndex}.type`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Question Type</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="mcq">
+                                Multiple Choice
+                              </SelectItem>
+                              <SelectItem value="truefalse">
+                                True/False
+                              </SelectItem>
+                              <SelectItem value="qa">
+                                Question & Answer
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Question Points */}
+                    <FormField
+                      control={form.control}
+                      name={`questions.${questionIndex}.points`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Points</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="mcq">Multiple Choice</SelectItem>
-                            <SelectItem value="truefalse">
-                              True/False
-                            </SelectItem>
-                            <SelectItem value="qa">
-                              Question & Answer
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Question Content */}
-                  <FormField
-                    control={form.control}
-                    name={`questions.${questionIndex}.question`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Question</FormLabel>
-                        <FormControl>
-                          <div className="border rounded-md">
-                            <JoditEditor
-                              value={field.value}
-                              config={editorConfig}
-                              onBlur={field.onChange}
+                            <Input
+                              {...field}
+                              type="number"
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
                             />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  {/* Question-specific answer fields */}
-                  {form.watch(`questions.${questionIndex}.type`) ===
-                    "truefalse" && (
+                    {/* Question Content */}
+                    <FormField
+                      control={form.control}
+                      name={`questions.${questionIndex}.question`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Question</FormLabel>
+                          <FormControl>
+                            <div className="border rounded-md">
+                              <JoditEditor
+                                value={field.value}
+                                config={editorConfig}
+                                onBlur={field.onChange}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Question-specific answer fields */}
+                    {form.watch(`questions.${questionIndex}.type`) ===
+                      "truefalse" && (
                       <FormField
                         control={form.control}
                         name={`questions.${questionIndex}.correctAnswer`}
@@ -463,143 +514,152 @@ export default function CreateAssessmentPage() {
                         )}
                       />
                     )}
-
-                  {form.watch(`questions.${questionIndex}.type`) === "mcq" && (
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <Label>Answer Options</Label>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => addOption(questionIndex)}
-                          disabled={
-                            (form.watch(`questions.${questionIndex}.options`) || []).length >= 4
-                          }
-                          className="h-7 text-xs"
-                        >
-                          Add Option
-                        </Button>
-                      </div>
-
-                      {(form.watch(`questions.${questionIndex}.options`) || []).length >= 4 && (
-                        <p className="text-xs text-muted-foreground">
-                          Maximum of 4 options allowed.
-                        </p>
-                      )}
-
+                    {/* MCQs */}
+                    {form.watch(`questions.${questionIndex}.type`) ===
+                      "mcq" && (
                       <div className="space-y-3">
-                        {form
-                          .watch(`questions.${questionIndex}.options`)
-                          ?.map((option, optionIndex) => (
-                            <div key={optionIndex} className="flex items-center gap-3">
-                              <FormField
-                                control={form.control}
-                                name={`questions.${questionIndex}.correctAnswer`}
-                                render={({ field }) => (
-                                  <FormItem className="flex items-center space-x-2 space-y-0">
-                                    <FormControl>
-                                      <RadioGroup
-                                        onValueChange={field.onChange}
-                                        value={field.value}
-                                        className="flex"
-                                      >
-                                        <div className="flex items-center space-x-2">
-                                          <RadioGroupItem
-                                            value={optionIndex.toString()}
-                                            id={`option-${questionIndex}-${optionIndex}`}
-                                          />
-                                        </div>
-                                      </RadioGroup>
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name={`questions.${questionIndex}.options.${optionIndex}`}
-                                render={({ field }) => (
-                                  <FormItem className="flex-1 space-y-0">
-                                    <FormControl>
-                                      <Input
-                                        placeholder={`Option ${optionIndex + 1}`}
-                                        {...field}
-                                      />
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeOption(questionIndex, optionIndex)}
-                                disabled={
-                                  form.watch(`questions.${questionIndex}.options`).length <= 2
-                                }
-                                className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                        <div className="flex justify-between items-center">
+                          <Label>Answer Options</Label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addOption(questionIndex)}
+                            disabled={
+                              form.watch(`questions.${questionIndex}.options`)
+                                ?.length >= 4
+                            }
+                            className="h-7 text-xs"
+                          >
+                            Add Option
+                          </Button>
+                        </div>
+
+                        {form.watch(`questions.${questionIndex}.options`)
+                          ?.length >= 4 && (
+                          <p className="text-xs text-muted-foreground">
+                            Maximum of 4 options allowed.
+                          </p>
+                        )}
+
+                        <RadioGroup
+                          value={form.watch(
+                            `questions.${questionIndex}.correctAnswer`
+                          )}
+                          onValueChange={(val) =>
+                            form.setValue(
+                              `questions.${questionIndex}.correctAnswer`,
+                              val
+                            )
+                          }
+                          className="space-y-3"
+                        >
+                          {form
+                            .watch(`questions.${questionIndex}.options`)
+                            ?.map((option, optionIndex) => (
+                              <div
+                                key={optionIndex}
+                                className="flex items-center gap-3"
                               >
-                                <Trash2 size={16} />
-                              </Button>
-                            </div>
-                          ))}
-                      </div>
-
-                      <FormMessage>
-                        {
-                          form.formState.errors.questions?.[questionIndex]
-                            ?.options?.message
-                        }
-                      </FormMessage>
-                    </div>
-                  )}
-
-
-                  {form.watch(`questions.${questionIndex}.type`) === "qa" && (
-                    <FormField
-                      control={form.control}
-                      name={`questions.${questionIndex}.correctAnswer`}
-                      render={({ field }) => {
-                        // Track character length locally
-                        const charCount = field.value?.length || 0;
-                        const maxChars = 200;
-
-                        return (
-                          <FormItem>
-                            <FormLabel>Model Answer (for teacher reference)</FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder="Enter the expected answer"
-                                {...field}
-                                rows={4}
-                                maxLength={maxChars}
-                                onChange={(e) => {
-                                  // Update value with max length enforcement
-                                  if (e.target.value.length <= maxChars) {
-                                    field.onChange(e);
+                                <RadioGroupItem
+                                  value={optionIndex.toString()}
+                                  id={`option-${questionIndex}-${optionIndex}`}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name={`questions.${questionIndex}.options.${optionIndex}`}
+                                  render={({ field }) => (
+                                    <Input
+                                      {...field}
+                                      placeholder={`Option ${optionIndex + 1}`}
+                                      className="flex-1"
+                                      onChange={(e) => {
+                                        field.onChange(e.target.value);
+                                      }}
+                                    />
+                                  )}
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    removeOption(questionIndex, optionIndex)
                                   }
-                                }}
-                              />
-                            </FormControl>
-                            <div className="text-sm text-muted-foreground mt-1">
-                              {charCount} / {maxChars} characters
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  )}
+                                  disabled={
+                                    form.watch(
+                                      `questions.${questionIndex}.options`
+                                    )?.length <= 2
+                                  }
+                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            ))}
+                        </RadioGroup>
 
-                </CardContent>
-              </Card>
-            ))}
+                        <FormMessage>
+                          {
+                            form.formState.errors.questions?.[questionIndex]
+                              ?.options?.message
+                          }
+                        </FormMessage>
+                        <FormMessage>
+                          {
+                            form.formState.errors.questions?.[questionIndex]
+                              ?.correctAnswer?.message
+                          }
+                        </FormMessage>
+                      </div>
+                    )}
+
+                    {form.watch(`questions.${questionIndex}.type`) === "qa" && (
+                      <FormField
+                        control={form.control}
+                        name={`questions.${questionIndex}.correctAnswer`}
+                        render={({ field }) => {
+                          // Track character length locally
+                          const charCount = field.value?.length || 0;
+                          const maxChars = 200;
+
+                          return (
+                            <FormItem>
+                              <FormLabel>
+                                Model Answer (for teacher reference)
+                              </FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Enter the expected answer"
+                                  {...field}
+                                  rows={4}
+                                  maxLength={maxChars}
+                                  onChange={(e) => {
+                                    // Update value with max length enforcement
+                                    if (e.target.value.length <= maxChars) {
+                                      field.onChange(e);
+                                    }
+                                  }}
+                                />
+                              </FormControl>
+                              <div className="text-sm text-muted-foreground mt-1">
+                                {charCount} / {maxChars} characters
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
             {form.formState.errors.questions?.message && (
               <p className="text-sm font-medium text-destructive">
                 {form.formState.errors.questions.message}
               </p>
             )}
-
           </div>
 
           <div className="flex justify-between items-center">
@@ -629,7 +689,9 @@ export default function CreateAssessmentPage() {
                 <div className="space-y-4 mt-2">
                   {selectedFiles.map((file, idx) => (
                     <div key={idx} className="border p-3 rounded">
-                      <p className="text-sm text-gray-700 truncate">{file.name}</p>
+                      <p className="text-sm text-gray-700 truncate">
+                        {file.name}
+                      </p>
 
                       {file.type === "application/pdf" ? (
                         <iframe
@@ -653,16 +715,13 @@ export default function CreateAssessmentPage() {
                 </div>
               </div>
             )}
-
           </div>
 
-
-
           <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Submitting..." : "Submit Assessment"}
+            {form.formState.isSubmitting
+              ? "Submitting..."
+              : "Submit Assessment"}
           </Button>
-
-
         </form>
       </Form>
     </div>

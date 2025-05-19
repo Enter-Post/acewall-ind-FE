@@ -21,6 +21,8 @@ export default function TeacherAnnouncement() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [announcementToDelete, setAnnouncementToDelete] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
+
 
   // Function to fetch announcements
   const fetchAnnouncements = async () => {

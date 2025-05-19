@@ -35,13 +35,15 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
               >
                 <div className="flex-1">
                   <Link to={link}>
-                    {item.basics?.courseTitle ? (
+                    {item?.courseTitle ? (
                       <p className="font-semibold text-gray-800">
-                        {item.basics.courseTitle}
+                        {item.courseTitle}
                       </p>
                     ) : (
                       <>
-                        <p className="font-semibold text-gray-800">{item.course}</p>
+                        <p className="font-semibold text-gray-800">
+                          {item.course}
+                        </p>
                         <p className="text-sm text-gray-600">{item.title}</p>
                       </>
                     )}
@@ -59,12 +61,13 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
               </div>
             ))
           ) : (
-            <div className="text-center text-sm text-gray-500 py-10">No data available.</div>
+            <div className="text-center text-sm text-gray-500 py-10">
+              No data available.
+            </div>
           )}
         </div>
       </CardContent>
     </Card>
-
   );
 }
 
@@ -220,14 +223,14 @@ const StudentCard = ({ student }) => (
         <span className="text-right text-gray-700 font-medium">
           {student?.purchasedCourse?.length || 0}
         </span>
-
       </div>
 
       {/* Optional CTA */}
-      <Button className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 " >View Profile</Button>
+      <Button className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 ">
+        View Profile
+      </Button>
     </CardContent>
   </Card>
-
 );
 
 const TransactionCard = ({ title, data }) => (
@@ -348,16 +351,14 @@ function StudentProfileCourseCard({ course }) {
     <Card className="p-4 flex flex-col items-center  gap-4 shadow-sm">
       <div className="w-full sm:w-36 h-24 rounded-md overflow-hidden shrink-0">
         <img
-          src={course.basics.thumbnail}
+          src={course.thumbnail}
           alt="Course Thumbnail"
           className="w-full h-full object-cover"
         />
       </div>
       <div className="flex-1 flex justify-center flex-col sm:flex-row items-center sm:items-start justify-between w-full gap-4 ">
         <div className="text-center sm:text-left">
-          <h3 className="font-bold text-gray-800">
-            {course.basics.courseTitle}
-          </h3>
+          <h3 className="font-bold text-gray-800">{course.courseTitle}</h3>
         </div>
       </div>
     </Card>
@@ -372,7 +373,7 @@ function StudentProfileStatCard({ title, value, icon }) {
       >
         {icon}
       </div>
-      <div >
+      <div>
         <p className="text-gray-500">{title}</p>
         <p className="text-3xl font-bold text-center">{value}</p>
       </div>
@@ -385,19 +386,19 @@ const MyCoursesCard = ({ course }) => {
     <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
       <AspectRatio ratio={16 / 9}>
         <img
-          src={course.basics.thumbnail || "/placeholder.svg"}
-          alt={`${course.basics.thumbnail} image`}
+          src={course.course.thumbnail.url || "/placeholder.svg"}
+          alt={`${course.course.thumbnail.filename} image`}
           className="object-cover w-full h-full"
         />
       </AspectRatio>
       <CardHeader>
         <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-          {course.basics.category?.title || "Development"}
+          {course.course.category?.title}
         </div>
         <CardTitle className="flex justify-between flex-col gap-2">
-          <span>{course.basics.courseTitle}</span>
+          <span>{course.course.courseTitle}</span>
           {/* <span className="text-lg font-semibold text-green-500">
-            ${course.basics.price}
+            ${course.price}
           </span> */}
         </CardTitle>
       </CardHeader>
@@ -411,10 +412,7 @@ const MyCoursesCard = ({ course }) => {
             {course.createdby?.lastName}
           </p>{" "} */}
           <p className="text-sm text-muted-foreground">
-            Language: {course.basics.language}
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Chapters: {course.chapters.length}
+            <span className="font-semibold">Language: </span> {course.course.language}
           </p>
         </div>
       </CardContent>

@@ -27,21 +27,24 @@ export default function CourseOverview() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
-  console.log(course, "course");
+  // console.log(course.teachingPoints, "course");
 
   const Navigate = useNavigate();
 
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
-      try {
-        const response = await axiosInstance.get(`/course/get/${id}`);
-        setCourse(response.data.course);
-      } catch (error) {
-        console.log("Error fetching course:", error);
-      } finally {
-        setLoading(false);
-      }
+      await axiosInstance
+        .get(`/enrollment/studentCourseDetails/${id}`)
+        .then((res) => {
+          console.log(res);
+          setCourse(res.data.enrolledCourse.courseDetails);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
     };
     getCourseDetails();
   }, [id]);
@@ -74,43 +77,46 @@ export default function CourseOverview() {
     return <div className="p-6 text-center">Course not found.</div>;
   }
 
-
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Course Header */}
       <div className="space-y-6">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900">
-          {course.basics.courseTitle}
+          {course.courseTitle}
         </h1>
 
         <p className="text-gray-600 text-base  leading-relaxed">
-          {course.basics.courseDescription}
+          {course.courseDescription}
         </p>
-
-        {/* Tags and Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 mt-4">
-          {/* Category */}
-          <div className="flex items-center gap-2">
+        <div className="flex item-center gap-10 mt-4">
+          <div className="flex items-center justify-center gap-2">
             <h3 className="text-gray-600 text-sm font-semibold mb-1">
               Category
             </h3>
             <Badge className="bg-green-100 text-green-800 text-sm border-none">
-              {course.basics.category.title}
+              {course?.category?.title}
             </Badge>
           </div>
 
-          {/* Language */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center  gap-2">
+            <h3 className="text-gray-600 text-sm font-semibold mb-1">
+              Subcategory
+            </h3>
+            <Badge className="bg-green-100 text-green-800 text-sm border-none">
+              {course?.subcategory?.title}
+            </Badge>
+          </div>
+
+          <div className="flex items-center justify-center gap-2">
             <h3 className="text-gray-600 text-sm font-semibold mb-1">
               Language
             </h3>
             <Badge className="bg-blue-100 text-blue-800 text-sm border-none capitalize">
-              {course.basics.language}
+              {course.language}
             </Badge>
           </div>
         </div>
 
-      
         {/* Instructor Info */}
         <section className="flex items-center justify-between">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
@@ -169,10 +175,10 @@ export default function CourseOverview() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">What You'll Learn</h2>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {course.basics.teachingPoints.map((point, i) => (
+              {course?.teachingPoints?.map((point, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
-                  <span>{point.value}</span>
+                  <span>{point}</span>
                 </li>
               ))}
             </ul>
@@ -181,10 +187,10 @@ export default function CourseOverview() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">Requirements</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {course.basics.requirements.map((req, i) => (
+              {course?.requirements.map((req, i) => (
                 <div key={i} className="flex items-start gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500 mt-1" />
-                  <span>{req.value}</span>
+                  <span>{req}</span>
                 </div>
               ))}
             </div>
@@ -208,20 +214,10 @@ export default function CourseOverview() {
                       <CardDescription>{chapter.description}</CardDescription>
                     </div>
                     <Badge className="bg-gray-100 text-gray-800 self-start">
-                      {chapter.lessons.length} Lessons
+                      {chapter?.lessonsCount} Lessons
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <ul className="space-y-2">
-                    {chapter.lessons.map((lesson, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        <span>{lesson.title}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
                 <CardFooter>
                   <Link
                     to={`/student/mycourses/chapter/${chapter._id}`}

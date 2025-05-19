@@ -1,114 +1,113 @@
-  import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-  import { AspectRatio } from "@/components/ui/aspect-ratio";
-  import { Link } from "react-router-dom";
-  import { Button } from "@/components/ui/button";
-  import SearchBox from "@/CustomComponent/SearchBox";
-  import { useContext, useEffect, useState } from "react";
-  import { axiosInstance } from "@/lib/AxiosInstance";
-  import oopsImage from "@/assets/oopsimage.png";
-  import { GlobalContext } from "@/Context/GlobalProvider";
-  import { MyCoursesCard } from "@/CustomComponent/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import SearchBox from "@/CustomComponent/SearchBox";
+import { useContext, useEffect, useState } from "react";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import oopsImage from "@/assets/oopsimage.png";
+import { GlobalContext } from "@/Context/GlobalProvider";
+import { MyCoursesCard } from "@/CustomComponent/Card";
 
-  const CourseCards = () => {
-    const [courses, setCourses] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [loading, setLoading] = useState(false);
-    const { user } = useContext(GlobalContext);
+const CourseCards = () => {
+  const [enrollment, setEnrollment] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { user } = useContext(GlobalContext);
 
-    const searching = searchQuery.trim() !== "";
+  console.log(enrollment, "enrollment");
 
-    useEffect(() => {
-      const getCourses = async () => {
-        setLoading(true);
-        await axiosInstance
-          .get(`/course/getMyCourses`, {
-            params: { search: searchQuery },
-            
-          })
-          .then((res) => {
-            setCourses(res.data.purchasedCourses);
-            // console.log("API Response:", res.data)
-            setLoading(false);
+  const searching = searchQuery.trim() !== "";
 
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
+  useEffect(() => {
+    const getCourses = async () => {
+      setLoading(true);
+      await axiosInstance
+        .get(`/enrollment/studentCourses`, {
+          params: { search: searchQuery },
+        })
+        .then((res) => {
+          setEnrollment(res.data.enrolledCourses);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    };
 
-      getCourses();
-    }, [searchQuery]);
+    getCourses();
+  }, [searchQuery]);
 
-    return (
-      <section className="p-3 md:p-0">
-        <div className="flex flex-col pb-5 gap-5 mb-10">
-          <div>
-            <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-              My Courses
-            </p>
-          </div>
-          <SearchBox query={searchQuery} setQuery={setSearchQuery} />
+  return (
+    <section className="p-3 md:p-0">
+      <div className="flex flex-col pb-5 gap-5 mb-10">
+        <div>
+          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+            My Courses
+          </p>
         </div>
-        {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <p className="text-lg text-muted-foreground">Loading courses...</p>
-          </div>
-        ) : courses?.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center px-4">
-            {searching ? (
-              <>
-                <h1 className="text-2xl font-semibold text-muted-foreground">
-                  No course found for "{searchQuery}"
-                </h1>
-                {/* <img src={oopsImage} alt="No result" className="w-full max-w-md h-80 object-contain mt-6" /> */}
-                <p className="text-md mt-4 text-muted-foreground">
-                  Try a different keyword or explore all courses.
-                </p>
-                <ul className="list-disc pl-6 leading-relaxed mt-4 text-left">
-                  <li>Make sure all words are spelled correctly</li>
-                  <li>Try different search terms</li>
-                  <li>Try more general search terms</li>
-                </ul>
-                <Button
-                  className="mt-6 bg-green-500 text-white hover:bg-acewall-main"
-                  onClick={() => setSearchQuery("")}
-                >
-                  Reset Search
+        <SearchBox query={searchQuery} setQuery={setSearchQuery} />
+      </div>
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <p className="text-lg text-muted-foreground">Loading courses...</p>
+        </div>
+      ) : enrollment?.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center px-4">
+          {searching ? (
+            <>
+              <h1 className="text-2xl font-semibold text-muted-foreground">
+                No course found for "{searchQuery}"
+              </h1>
+              {/* <img src={oopsImage} alt="No result" className="w-full max-w-md h-80 object-contain mt-6" /> */}
+              <p className="text-md mt-4 text-muted-foreground">
+                Try a different keyword or explore all courses.
+              </p>
+              <ul className="list-disc pl-6 leading-relaxed mt-4 text-left">
+                <li>Make sure all words are spelled correctly</li>
+                <li>Try different search terms</li>
+                <li>Try more general search terms</li>
+              </ul>
+              <Button
+                className="mt-6 bg-green-500 text-white hover:bg-acewall-main"
+                onClick={() => setSearchQuery("")}
+              >
+                Reset Search
+              </Button>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-semibold text-muted-foreground">
+                Kickstart your learning journey
+              </h1>
+              <p className="text-lg text-muted-foreground mt-2">
+                When you enroll in a course, it will appear here.
+              </p>
+              <img
+                src={oopsImage}
+                alt="No courses"
+                className="w-full max-w-md h-80 object-contain mt-6"
+              />
+              <Link to="/student/courses">
+                <Button className="mt-6 bg-green-500 text-white hover:bg-acewall-main">
+                  Explore Courses
                 </Button>
-              </>
-            ) : (
-              <>
-                <h1 className="text-2xl font-semibold text-muted-foreground">
-                  Kickstart your learning journey
-                </h1>
-                <p className="text-lg text-muted-foreground mt-2">
-                  When you enroll in a course, it will appear here.
-                </p>
-                <img
-                  src={oopsImage}
-                  alt="No courses"
-                  className="w-full max-w-md h-80 object-contain mt-6"
-                />
-                <Link to="/student/courses">
-                  <Button className="mt-6 bg-green-500 text-white hover:bg-acewall-main">
-                    Explore Courses
-                  </Button>
-                </Link>
-              </>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses?.map((course, index) => (
-              <Link key={index} to={`/student/mycourses/${course._id}`}>
-                <MyCoursesCard course={course} />
               </Link>
-            ))}
-          </div>
-        )}
-      </section>
-    );
-  };
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {enrollment?.map((course, index) => (
+            <Link key={index} to={`/student/mycourses/${course._id}`}>
+              <MyCoursesCard course={course} />
+            </Link>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+};
 
-  export default CourseCards;
+export default CourseCards;

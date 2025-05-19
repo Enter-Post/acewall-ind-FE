@@ -34,7 +34,7 @@ const AnnouncementSchema = z.object({
   message: z.string().min(1, "Message is required"),
 });
 
-export default function AnnouncementDialog({ open, onOpenChange }) {
+export default function AnnouncementDialog({ open, onOpenChange , onCreated  }) {
   const { user } = useContext(GlobalContext);
   const [allCourses, setAllCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -84,6 +84,8 @@ export default function AnnouncementDialog({ open, onOpenChange }) {
         payload
       );
       console.log("Announcement created:", res.data);
+      if (onCreated) onCreated(res.data.announcement);
+
       onOpenChange(false);
       reset(); // Clear the form
     } catch (err) {

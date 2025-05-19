@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import Layout from "./Page/StudentPortal/Layout";
 import Deshboard from "./Page/StudentPortal/Deshboard";
 import Mycourses from "./Page/StudentPortal/Courses/MyCourses";
-import Assignment from "./Page/StudentPortal/Assignment";
+import Assignment from "./Page/StudentPortal/Assessment/Assignment";
 import Login from "./Page/Login";
 import Announcement from "./Page/StudentPortal/Announcement";
 import Account from "./Page/StudentPortal/Account";
@@ -49,6 +49,7 @@ import ChapterDetail from "./Page/StudentPortal/Courses/MyCourseDetail";
 import NotFoundPage from "./Page/NotFoundPage";
 import { io } from "socket.io-client";
 import ChatWindow from "./CustomComponent/MessagesCmp.jsx/chat-window";
+import AssessmentSubmissionPage from "./Page/StudentPortal/Assessment/AssessmentSubmissionPage";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -128,10 +129,16 @@ function App() {
             <Route path="mycourses">
               <Route index element={<Mycourses />} />
               <Route path=":id" element={<MainDetailPage />} />
-              <Route path="chapter/:id" element={<ChapterDetail />} />
+              <Route path="chapter/:chapterId" element={<ChapterDetail />} />
             </Route>
             <Route index element={<Deshboard />} />
-            <Route path="assignment" element={<Assignment />}></Route>
+            <Route path="assessment">
+              <Route index element={<Assignment />} />
+              <Route
+                path="submission/:id"
+                element={<AssessmentSubmissionPage />}
+              />
+            </Route>
             <Route path="gradebook" element={<Gradebook />}></Route>
             <Route path="announcements" element={<Announcement />}></Route>
             <Route path="account" element={<Account />}></Route>

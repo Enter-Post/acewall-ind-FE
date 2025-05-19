@@ -73,7 +73,7 @@ const Assignment = () => {
     <div className="">
       <div className="">
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
-        Assessment
+          Assessment
         </p>
       </div>
       <div className="flex items-center py-4">
@@ -91,14 +91,14 @@ const Assignment = () => {
             <TableHeader>
               <TableRow>
                 {tableHead.map((item, idx) => {
-                  return <TableHead key={idx}>{item}  </TableHead>;
+                  return <TableHead key={idx}>{item} </TableHead>;
                 })}
 
                 {/* <TableHead className="">Actions</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAssessment.map((assignment) => (
+              {filteredAssessment?.map((assignment) => (
                 <>
                   <TableRow
                     key={assignment.id}
@@ -127,10 +127,11 @@ const Assignment = () => {
                     <TableCell>{assignment.dueDate}</TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${assignment.status === "Completed"
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          assignment.status === "Completed"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
-                          }`}
+                        }`}
                       >
                         {assignment.status}
                       </span>

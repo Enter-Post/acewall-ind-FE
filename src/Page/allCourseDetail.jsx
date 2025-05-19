@@ -32,19 +32,6 @@ const AllCoursesDetail = () => {
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const purchase = async () => {
-    await axiosInstance
-      .post("course/purchase", { course: courseDetails._id })
-      .then((res) => {
-        console.log(res);
-        toast.success(res.data.message);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response.data.error);
-      });
-  };
-
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
@@ -63,8 +50,6 @@ const AllCoursesDetail = () => {
 
     getCourseDetails();
   }, [id]);
-
-  console.log("Course Details State:", courseDetails); // Debug the state value
 
   if (loading)
     return (
@@ -161,11 +146,12 @@ const AllCoursesDetail = () => {
                     {Array.isArray(courseDetails?.teachingPoints) &&
                       courseDetails.teachingPoints.map((item, index) => (
                         <div key={index} className="flex items-start gap-2">
+                          {console.log(item, "item")}
                           <CheckCircle2
                             size={20}
                             className="text-green-500 mt-0.5 "
                           />
-                          <span className="text-sm">{item.value}</span>
+                          <span className="text-sm">{item}</span>
                         </div>
                       ))}
                   </div>
@@ -181,7 +167,7 @@ const AllCoursesDetail = () => {
                             size={20}
                             className="text-green-500 mt-0.5"
                           />
-                          <span className="text-sm">{item.value}</span>
+                          <span className="text-sm">{item}</span>
                         </div>
                       ))}
                   </div>
@@ -420,7 +406,9 @@ const AllCoursesDetail = () => {
         <div className="md:col-span-1">
           <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
             <div className="flex flex-col gap-6 mb-6">
-              <PurchaseConfirmationModal purchase={purchase} />
+              <PurchaseConfirmationModal
+                courseID={courseDetails._id}
+              />
             </div>
 
             <div className="space-y-4">
@@ -441,19 +429,17 @@ const AllCoursesDetail = () => {
                 <CheckCircle2 size={18} className="mt-0.5" />
                 <span className="text-sm">Access on mobile and web</span>
               </div>
-              <div className="flex items-start gap-2 text-gray-700">
-                <CheckCircle2 size={18} className="mt-0.5" />
-                <span className="text-sm">
-                  Includes{" "}
-                  {courseDetails.chapters
-                    ? `${courseDetails.chapters.reduce(
-                        (acc, chapter) => acc + chapter.lessons.length,
-                        0
-                      )} Lessons`
-                    : "No lessons included"}
-                </span>
-              </div>
-              <div className="flex items-start gap-2 text-gray-700">
+
+              {courseDetails?.chapters.length > 0 && (
+                <div className="flex items-start gap-2 text-gray-700">
+                  <CheckCircle2 size={18} className="mt-0.5" />
+                  <span className="text-sm">
+                    Include {courseDetails?.chapters.length}{" "}
+                    {courseDetails.chapters.length > 1 ? "chapters" : "chapter"}
+                  </span>
+                </div>
+              )}
+              {/* <div className="flex items-start gap-2 text-gray-700">
                 <CheckCircle2 size={18} className="mt-0.5" />
                 <span className="text-sm">
                   Includes {courseDetails.level}{" "}
@@ -468,7 +454,7 @@ const AllCoursesDetail = () => {
                       }, 0)} Assessments`
                     : "No Assessments available"}
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

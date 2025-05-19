@@ -11,12 +11,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-export default function PurchaseConfirmationModal({ purchase }) {
+export default function PurchaseConfirmationModal({ courseID }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleConfirm = () => {
-    purchase();
+  const handleConfirm = async () => {
+    await axiosInstance
+      .post(`enrollment/create/${courseID}`, )
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.message);
+        navigate("/student/mycourses");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response.data.error || "Something went wrong");
+      });
     setOpen(false);
   };
 
@@ -38,7 +51,7 @@ export default function PurchaseConfirmationModal({ purchase }) {
             <CheckCircle2 className="h-5 w-5" /> Enroll in Course
           </DialogTitle>
           <DialogDescription>
-             Click below to enroll and get started for free.
+            Click below to enroll and get started for free.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
