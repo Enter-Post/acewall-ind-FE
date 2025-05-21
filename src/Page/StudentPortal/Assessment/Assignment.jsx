@@ -12,42 +12,6 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronDown, ChevronRight, Upload, FileText } from "lucide-react";
 
-const initialAssessment = [
-  {
-    id: "1",
-    title: "Essay on Climate Change",
-    course: "Environmental Science 101",
-    dueDate: "2024-03-15",
-    status: "Pending",
-    description:
-      "Write a 5-page essay discussing the impacts of climate change.",
-    documents: [
-      { id: "doc1", name: "Climate Change Guidelines.pdf", url: "#" },
-      { id: "doc2", name: "Sample Essay.docx", url: "#" },
-    ],
-  },
-  {
-    id: "2",
-    title: "Math Assignment 3",
-    course: "Calculus II",
-    dueDate: "2024-03-20",
-    status: "Completed",
-    description: "Solve the following calculus problems.",
-    documents: [{ id: "doc3", name: "Problems.pdf", url: "#" }],
-  },
-  {
-    id: "3",
-    title: "History Presentation",
-    course: "World History",
-    dueDate: "2024-03-25",
-    status: "Pending",
-    description: "Prepare a presentation on the French Revolution.",
-    documents: [
-      { id: "doc4", name: "Presentation Guidelines.pdf", url: "#" },
-      { id: "doc5", name: "Historical Data.xlsx", url: "#" },
-    ],
-  },
-];
 
 const tableHead = ["Assessment Name", "Course", "Due Date", "Status"];
 const Assignment = () => {

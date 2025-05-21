@@ -50,6 +50,9 @@ import NotFoundPage from "./Page/NotFoundPage";
 import { io } from "socket.io-client";
 import ChatWindow from "./CustomComponent/MessagesCmp.jsx/chat-window";
 import AssessmentSubmissionPage from "./Page/StudentPortal/Assessment/AssessmentSubmissionPage";
+import SubmittedAssessment from "./Page/teacher/Assessment/submittedAssessment";
+import AssessmentReview from "./Page/teacher/Assessment/submittedAssessment";
+import AllSubmission from "./Page/teacher/Assessment/allSubmission";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -159,8 +162,10 @@ function App() {
             <Route index element={<TeacherDashboard />} />
             <Route path="account" element={<TeacherAccount />} />
             {/* <Route path="messages" element={<TeacherMessages />} /> */}
-            <Route path="assignment">
+            <Route path="assessments">
               <Route index element={<TeacherrAssessment />} />
+              <Route path="allsubmissions/:id" element={<AllSubmission />} />
+              <Route path=":id" element={<AssessmentReview />} />
               <Route
                 path="create/:type/:id"
                 element={<CreateAssessmentPage />}

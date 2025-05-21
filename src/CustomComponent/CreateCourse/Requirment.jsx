@@ -12,17 +12,16 @@ const RequirementInput = React.memo(
         <input
           {...register(`requirements.${index}.value`)}
           placeholder="What is your course requirement..."
-          className={`pr-16 bg-gray-50 w-full relative border border-gray-300 rounded-sm px-3 py-1 ${
-            error ? "border border-red-500" : ""
-          }`}
+          maxLength={120}
+          className={`pr-16 bg-gray-50 w-full relative border border-gray-300 rounded-sm px-3 py-1 ${error ? "border border-red-500" : ""
+            }`}
         />
 
         <button
           type="button"
           onClick={() => remove(index)}
-          className={`text-red-500 cursor-pointer border border-gray-300 px-2 py-1 rounded-lg ${
-            requirementsFields.length === 1 ? "hidden" : ""
-          }`}
+          className={`text-red-500 cursor-pointer border border-gray-300 px-2 py-1 rounded-lg ${requirementsFields.length === 1 ? "hidden" : ""
+            }`}
         >
           Remove
         </button>

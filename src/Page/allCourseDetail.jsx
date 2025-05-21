@@ -39,6 +39,8 @@ const AllCoursesDetail = () => {
         .get(`/course/get/${id}`)
         .then((res) => {
           setCourseDetails(res.data.course);
+          console.log(res);
+          
           setLoading(false);
         })
         .catch((err) => {
@@ -79,12 +81,13 @@ const AllCoursesDetail = () => {
                 <div className="flex items-center">
                   <Avatar className="h-10 w-10 rounded-full">
                     <AvatarImage
-                      className=" rounded-full"
                       src={courseDetails.createdby.profileImg}
                       alt="Instructor"
+                      className="h-10 w-10 object-cover rounded-full"
                     />
                     <AvatarFallback>IN</AvatarFallback>
                   </Avatar>
+
                   <div className="ml-2">
                     <div className="text-sm font-medium">
                       {courseDetails.createdby.firstName}{" "}
@@ -177,7 +180,7 @@ const AllCoursesDetail = () => {
                 <TabsContent value="curriculum" className="p-6">
                   <Accordion type="curriculum" collapsible className="w-full">
                     {Array.isArray(courseDetails?.chapters) &&
-                    courseDetails.chapters.length > 0 ? (
+                      courseDetails.chapters.length > 0 ? (
                       courseDetails.chapters.map((chapter, index) => (
                         <AccordionItem key={index} value={`chapter-${index}`}>
                           <AccordionTrigger className="py-4 text-sm font-semibold flex justify-between items-center group">
@@ -194,7 +197,7 @@ const AllCoursesDetail = () => {
                             </div>
                             <div className="space-y-4 pl-6">
                               {Array.isArray(chapter.lessons) &&
-                              chapter.lessons.length > 0 ? (
+                                chapter.lessons.length > 0 ? (
                                 chapter.lessons.map((lesson, i) => (
                                   <Collapsible key={i}>
                                     <CollapsibleTrigger className="w-full flex items-center justify-between text-left group bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200">
@@ -284,13 +287,13 @@ const AllCoursesDetail = () => {
                 {/* instructor */}
                 <TabsContent value="instructor" className="p-6">
                   <div className="flex flex-col sm:flex-row items-start gap-6">
-                    <Avatar className="h-20 w-20 shadow-md ring-green-500 ring-3 rounded-full">
+                    <Avatar className="h-15 w-15 shadow-md ring-green-500 ring-3 rounded-full">
                       <AvatarImage
                         src={courseDetails.createdby.profileImg}
                         alt="Instructor"
-                        className="object-cover rounded-full"
+                        className="h-15 w-15 object-cover rounded-full"
                       />
-                      <AvatarFallback className="text-lg font-semibold">
+                      <AvatarFallback className="h-20 w-20 flex items-center justify-center rounded-full bg-gray-200 text-lg font-semibold">
                         {courseDetails.createdby.firstName?.charAt(0)}
                         {courseDetails.createdby.lastName?.charAt(0)}
                       </AvatarFallback>
@@ -302,7 +305,7 @@ const AllCoursesDetail = () => {
                         {courseDetails.createdby.middleName}{" "}
                         {courseDetails.createdby.lastName}
                       </h3>
-
+{/* 
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mt-2">
                         <span>{courseDetails.createdby.gender}</span>
                         <span>·</span>
@@ -321,11 +324,11 @@ const AllCoursesDetail = () => {
                             ? "Course"
                             : "Courses"}
                         </span>
-                      </div>
+                      </div> */}
 
-                      <p className="text-gray-700 text-sm mt-4 leading-relaxed">
+                      {/* <p className="text-gray-700 text-sm mt-4 leading-relaxed">
                         {courseDetails.createdby.Bio || "No bio provided."}
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                 </TabsContent>
@@ -364,7 +367,7 @@ const AllCoursesDetail = () => {
                       </h3>
                       <div className="space-y-6">
                         {Array.isArray(courseDetails.reviews) &&
-                        courseDetails.reviews.length > 0 ? (
+                          courseDetails.reviews.length > 0 ? (
                           courseDetails.reviews.map((review, index) => (
                             <div
                               key={index}

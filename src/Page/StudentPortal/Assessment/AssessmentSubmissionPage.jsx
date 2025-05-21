@@ -45,6 +45,8 @@ const AssessmentSubmissionPage = () => {
       try {
         const res = await axiosInstance.get(`/assessment/${id}`);
         setAssessment(res.data.assessment);
+        console.log(res);
+
       } catch (err) {
         setError("Failed to load assessment. Please try again later.");
       } finally {
@@ -128,21 +130,27 @@ const AssessmentSubmissionPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="space-y-2 text-center">
-              <p className="text-lg font-medium">
-                Total Score: {result.submission.totalScore}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Submission Date:{" "}
-                {new Date(result.submission.submittedAt).toLocaleString()}
-              </p>
-              {!result.submission.graded && (
-                <p className="text-amber-600 dark:text-amber-400 italic text-sm mt-4">
-                  Some of your answers require manual grading. Your final score
-                  will be updated soon.
-                </p>
-              )}
-            </div>
+            {
+              result.submission.totalScore === 0 ? <>  <p className="text-amber-600 text-center dark:text-amber-400 italic text-lg font-bold mt-4">
+             Thankyou  for your submission  your final score will be updated soon
+              </p></> :
+                <div className="space-y-2 text-center">
+                  <p className="text-lg font-medium">
+                    Total Score: {result.submission.totalScore}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Submission Date:{" "}
+                    {new Date(result.submission.submittedAt).toLocaleString()}
+                  </p>
+                  {!result.submission.graded && (
+                    <p className="text-amber-600 dark:text-amber-400 italic text-sm mt-4">
+                      Some of your answers require manual grading. Your final score
+                      will be updated soon.
+                    </p>
+                  )}
+                </div>
+            }
+
           </CardContent>
           <CardFooter className="flex justify-center">
             <Button
@@ -174,6 +182,12 @@ const AssessmentSubmissionPage = () => {
                             Points: {question.points}
                           </span>
                         </div>
+                        <p
+                          className="text-sm font-medium text-gray-800 mb-2"
+                          dangerouslySetInnerHTML={{
+                            __html: ` ${question.question}`,
+                          }}
+                        />
                         <CardDescription className="text-base font-medium text-foreground mt-2">
                           {question.text}
                         </CardDescription>
@@ -221,6 +235,7 @@ const AssessmentSubmissionPage = () => {
                           <FormField
                             control={form.control}
                             name={`question-${question._id}`}
+
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
@@ -231,7 +246,7 @@ const AssessmentSubmissionPage = () => {
                                   >
                                     <div className="flex items-center space-x-2">
                                       <RadioGroupItem
-                                        value="1"
+                                        value="true"
                                         id={`q${question._id}-true`}
                                       />
                                       <Label htmlFor={`q${question._id}-true`}>
@@ -240,7 +255,7 @@ const AssessmentSubmissionPage = () => {
                                     </div>
                                     <div className="flex items-center space-x-2">
                                       <RadioGroupItem
-                                        value="0"
+                                        value="false"
                                         id={`q${question._id}-false`}
                                       />
                                       <Label htmlFor={`q${question._id}-false`}>

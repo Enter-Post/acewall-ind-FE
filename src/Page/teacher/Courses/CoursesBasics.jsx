@@ -186,43 +186,51 @@ export default function CoursesBasis() {
     const formData = new FormData();
     setLoading(true);
 
-    formData.append("thumbnail", data.thumbnail);
-    formData.append("courseTitle", data.courseTitle);
-    formData.append("category", data.category);
-    formData.append("subcategory", data.subcategory);
-    formData.append("language", data.language);
-    formData.append("courseDescription", data.courseDescription);
-    formData.append(
-      "teachingPoints",
-      JSON.stringify(data.teachingPoints.map((tp) => tp.value))
-    );
-    formData.append(
-      "requirements",
-      JSON.stringify(data.requirements.map((req) => req.value))
-    );
+    // ✅ Show loading toast only when form is valid and submission starts
+    const loadingToastId = toast.loading("Creating course...");
 
-    await axiosInstance
-      .post("/course/create", formData, {
+    try {
+      formData.append("thumbnail", data.thumbnail);
+      formData.append("courseTitle", data.courseTitle);
+      formData.append("category", data.category);
+      formData.append("subcategory", data.subcategory);
+      formData.append("language", data.language);
+      formData.append("courseDescription", data.courseDescription);
+      formData.append(
+        "teachingPoints",
+        JSON.stringify(data.teachingPoints.map((tp) => tp.value))
+      );
+      formData.append(
+        "requirements",
+        JSON.stringify(data.requirements.map((req) => req.value))
+      );
+
+      const res = await axiosInstance.post("/course/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => {
-        console.log(res, "res");
-        toast.success(res.data.message);
-        navigate("/teacher/courses");
-        reset();
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response.data.message);
-        setLoading(false);
       });
+
+      toast.dismiss(loadingToastId);
+      toast.success(res.data.message);
+      reset();
+      navigate("/teacher/courses");
+    } catch (err) {
+      console.log(err);
+      toast.dismiss(loadingToastId);
+      toast.error(err?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const onError = (errors) => {
+    toast.error("Please fill out all required fields correctly.");
+    console.log(errors);
   };
 
   return (
     <div>
       <h1>Create New Course</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
+
         <section>
           <div className="space-y-6">
             <div>
@@ -230,9 +238,8 @@ export default function CoursesBasis() {
                 Thumbnail
               </Label>
               <div
-                className={` p-1 w-full max-w-md ${
-                  errors.thumbnail ? "border-red-500" : "border-gray-300"
-                }`}
+                className={` p-1 w-full max-w-md ${errors.thumbnail ? "border-red-500" : "border-gray-300"
+                  }`}
               ></div>
               {errors?.thumbnail && (
                 <p className="text-xs text-red-500 mt-1">
@@ -294,9 +301,9 @@ export default function CoursesBasis() {
                 </Label>
                 <Input
                   id="courseTitle"
-                  className={`bg-gray-50 ${
-                    errors.courseTitle ? "border border-red-500" : ""
-                  }`}
+                  maxLength={50}
+                  className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""
+                    }`}
                   {...register("courseTitle")}
                 />
                 {errors.courseTitle && (
@@ -358,9 +365,8 @@ export default function CoursesBasis() {
               </Label>
               <Textarea
                 id="courseDescription"
-                className={`min-h-[100px] bg-gray-50  ${
-                  errors.courseDescription ? "border border-red-500" : ""
-                }`}
+                className={`min-h-[100px] bg-gray-50  ${errors.courseDescription ? "border border-red-500" : ""
+                  }`}
                 maxLength={500}
                 {...register("courseDescription")}
               />
@@ -397,11 +403,10 @@ export default function CoursesBasis() {
                 type="button"
                 disabled={teachingPointsFields.length >= 6}
                 onClick={() => appendTeachingPoint({ value: "" })}
-                className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                  teachingPointsFields.length >= 6
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+                className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 6
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+                  }`}
               >
                 + Add Teaching Point
               </button>
@@ -429,11 +434,10 @@ export default function CoursesBasis() {
               <button
                 type="button"
                 onClick={() => appendRequirement({ value: "" })}
-                className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                  requirementsFields.length >= 6
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                }`}
+                className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 6
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+                  }`}
                 disabled={requirementsFields.length >= 6}
               >
                 + Add Requirement
@@ -447,6 +451,7 @@ export default function CoursesBasis() {
             Next
           </Button>
         </div>
+
       </form>
     </div>
   );

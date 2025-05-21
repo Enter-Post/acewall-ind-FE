@@ -24,7 +24,12 @@ import { useContext } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { useState } from "react";
 
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { axiosInstance } from "@/lib/AxiosInstance";
 const sideBarTabs = [
   {
@@ -44,7 +49,7 @@ const sideBarTabs = [
     id: 3,
     name: "Assessments",
     icon: <AssessmentIcon />,
-    path: "/teacher/assignment",
+    path: "/teacher/assessments",
   },
   {
     id: 5,
@@ -52,7 +57,7 @@ const sideBarTabs = [
     icon: <Megaphone02Icon />,
     path: "/teacher/announcements",
   },
- 
+
   {
     id: 12,
     name: "Messages",
@@ -67,7 +72,6 @@ const sideBarTabs = [
   },
 ];
 
-
 export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { checkAuth, user, Authloading, setAuthLoading } =
@@ -79,10 +83,6 @@ export default function TeacherLayout() {
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [openDropdown, setOpenDropdown] = React.useState(false);
-
-
-
-
 
   const handleSearch = async () => {
     if (!searchQuery.trim() || loading) return;
@@ -105,10 +105,6 @@ export default function TeacherLayout() {
       setOpenDropdown(true); // ✅ Open dropdown only after data is ready
     }
   };
-
-
-
-
 
   return (
     <div className="flex flex-col">
@@ -141,10 +137,13 @@ export default function TeacherLayout() {
             />
           </Link>
 
-
           {/* Search Dropdown */}
           <div className="relative w-64 hidden md:flex flex-col">
-            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
+            <DropdownMenu
+              open={openDropdown}
+              onOpenChange={setOpenDropdown}
+              modal={false}
+            >
               <DropdownMenuTrigger asChild>
                 <div className="relative flex gap-2 w-full">
                   <Input
@@ -194,35 +193,36 @@ export default function TeacherLayout() {
                   ))
                 ) : (
                   <DropdownMenuItem disabled>
-                    <span className="text-sm text-gray-500">No results found</span>
+                    <span className="text-sm text-gray-500">
+                      No results found
+                    </span>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
-
-
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
-            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
               <Link to="/teacher/account" className="w-10">
-                <Avatar>
+                <Avatar className="rounded-full w-10 h-10">
                   <AvatarImage
-                    className="rounded-full"
+                    className="rounded-full w-10 h-10 object-cover"
                     src={user.profileImg}
                     alt="@user"
                   />
                   <AvatarFallback>UN</AvatarFallback>
                 </Avatar>
               </Link>
+
               <div>
                 <p className="font-medium">{user.firstName}</p>
                 <p className="text-sm text-gray-600">{user.email}</p>
@@ -236,13 +236,15 @@ export default function TeacherLayout() {
                   onClick={() => {
                     setIsSidebarOpen(false);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
-                    } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                    location == tab.path ? "bg-green-500" : "text-black"
+                  } `}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${location == tab.path ? "text-white" : "text-green-600"
-                      }`}
+                    className={`${
+                      location == tab.path ? "text-white" : "text-green-600"
+                    }`}
                   >
                     {tab.name}
                   </span>

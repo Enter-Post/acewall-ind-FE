@@ -1,17 +1,36 @@
 import React from "react";
 import { Card } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { BookOpen, ChevronDown, ChevronUp } from "lucide-react";
 import AssessmentCard from "./AssessmentCard";
 
-export default function AssessmentSection({ title, Assessments, expanded, setExpanded }) {
+export default function AssessmentSection({
+  title,
+  Assessments,
+  expanded,
+  setExpanded,
+}) {
   return (
     <Card className="border rounded-lg bg-gray-50 p-4 ">
-      <Collapsible open={expanded} onOpenChange={setExpanded} className="space-y-4">
+      <Collapsible
+        open={expanded}
+        onOpenChange={setExpanded}
+        className="space-y-4"
+      >
         <CollapsibleTrigger className="flex items-center w-full text-left">
           <div className="flex items-center">
-            {expanded ? <ChevronDown className="h-5 w-5 mr-2" /> : <ChevronUp className="h-5 w-5 mr-2" />}
-            <h2 className="text-md font-semibold">{title} ({Assessments.length})</h2>
+            {expanded ? (
+              <ChevronDown className="h-5 w-5 mr-2" />
+            ) : (
+              <ChevronUp className="h-5 w-5 mr-2" />
+            )}
+            <h2 className="text-md font-semibold">
+              {title} ({Assessments.length})
+            </h2>
           </div>
         </CollapsibleTrigger>
         <CollapsibleContent>

@@ -59,7 +59,13 @@ const mcqQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z
     .string()
     .min(1, { message: "Please select the correct answer" }),
-  points: z.number().min(0, { message: "Points must be at least 0" }),
+  points: z
+    .number({
+      required_error: "Points are required",
+      invalid_type_error: "Points must be a number",
+    })
+    .min(1, { message: "Points must be at least 1" })
+    .max(9, { message: "Points must not exceed 9" }),
 });
 
 const trueFalseQuestionSchema = baseQuestionSchema.extend({
@@ -67,7 +73,13 @@ const trueFalseQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z.enum(["true", "false"], {
     required_error: "Please select the correct answer",
   }),
-  points: z.number().min(0, { message: "Points must be at least 0" }),
+  points: z
+    .number({
+      required_error: "Points are required",
+      invalid_type_error: "Points must be a number",
+    })
+    .min(1, { message: "Points must be at least 1" })
+    .max(9, { message: "Points must not exceed 9" }),
 });
 
 const qaQuestionSchema = baseQuestionSchema.extend({
@@ -75,7 +87,13 @@ const qaQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z
     .string()
     .min(1, { message: "Please provide a model answer" }),
-  points: z.number().min(0, { message: "Points must be at least 0" }),
+  points: z
+    .number({
+      required_error: "Points are required",
+      invalid_type_error: "Points must be a number",
+    })
+    .min(1, { message: "Points must be at least 1" })
+    .max(9, { message: "Points must not exceed 9" }),
 });
 
 const questionSchema = z.discriminatedUnion("type", [
@@ -166,7 +184,7 @@ export default function CreateAssessmentPage() {
       const isValidType =
         file.type === "application/pdf" ||
         file.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       return isValidType && isValidSize;
     });
@@ -437,13 +455,21 @@ export default function CreateAssessmentPage() {
                             <Input
                               {...field}
                               type="number"
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
+                              min={1}
+                              max={9}
+                              onChange={(e) => {
+                                const value = Number(e.target.value);
+                                if (value >= 1 && value <= 9) {
+                                  field.onChange(value);
+                                } else {
+                                  field.onChange(""); // optional: clear or block invalid input
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
+
                       )}
                     />
 
@@ -471,148 +497,148 @@ export default function CreateAssessmentPage() {
                     {/* Question-specific answer fields */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "truefalse" && (
-                      <FormField
-                        control={form.control}
-                        name={`questions.${questionIndex}.correctAnswer`}
-                        render={({ field }) => (
-                          <FormItem className="space-y-3">
-                            <FormLabel>Correct Answer</FormLabel>
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                value={field.value}
-                                className="flex space-x-4"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="true"
-                                    id={`true-${question.id}`}
-                                  />
-                                  <Label
-                                    htmlFor={`true-${question.id}`}
-                                    className="font-normal"
-                                  >
-                                    True
-                                  </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="false"
-                                    id={`false-${question.id}`}
-                                  />
-                                  <Label
-                                    htmlFor={`false-${question.id}`}
-                                    className="font-normal"
-                                  >
-                                    False
-                                  </Label>
-                                </div>
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
+                        <FormField
+                          control={form.control}
+                          name={`questions.${questionIndex}.correctAnswer`}
+                          render={({ field }) => (
+                            <FormItem className="space-y-3">
+                              <FormLabel>Correct Answer</FormLabel>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="flex space-x-4"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="true"
+                                      id={`true-${question.id}`}
+                                    />
+                                    <Label
+                                      htmlFor={`true-${question.id}`}
+                                      className="font-normal"
+                                    >
+                                      True
+                                    </Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="false"
+                                      id={`false-${question.id}`}
+                                    />
+                                    <Label
+                                      htmlFor={`false-${question.id}`}
+                                      className="font-normal"
+                                    >
+                                      False
+                                    </Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     {/* MCQs */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "mcq" && (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Label>Answer Options</Label>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => addOption(questionIndex)}
-                            disabled={
-                              form.watch(`questions.${questionIndex}.options`)
-                                ?.length >= 4
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <Label>Answer Options</Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addOption(questionIndex)}
+                              disabled={
+                                form.watch(`questions.${questionIndex}.options`)
+                                  ?.length >= 4
+                              }
+                              className="h-7 text-xs"
+                            >
+                              Add Option
+                            </Button>
+                          </div>
+
+                          {form.watch(`questions.${questionIndex}.options`)
+                            ?.length >= 4 && (
+                              <p className="text-xs text-muted-foreground">
+                                Maximum of 4 options allowed.
+                              </p>
+                            )}
+
+                          <RadioGroup
+                            value={form.watch(
+                              `questions.${questionIndex}.correctAnswer`
+                            )}
+                            onValueChange={(val) =>
+                              form.setValue(
+                                `questions.${questionIndex}.correctAnswer`,
+                                val
+                              )
                             }
-                            className="h-7 text-xs"
+                            className="space-y-3"
                           >
-                            Add Option
-                          </Button>
-                        </div>
-
-                        {form.watch(`questions.${questionIndex}.options`)
-                          ?.length >= 4 && (
-                          <p className="text-xs text-muted-foreground">
-                            Maximum of 4 options allowed.
-                          </p>
-                        )}
-
-                        <RadioGroup
-                          value={form.watch(
-                            `questions.${questionIndex}.correctAnswer`
-                          )}
-                          onValueChange={(val) =>
-                            form.setValue(
-                              `questions.${questionIndex}.correctAnswer`,
-                              val
-                            )
-                          }
-                          className="space-y-3"
-                        >
-                          {form
-                            .watch(`questions.${questionIndex}.options`)
-                            ?.map((option, optionIndex) => (
-                              <div
-                                key={optionIndex}
-                                className="flex items-center gap-3"
-                              >
-                                <RadioGroupItem
-                                  value={optionIndex.toString()}
-                                  id={`option-${questionIndex}-${optionIndex}`}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name={`questions.${questionIndex}.options.${optionIndex}`}
-                                  render={({ field }) => (
-                                    <Input
-                                      {...field}
-                                      placeholder={`Option ${optionIndex + 1}`}
-                                      className="flex-1"
-                                      onChange={(e) => {
-                                        field.onChange(e.target.value);
-                                      }}
-                                    />
-                                  )}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    removeOption(questionIndex, optionIndex)
-                                  }
-                                  disabled={
-                                    form.watch(
-                                      `questions.${questionIndex}.options`
-                                    )?.length <= 2
-                                  }
-                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                            {form
+                              .watch(`questions.${questionIndex}.options`)
+                              ?.map((option, optionIndex) => (
+                                <div
+                                  key={optionIndex}
+                                  className="flex items-center gap-3"
                                 >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </div>
-                            ))}
-                        </RadioGroup>
+                                  <RadioGroupItem
+                                    value={optionIndex.toString()}
+                                    id={`option-${questionIndex}-${optionIndex}`}
+                                  />
+                                  <FormField
+                                    control={form.control}
+                                    name={`questions.${questionIndex}.options.${optionIndex}`}
+                                    render={({ field }) => (
+                                      <Input
+                                        {...field}
+                                        placeholder={`Option ${optionIndex + 1}`}
+                                        className="flex-1"
+                                        onChange={(e) => {
+                                          field.onChange(e.target.value);
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      removeOption(questionIndex, optionIndex)
+                                    }
+                                    disabled={
+                                      form.watch(
+                                        `questions.${questionIndex}.options`
+                                      )?.length <= 2
+                                    }
+                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </div>
+                              ))}
+                          </RadioGroup>
 
-                        <FormMessage>
-                          {
-                            form.formState.errors.questions?.[questionIndex]
-                              ?.options?.message
-                          }
-                        </FormMessage>
-                        <FormMessage>
-                          {
-                            form.formState.errors.questions?.[questionIndex]
-                              ?.correctAnswer?.message
-                          }
-                        </FormMessage>
-                      </div>
-                    )}
+                          <FormMessage>
+                            {
+                              form.formState.errors.questions?.[questionIndex]
+                                ?.options?.message
+                            }
+                          </FormMessage>
+                          <FormMessage>
+                            {
+                              form.formState.errors.questions?.[questionIndex]
+                                ?.correctAnswer?.message
+                            }
+                          </FormMessage>
+                        </div>
+                      )}
 
                     {form.watch(`questions.${questionIndex}.type`) === "qa" && (
                       <FormField

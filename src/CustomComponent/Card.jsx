@@ -108,7 +108,7 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
   );
 }
 
-function AnnouncementCard({ mainHeading, data }) {
+function AnnouncementCard({data }) {
   return (
     <Card className="h-fit p-0">
       <CardContent className="p-0">
@@ -125,16 +125,22 @@ function AnnouncementCard({ mainHeading, data }) {
               className="px-4 py-3 flex flex-col gap-3 border-b border-gray-300"
             >
               {/* Title and Date/Time */}
-              <p className="font-bold text-lg">{announcement.course}</p>
+              <p className="font-bold text-lg">{announcement.title}</p>
               <div className="flex justify-between items-center">
-                <p className="font-semibold">{announcement.title}</p>
+                <p className="font-semibold">{announcement.message}</p>
                 <p className="text-sm text-gray-500">
-                  {announcement.date} • {announcement.time}
+                  {announcement.date}
                 </p>
               </div>
 
               {/* Announcement Message */}
-              <p className="text-gray-700">{announcement.message}</p>
+                <div className="flex justify-between items-center">
+              <p className="text-gray-700">{announcement.course}</p>
+                <p className="text-sm text-gray-500">
+{announcement.time}
+                </p>
+              </div>
+
             </div>
           ))}
         </div>

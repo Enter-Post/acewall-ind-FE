@@ -21,6 +21,7 @@ const TeachingPointInput = React.memo(
         <input
           {...register(`teachingPoints.${index}.value`)}
           placeholder="What you will teach in this course..."
+          maxLength={120}
           className={`pr-16 bg-gray-50 w-full relative border border-gray-300 rounded-sm px-3 py-1 ${
             error ? "border border-red-500" : ""
           }`}

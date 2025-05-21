@@ -1,37 +1,99 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { useEffect, useState } from "react";
+import { BookOpen, GraduationCap, Library, NotebookText } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
+import { axiosInstance } from "@/lib/AxiosInstance";
 import { Link } from "react-router-dom";
-import AssessmentSection from "../../CustomComponent/teacher/Assessment/AssessmentSection";
 
 export default function TeacherAssessment() {
-  const [currentExpanded, setCurrentExpanded] = useState(true);
-  const [completedExpanded, setCompletedExpanded] = useState(true);
+  const [assessments, setAssessments] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
 
-  const currentAssessments = [
-    { id: 4, title: "Create a Facebook Marketing Plan", questions: 2, points: 10, dueDate: "Oct 30, 2024" },
-    { id: 5, title: "Instagram Story Strategy Analysis", questions: 10, points: 10, dueDate: "Nov 15, 2024" },
-    { id: 6, title: "Analyze a Social Media Campaign", questions: 10, points: 10, dueDate: "Nov 25, 2024" },
-    { id: 7, title: "Final Project: Build a Marketing Campaign", questions: 10, points: 10, dueDate: "Dec 10, 2024" },
-  ];
-
-  const completedAssessments = [
-    { id: 1, title: "Social Media Audit Report", questions: 10, points: 10, dueDate: "Sep 30, 2024" },
-    { id: 2, title: "SEO Optimization Strategy P1", questions: 10, points: 10, dueDate: "Aug 15, 2024" },
-    { id: 3, title: "SEO Optimization Strategy P2", questions: 10, points: 10, dueDate: "Aug 15, 2024" },
-  ];
-
+  useEffect(() => {
+    const fetchAssessments = async () => {
+      await axiosInstance
+        .get("assessment/allAssessmentByTeacher")
+        .then((response) => {
+          console.log(response);
+          setAssessments(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching assessments:", error);
+        });
+    };
+    fetchAssessments();
+  }, []);
   return (
-    <div className="container p-3 md:p-0">
-      <div className="flex flex-col mb-2 justify-between">
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Assessments</p>
-        <div className="flex justify-end">
-         
-        </div>
-      </div>
+    <div className="flex w-full min-h-screen p-6">
+      <div className="w-full mx-auto space-y-4">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Assessments</h1>
 
-      <div className="space-y-6">
-        <AssessmentSection title="Current Assessments" Assessments={currentAssessments} expanded={currentExpanded} setExpanded={setCurrentExpanded} />
-        <AssessmentSection title="Completed Assessments" Assessments={completedAssessments} expanded={completedExpanded} setExpanded={setCompletedExpanded} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {assessments?.map(
+            (assessment) => (
+              console.log(assessment),
+              (
+                <Link
+                  key={assessment._id}
+                  to={`/teacher/assessments/allsubmissions/${assessment._id}`}
+                >
+                  <Card
+                    className={`w-full border-gray-200 hover:border-green-300 transition-all duration-200 hover:shadow-md cursor-pointer`}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-green-100 p-2 rounded-lg">
+                          <BookOpen className="h-5 w-5 text-green-600" />
+                        </div>
+                        <h2 className="text-lg font-semibold text-gray-800 line-clamp-1">
+                          {assessment?.title}
+                        </h2>
+                      </div>
+
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                        {assessment?.description}
+                      </p>
+
+                      <div className="grid grid-cols-3 gap-2 mb-3">
+                        <div className="flex items-center gap-1.5">
+                          <GraduationCap className="h-3.5 w-3.5 text-green-500" />
+                          <p className="text-xs text-gray-700 truncate">
+                            {assessment?.course?.courseTitle}
+                          </p>
+                        </div>
+
+                        {assessment?.chapter && (
+                          <div className="flex items-center gap-1.5">
+                            <Library className="h-3.5 w-3.5 text-green-500" />
+                            <p className="text-xs text-gray-700 truncate">
+                              {assessment?.chapter?.title}
+                            </p>
+                          </div>
+                        )}
+
+                        {assessment?.lesson && (
+                          <div className="flex items-center gap-1.5">
+                            <Library className="h-3.5 w-3.5 text-green-500" />
+                            <p className="text-xs text-gray-700 truncate">
+                              {assessment?.lesson?.title}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="text-xs text-gray-500 mt-2">
+                        Created:{" "}
+                        {format(new Date(assessment.createdAt), "MMM d, yyyy")}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              )
+            )
+          )}
+        </div>
       </div>
     </div>
   );

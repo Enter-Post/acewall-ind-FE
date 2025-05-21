@@ -67,10 +67,16 @@ const PasswordInfo = () => {
           type={showConfirmPassword ? "text" : "password"}
           id="confirmPassword"
           name="confirmPassword"
+          autoComplete="new-password"
           {...register("confirmPassword")}
+          onPaste={(e) => e.preventDefault()}
+          onCopy={(e) => e.preventDefault()}
+          onCut={(e) => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
           className="mt-1 block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         />
-       
+
+
         {errors?.confirmPassword?.message && (
           <p className="text-xs text-red-600 mt-1">{errors.confirmPassword.message}</p>
         )}

@@ -184,7 +184,7 @@ export default function TeacherCourseDetails() {
           <div className="space-y-4">
             {/* Add Final Assessment Button */}
             <div>
-              <Link to={`/teacher/assignment/create/course/${course._id}`}>
+              <Link to={`/teacher/assessments/create/course/${course._id}`}>
                 <Button variant="outline" className="text-green-600">
                   + Add Assessment
                 </Button>

@@ -16,62 +16,63 @@ const PersonalInfo = () => {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
         <div>
-          <Label
-            htmlFor="firstName"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
+          <Label htmlFor="firstName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             First Name
           </Label>
           <Input
             type="text"
             name="firstName"
             id="firstName"
-            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              maxLength={15}
             placeholder="John"
             {...register("firstName")}
+            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
-          {errors?.firstName && (
-            <p className="text-xs text-red-600">{errors.firstName.message}</p>
-          )}
+          <div className="h-4 mt-1">
+            {errors?.firstName && (
+              <p className="text-xs text-red-600">{errors.firstName.message}</p>
+            )}
+          </div>
         </div>
+
         <div>
-          <Label
-            htmlFor="middleName"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
+          <Label htmlFor="middleName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Middle Name
           </Label>
           <Input
             type="text"
             name="middleName"
             id="middleName"
-            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              maxLength={15}
             placeholder="M."
             {...register("middleName")}
+            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
+          <div className="h-4 mt-1">
+            {errors?.middleName && (
+              <p className="text-xs text-red-600">{errors.middleName.message}</p>
+            )}
+          </div>
         </div>
-        {errors?.middleName && (
-          <p className="text-xs text-red-600">{errors.middleName.message}</p>
-        )}
 
         <div>
-          <Label
-            htmlFor="lastName"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
+          <Label htmlFor="lastName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Last Name
           </Label>
           <Input
             type="text"
             name="lastName"
             id="lastName"
-            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              maxLength={15}
             placeholder="Doe"
             {...register("lastName")}
+            className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
-          {errors?.lastName && (
-            <p className="text-xs text-red-600">{errors.lastName.message}</p>
-          )}
+          <div className="h-4 mt-1">
+            {errors?.lastName && (
+              <p className="text-xs text-red-600">{errors.lastName.message}</p>
+            )}
+          </div>
         </div>
       </div>
 

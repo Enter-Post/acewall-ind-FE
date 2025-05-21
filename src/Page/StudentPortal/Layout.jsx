@@ -46,7 +46,7 @@ const sideBarTabs = [
     id: 3,
     name: "My Assessment",
     icon: <AssessmentIcon />,
-    path: "/student/assignment",
+    path: "/student/assessment",
   },
   {
     id: 4,

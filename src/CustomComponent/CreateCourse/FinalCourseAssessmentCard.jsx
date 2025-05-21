@@ -21,7 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export function FinalCourseAssessmentCard({ assessment ,handleDeleteAssessment  }) {
+export function FinalCourseAssessmentCard({ assessment, handleDeleteAssessment }) {
   if (!assessment) return null;
 
   return (
@@ -57,29 +57,26 @@ export function FinalCourseAssessmentCard({ assessment ,handleDeleteAssessment  
                   </DialogHeader>
 
                   <div className="mt-2 space-y-4">
-                    {assessment.description && (
-                      <p className="text-sm text-gray-700">{assessment.description}</p>
-                    )}
-
                     {assessment.files?.length > 0 && (
                       <div>
                         <h4 className="text-sm font-semibold text-gray-600 mb-2">Files</h4>
                         <div className="flex flex-wrap gap-2">
                           {assessment.files.map((file, i) => (
                             <a
-                              key={i}
-                              href={file}
+                              key={file._id}
+                              href={file.url}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
                             >
                               <FileText className="h-4 w-4" />
-                              PDF {i + 1}
+                              {file.filename || `PDF ${i + 1}`}
                             </a>
                           ))}
                         </div>
                       </div>
                     )}
+
 
                     {assessment.questions?.length > 0 && (
                       <Accordion type="multiple" className="w-full">
@@ -146,15 +143,15 @@ export function FinalCourseAssessmentCard({ assessment ,handleDeleteAssessment  
                 </DialogContent>
               </Dialog>
 
-           <Button
-  variant="ghost"
-  size="sm"
-  className="h-8 text-gray-500 hover:text-red-600"
-  onClick={() => handleDeleteAssessment(assessment._id)}
->
-  <Trash2 className="h-4 w-4" />
-  <span className="sr-only">Delete</span>
-</Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-gray-500 hover:text-red-600"
+                onClick={() => handleDeleteAssessment(assessment._id)}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Delete</span>
+              </Button>
 
             </div>
           </div>

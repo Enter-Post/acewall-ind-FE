@@ -122,14 +122,13 @@ const LandingPage = () => {
       {/* Top Bar */}
 
       <div className="flex flex-col ">
-        <div className="h-[70vh] bg-cover bg-start bg-no-repeat bg-[url('assets/hero.webp')] ">
+        <div className=" h-[50vh] sm:h-[70vh] md:h-[60vh] lg:h-[70vh] bg-cover bg-start bg-no-repeat bg-[url('assets/hero.webp')] ">
           <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
             <div
               className="flex  flex-col mt-10 justify-center  items-center px-2 md:px-10  md:mt-16 
             text-center"
             >
-              <h1 className="text-white text-xl font-semibold tracking-wide mx-23">
-                Where the vision is realized. Where the dream is achieved.
+              <h1 className="text-white text-lg sm:text-3xl font-semibold tracking-wide content-center ">              Where the vision is realized. Where the dream is achieved.
               </h1>
               <div className="flex items-center justify-center flex-wrap sm:flex-row flex-col gap-x-2 text-white ml-2">
                 <div className="flex items-center text-md whitespace-nowrap">
@@ -145,66 +144,75 @@ const LandingPage = () => {
         </div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-black flex flex-col lg:flex-row items-center gap-8 lg:gap-20 p-6 lg:p-4 w-full justify-center"
+          className="bg-black flex flex-col lg:flex-row flex-wrap items-center justify-center gap-6 p-10 w-full"
         >
-          <div className="bg-black flex flex-col lg:flex-row items-center gap-8 lg:gap-20 p-6 lg:p-4 w-full justify-center">
-            <h1 className="text-white text-2xl font-semibold text-center">
+          {/* Heading */}
+          <div className="w-full lg:w-auto text-center lg:text-left">
+            <h1 className="text-white text-xl font-semibold whitespace-nowrap">
               Create an account
             </h1>
-            <div>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                {...register("email")}
-                className="bg-white text-black rounded-lg px-4 py-2 w-full lg:w-[250px] focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+          </div>
 
-            <div>
-              <Controller
-                name="role"
-                control={control}
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full lg:w-[180px] bg-white rounded-lg px-4 py-5">
-                      <SelectValue placeholder="Select Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="teacher">Teacher</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {errors.role && (
-                <p className="text-red-500 text-xs">Please enter the role</p>
-              )}
-            </div>
+          {/* Email Field */}
+          <div className="w-full lg:w-[200px]">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              {...register("email")}
+              className="bg-white text-black rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            )}
+          </div>
 
-            <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
-              <div className="flex flex-col lg:flex-row gap-3 w-full lg:w-auto">
-                <button
-                  type="submit"
-                  className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
-                >
-                  Create an Account
-                </button>
-              </div>
-            </div>
+          {/* Role Select */}
+          <div className="w-full lg:w-[200px]">
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="bg-white rounded-lg px-4 py-2 w-full">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="teacher">Teacher</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.role && (
+              <p className="text-red-500 text-xs mt-1">Please enter the role</p>
+            )}
+          </div>
+
+          {/* Create Account Button */}
+          <div className="w-full lg:w-[200px]">
+            <button
+              type="submit"
+              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-4 py-2 w-full"
+            >
+              Create an Account
+            </button>
+          </div>
+
+          {/* Login Button */}
+          <div className="w-full lg:w-[200px]">
             <Link to="/login">
               <button
-                className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-6 py-3 w-full"
+                type="button"
+                className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-4 py-2 w-full"
               >
                 Login
               </button>
             </Link>
           </div>
         </form>
+
+
+
         <section className="flex justify-center">
           <div
             id="additionalServices"

@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import { AnnouncementCard } from "@/CustomComponent/Card";
 import oopsImage from "@/assets/oopsimage.png";
 import { axiosInstance } from "@/lib/AxiosInstance";
-
+import { useContext } from "react";
+import { GlobalContext } from "../../Context/GlobalProvider";
 const Announcement = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const { user } = useContext(GlobalContext);
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get("/announcement/getAll");
+        const response = await axiosInstance.get(`/announcements/getbystudent/${user?._id}`);
         setAnnouncements(response.data.announcements || []);
       } catch (error) {
         console.error("Error fetching announcements:", error);
@@ -23,6 +24,16 @@ const Announcement = () => {
 
     fetchAnnouncements();
   }, []);
+  const transformedData = announcements.map((a) => {
+  const created = new Date(a.createdAt);
+  return {
+    title: a.title,
+    message: a.message,
+    course: a.course?.courseTitle ?? 'Unknown Course',
+    date: created.toLocaleDateString(), // e.g., "5/21/2025"
+    time: created.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // e.g., "09:01 PM"
+  };
+});
 
   return (
     <section className="p-3 md:p-0">
@@ -52,7 +63,7 @@ const Announcement = () => {
         </div>
       ) : (
         <div className="overflow-hidden">
-          <AnnouncementCard mainHeading={"Latest Announcements"} data={announcements} />
+          <AnnouncementCard mainHeading={"Latest Announcements"} data={transformedData} />
         </div>
       )}
     </section>
