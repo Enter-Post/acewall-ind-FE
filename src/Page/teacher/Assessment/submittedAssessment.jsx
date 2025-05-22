@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle, Loader } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useParams } from "react-router-dom";
 
@@ -28,6 +28,10 @@ const AssessmentReview = () => {
       0
     )
   );
+  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  console.log(manualGrades, "manualGrades");
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -35,23 +39,28 @@ const AssessmentReview = () => {
         .get(`/assessmentSubmission/submission/${id}`)
         .then((response) => {
           console.log(response.data);
-            setSubmission(response.data.submission);
+          setSubmission(response.data.submission);
         })
         .catch((error) => {
           console.error("Error fetching submission:", error);
         });
     };
     fetchSubmission();
-  }, []);
+  }, [loading]);
 
-  const handleGradeChange = (questionId, points) => {
-    const newGrades = { ...manualGrades, [questionId]: Number(points) };
+  const handleGradeChange = (questionId, points, maxPoints) => {
+    const newGrades = {
+      ...manualGrades,
+      [questionId]: {
+        awardedPoints: Number(points),
+        maxPoints: Number(maxPoints),
+      },
+    };
     setManualGrades(newGrades);
 
-    // Recalculate total score
     const newTotal = submission.answers.reduce((total, answer) => {
       if (answer.requiresManualCheck) {
-        return total + (newGrades[answer.questionId] || 0);
+        return total + (newGrades[answer.questionId]?.awardedPoints || 0);
       }
       return total + (answer.pointsAwarded || 0);
     }, 0);
@@ -59,9 +68,18 @@ const AssessmentReview = () => {
     setTotalScore(newTotal);
   };
 
-  const handleSubmitGrades = () => {
-    // Here you would implement the API call to submit the grades
-    alert("Grades submitted successfully!");
+  const handleSubmitGrades = async () => {
+    setLoading(true);
+    await axiosInstance
+      .put(`/assessmentSubmission/teacherGrading/${id}`, manualGrades)
+      .then((response) => {
+        console.log(response);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error submitting grades:", error);
+        setLoading(false);
+      });
   };
 
   const formatDate = (dateString) => {
@@ -126,7 +144,9 @@ const AssessmentReview = () => {
                 <p className="font-medium">{submission?.assessment}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Current Score</p>
+                <p className="text-sm text-muted-foreground">
+                  Current {submission?.totalScore > 0 ? "Points" : "Point"}
+                </p>
                 <p className="font-medium">{submission?.totalScore} points</p>
               </div>
             </div>
@@ -138,7 +158,7 @@ const AssessmentReview = () => {
                 All Questions ({submission?.answers?.length})
               </TabsTrigger>
               <TabsTrigger value="manual">
-                Needs Manual Grading (
+                Needs Grading (
                 {
                   submission?.answers?.filter((a) => a.requiresManualCheck)
                     .length
@@ -146,7 +166,7 @@ const AssessmentReview = () => {
                 )
               </TabsTrigger>
               <TabsTrigger value="auto">
-                Auto-Graded (
+                Graded (
                 {
                   submission?.answers?.filter((a) => !a.requiresManualCheck)
                     .length
@@ -196,6 +216,8 @@ const AssessmentReview = () => {
                       index={index}
                       manualGrades={manualGrades}
                       onGradeChange={handleGradeChange}
+                      setError={setError}
+                      error={error}
                     />
                   ))}
               </div>
@@ -208,13 +230,14 @@ const AssessmentReview = () => {
             Total Score: {totalScore} points
           </div>
           <Button
-            onClick={handleSubmitGrades}
+            className="bg-green-500 hover:bg-green-600 text-white"
+            onClick={() => handleSubmitGrades()}
             disabled={
               submission?.answers?.filter((a) => a.requiresManualCheck)
                 .length === 0
             }
           >
-            Submit Grades
+            {loading ? <Loader className="animate-spin" /> : "Submit Grades"}
           </Button>
         </CardFooter>
       </Card>
@@ -222,9 +245,30 @@ const AssessmentReview = () => {
   );
 };
 
-const QuestionCard = ({ answer, index, manualGrades, onGradeChange }) => {
+const QuestionCard = ({
+  answer,
+  index,
+  manualGrades,
+  onGradeChange,
+  setError = () => {},
+  error = {},
+}) => {
   const questionType = answer?.questionDetails?.type || "unknown";
   const maxPoints = answer?.questionDetails?.points || 0;
+
+  console.log(maxPoints, "maxPoints");
+  const handleError = (questionId, message) => {
+    setError((prevErrors) => {
+      if (!message) {
+        const { [questionId]: _, ...rest } = prevErrors;
+        return rest;
+      }
+      return {
+        ...prevErrors,
+        [questionId]: message,
+      };
+    });
+  };
 
   return (
     <Card>
@@ -269,9 +313,7 @@ const QuestionCard = ({ answer, index, manualGrades, onGradeChange }) => {
               </Badge>
             )}
             <Badge variant="outline">
-              {answer.requiresManualCheck
-                ? `${manualGrades[answer?.questionId] || 0}/${maxPoints} points`
-                : `${answer?.pointsAwarded}/${maxPoints} points`}
+              {`${answer?.pointsAwarded || 0}/${maxPoints} points`}
             </Badge>
           </div>
         </div>
@@ -298,7 +340,7 @@ const QuestionCard = ({ answer, index, manualGrades, onGradeChange }) => {
                 </span>
               ) : questionType === "mcq" ? (
                 <span className="font-medium">
-                  Option {answer?.selectedAnswer}
+                  Option: {answer?.selectedAnswer}
                 </span>
               ) : (
                 <div
@@ -318,12 +360,38 @@ const QuestionCard = ({ answer, index, manualGrades, onGradeChange }) => {
                   type="number"
                   min="0"
                   max={maxPoints}
-                  value={manualGrades[answer?.questionId] || 0}
-                  onChange={(e) =>
-                    onGradeChange(answer?.questionId, e.target.value)
-                  }
-                  className="w-24"
+                  value={manualGrades[answer?.questionId]?.awardedPoints || ""}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+
+                    if (value > maxPoints) {
+                      handleError(
+                        answer?.questionId,
+                        `Points cannot exceed ${maxPoints}`
+                      );
+                      return;
+                    } else if (value < 0) {
+                      handleError(
+                        answer?.questionId,
+                        `Points cannot be negative`
+                      );
+                      return;
+                    } else {
+                      handleError(answer?.questionId, null); // Clear error
+                    }
+
+                    onGradeChange(
+                      answer?.questionId,
+                      e.target.value,
+                      maxPoints
+                    );
+                  }}
                 />
+                {error?.[answer?.questionId] && (
+                  <p className="text-sm text-red-600">
+                    {error[answer?.questionId]}
+                  </p>
+                )}
                 <span className="text-sm text-muted-foreground">
                   out of {maxPoints} points
                 </span>

@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,33 +12,113 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronDown, ChevronRight, Upload, FileText } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Upload,
+  FileText,
+  Calendar,
+  Clock,
+} from "lucide-react";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import { format } from "date-fns";
 
+const tableHead = ["Assessment Name", "Course", "Due Date", "Status", "Type"];
 
-const tableHead = ["Assessment Name", "Course", "Due Date", "Status"];
-const Assignment = () => {
+const Assessment = () => {
   const [search, setSearch] = useState("");
-  const [Assessment, setAssessment] = useState(initialAssessment);
-  const [expandedAssignmentId, setExpandedAssignmentId] = useState(null);
+  const [assessments, setAssessments] = useState([]);
+  const [expandedAssessmentId, setExpandedAssessmentId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredAssessment = Assessment.filter((assignment) =>
-    assignment.title.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchAssessment = async () => {
+      try {
+        setLoading(true);
+        const res = await axiosInstance.get(
+          "assessment/getAllassessmentforStudent"
+        );
+        if (res.data && Array.isArray(res.data)) {
+          setAssessments(res.data);
+        } else if (res.data && Array.isArray(res.data.assessments)) {
+          setAssessments(res.data.assessments);
+        } else {
+          throw new Error("Unexpected response format");
+        }
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching assessments:", err);
+        setError("Failed to load assessments. Please try again later.");
+        setAssessments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const toggleAssignmentExpand = (assignmentId) => {
-    setExpandedAssignmentId(
-      expandedAssignmentId === assignmentId ? null : assignmentId
+    fetchAssessment();
+  }, []);
+
+  const formatDueDate = (date, time) => {
+    try {
+      const dateObj = new Date(date);
+      return `${format(dateObj, "MMM dd, yyyy")} at ${time}`;
+    } catch (error) {
+      return "Invalid date";
+    }
+  };
+
+ const filteredAssessments = Array.isArray(assessments)
+  ? assessments.filter((assessment) =>
+      assessment?.title?.toLowerCase().includes(search.toLowerCase())
+    )
+  : [];
+
+  const toggleAssessmentExpand = (assessmentId) => {
+    setExpandedAssessmentId(
+      expandedAssessmentId === assessmentId ? null : assessmentId
     );
   };
 
-  const handleSubmitAssignment = (assignmentId) => {
-    console.log(`Submitting assignment ${assignmentId}`);
+  const handleSubmitAssessment = async (assessmentId) => {
+    try {
+      console.log(`Submitting assessment ${assessmentId}`);
+      // await axiosInstance.post(`assessment/submit/${assessmentId}`)
+
+      setAssessments(
+        assessments.map((assessment) =>
+          assessment._id === assessmentId
+            ? { ...assessment, isSubmitted: true }
+            : assessment
+        )
+      );
+    } catch (err) {
+      console.error("Error submitting assessment:", err);
+    }
   };
+
+  const getStatusLabel = (isSubmitted) =>
+    isSubmitted ? "Submitted" : "Pending";
+
+  const getStatusClass = (isSubmitted) =>
+    isSubmitted
+      ? "bg-green-100 text-green-800"
+      : "bg-yellow-100 text-yellow-800";
+
+  if (loading) {
+    return (
+      <div className="flex justify-center p-8">Loading assessments...</div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500 p-8">{error}</div>;
+  }
 
   return (
     <div className="">
       <div className="">
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg ">
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
           Assessment
         </p>
       </div>
@@ -49,114 +131,129 @@ const Assignment = () => {
         />
       </div>
 
-      <div className="rounded-md border ">
-        <ScrollArea>
+      <div className="rounded-md border">
+        <ScrollArea className="h-[calc(100vh-250px)]">
           <Table>
             <TableHeader>
               <TableRow>
-                {tableHead.map((item, idx) => {
-                  return <TableHead key={idx}>{item} </TableHead>;
-                })}
-
-                {/* <TableHead className="">Actions</TableHead> */}
+                {tableHead.map((item, idx) => (
+                  <TableHead key={idx}>{item}</TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAssessment?.map((assignment) => (
-                <>
-                  <TableRow
-                    key={assignment.id}
-                    className={"text-xs md:text-sm"}
-                  >
-                    <TableCell
-                      className="cursor-pointer hover:text-blue-600 flex items-center gap-2"
-                      onClick={() => toggleAssignmentExpand(assignment.id)}
-                    >
-                      {expandedAssignmentId === assignment.id ? (
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-500" />
-                      )}
-                      <span
-                        className={
-                          expandedAssignmentId === assignment.id
-                            ? "font-medium"
-                            : ""
-                        }
+              {filteredAssessments.length > 0 ? (
+                filteredAssessments.map((assessment) => (
+                  <React.Fragment key={assessment._id}>
+                    <TableRow className="text-xs md:text-sm">
+                      <TableCell
+                        className="cursor-pointer hover:text-blue-600 flex items-center gap-2"
+                        onClick={() => toggleAssessmentExpand(assessment._id)}
                       >
-                        {assignment.title}
-                      </span>
-                    </TableCell>
-                    <TableCell>{assignment.course}</TableCell>
-                    <TableCell>{assignment.dueDate}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          assignment.status === "Completed"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {assignment.status}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                  {expandedAssignmentId === assignment.id && (
-                    <TableRow className="bg-gray-50 border">
-                      <TableCell colSpan={5} className="p-4">
-                        <div className="space-y-4">
-                          <div>
-                            <h4 className="text-sm font-medium mb-2">
-                              Description
-                            </h4>
-                            <p className="text-sm text-gray-600">
-                              {assignment.description}
-                            </p>
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-medium mb-2">
-                              Documents
-                            </h4>
-                            <div className="space-y-2">
-                              {assignment.documents.map((doc) => (
-                                <div
-                                  key={doc.id}
-                                  className="flex items-center gap-2 text-sm border"
-                                >
-                                  <FileText className="h-4 w-4 text-gray-500" />
-                                  <a
-                                    href="#"
-                                    className="text-blue-600 hover:underline"
-                                  >
-                                    {doc.name}
-                                  </a>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          {assignment.status !== "Completed" && (
-                            <div className="pt-2">
-                              <Button
-                                className="bg-green-500 hover:bg-green-600"
-                                onClick={() =>
-                                  handleSubmitAssignment(assignment.id)
-                                }
-                              >
-                                <Upload className="h-4 w-4 mr-2" />
-                                Add Assessment
-                              </Button>
-                            </div>
-                          )}
-                        </div>
+                        {expandedAssessmentId === assessment._id ? (
+                          <ChevronDown className="h-4 w-4 text-gray-500" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-gray-500" />
+                        )}
+                        <span
+                          className={
+                            expandedAssessmentId === assessment._id
+                              ? "font-medium"
+                              : ""
+                          }
+                        >
+                          {assessment.title}
+                        </span>
+                      </TableCell>
+                      <TableCell>{assessment.course.courseTitle}</TableCell>
+                      <TableCell>
+                        {formatDueDate(
+                          assessment.dueDate.date,
+                          assessment.dueDate.time
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
+                            assessment.isSubmitted
+                          )}`}
+                        >
+                          {getStatusLabel(assessment.isSubmitted)}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="capitalize">
+                          {assessment.type.replace("-", " ")}
+                        </span>
                       </TableCell>
                     </TableRow>
-                  )}
-                </>
-              ))}
-              {filteredAssessment.length === 0 && (
+                    {expandedAssessmentId === assessment._id && (
+                      <TableRow className="bg-gray-50 border">
+                        <TableCell colSpan={5} className="p-4">
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="text-sm font-medium mb-2">
+                                Description
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                {assessment.description ||
+                                  "No description provided."}
+                              </p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <h4 className="text-sm font-medium mb-2">
+                                  Course
+                                </h4>
+                                <p className="text-sm text-gray-600 flex items-center gap-2">
+                                  <FileText className="h-4 w-4 text-gray-500" />
+                                  {assessment.course.courseTitle}
+                                </p>
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-medium mb-2">
+                                  Due Date
+                                </h4>
+                                <div className="flex flex-col space-y-1">
+                                  <p className="text-sm text-gray-600 flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-gray-500" />
+                                    {format(
+                                      new Date(assessment.dueDate.date),
+                                      "MMMM dd, yyyy"
+                                    )}
+                                  </p>
+                                  <p className="text-sm text-gray-600 flex items-center gap-2">
+                                    <Clock className="h-4 w-4 text-gray-500" />
+                                    {assessment.dueDate.time}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            {!assessment.isSubmitted && (
+                              <div className="pt-2">
+                                <Button
+                                  className="bg-green-500 hover:bg-green-600"
+                                  onClick={() =>
+                                    handleSubmitAssessment(assessment._id)
+                                  }
+                                >
+                                  <Upload className="h-4 w-4 mr-2" />
+                                  Submit Assessment
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    No Assessment found.
+                  <TableCell colSpan={5} className="text-center py-8">
+                    {search
+                      ? "No assessments found matching your search."
+                      : "No assessments available."}
                   </TableCell>
                 </TableRow>
               )}
@@ -168,4 +265,4 @@ const Assignment = () => {
   );
 };
 
-export default Assignment;
+export default Assessment;

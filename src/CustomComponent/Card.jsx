@@ -108,7 +108,7 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
   );
 }
 
-function AnnouncementCard({data }) {
+function AnnouncementCard({ data }) {
   return (
     <Card className="h-fit p-0">
       <CardContent className="p-0">
@@ -128,19 +128,14 @@ function AnnouncementCard({data }) {
               <p className="font-bold text-lg">{announcement.title}</p>
               <div className="flex justify-between items-center">
                 <p className="font-semibold">{announcement.message}</p>
-                <p className="text-sm text-gray-500">
-                  {announcement.date}
-                </p>
+                <p className="text-sm text-gray-500">{announcement.date}</p>
               </div>
 
               {/* Announcement Message */}
-                <div className="flex justify-between items-center">
-              <p className="text-gray-700">{announcement.course}</p>
-                <p className="text-sm text-gray-500">
-{announcement.time}
-                </p>
+              <div className="flex justify-between items-center">
+                <p className="text-gray-700">{announcement.course}</p>
+                <p className="text-sm text-gray-500">{announcement.time}</p>
               </div>
-
             </div>
           ))}
         </div>
@@ -392,17 +387,17 @@ const MyCoursesCard = ({ course }) => {
     <Card className="pb-6 pt-0 w-full overflow-hidden cursor-pointer">
       <AspectRatio ratio={16 / 9}>
         <img
-          src={course.course.thumbnail.url || "/placeholder.svg"}
-          alt={`${course.course.thumbnail.filename} image`}
+          src={course?.course?.thumbnail?.url || "/placeholder.svg"}
+          alt={`${course?.course?.thumbnail?.filename} image`}
           className="object-cover w-full h-full"
         />
       </AspectRatio>
       <CardHeader>
         <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium mb-2 w-fit px-2">
-          {course.course.category?.title}
+          {course?.course?.category?.title}
         </div>
         <CardTitle className="flex justify-between flex-col gap-2">
-          <span>{course.course.courseTitle}</span>
+          <span>{course?.course?.courseTitle}</span>
           {/* <span className="text-lg font-semibold text-green-500">
             ${course.price}
           </span> */}
@@ -410,15 +405,9 @@ const MyCoursesCard = ({ course }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {/* <p className="text-sm text-muted-foreground">
-            Teacher: {course.createdby?.firstName}{" "}
-            {course.createdby?.middleName
-              ? course.createdby.middleName + " "
-              : ""}
-            {course.createdby?.lastName}
-          </p>{" "} */}
           <p className="text-sm text-muted-foreground">
-            <span className="font-semibold">Language: </span> {course.course.language}
+            <span className="font-semibold">Language: </span>{" "}
+            {course?.course?.language}
           </p>
         </div>
       </CardContent>
