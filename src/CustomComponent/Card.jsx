@@ -11,8 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
 
-function DeshBoardCard({ mainHeading, data, link, height }) {
+function DeshboardAnnouncementCard({ mainHeading, data, link, height }) {
+  console.log(data, "data");
   return (
     <Card
       className={`bg-gray-100 border-0 my-auto py-0 gap-2 rounded h-full`}
@@ -28,35 +31,95 @@ function DeshBoardCard({ mainHeading, data, link, height }) {
       <CardContent className="p-0 overflow-auto max-h-[390px]">
         <div className="divide-y divide-gray-100">
           {data?.length > 0 ? (
-            data.map((item, index) => (
+            data?.map((item, index) => (
               <div
                 key={index}
                 className="px-6 py-4 flex items-start justify-between  transition"
               >
                 <div className="flex-1">
                   <Link to={link}>
-                    {item?.courseTitle ? (
-                      <p className="font-semibold text-gray-800">
-                        {item.courseTitle}
-                      </p>
+                    <p className="font-semibold text-md">{item.title}</p>
+                    <p className="text-sm text-gray-500 mb-2 mt-1">
+                      {item.course.courseTitle}
+                    </p>
+                  </Link>
+                </div>
+
+                <div className="text-right text-xs text-gray-500 whitespace-nowrap">
+                  {item.createdAt ? (
+                    <p>{new Date(item.createdAt).toLocaleDateString()}</p>
+                  ) : item.createdAt ? (
+                    <p>{new Date(item.createdAt).toLocaleDateString()}</p>
+                  ) : null}
+                  {item.time && <p>{item.time}</p>}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-sm text-gray-500 py-10">
+              No data available.
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function DeshBoardCourseCard({ mainHeading, data, link, height }) {
+  return (
+    <Card
+      className={`bg-gray-100 border-0 my-auto py-0 gap-2 rounded h-full`}
+      style={{ height: height || "100%" }}
+    >
+      <CardHeader className="flex-row justify-between items-center bg-green-600 py-3 rounded">
+        <CardTitle className="text-lg text-white ">{mainHeading}</CardTitle>
+        <Link to={link} className="text-white text-xs">
+          View All
+        </Link>
+      </CardHeader>
+
+      <CardContent className="p-0 overflow-auto max-h-[390px]">
+        <div className="divide-y divide-gray-100">
+          {data?.length > 0 ? (
+            data?.map((item, index) => (
+              <div
+                key={index}
+                className="px-6 py-4 flex items-start justify-between  transition"
+              >
+                <div className="flex-1">
+                  <Link to={`/student/mycourses/${item?._id}`}>
+                    {item.course?.courseTitle ? (
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {item.course.courseTitle}
+                        </p>
+                      </div>
                     ) : (
                       <>
                         <p className="font-semibold text-gray-800">
                           {item.course}
                         </p>
-                        <p className="text-sm text-gray-600">{item.title}</p>
+                        <p className="text-sm text-gray-600">
+                          {item.course.title}
+                        </p>
                       </>
                     )}
                   </Link>
                 </div>
 
                 <div className="text-right text-xs text-gray-500 whitespace-nowrap">
-                  {item.date ? (
-                    <p>{new Date(item.date).toLocaleDateString()}</p>
-                  ) : item.createdAt ? (
-                    <p>{new Date(item.createdAt).toLocaleDateString()}</p>
+                  {item.enrolledAt ? (
+                    <div>
+                      <p>Enrolled at</p>
+                      <p>{new Date(item.enrolledAt).toLocaleDateString()}</p>
+                    </div>
+                  ) : item.course.createdAt ? (
+                    <p>
+                      {new Date(item.course.createdAt).toLocaleDateString()}
+                    </p>
                   ) : null}
-                  {item.time && <p>{item.time}</p>}
+                  {item.course.time && <p>{item.course.time}</p>}
                 </div>
               </div>
             ))
@@ -109,41 +172,61 @@ function Assignment({ mainHeading, data, bgcolor, bordercolor, height }) {
 }
 
 function AnnouncementCard({ data }) {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggleOpen = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
   return (
-    <Card className="h-fit p-0">
-      <CardContent className="p-0">
-        {/* Announcement Header */}
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-          Anouncements
-        </p>
+    <Card className="w-full mx-auto rounded-2xl bg-white shadow-sm hover:shadow-md transition duration-200">
+      <CardContent className="p-0 divide-y divide-gray-200">
+        {data?.map((announcement, index) => {
+          const isOpen = openIndex === index;
 
-        {/* Announcements List */}
-        <div className="divide-y">
-          {data?.map((announcement, index) => (
-            <div
-              key={index}
-              className="px-4 py-3 flex flex-col gap-3 border-b border-gray-300"
-            >
-              {/* Title and Date/Time */}
-              <p className="font-bold text-lg">{announcement.title}</p>
-              <div className="flex justify-between items-center">
-                <p className="font-semibold">{announcement.message}</p>
-                <p className="text-sm text-gray-500">{announcement.date}</p>
+          return (
+            <div key={index} className="px-6 py-4">
+              {/* Title and Date */}
+              <div
+                className="flex justify-between items-center cursor-pointer"
+                onClick={() => toggleOpen(index)}
+              >
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {announcement.title}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm text-gray-500">{announcement.date}</p>
+                  {isOpen ? (
+                    <ChevronUp className="text-gray-500" size={20} />
+                  ) : (
+                    <ChevronDown className="text-gray-500" size={20} />
+                  )}
+                </div>
               </div>
 
-              {/* Announcement Message */}
-              <div className="flex justify-between items-center">
-                <p className="text-gray-700">{announcement.course}</p>
-                <p className="text-sm text-gray-500">{announcement.time}</p>
-              </div>
+              {/* Course */}
+              <p className="text-sm text-gray-600 mt-1">
+                <span className="font-medium text-gray-800">Course:</span>{" "}
+                {announcement.course}
+              </p>
+
+              {/* Dropdown content */}
+              {isOpen && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-gray-700">{announcement.message}</p>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium text-gray-800">Time:</span>{" "}
+                    {announcement.time}
+                  </p>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
+          );
+        })}
       </CardContent>
     </Card>
   );
 }
-
 function CoursesCard({ course, link }) {
   return (
     <Link key={course.id} to={link}>
@@ -349,20 +432,24 @@ const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
 
 function StudentProfileCourseCard({ course }) {
   return (
-    <Card className="p-4 flex flex-col items-center  gap-4 shadow-sm">
+    <Card className="p-4 flex flex-col sm:flex-row items-center  gap-4 sm:gap-10 shadow-sm rounded-md">
+      {/* Thumbnail */}
       <div className="w-full sm:w-36 h-24 rounded-md overflow-hidden shrink-0">
         <img
-          src={course.thumbnail}
+          src={course?.thumbnail?.url}
           alt="Course Thumbnail"
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="flex-1 flex justify-center flex-col sm:flex-row items-center sm:items-start justify-between w-full gap-4 ">
-        <div className="text-center sm:text-left">
-          <h3 className="font-bold text-gray-800">{course.courseTitle}</h3>
-        </div>
+
+      {/* Course Info */}
+      <div className="flex-1 w-full text-center sm:text-left">
+        <h3 className="font-bold text-white text-lg">{course?.courseTitle}</h3>
+        {/* Optional subtitle or description */}
+        {/* <p className="text-white text-sm mt-1">{course?.description}</p> */}
       </div>
     </Card>
+
   );
 }
 
@@ -418,7 +505,8 @@ const MyCoursesCard = ({ course }) => {
 export default Card;
 
 export {
-  DeshBoardCard,
+  DeshboardAnnouncementCard,
+  DeshBoardCourseCard,
   Assignment,
   AnnouncementCard,
   CoursesCard,

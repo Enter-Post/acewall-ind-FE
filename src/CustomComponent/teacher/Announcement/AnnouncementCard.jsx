@@ -11,9 +11,7 @@ export default function AnnouncementCard({ announcement, onDelete }) {
       </td>
       <td className="p-4 text-gray-700">{announcement.message}</td>
       <td className="p-4 flex justify-end space-x-2">
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500">
-          <Edit className="h-4 w-4" />
-        </Button>
+        
         <Button
           variant="ghost"
           size="icon"

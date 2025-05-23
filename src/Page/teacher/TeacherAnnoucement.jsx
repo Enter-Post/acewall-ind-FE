@@ -11,6 +11,7 @@ import AnnouncementList from "../../CustomComponent/teacher/Announcement/Announc
 import AnnouncementDialog from "../../CustomComponent/teacher/Announcement/AnnouncementDialog";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { Loader } from "lucide-react";
 
 export default function TeacherAnnouncement() {
   const { user } = useContext(GlobalContext);
@@ -91,7 +92,7 @@ export default function TeacherAnnouncement() {
         </p>
         <div className="flex justify-end">
           <Button
-            className="bg-green-500 hover:bg-green-600"
+            className="bg-green-500 hover:bg-green-600 mb-5"
             onClick={() => setShowNewDialog(true)}
           >
             + Add New
@@ -100,7 +101,9 @@ export default function TeacherAnnouncement() {
       </div>
 
       {loading ? (
-        <p>Loading announcements...</p>
+        <div className="flex justify-center items-center py-10">
+          <Loader className="animate-spin " />
+        </div>
       ) : (
         <AnnouncementList
           title="Announcements"
@@ -108,6 +111,7 @@ export default function TeacherAnnouncement() {
           onDelete={handleDeleteAnnouncement}
         />
       )}
+
 
       <AnnouncementDialog
         open={showNewDialog}

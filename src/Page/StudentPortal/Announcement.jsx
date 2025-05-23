@@ -4,6 +4,7 @@ import oopsImage from "@/assets/oopsimage.png";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useContext } from "react";
 import { GlobalContext } from "../../Context/GlobalProvider";
+import { Loader } from "lucide-react";
 const Announcement = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ const Announcement = () => {
 
   return (
     <section className="p-3 md:p-0">
-      <div className="flex flex-col pb-5 gap-5 mb-10">
+      <div className="flex flex-col pb-2 gap-5">
         <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
           Announcements
         </p>
@@ -45,7 +46,7 @@ const Announcement = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-10">
-          <p className="text-lg text-muted-foreground">Loading announcements...</p>
+          <Loader className="animate-spin"/>
         </div>
       ) : announcements.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center px-4">

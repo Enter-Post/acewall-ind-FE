@@ -49,50 +49,51 @@ export default function TeacherDashboard() {
 
   //students
   useEffect(() => {
-    const getTeacherCourse = async () => {
-      await axiosInstance("/course/getpurchaseCourse")
+    const getTeacherstudents = async () => {
+      await axiosInstance("/course/getallCoursesforTeacher")
         .then((res) => {
-          setStudents(res.data.users);
+          setStudents(res.data.students);
         })
+        console.log(res.data.students, "students from new API")
+        
         .catch((err) => {
           console.log(err);
         });
     };
-    getTeacherCourse();
+    getTeacherstudents();
   }, []);
 
-  useEffect(() => {
-    const getRecentComments = async () => {
-      try {
-        const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
-        const comments = res.data.comments;
+  // useEffect(() => {
+  //   const getRecentComments = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
+  //       const comments = res.data.comments;
 
-        const formatted = comments.map((comment) => ({
-          user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
-          action: "commented on",
-          target: comment.course?.basics?.courseTitle || "a course",
-          time: new Date(comment.createdAt).toLocaleString("en-US", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          }),
-        }));
+  //       const formatted = comments.map((comment) => ({
+  //         user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
+  //         action: "commented on",
+  //         target: comment.course?.basics?.courseTitle || "a course",
+  //         time: new Date(comment.createdAt).toLocaleString("en-US", {
+  //           dateStyle: "medium",
+  //           timeStyle: "short",
+  //         }),
+  //       }));
 
-        setRecentActivity(formatted);
-      } catch (err) {
-        console.error("Error fetching recent comments:", err);
-      }
-    };
+  //       setRecentActivity(formatted);
+  //     } catch (err) {
+  //       console.error("Error fetching recent comments:", err);
+  //     }
+  //   };
 
-    getRecentComments();
-  }, []);
+  //   getRecentComments();
+  // }, []);
 
 
 
   const metrics = [
-    
     {
       title: "Courses",
-      value: courses?.length,
+      value: courses?.length || 0,
       icon: (
         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
           <BookOpen size={16} className="text-green-600" />
@@ -101,22 +102,15 @@ export default function TeacherDashboard() {
     },
     {
       title: "Students",
-      value: students?.length,
+      value: students?.length || 0,
       icon: (
-        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-          <Users size={16} className="text-green-600" />
+        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+          <Users size={16} className="text-blue-600" />
         </div>
       ),
     },
-
   ];
 
-  // const recentActivity = Array(3).fill({
-  //   user: "Kevin",
-  //   action: "comments on your lecture",
-  //   target: "What is ux 2021 UI/UX design with figma",
-  //   time: "Just now",
-  // });
 
   const recentSales = Array(3).fill({
     user: "Kevin",
@@ -126,7 +120,7 @@ export default function TeacherDashboard() {
   });
 
 
-  
+
 
   return (
     <div className="min-h-screen">
@@ -137,24 +131,22 @@ export default function TeacherDashboard() {
         </h1>
 
         {/* Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 ">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {metrics.map((metric, i) => (
             <Card key={i}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
-                <CardTitle className="text-sm font-medium text-gray-500">
-                  {metric.title}
-                </CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600">{metric.title}</CardTitle>
                 {metric.icon}
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{metric.value}</div>
+                <div className="text-2xl font-bold text-gray-800">{metric.value}</div>
               </CardContent>
             </Card>
           ))}
         </div>
 
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Activity */}
 
           <div>
             <div className="flex items-center justify-between mb-4">

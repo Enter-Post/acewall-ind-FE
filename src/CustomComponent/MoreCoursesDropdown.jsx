@@ -74,7 +74,7 @@ const MoreCoursesDropdown = () => {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="grid grid-row-8 gap-2">
+      <DropdownMenuContent className="grid grid-cols-2   gap-4">
         {categories.length > 0 ? (
           categories.map((category, index) => (
             <DropdownMenuSub key={index}>
@@ -88,11 +88,8 @@ const MoreCoursesDropdown = () => {
                   <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
                 ) : subCategoriesMap[category._id].length > 0 ? (
                   subCategoriesMap[category._id].map((sub) => (
-                    <Link to={`/student/courses/${sub._id}`}>
-                      <DropdownMenuItem
-                        key={sub._id}
-                        className="cursor-pointer"
-                      >
+                    <Link to={`/student/courses/${sub._id}`} key={sub._id}>
+                      <DropdownMenuItem className="cursor-pointer">
                         {sub.title}
                       </DropdownMenuItem>
                     </Link>
@@ -107,6 +104,7 @@ const MoreCoursesDropdown = () => {
           <DropdownMenuItem disabled>No categories available</DropdownMenuItem>
         )}
       </DropdownMenuContent>
+
     </DropdownMenu>
   );
 };

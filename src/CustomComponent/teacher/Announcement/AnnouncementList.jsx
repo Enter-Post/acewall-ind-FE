@@ -29,13 +29,15 @@ export default function AnnouncementList({ title, announcements, onDelete }) {
                 </tr>
               </thead>
               <tbody>
-                {announcements.map((announcement) => (
+                {[...announcements].reverse().map((announcement) => (
                   <AnnouncementCard
                     key={announcement._id}
                     announcement={announcement}
                     onDelete={onDelete}
-                  />))}
+                  />
+                ))}
               </tbody>
+
             </table>
           </div>
         </CollapsibleContent>

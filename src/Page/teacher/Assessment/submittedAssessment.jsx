@@ -88,33 +88,36 @@ const AssessmentReview = () => {
   };
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="container mx-auto px-4 py-6">
       <Card className="w-full">
-        <CardHeader className="">
-          <div className="flex items-center justify-between">
+        {/* Header */}
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            {/* Student Info */}
             <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
+              <Avatar className="h-12 w-12 rounded-full overflow-hidden">
                 <AvatarImage
                   src={submission?.studentId?.profileImg || "/placeholder.svg"}
                   alt={`${submission?.studentId?.firstName} ${submission?.studentId?.lastName}`}
+                  className="object-cover"
                 />
                 <AvatarFallback>
-                  {submission?.studentId?.firstName[0]}
-                  {submission?.studentId?.lastName[0]}
+                  {submission?.studentId?.firstName?.[0]}
                 </AvatarFallback>
               </Avatar>
+
               <div>
-                <CardTitle>
-                  {submission?.studentId?.firstName}
-                  {submission?.studentId?.lastName}
-                </CardTitle>
-                <CardDescription>
-                  {submission?.studentId?.email}
-                </CardDescription>
+                <div className="text-lg font-semibold text-gray-800 flex gap-1">
+                  <span>{submission?.studentId?.firstName}</span>
+                  <span>{submission?.studentId?.lastName}</span>
+                </div>
+                <CardDescription>{submission?.studentId?.email}</CardDescription>
               </div>
             </div>
-            <div className="text-right">
-              <div className="flex items-center space-x-2">
+
+            {/* Status & Date */}
+            <div className="text-right space-y-1">
+              <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
                 <Badge
                   variant={
                     submission?.status === "before due date"
@@ -122,54 +125,53 @@ const AssessmentReview = () => {
                       : "destructive"
                   }
                 >
-                  {submission?.status}{" "}
+                  {submission?.status}
                 </Badge>
                 <Badge variant={submission?.graded ? "outline" : "secondary"}>
                   {submission?.graded ? "Graded" : "Needs Grading"}
                 </Badge>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm">
                 Submitted on: {formatDate(submission?.createdAt)}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="pt-6">
-          <div className="mb-6">
+        {/* Content */}
+        <CardContent className="pt-6 space-y-6">
+          {/* Summary */}
+          <div>
             <h3 className="text-lg font-semibold mb-2">Assessment Summary</h3>
-            <div className="grid grid-cols-2 gap-4 p-4 bg-slate-50 rounded-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-md">
               <div>
                 <p className="text-sm text-muted-foreground">Assessment ID</p>
                 <p className="font-medium">{submission?.assessment}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">
-                  Current {submission?.totalScore > 0 ? "Points" : "Point"}
-                </p>
+                <p className="text-sm text-muted-foreground">Total Points</p>
                 <p className="font-medium">{submission?.totalScore} points</p>
               </div>
             </div>
           </div>
 
+          {/* Tabs */}
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="mb-4">
+            <TabsList className="flex-wrap justify-start gap-2 mb-4">
               <TabsTrigger value="all">
                 All Questions ({submission?.answers?.length})
               </TabsTrigger>
               <TabsTrigger value="manual">
                 Needs Grading (
                 {
-                  submission?.answers?.filter((a) => a.requiresManualCheck)
-                    .length
+                  submission?.answers?.filter((a) => a.requiresManualCheck).length
                 }
                 )
               </TabsTrigger>
               <TabsTrigger value="auto">
                 Graded (
                 {
-                  submission?.answers?.filter((a) => !a.requiresManualCheck)
-                    .length
+                  submission?.answers?.filter((a) => !a.requiresManualCheck).length
                 }
                 )
               </TabsTrigger>
@@ -225,16 +227,16 @@ const AssessmentReview = () => {
           </Tabs>
         </CardContent>
 
-        <CardFooter className="flex justify-between border-t p-6">
+        {/* Footer */}
+        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t p-6">
           <div className="text-lg font-semibold">
             Total Score: {totalScore} points
           </div>
           <Button
             className="bg-green-500 hover:bg-green-600 text-white"
-            onClick={() => handleSubmitGrades()}
+            onClick={handleSubmitGrades}
             disabled={
-              submission?.answers?.filter((a) => a.requiresManualCheck)
-                .length === 0
+              submission?.answers?.filter((a) => a.requiresManualCheck).length === 0
             }
           >
             {loading ? <Loader className="animate-spin" /> : "Submit Grades"}
@@ -242,6 +244,7 @@ const AssessmentReview = () => {
         </CardFooter>
       </Card>
     </div>
+
   );
 };
 
@@ -250,7 +253,7 @@ const QuestionCard = ({
   index,
   manualGrades,
   onGradeChange,
-  setError = () => {},
+  setError = () => { },
   error = {},
 }) => {
   const questionType = answer?.questionDetails?.type || "unknown";
@@ -270,136 +273,118 @@ const QuestionCard = ({
   };
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
+    <Card className="w-full border shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-3">
           <div>
-            <CardTitle className="text-base">Question {index + 1}</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-base font-semibold text-gray-800">
+              Question {index + 1}
+            </CardTitle>
+            <CardDescription className="capitalize text-sm text-gray-500">
               {questionType === "mcq"
                 ? "Multiple Choice"
                 : questionType === "truefalse"
-                ? "True/False"
-                : questionType === "qa"
-                ? "Question & Answer"
-                : "Unknown Type"}
+                  ? "True/False"
+                  : questionType === "qa"
+                    ? "Question & Answer"
+                    : "Unknown Type"}
             </CardDescription>
           </div>
-          <div className="flex items-center space-x-2">
+
+          <div className="flex flex-wrap items-center gap-2 justify-end">
             {answer?.requiresManualCheck ? (
-              <Badge
-                variant="warning"
-                className="bg-amber-100 text-amber-800 hover:bg-amber-100"
-              >
-                <AlertCircle className="h-3 w-3 mr-1" />
+              <Badge variant="warning" className="bg-yellow-100 text-yellow-800">
+                <AlertCircle className="w-4 h-4 mr-1" />
                 Needs Manual Grading
               </Badge>
             ) : answer?.isCorrect ? (
-              <Badge
-                variant="success"
-                className="bg-green-100 text-green-800 hover:bg-green-100"
-              >
-                <CheckCircle className="h-3 w-3 mr-1" />
+              <Badge variant="success" className="bg-green-100 text-green-800">
+                <CheckCircle className="w-4 h-4 mr-1" />
                 Correct
               </Badge>
             ) : (
-              <Badge
-                variant="destructive"
-                className="bg-red-100 text-red-800 hover:bg-red-100"
-              >
-                <XCircle className="h-3 w-3 mr-1" />
+              <Badge variant="destructive" className="bg-red-100 text-red-800">
+                <XCircle className="w-4 h-4 mr-1" />
                 Incorrect
               </Badge>
             )}
-            <Badge variant="outline">
-              {`${answer?.pointsAwarded || 0}/${maxPoints} points`}
+            <Badge variant="outline" className="text-sm">
+              {`${answer?.pointsAwarded || 0}/${maxPoints} pts`}
             </Badge>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent>
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-medium mb-2">Question:</h4>
-            <div
-              className="p-3 bg-slate-50 rounded-md"
-              dangerouslySetInnerHTML={{
-                __html: answer?.questionDetails?.question || "",
-              }}
-            />
-          </div>
+      <CardContent className="space-y-6">
+        {/* Question */}
+        <div>
+          <h4 className="font-medium text-sm text-gray-700 mb-1">Question:</h4>
+          <div
+            className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800"
+            dangerouslySetInnerHTML={{
+              __html: answer?.questionDetails?.question || "<i>No question</i>",
+            }}
+          />
+        </div>
 
+        {/* Answer */}
+        <div>
+          <h4 className="font-medium text-sm text-gray-700 mb-1">Student's Answer:</h4>
+          <div className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800">
+            {questionType === "truefalse" ? (
+              <span className="font-semibold">
+                {answer?.selectedAnswer === "true" ? "True" : "False"}
+              </span>
+            ) : questionType === "mcq" ? (
+              <span className="font-semibold">Option: {answer?.selectedAnswer}</span>
+            ) : (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: answer?.selectedAnswer || "<i>No answer provided</i>",
+                }}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Manual Grading */}
+        {answer.requiresManualCheck && (
           <div>
-            <h4 className="font-medium mb-2">Student's Answer:</h4>
-            <div className="p-3 bg-slate-50 rounded-md">
-              {questionType === "truefalse" ? (
-                <span className="font-medium">
-                  {answer?.selectedAnswer === "true" ? "True" : "False"}
-                </span>
-              ) : questionType === "mcq" ? (
-                <span className="font-medium">
-                  Option: {answer?.selectedAnswer}
-                </span>
-              ) : (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: answer?.selectedAnswer || "",
-                  }}
-                />
+            <h4 className="font-medium text-sm text-gray-700 mb-1">Assign Points:</h4>
+            <div className="flex flex-wrap items-center gap-3">
+              <Input
+                type="number"
+                min="0"
+                max={maxPoints}
+                value={manualGrades[answer?.questionId]?.awardedPoints || ""}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+
+                  if (value > maxPoints) {
+                    handleError(answer?.questionId, `Points cannot exceed ${maxPoints}`);
+                    return;
+                  } else if (value < 0) {
+                    handleError(answer?.questionId, `Points cannot be negative`);
+                    return;
+                  } else {
+                    handleError(answer?.questionId, null); // Clear error
+                  }
+
+                  onGradeChange(answer?.questionId, value, maxPoints);
+                }}
+                className="w-24"
+              />
+              <span className="text-sm text-muted-foreground">/ {maxPoints} pts</span>
+
+              {error?.[answer?.questionId] && (
+                <p className="text-sm text-red-600">{error[answer?.questionId]}</p>
               )}
             </div>
           </div>
-
-          {answer.requiresManualCheck && (
-            <div className="pt-2">
-              <h4 className="font-medium mb-2">Assign Points:</h4>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="number"
-                  min="0"
-                  max={maxPoints}
-                  value={manualGrades[answer?.questionId]?.awardedPoints || ""}
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-
-                    if (value > maxPoints) {
-                      handleError(
-                        answer?.questionId,
-                        `Points cannot exceed ${maxPoints}`
-                      );
-                      return;
-                    } else if (value < 0) {
-                      handleError(
-                        answer?.questionId,
-                        `Points cannot be negative`
-                      );
-                      return;
-                    } else {
-                      handleError(answer?.questionId, null); // Clear error
-                    }
-
-                    onGradeChange(
-                      answer?.questionId,
-                      e.target.value,
-                      maxPoints
-                    );
-                  }}
-                />
-                {error?.[answer?.questionId] && (
-                  <p className="text-sm text-red-600">
-                    {error[answer?.questionId]}
-                  </p>
-                )}
-                <span className="text-sm text-muted-foreground">
-                  out of {maxPoints} points
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </CardContent>
     </Card>
+
   );
 };
 

@@ -103,7 +103,7 @@ const Assessment = () => {
       </div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Search Assessment..."
+          placeholder="Search by title"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
