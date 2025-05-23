@@ -8,6 +8,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import oopsImage from "@/assets/oopsimage.png";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { MyCoursesCard } from "@/CustomComponent/Card";
+import { Loader } from "lucide-react";
 
 const CourseCards = () => {
   const [enrollment, setEnrollment] = useState([]);
@@ -51,7 +52,7 @@ const CourseCards = () => {
       </div>
       {loading ? (
         <div className="flex justify-center items-center py-10">
-          <p className="text-lg text-muted-foreground">Loading courses...</p>
+          <Loader className="animate-spin" />
         </div>
       ) : enrollment?.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center px-4">

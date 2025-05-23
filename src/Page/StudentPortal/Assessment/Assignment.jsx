@@ -19,9 +19,11 @@ import {
   FileText,
   Calendar,
   Clock,
+  Loader,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 const tableHead = ["Assessment Name", "Course", "Due Date", "Status", "Type"];
 
@@ -34,26 +36,18 @@ const Assessment = () => {
 
   useEffect(() => {
     const fetchAssessment = async () => {
-      try {
-        setLoading(true);
-        const res = await axiosInstance.get(
-          "assessment/getAllassessmentforStudent"
-        );
-        if (res.data && Array.isArray(res.data)) {
+      setLoading(true);
+      await axiosInstance
+        .get("assessment/getAllassessmentforStudent")
+        .then((res) => {
+          console.log(res.data);
           setAssessments(res.data);
-        } else if (res.data && Array.isArray(res.data.assessments)) {
-          setAssessments(res.data.assessments);
-        } else {
-          throw new Error("Unexpected response format");
-        }
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching assessments:", err);
-        setError("Failed to load assessments. Please try again later.");
-        setAssessments([]);
-      } finally {
-        setLoading(false);
-      }
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError("Failed to fetch assessments");
+          setLoading(false);
+        });
     };
 
     fetchAssessment();
@@ -68,33 +62,16 @@ const Assessment = () => {
     }
   };
 
- const filteredAssessments = Array.isArray(assessments)
-  ? assessments.filter((assessment) =>
-      assessment?.title?.toLowerCase().includes(search.toLowerCase())
-    )
-  : [];
+  const filteredAssessments = Array.isArray(assessments)
+    ? assessments.filter((assessment) =>
+        assessment?.title?.toLowerCase().includes(search.toLowerCase())
+      )
+    : [];
 
   const toggleAssessmentExpand = (assessmentId) => {
     setExpandedAssessmentId(
       expandedAssessmentId === assessmentId ? null : assessmentId
     );
-  };
-
-  const handleSubmitAssessment = async (assessmentId) => {
-    try {
-      console.log(`Submitting assessment ${assessmentId}`);
-      // await axiosInstance.post(`assessment/submit/${assessmentId}`)
-
-      setAssessments(
-        assessments.map((assessment) =>
-          assessment._id === assessmentId
-            ? { ...assessment, isSubmitted: true }
-            : assessment
-        )
-      );
-    } catch (err) {
-      console.error("Error submitting assessment:", err);
-    }
   };
 
   const getStatusLabel = (isSubmitted) =>
@@ -107,7 +84,9 @@ const Assessment = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center p-8">Loading assessments...</div>
+      <div className="flex items-center justify-center w-full h-screen">
+        <Loader className="animate-spin" />;
+      </div>
     );
   }
 
@@ -229,19 +208,20 @@ const Assessment = () => {
                                 </div>
                               </div>
                             </div>
-                            {!assessment.isSubmitted && (
-                              <div className="pt-2">
-                                <Button
-                                  className="bg-green-500 hover:bg-green-600"
-                                  onClick={() =>
-                                    handleSubmitAssessment(assessment._id)
-                                  }
-                                >
-                                  <Upload className="h-4 w-4 mr-2" />
-                                  Submit Assessment
-                                </Button>
-                              </div>
-                            )}
+                            <Link
+                              to={`/student/assessment/submission/${assessment._id}`}
+                              className="pt-2"
+                            >
+                              <Button
+                                className="bg-green-500 hover:bg-green-600 text-white"
+                                size="sm"
+                              >
+                                <Upload className="h-4 w-4 mr-2" />
+                                {assessment.isSubmitted
+                                  ? "See Results"
+                                  : "Submit Assessment"}
+                              </Button>
+                            </Link>
                           </div>
                         </TableCell>
                       </TableRow>

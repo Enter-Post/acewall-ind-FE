@@ -9,60 +9,61 @@ const AssessmentTablist = ({
   isLessonVisible,
   toggleLessonVisibility,
 }) => {
-  console.log(lessonAssessments, "lessonAssessments");
-
   return (
     <TabsContent
       value="Assessments"
       className="p-6 bg-white rounded-lg shadow-md"
     >
-      <div>
-        {chapter &&
-          chapter.chapterAssessments &&
-          chapter.chapterAssessments.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                Chapter Assessment
-              </h3>
-              {chapter.chapterAssessments.map((Assessment, i) => (
-                <Link to={`/student/assessment/submission/${Assessment._id}`}>
-                  <div
-                    key={i}
-                    className="border border-gray-200 p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
-                  >
-                    <div className="flex items-center gap-4">
-                      <BookOpenCheck className="h-5 w-5 text-green-500" />
-                      <h3 className="text-lg font-semibold text-gray-800">
-                        {Assessment.title}
-                      </h3>
-                    </div>
-
-                    <p className="text-gray-700 mt-4 text-sm">
-                      {Assessment.description}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-      </div>
       <div className="space-y-6">
         <p className="text-lg font-semibold text-gray-700 my-4">
           Lesson Assessments
         </p>
-        {!lessonAssessments || lessonAssessments.length === 0 ? (
-          <p className="text-sm text-gray-400 my-4">
-            No lesson assessments available
-          </p>
-        ) : (
-          lessonAssessments?.map(
-            (assessment, index) => (
-              console.log(`/student/assessment/submission/${assessment._id}`),
-              (
+        <div className="flex flex-col gap-4">
+          {!lessonAssessments || lessonAssessments.length === 0 ? (
+            <p className="text-sm text-gray-400 my-4">
+              No lesson assessments available
+            </p>
+          ) : (
+            lessonAssessments?.map(
+              (assessment, index) => (
+                console.log(`/student/assessment/submission/${assessment._id}`),
+                (
+                  <Link to={`/student/assessment/submission/${assessment._id}`}>
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 shadow-md"
+                    >
+                      <div className="flex items-center gap-4">
+                        <BookOpenCheck className="h-5 w-5 text-green-500" />
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          {assessment.title}
+                        </h3>
+                      </div>
+
+                      <p className="text-gray-700 mt-4 text-sm">
+                        {assessment.description}
+                      </p>
+                    </div>
+                  </Link>
+                )
+              )
+            )
+          )}
+        </div>
+      </div>
+      <div>
+        {chapter &&
+          chapter.chapterAssessments &&
+          chapter.chapterAssessments.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-200 flex flex-col gap-3">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                Chapter Assessment
+              </h3>
+              {chapter.chapterAssessments.map((assessment, i) => (
                 <Link to={`/student/assessment/submission/${assessment._id}`}>
                   <div
-                    key={index}
-                    className="border border-gray-200 p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    key={i}
+                    className="p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 shadow-md"
                   >
                     <div className="flex items-center gap-4">
                       <BookOpenCheck className="h-5 w-5 text-green-500" />
@@ -76,10 +77,9 @@ const AssessmentTablist = ({
                     </p>
                   </div>
                 </Link>
-              )
-            )
-          )
-        )}
+              ))}
+            </div>
+          )}
       </div>
     </TabsContent>
   );

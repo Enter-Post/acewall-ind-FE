@@ -14,7 +14,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle, Star, Users, BookOpen, Clock, Send } from "lucide-react";
+import {
+  CheckCircle,
+  Star,
+  Users,
+  BookOpen,
+  Clock,
+  Send,
+  Loader,
+  BookOpenCheck,
+} from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import LoadingLoader from "@/CustomComponent/LoadingLoader";
 import RatingStars from "@/CustomComponent/RatingStars";
@@ -68,7 +77,7 @@ export default function CourseOverview() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <LoadingLoader />
+        <Loader className="animate-spin" />
       </div>
     );
   }
@@ -230,6 +239,38 @@ export default function CourseOverview() {
                 </CardFooter>
               </Card>
             ))}
+            <div>
+              {course &&
+                course.finalAssessments &&
+                course.finalAssessments.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-gray-200 flex flex-col gap-3">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
+                      Final Assessment
+                    </h3>
+                    {course.finalAssessments.map((assessment, i) => (
+                      <Link
+                        to={`/student/assessment/submission/${assessment._id}`}
+                      >
+                        <div
+                          key={i}
+                          className="p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 shadow-md"
+                        >
+                          <div className="flex items-center gap-4">
+                            <BookOpenCheck className="h-5 w-5 text-green-500" />
+                            <h3 className="text-lg font-semibold text-gray-800">
+                              {assessment.title}
+                            </h3>
+                          </div>
+
+                          <p className="text-gray-700 mt-4 text-sm">
+                            {assessment.description}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+            </div>
           </div>
         </TabsContent>
 

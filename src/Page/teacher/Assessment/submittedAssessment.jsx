@@ -256,7 +256,6 @@ const QuestionCard = ({
   const questionType = answer?.questionDetails?.type || "unknown";
   const maxPoints = answer?.questionDetails?.points || 0;
 
-  console.log(maxPoints, "maxPoints");
   const handleError = (questionId, message) => {
     setError((prevErrors) => {
       if (!message) {

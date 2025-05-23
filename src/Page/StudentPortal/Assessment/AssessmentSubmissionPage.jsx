@@ -29,8 +29,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader } from "lucide-react";
+import { FileText, Loader } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import AssessmentResultCard from "@/CustomComponent/Assessment/AssessmentResultCard";
 
 const AssessmentSubmissionPage = () => {
   const { id } = useParams();
@@ -40,12 +41,14 @@ const AssessmentSubmissionPage = () => {
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
 
+  console.log(result, "result");
+
   useEffect(() => {
     const fetchAssessment = async () => {
       try {
         const res = await axiosInstance.get(`/assessment/${id}`);
         setAssessment(res.data.assessment);
-        console.log(res);
+        setResult(res.data.submission);
       } catch (err) {
         setError("Failed to load assessment. Please try again later.");
       } finally {
@@ -111,12 +114,16 @@ const AssessmentSubmissionPage = () => {
     );
   }
 
-  if (!assessment) {
+  if (!assessment && !result) {
     return (
       <Alert variant="destructive" className="max-w-md mx-auto mt-8">
         <AlertDescription>Assessment not found</AlertDescription>
       </Alert>
     );
+  }
+
+  if (result) {
+    return <AssessmentResultCard submission={result} />;
   }
 
   return (
@@ -172,8 +179,28 @@ const AssessmentSubmissionPage = () => {
                 <CardTitle>{assessment.title}</CardTitle>
                 <CardDescription>{assessment.description}</CardDescription>
               </CardHeader>
+              <section>
+                {assessment.files.length > 0 && (
+                  <div className="flex items-center gap-2 mb-4 border rounded-lg w-40 p-4 ml-5">
+                    <FileText className="text-green-500" />
+                    <span className="text-sm font-medium text-gray-800">
+                      {assessment.files.map((file, index) => (
+                        <a
+                          key={index}
+                          href={file.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          {file.filename}
+                        </a>
+                      ))}
+                    </span>
+                  </div>
+                )}
+              </section>
               <CardContent>
-                <div className="space-y-6">
+                <div className="space-y-6 ">
                   {assessment?.questions?.map((question, index) => (
                     <Card key={question._id} className="border shadow-sm">
                       <CardHeader className="pb-2">
