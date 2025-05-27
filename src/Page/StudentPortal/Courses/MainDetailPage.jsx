@@ -277,7 +277,7 @@ export default function CourseOverview() {
         {/* Reviews */}
         <TabsContent value="reviews" className="py-8 space-y-8">
           <RatingSection id={id} course={course} />
-          <CommentSection id={id} />
+          <CommentSection id={course._id} />
         </TabsContent>
       </Tabs>
     </div>

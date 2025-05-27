@@ -148,7 +148,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                       fetchCourseDetail={fetchCourseDetail}
                     />
                     <Link
-                      to={`/teacher/assessments/create/chapter/${chapter._id}`}
+                      to={`/teacher/assessments/create/chapter/${chapter._id}/${courseId}`}
                     >
                       <Button variant="outline" className="text-green-600">
                         + Add Assessment
@@ -393,7 +393,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                   }
                                 />
                                 <Link
-                                  to={`/teacher/assessments/create/lesson/${lesson._id}`}
+                                  to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}`}
                                 >
                                   <Button
                                     variant="outline"

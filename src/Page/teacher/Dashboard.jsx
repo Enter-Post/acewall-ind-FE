@@ -178,32 +178,7 @@ export default function TeacherDashboard() {
           </div>
 
 
-          {/* Recent Sales */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Recent Sales</h2>
-            </div>
-            <div className="space-y-4">
-              {recentSales.map((sale, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
-                >
-                  <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                    <MessageSquare size={16} />
-                  </div>
-                  <div>
-                    <p className="text-sm">
-                      <span className="font-medium">{sale.user}</span>{" "}
-                      {sale.action}{" "}
-                      <span className="text-gray-500">{sale.target}</span>
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">{sale.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        
 
           {/* Recent Courses */}
           <div>

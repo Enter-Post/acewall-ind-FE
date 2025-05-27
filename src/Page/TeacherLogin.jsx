@@ -14,17 +14,17 @@ const schema = z.object({
 });
 
 const TeacherLogin = () => {
- const { login } = useContext(GlobalContext);
+  const { login } = useContext(GlobalContext);
 
-//  console.log(login, "login in teacherlogin");
- 
+  //  console.log(login, "login in teacherlogin");
+
   const schema = z.object({
     email: z.string().min(1).email(),
     password: z.string().min(8),
-    
+
   });
 
-const {
+  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -34,8 +34,8 @@ const {
 
 
   const onSubmit = async (formData) => {
-    
-    login(formData);  
+
+    login(formData);
   };
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -126,16 +126,13 @@ const {
                 Teachers Love Acewall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> Acewall Scholars is an
-                amazing program. They have helped me with numerous subjects,
-                including Biology, Algebra, and Spanish….I not only aced the
-                midterm but I got the highest score out of all of Spanish 1,
-                thank you.
+                <span className="text-2xl">"</span> This is one of the best Learning Management Platforms. Their supportteam is topnnotvch. The platform also supports various integrations as resources for classroom set up. I really enjoy making residual inome for the classes I create.
+
                 <span className="text-2xl">"</span>
               </blockquote>
               <div className="text-center md:text-left">
-                <p className="font-medium text-gray-800">Sara Wilsson</p>
-                <p className="text-gray-600">Teacher</p>
+                <p className="font-medium text-gray-800">-Regina</p>
+                <p className="text-gray-600 font-medium">Teacher</p>
               </div>
             </div>
           </div>

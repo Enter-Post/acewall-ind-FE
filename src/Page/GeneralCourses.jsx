@@ -21,7 +21,7 @@ const GeneralCourses = () => {
     setLoading(true);
     const delayDebounce = setTimeout(() => {
       const getCourses = async () => {
-        try {
+        try {``
           const response = await axiosInstance.get("/course/get", {
             params: { search: searchQuery },
           });

@@ -90,9 +90,9 @@ const Account = () => {
     }
 
     // ✅ Validate file size (limit to 1MB)
-    const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+   const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSizeInBytes) {
-      alert("Image size must be less than 1MB.");
+      alert("Image size must be less than 5MB.");
       return;
     }
 
@@ -260,13 +260,13 @@ const Account = () => {
                 id="Bio"
                 rows={5}
                 placeholder="Write a short Bio..."
-                maxLength={300}
+                maxLength={500}
                 {...register("Bio")}
               />
 
               {/* Character count */}
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{watch("Bio")?.length || 0}/300 characters</span>
+                <span>{watch("Bio")?.length || 0}/500 characters</span>
                 {errors.Bio && (
                   <span className="text-red-500">{errors.Bio.message}</span>
                 )}

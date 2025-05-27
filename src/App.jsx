@@ -167,7 +167,7 @@ function App() {
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
               <Route
-                path="create/:type/:id"
+                path="create/:type/:id/:courseId"
                 element={<CreateAssessmentPage />}
               />
             </Route>

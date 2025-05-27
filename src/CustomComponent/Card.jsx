@@ -390,17 +390,17 @@ const EarningStateCard = ({ data }) => {
 
 const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
   return (
-    <Card className="pb-6 pt-0 overflow-hidden cursor-pointer border flex flex-col gap-4">
+    <Card className="pb-6 pt-0 overflow-hidden cursor-pointer h-full border flex flex-col gap-4">
       <AspectRatio ratio={16 / 5}>
         <img src={imageUrl} alt={name} className="object-cover w-full h-full" />
       </AspectRatio>
       <CardHeader>
         {/* <CardTitle>{name}</CardTitle> */}
-        <p className="text-md font-bold truncate line-clamp-1.4">{name}</p>
+        <p className="text-md font-bold ">{name}</p>
       </CardHeader>
       <CardContent className="flex flex-col flex-1">
         <div className="flex flex-col flex-1 gap-6">
-          <p className="text-muted-foreground  text-xs line-clamp-4">
+          <p className="text-muted-foreground  text-xs ">
             {description}
           </p>
           <a

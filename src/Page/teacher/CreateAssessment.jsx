@@ -37,6 +37,7 @@ import { toast } from "sonner";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import DueDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
+import CategoryDropdown from "@/CustomComponent/Assessment/Assessment-category-dropdown";
 
 // Define the form schema with Zod
 const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
@@ -108,6 +109,7 @@ const formSchema = z.object({
     .string()
     .min(10, { message: "Description must be at least 10 characters" })
     .max(1000, { message: "Description cannot exceed 1000 characters" }),
+  category: z.string().min(1, { message: "Please select a category" }),
   questions: z
     .array(questionSchema)
     .min(1, { message: "At least one question is required" }),
@@ -150,6 +152,7 @@ export default function CreateAssessmentPage() {
       chapter: "",
       course: "",
       lesson: "",
+      category: "",
       questions: [
         {
           type: "mcq",
@@ -242,12 +245,13 @@ export default function CreateAssessmentPage() {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating assessment...");
     console.log(data, "data");
+    const toastId = toast.loading("Creating assessment...");
 
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("description", data.description);
+    formData.append("category", data.category);
     if (data.dueDate.dateTime) {
       formData.append("dueDate", data.dueDate.dateTime);
     }
@@ -357,6 +361,25 @@ export default function CreateAssessmentPage() {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <CategoryDropdown
+                    courseId={params.courseId}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    error={form.formState.errors.category?.message}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Due Date</h3>

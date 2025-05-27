@@ -21,16 +21,16 @@ const cardData = [
   {
     name: "Academic Tutoring",
     description:
-      "Academic tutoring includes remediation and enrichment in reading, writing, and mathematics with emphasis in STEM education. Serving grades K-12.",
+      "Acewall Scholars offers one-on-one tutoring services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_357701907-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/academic-tutoring ",
   },
 
   {
-    name: "Mentoring and Mental Health Support",
+    name: "Mentoring and Mental Health Support - a 360° approach",
     description:
-      "Mentoring and Mental Health - a 360° approach works to improve each client’s sense of self by providing mentoring support services that positively affect the client’s mental health through the promotion and integration of emotional, physical, and mental well-being. Participants will receive one-on-one and group activities to support the overall goal of mental wellness, in addition to, the integration of Social and Emotional Learning (SEL) activities.",
+      "Acewall Scholars offers a 360° approach to mentoring and mental health support. Our experienced mentors and mental health professionals provide personalized support and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/mentoring",
@@ -38,15 +38,15 @@ const cardData = [
   {
     name: "Parent Aide",
     description:
-      "Acewall Scholars offers The Holistic Parent Aid program. This program falls within our mentoring department. Our Parenting progam offers a holistic approach to developing effective parenting skills. Providing education on healthy and effective ways to support children through their emotional, physical, mental, and spiritual development, is our goal.",
+      "How did we determine the popular course? The college level courses that have been listed should not be there.If we just need a place holder than we should be putting in classes like, Algebra 1, English, Physics, etc.     ",
     imageUrl:
-      "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
+    "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
   },
   {
     name: "Test Prep",
     description:
-      "Our Test Prep services prepare students to take standardized test by helping improve their overall test scores. Test prep services are offered for the ASVAB, GED, SOL, ACT, SAT, GRE, and LSAT.",
+      "Acewall Scholars offers test preparation services to support students in their academic journey. Our experienced tutors provide personalized instruction and guidance to help students succeed.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/row-students-doing-exam-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/test-prep",
@@ -63,7 +63,7 @@ const cardData = [
   {
     name: "College Counseling",
     description:
-      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process. ",
+      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process.  ",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/college+counseling-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/college-counseling",

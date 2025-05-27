@@ -79,9 +79,9 @@ const Account = () => {
     }
 
     // ✅ Validate file size (limit to 1MB)
-    const maxSizeInBytes = 1 * 1024 * 1024; // 1MB
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSizeInBytes) {
-      alert("Image size must be less than 1MB.");
+      alert("Image size must be less than 5MB.");
       return;
     }
 

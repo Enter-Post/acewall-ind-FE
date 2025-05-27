@@ -1,30 +1,43 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import TermsModal from "@/CustomComponent/Termsandcondition";
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
-  Mail,
-  ArrowUp,
-} from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube, Mail, ArrowUp } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import PrivacyPolicy from "./PrivacePolicy";
 import { useEffect, useState } from "react";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 export default function Footer() {
   const location = useLocation().pathname;
-
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [subcategories, setSubcategories] = useState([]);
+  const [email, setEmail] = useState(""); // State for email input
+  const [loading, setLoading] = useState(false); // Loading state for button
+  const [error, setError] = useState(""); // Error message state
+  const [success, setSuccess] = useState(""); // Success message state
 
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    axiosInstance
+      .get("/subcategory/get")
+      .then((response) => {
+        const topTitles = response.data?.subcategories
+          ?.map((item) => item.title)
+          .filter(Boolean)
+          .slice(0, 5); // Get only top 5
+        setSubcategories(topTitles);
+      })
+      .catch((error) => {
+        console.error("Error fetching subcategories:", error);
+        setSubcategories([]);
+      });
   }, []);
 
   const usefulLinks = [
@@ -33,27 +46,41 @@ export default function Footer() {
     { name: "Additional Services", url: "/AdditionalServices" },
   ];
 
-  const popularCourses = [
-    { name: "Cell Biology", url: "/Courses/detail" },
-    { name: "Calculus", url: "/Courses/detail" },
-    { name: "American Literature", url: "/Courses/detail" },
-    { name: "Momentum and Energy", url: "/Courses/detail" },
-    { name: "Thermodynamics", url: "/Courses/detail" },
-  ];
-
   const socialLinks = [
     { Icon: Twitter, url: "https://twitter.com/AcewallScholars" },
     { Icon: Facebook, url: "https://www.facebook.com/acewallscholars" },
-    {
-      Icon: Instagram,
-      url: "https://www.instagram.com/acewallscholarsonline/",
-    },
-    {
-      Icon: Youtube,
-      url: "https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ",
-    },
+    { Icon: Instagram, url: "https://www.instagram.com/acewallscholarsonline/" },
+    { Icon: Youtube, url: "https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ" },
     { Icon: Mail, url: "mailto:contact@acewallscholars.org" },
   ];
+
+  const handleSubscribe = async () => {
+    if (!email) {
+      setError("Email is required");
+      return;
+    }
+
+    setLoading(true);
+    setError(""); // Reset any previous errors
+    setSuccess(""); // Reset success message
+
+    try {
+      const response = await axiosInstance.post("/newsletter/subscribe", { email });
+
+      // If subscription is successful
+      setSuccess("Subscribed successfully! Thank you for joining.");
+      console.log(response.data);
+      
+      setEmail(""); // Clear email input field after success
+
+    } catch (error) {
+      // If there’s an error
+      console.error("Error subscribing:", error);
+      setError("Failed to subscribe. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -77,11 +104,7 @@ export default function Footer() {
               <ul className="space-y-2 text-sm text-gray-300">
                 {usefulLinks.map((link, index) => (
                   <li key={index}>
-                    <Link
-                      to={link.url}
-                      onClick={link.func ? link.func : undefined}
-                      className="flex items-center hover:text-white"
-                    >
+                    <Link to={link.url} className="flex items-center hover:text-white">
                       <span className="text-green-500 mr-2">›</span>
                       <p>{link.name}</p>
                     </Link>
@@ -96,42 +119,51 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Column 3: Popular Courses */}
+            {/* Column 3: Popular Categories */}
             <div>
-              <h3 className="font-semibold text-white mb-4">Popular Courses</h3>
+              <h3 className="font-semibold text-white mb-4">Popular Categories</h3>
               <ul className="space-y-2 text-sm text-gray-300">
-                {popularCourses.map((course, index) => (
-                  <li key={index}>
-                    <Link
-                      to={course.url}
-                      className="flex items-center hover:text-white"
-                    >
-                      <span className="text-green-500 mr-2">›</span>{" "}
-                      {course.name}
-                    </Link>
-                  </li>
-                ))}
+                {subcategories.length > 0 ? (
+                  subcategories.map((title, index) => (
+                    <li key={index}>
+                      <Link
+                        to={`/courses?subcategory=${encodeURIComponent(title)}`}
+                        className="flex items-center hover:text-white"
+                      >
+                        <span className="text-green-500 mr-2">›</span> {title}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No subcategories found.</p>
+                )}
               </ul>
             </div>
 
             {/* Column 4: Newsletter */}
             <div>
-              <h3 className="font-semibold text-white mb-4">
-                Join Our Newsletter
-              </h3>
-              <p className="text-sm text-gray-300 mb-4">
-                Stay updated with our latest news and offers.
-              </p>
+              <h3 className="font-semibold text-white mb-4">Join Our Newsletter</h3>
+              <p className="text-sm text-gray-300 mb-4">Stay updated with our latest news and offers.</p>
               <div className="flex">
                 <Input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="rounded-l-md rounded-r-none border-gray-700 bg-black text-white focus:ring-0 focus:border-gray-600"
                 />
-                <Button className="rounded-l-none bg-green-500 hover:bg-green-600 text-white">
-                  Subscribe
+                <Button
+                  onClick={handleSubscribe}
+                  className="rounded-l-none bg-green-500 hover:bg-green-600 text-white"
+                  disabled={loading}
+                >
+                  {loading ? "Subscribing..." : "Subscribe"}
                 </Button>
               </div>
+
+              {/* Error and success messages */}
+              {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+              {success && <p className="text-sm text-green-500 mt-2">{success}</p>}
             </div>
           </div>
         </div>

@@ -19,12 +19,12 @@ const cardData = [
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/mentoring",
   },
-  {
+ {
     name: "Parent Aide",
     description:
-      "Acewall Scholars offers The Holistic Parent Aid program. This program falls within our mentoring department. Our Parenting progam offers Acewall Scholars will assist students with finding summer programs, internships, and/or apprenticeships, ",
+      "How did we determine the popular course? The college level courses that have been listed should not be there.If we just need a place holder than we should be putting in classes like, Algebra 1, English, Physics, etc.     ",
     imageUrl:
-      "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
+    "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
   },
   {
@@ -38,7 +38,7 @@ const cardData = [
   {
     name: "Internship Support/Placement",
     description:
-      "Acewall Scholars offers internship support and placement services to support students in their academic journey. Our experienced mentors and career counselors provide personalized support and guidance to help students succeed.",
+      "Acewall Scholars will assist students with finding summer programs, internships, and/or apprenticeships, as well as volunteering experience in fields of interest.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/internship+support-placement-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/internship-support/placement",
@@ -47,7 +47,7 @@ const cardData = [
   {
     name: "College Counseling",
     description:
-      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process. necessary guidance and information to assist in navigating the college process. ",
+      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process.  ",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/college+counseling-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/college-counseling",

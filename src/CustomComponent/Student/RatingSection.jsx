@@ -1,33 +1,47 @@
 import React, { useEffect, useState } from "react";
 import RatingStars from "../RatingStars";
-import { Star } from "lucide-react";
+import { Loader, Star } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 
 const RatingSection = ({ course, id }) => {
   const [userRating, setUserRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [courseRating, setCourseRating] = useState();
+  const [loading, setLoading] = useState(false);
 
-  // Fetch whether user has already rated this course
-  useEffect(() => {
-    const fetchUserRating = async () => {
-      try {
-        const res = await axiosInstance.get(`/rating/isRated/${id}`);
-        if (res.data.rating) {
-          setUserRating(res.data.star);
-          setHasRated(true);
-        }
-      } catch (err) {
-        if (err.response?.status !== 404) {
-          toast.error("Error checking user rating");
-        }
-      } finally {
+  const fetchUserRating = async () => {
+    setLoading(true);
+    await axiosInstance
+      .get(`rating/isRated/${course._id}`)
+      .then((res) => {
+        console.log(res);
+        setHasRated(res.data);
         setLoading(false);
-      }
-    };
+      })
+      .catch((err) => {
+        console.log(err, "err");
+        setLoading(false);
+      });
+  };
+  const fetchCourseRating = async () => {
+    setLoading(true);
+    await axiosInstance
+      .get(`rating/course/${course._id}`)
+      .then((res) => {
+        setLoading(false);
+        console.log(res, "whole course rating");
+        setCourseRating(res.data);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err, "err is fetching course rating");
+      });
+  };
 
+  useEffect(() => {
     fetchUserRating();
+    fetchCourseRating();
   }, [id]);
 
   const handleRatingSubmit = async (rating) => {
@@ -35,17 +49,19 @@ const RatingSection = ({ course, id }) => {
       toast.error("You have already rated this course.");
       return;
     }
-
+    setLoading(true);
     try {
-      const res = await axiosInstance.post(`/rating/create/${id}`, {
+      const res = await axiosInstance.post(`rating/create/${course._id}`, {
         star: rating,
       });
       toast.success(res.data.message);
       setUserRating(rating);
       setHasRated(true);
+      setLoading(false);
     } catch (err) {
       console.log(err);
       toast.error(err.response?.data?.message || "Failed to submit rating");
+      setLoading(false);
     }
   };
 
@@ -53,11 +69,21 @@ const RatingSection = ({ course, id }) => {
     <div className="bg-gray-50 p-6 rounded-lg">
       <h3 className="text-xl font-bold mb-4">Rate this course</h3>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center ">
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
-        ) : hasRated ? (
+          <Loader className="animate-spin" />
+        ) : hasRated && hasRated.rating ? (
           <>
+            {[...Array(hasRated.star)].map((_, i) => (
+              <Star
+                key={i}
+                className="h-5 w-5 fill-yellow-500 text-yellow-500"
+              />
+            ))}
+            <span className="ml-2 text-sm text-gray-600">
+              You rated this course {hasRated.star} star
+              {hasRated.star > 1 ? "s" : ""}
+            </span>
           </>
         ) : (
           <>
@@ -66,7 +92,7 @@ const RatingSection = ({ course, id }) => {
               setRating={handleRatingSubmit}
               editable={true}
             />
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 ml-4">
               {userRating > 0 ? "Thanks for rating!" : "Click to rate"}
             </p>
           </>
@@ -80,16 +106,18 @@ const RatingSection = ({ course, id }) => {
               <Star
                 key={star}
                 className={`h-5 w-5 ${
-                  star <= Math.round(course.averageRating)
+                  star <= Math.round(courseRating?.averageStar)
                     ? "fill-yellow-500 text-yellow-500"
                     : "text-gray-300"
                 }`}
               />
             ))}
           </div>
-          <span className="font-medium">{course?.averageRating?.toFixed(1)}</span>
+          <span className="font-medium">
+            {courseRating?.averageStar?.toFixed(1)}
+          </span>
           <span className="text-gray-500">
-            ({course.rating.length} ratings)
+            ({courseRating?.count} ratings)
           </span>
         </div>
       </div>
