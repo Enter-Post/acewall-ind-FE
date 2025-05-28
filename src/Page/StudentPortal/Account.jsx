@@ -220,9 +220,7 @@ const onSubmit = async (data) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Pronouns */}
               <div className="space-y-2">
-                <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Preferred Pronouns
-                </Label>
+               
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {/* Pronouns */}
                   <div className="space-y-2">
@@ -256,30 +254,7 @@ const onSubmit = async (data) => {
                   </div>
 
                   {/* Gender */}
-                  <div className="space-y-2">
-                    <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                      Gender Identity
-                    </Label>
-                    <div className="grid grid-cols-1 gap-2">
-                      {["Male", "Female", "Non-binary", "Other"].map((gender) => (
-                        <div key={gender} className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id={`gender-${gender.toLowerCase()}`}
-                            value={gender.toLowerCase()}
-                            {...register("gender")}
-                            className="w-4 h-4 accent-blue-600"
-                          />
-                          <label
-                            htmlFor={`gender-${gender.toLowerCase()}`}
-                            className="text-sm text-gray-900 dark:text-white"
-                          >
-                            {gender}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
 

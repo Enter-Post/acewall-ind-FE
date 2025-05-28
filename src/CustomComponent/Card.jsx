@@ -303,10 +303,7 @@ const StudentCard = ({ student }) => (
         <span className="text-right text-gray-700 font-medium">
           {new Date(student.createdAt).toLocaleDateString()}
         </span>
-        <span className="text-gray-500">Courses</span>
-        <span className="text-right text-gray-700 font-medium">
-          {student?.purchasedCourse?.length || 0}
-        </span>
+       
       </div>
 
       {/* Optional CTA */}
@@ -444,7 +441,7 @@ function StudentProfileCourseCard({ course }) {
 
       {/* Course Info */}
       <div className="flex-1 w-full text-center sm:text-left">
-        <h3 className="font-bold text-white text-lg">{course?.courseTitle}</h3>
+        <h3 className="font-bold text-black text-md">{course?.courseTitle}</h3>
         {/* Optional subtitle or description */}
         {/* <p className="text-white text-sm mt-1">{course?.description}</p> */}
       </div>

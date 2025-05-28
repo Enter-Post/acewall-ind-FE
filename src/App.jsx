@@ -73,7 +73,7 @@ function App() {
   }
 
   const connectsocket = () => {
-    const newSocket = io("http://localhost:5050", {
+    const newSocket = io("https://acewall-backend-school-instance-production.up.railway.app", {
       query: { userId: user?._id || "" },
     });
 

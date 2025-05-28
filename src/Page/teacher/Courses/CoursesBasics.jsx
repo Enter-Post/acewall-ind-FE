@@ -20,7 +20,7 @@ import CategorySelect from "@/CustomComponent/CreateCourse/CategorySelect";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
-import SubCategorySelect from "@/CustomComponent/CreateCourse/subCategorySelect";
+import SubCategorySelect from "@/CustomComponent/CreateCourse/SubCategorySelect";
 import TeachingPointInput from "@/CustomComponent/CreateCourse/TeachingPoints";
 import RequirementInput from "@/CustomComponent/CreateCourse/Requirment";
 

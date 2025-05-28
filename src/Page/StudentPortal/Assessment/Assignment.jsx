@@ -144,7 +144,7 @@ const Assessment = () => {
                           {assessment.title}
                         </span>
                       </TableCell>
-                      <TableCell>{assessment.course.courseTitle}</TableCell>
+                      <TableCell>{assessment?.course?.courseTitle}</TableCell>
                       <TableCell>
                         {formatDueDate(
                           assessment.dueDate.date,
@@ -186,7 +186,7 @@ const Assessment = () => {
                                 </h4>
                                 <p className="text-sm text-gray-600 flex items-center gap-2">
                                   <FileText className="h-4 w-4 text-gray-500" />
-                                  {assessment.course.courseTitle}
+                                  {assessment?.course?.courseTitle}
                                 </p>
                               </div>
                               <div>
@@ -197,7 +197,7 @@ const Assessment = () => {
                                   <p className="text-sm text-gray-600 flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-gray-500" />
                                     {format(
-                                      new Date(assessment.dueDate.date),
+                                      new Date(assessment?.dueDate?.date),
                                       "MMMM dd, yyyy"
                                     )}
                                   </p>

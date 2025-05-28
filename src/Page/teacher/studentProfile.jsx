@@ -74,13 +74,11 @@ export default function StudentProfile() {
       </div>
 
       {/* Course List */}
-      <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Enrolled Courses</h2>
-        <div className="flex flex-row gap-8 items-center flex-wrap justify-center md:justify-start">
-          {student?.courses?.map((course, index) => (
-            <StudentProfileCourseCard key={index} course={course} />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
+        <h2 className="text-xl font-semibold text-gray-800 col-span-1 sm:col-span-3 mb-2">Enrolled Courses</h2>
+        {student?.courses?.map((course, index) => (
+          <StudentProfileCourseCard key={index} course={course} className="col-span-1" />
+        ))}
       </div>
     </div>
   );

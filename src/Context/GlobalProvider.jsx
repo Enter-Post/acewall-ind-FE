@@ -66,7 +66,7 @@ export const GlobalProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       setAuthLoading(true);
-      const res = await axiosInstance.get("auth/checkAuth");
+      const res = await axiosInstance.get("auth/checkAuth" , { withCredentials: true });
       setUser(res.data.user);
       setAuthLoading(false);
     } catch (error) {
