@@ -27,17 +27,19 @@ import * as z from "zod";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
-// Zod Schema
+// ✅ Zod Schema with limits
 const AnnouncementSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "Title is required").max(100, "Title cannot exceed 100 characters"),
   courseId: z.string().min(1, "Course is required"),
-  message: z.string().min(1, "Message is required"),
+  message: z.string().min(1, "Message is required").max(500, "Message cannot exceed 500 characters"),
 });
 
-export default function AnnouncementDialog({ open, onOpenChange , onCreated  }) {
+export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
   const { user } = useContext(GlobalContext);
   const [allCourses, setAllCourses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [titleCharCount, setTitleCharCount] = useState(0);
+  const [messageCharCount, setMessageCharCount] = useState(0);
 
   const {
     register,
@@ -45,6 +47,7 @@ export default function AnnouncementDialog({ open, onOpenChange , onCreated  }) 
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(AnnouncementSchema),
     defaultValues: {
@@ -83,11 +86,12 @@ export default function AnnouncementDialog({ open, onOpenChange , onCreated  }) 
         "/announcements/createannouncement",
         payload
       );
-      console.log("Announcement created:", res.data);
       if (onCreated) onCreated(res.data.announcement);
 
       onOpenChange(false);
-      reset(); // Clear the form
+      reset();
+      setTitleCharCount(0);
+      setMessageCharCount(0);
     } catch (err) {
       console.error("Error creating announcement:", err);
     }
@@ -103,22 +107,32 @@ export default function AnnouncementDialog({ open, onOpenChange , onCreated  }) 
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+          {/* Title */}
           <div>
             <Label htmlFor="title">Announcement Title</Label>
             <Input
               id="title"
-              placeholder="Enter title"
+              maxLength={100}
               {...register("title")}
+              onChange={(e) => {
+                setTitleCharCount(e.target.value.length);
+                setValue("title", e.target.value, { shouldValidate: true });
+              }}
+              placeholder="Enter title"
             />
+            <div className="text-sm text-gray-500 text-right mt-1">
+              {titleCharCount}/100 characters
+            </div>
             {errors.title && (
               <p className="text-sm text-red-500">{errors.title.message}</p>
             )}
           </div>
 
+          {/* Course Selection */}
           <div>
             <Label htmlFor="course">Select Course</Label>
             <Select
-              onValueChange={(value) => setValue("courseId", value)}
+              onValueChange={(value) => setValue("courseId", value, { shouldValidate: true })}
               disabled={loading}
             >
               <SelectTrigger>
@@ -143,24 +157,36 @@ export default function AnnouncementDialog({ open, onOpenChange , onCreated  }) 
             )}
           </div>
 
+          {/* Message */}
           <div>
             <Label htmlFor="message">Announcement Message</Label>
             <Textarea
               id="message"
-              placeholder="Enter message"
+              maxLength={500}
               {...register("message")}
+              onChange={(e) => {
+                setMessageCharCount(e.target.value.length);
+                setValue("message", e.target.value, { shouldValidate: true });
+              }}
+              placeholder="Enter message"
             />
+            <div className="text-sm text-gray-500 text-right mt-1">
+              {messageCharCount}/500 characters
+            </div>
             {errors.message && (
               <p className="text-sm text-red-500">{errors.message.message}</p>
             )}
           </div>
 
+          {/* Footer Buttons */}
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
               onClick={() => {
                 reset();
+                setTitleCharCount(0);
+                setMessageCharCount(0);
                 onOpenChange(false);
               }}
             >

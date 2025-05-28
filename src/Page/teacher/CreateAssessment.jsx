@@ -184,7 +184,7 @@ export default function CreateAssessmentPage() {
       const isValidType =
         file.type === "application/pdf" ||
         file.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       return isValidType && isValidSize;
     });
@@ -244,43 +244,46 @@ export default function CreateAssessmentPage() {
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onSubmit = async (data) => {
-    console.log(data, "data");
+    if (isSubmitting) return; // prevent double submission
+
+    setIsSubmitting(true);
     const toastId = toast.loading("Creating assessment...");
 
-    const formData = new FormData();
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-    formData.append("category", data.category);
-    if (data.dueDate.dateTime) {
-      formData.append("dueDate", data.dueDate.dateTime);
-    }
-    formData.append(params.type, params.id);
-    formData.append("questions", JSON.stringify(data.questions));
-    if (selectedFiles.length > 0) {
-      selectedFiles.forEach((file) => {
-        formData.append("files", file); // key must match backend field
-      });
-    }
+    try {
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("category", data.category);
+      if (data.dueDate.dateTime) {
+        formData.append("dueDate", data.dueDate.dateTime);
+      }
+      formData.append(params.type, params.id);
+      formData.append("questions", JSON.stringify(data.questions));
+      if (selectedFiles.length > 0) {
+        selectedFiles.forEach((file) => {
+          formData.append("files", file);
+        });
+      }
 
-    await axiosInstance
-      .post("assessment/create", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        toast.success(res.data.message, { id: toastId });
-        navigate(-1);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(
-          err?.response?.data?.message || "Failed to create assessment",
-          { id: toastId }
-        );
+      const res = await axiosInstance.post("assessment/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
+      toast.success(res.data.message, { id: toastId });
+      navigate(-1);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.response?.data?.message || "Failed to create assessment", {
+        id: toastId,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   const { watch, control, formState } = form;
 
@@ -516,154 +519,154 @@ export default function CreateAssessmentPage() {
                     {/* Question-specific answer fields */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "truefalse" && (
-                      <FormField
-                        control={form.control}
-                        name={`questions.${questionIndex}.correctAnswer`}
-                        render={({ field }) => (
-                          <FormItem className="space-y-3">
-                            <FormLabel>Correct Answer</FormLabel>
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                value={field.value}
-                                className="flex space-x-4"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="true"
-                                    id={`true-${question.id}`}
-                                  />
-                                  <Label
-                                    htmlFor={`true-${question.id}`}
-                                    className="font-normal"
-                                  >
-                                    True
-                                  </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="false"
-                                    id={`false-${question.id}`}
-                                  />
-                                  <Label
-                                    htmlFor={`false-${question.id}`}
-                                    className="font-normal"
-                                  >
-                                    False
-                                  </Label>
-                                </div>
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
+                        <FormField
+                          control={form.control}
+                          name={`questions.${questionIndex}.correctAnswer`}
+                          render={({ field }) => (
+                            <FormItem className="space-y-3">
+                              <FormLabel>Correct Answer</FormLabel>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="flex space-x-4"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="true"
+                                      id={`true-${question.id}`}
+                                    />
+                                    <Label
+                                      htmlFor={`true-${question.id}`}
+                                      className="font-normal"
+                                    >
+                                      True
+                                    </Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="false"
+                                      id={`false-${question.id}`}
+                                    />
+                                    <Label
+                                      htmlFor={`false-${question.id}`}
+                                      className="font-normal"
+                                    >
+                                      False
+                                    </Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     {/* MCQs */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "mcq" && (
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Label>Answer Options</Label>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => addOption(questionIndex)}
-                            disabled={
-                              form.watch(`questions.${questionIndex}.options`)
-                                ?.length >= 4
-                            }
-                            className="h-7 text-xs"
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <Label>Answer Options</Label>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addOption(questionIndex)}
+                              disabled={
+                                form.watch(`questions.${questionIndex}.options`)
+                                  ?.length >= 4
+                              }
+                              className="h-7 text-xs"
+                            >
+                              Add Option
+                            </Button>
+                          </div>
+
+                          {form.watch(`questions.${questionIndex}.options`)
+                            ?.length >= 4 && (
+                              <p className="text-xs text-muted-foreground">
+                                Maximum of 4 options allowed.
+                              </p>
+                            )}
+
+                          <RadioGroup
+                            value={form.watch(
+                              `questions.${questionIndex}.correctAnswer`
+                            )}
+                            onValueChange={(val) => {
+                              console.log(val, "val");
+                              form.setValue(
+                                `questions.${questionIndex}.correctAnswer`,
+                                val
+                              );
+                            }}
+                            className="space-y-3"
                           >
-                            Add Option
-                          </Button>
-                        </div>
-
-                        {form.watch(`questions.${questionIndex}.options`)
-                          ?.length >= 4 && (
-                          <p className="text-xs text-muted-foreground">
-                            Maximum of 4 options allowed.
-                          </p>
-                        )}
-
-                        <RadioGroup
-                          value={form.watch(
-                            `questions.${questionIndex}.correctAnswer`
-                          )}
-                          onValueChange={(val) => {
-                            console.log(val, "val");
-                            form.setValue(
-                              `questions.${questionIndex}.correctAnswer`,
-                              val
-                            );
-                          }}
-                          className="space-y-3"
-                        >
-                          {form
-                            .watch(`questions.${questionIndex}.options`)
-                            ?.map((option, optionIndex) => (
-                              <div
-                                key={optionIndex}
-                                className="flex items-center gap-3"
-                              >
-                                <RadioGroupItem
-                                  value={
-                                    form.watch(
-                                      `questions.${questionIndex}.options.${optionIndex}`
-                                    ) || ""
-                                  }
-                                  id={`option-${questionIndex}-${optionIndex}`}
-                                />
-
-                                <FormField
-                                  control={form.control}
-                                  name={`questions.${questionIndex}.options.${optionIndex}`}
-                                  render={({ field }) => (
-                                    <Input
-                                      {...field}
-                                      placeholder={`Option ${optionIndex + 1}`}
-                                      className="flex-1"
-                                      onChange={(e) => {
-                                        field.onChange(e.target.value);
-                                      }}
-                                    />
-                                  )}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    removeOption(questionIndex, optionIndex)
-                                  }
-                                  disabled={
-                                    form.watch(
-                                      `questions.${questionIndex}.options`
-                                    )?.length <= 2
-                                  }
-                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                            {form
+                              .watch(`questions.${questionIndex}.options`)
+                              ?.map((option, optionIndex) => (
+                                <div
+                                  key={optionIndex}
+                                  className="flex items-center gap-3"
                                 >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </div>
-                            ))}
-                        </RadioGroup>
+                                  <RadioGroupItem
+                                    value={
+                                      form.watch(
+                                        `questions.${questionIndex}.options.${optionIndex}`
+                                      ) || ""
+                                    }
+                                    id={`option-${questionIndex}-${optionIndex}`}
+                                  />
 
-                        <FormMessage>
-                          {
-                            form.formState.errors.questions?.[questionIndex]
-                              ?.options?.message
-                          }
-                        </FormMessage>
-                        <FormMessage>
-                          {
-                            form.formState.errors.questions?.[questionIndex]
-                              ?.correctAnswer?.message
-                          }
-                        </FormMessage>
-                      </div>
-                    )}
+                                  <FormField
+                                    control={form.control}
+                                    name={`questions.${questionIndex}.options.${optionIndex}`}
+                                    render={({ field }) => (
+                                      <Input
+                                        {...field}
+                                        placeholder={`Option ${optionIndex + 1}`}
+                                        className="flex-1"
+                                        onChange={(e) => {
+                                          field.onChange(e.target.value);
+                                        }}
+                                      />
+                                    )}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      removeOption(questionIndex, optionIndex)
+                                    }
+                                    disabled={
+                                      form.watch(
+                                        `questions.${questionIndex}.options`
+                                      )?.length <= 2
+                                    }
+                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </div>
+                              ))}
+                          </RadioGroup>
+
+                          <FormMessage>
+                            {
+                              form.formState.errors.questions?.[questionIndex]
+                                ?.options?.message
+                            }
+                          </FormMessage>
+                          <FormMessage>
+                            {
+                              form.formState.errors.questions?.[questionIndex]
+                                ?.correctAnswer?.message
+                            }
+                          </FormMessage>
+                        </div>
+                      )}
                   </CardContent>
                 </Card>
               );
@@ -730,11 +733,10 @@ export default function CreateAssessmentPage() {
             )}
           </div>
 
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting
-              ? "Submitting..."
-              : "Submit Assessment"}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Submit Assessment"}
           </Button>
+
         </form>
       </Form>
     </div>

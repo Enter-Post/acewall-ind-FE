@@ -29,7 +29,7 @@ export default function TeacherDashboard() {
   const [students, setStudents] = useState();
   const [recentActivity, setRecentActivity] = useState([]);
 
-  console.log(courses);
+  // console.log(courses);
   const { user } = useContext(GlobalContext)
   const teacherId = user._id
 
@@ -54,8 +54,8 @@ export default function TeacherDashboard() {
         .then((res) => {
           setStudents(res.data.students);
         })
-        console.log(res.data.students, "students from new API")
-        
+        // console.log(res.data.students, "students from new API")
+
         .catch((err) => {
           console.log(err);
         });
@@ -63,30 +63,32 @@ export default function TeacherDashboard() {
     getTeacherstudents();
   }, []);
 
-  // useEffect(() => {
-  //   const getRecentComments = async () => {
-  //     try {
-  //       const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
-  //       const comments = res.data.comments;
+  useEffect(() => {
+    const getRecentComments = async () => {
+      try {
+        console.log(`Fetching comments for teacherId: ${teacherId}`);
+        const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
+        console.log(res.data);  // Log the full response to inspect data structure
 
-  //       const formatted = comments.map((comment) => ({
-  //         user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
-  //         action: "commented on",
-  //         target: comment.course?.basics?.courseTitle || "a course",
-  //         time: new Date(comment.createdAt).toLocaleString("en-US", {
-  //           dateStyle: "medium",
-  //           timeStyle: "short",
-  //         }),
-  //       }));
+        const comments = res.data.comments || [];
+        const formatted = comments.map((comment) => ({
+          user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
+          action: "commented on",
+          target: comment.course?.basics?.courseTitle || "a course",
+          time: new Date(comment.createdAt).toLocaleString("en-US", {
+            dateStyle: "medium",
+            timeStyle: "short",
+          }),
+        }));
 
-  //       setRecentActivity(formatted);
-  //     } catch (err) {
-  //       console.error("Error fetching recent comments:", err);
-  //     }
-  //   };
+        setRecentActivity(formatted);
+      } catch (err) {
+        console.error("Error fetching recent comments:", err.response ? err.response.data : err);
+      }
+    };
 
-  //   getRecentComments();
-  // }, []);
+    getRecentComments();
+  }, [teacherId]);  // Don't forget to include teacherId in the dependency array
 
 
 
@@ -178,7 +180,7 @@ export default function TeacherDashboard() {
           </div>
 
 
-        
+
 
           {/* Recent Courses */}
           <div>

@@ -186,7 +186,7 @@ export default function CoursesBasis() {
     const formData = new FormData();
     setLoading(true);
 
-    // ✅ Show loading toast only when form is valid and submission starts
+    // Show loading toast
     const loadingToastId = toast.loading("Creating course...");
 
     try {
@@ -209,18 +209,22 @@ export default function CoursesBasis() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
+      // Dismiss loading toast and show success
       toast.dismiss(loadingToastId);
-      toast.success(res.data.message);
+      toast.success(res.data.message || "Course created successfully!");
+
       reset();
       navigate("/teacher/courses");
     } catch (err) {
-      console.log(err);
+      // Dismiss loading toast and show error
       toast.dismiss(loadingToastId);
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
+
+
   const onError = (errors) => {
     toast.error("Please fill out all required fields correctly.");
     console.log(errors);
@@ -446,11 +450,14 @@ export default function CoursesBasis() {
           </section>
         </section>
 
-        <div className="flex justify-end gap-4 mt-10">
-          <Button type="submit" className={"bg-green-500 hover:bg-green-600"}>
-            Next
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "Creating..." : "Create"}
+        </Button>
+
 
       </form>
     </div>

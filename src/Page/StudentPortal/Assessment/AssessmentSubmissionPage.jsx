@@ -40,6 +40,7 @@ const AssessmentSubmissionPage = () => {
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   console.log(result, "result");
 
@@ -78,12 +79,13 @@ const AssessmentSubmissionPage = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log(data);
+    if (submitting) return;
+    setSubmitting(true);
+
     const answers = assessment.questions.map((question) => ({
       questionId: question._id,
       selectedAnswer: data[`question-${question._id}`],
     }));
-    console.log(answers, "answers");
 
     try {
       const res = await axiosInstance.post(
@@ -95,8 +97,12 @@ const AssessmentSubmissionPage = () => {
       toast.success(res.data.message);
     } catch (err) {
       toast.error(err.response?.data?.message || "Submission failed");
+    } finally {
+      // keep submitting true if you want to fully prevent resubmission
+      setSubmitting(false); // set to false only if you allow retrying after failure
     }
   };
+
 
   if (loading) {
     return (
@@ -328,7 +334,16 @@ const AssessmentSubmissionPage = () => {
                 </Alert>
               )}
               <CardFooter className="flex justify-between">
-                <Button type="submit">Submit Assessment</Button>
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Assessment"
+                  )}
+                </Button>
               </CardFooter>
             </Card>
           </form>

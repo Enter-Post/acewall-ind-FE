@@ -9,41 +9,45 @@ import { toast } from "sonner";
 const CommentSection = ({ id }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const getCourseComments = async () => {
       setLoading(true);
-      await axiosInstance
-        .get(`/comment/${id}`)
-        .then((res) => {
-          console.log(res);
-          setComments(res.data.comments);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
+      try {
+        const res = await axiosInstance.get(`/comment/${id}`);
+        setComments(res.data.comments || []);
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to load comments");
+      } finally {
+        setLoading(false);
+      }
     };
-    getCourseComments();
+
+    if (id) {
+      getCourseComments();
+    }
   }, [id]);
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
-    if (!comment.trim()) return;
-    axiosInstance
-      .post(`/comment/sendComment/${id}`, { text: comment })
-      .then((response) => {
-        const newComment = response.data.comment;
-        setComments((prev) => [...prev, newComment]);
-        toast.success(response.data.message);
+    if (!comment.trim() || isSubmitting) return;
 
-        setComment("");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    setIsSubmitting(true);
+    try {
+      const response = await axiosInstance.post(`/comment/sendComment/${id}`, { text: comment });
+      const newComment = response.data.comment;
+      setComments((prev) => [...prev, newComment]);
+      toast.success(response.data.message || "Comment posted successfully");
+      setComment("");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to post comment");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -58,11 +62,16 @@ const CommentSection = ({ id }) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             className="min-h-[100px]"
+            disabled={isSubmitting}
           />
           <div className="flex justify-end">
-            <Button type="submit" className="bg-green-600 hover:bg-green-700">
+            <Button
+              type="submit"
+              className="bg-green-600 hover:bg-green-700"
+              disabled={isSubmitting || !comment.trim()}
+            >
               <Send className="h-4 w-4 mr-2" />
-              Post Comment
+              {isSubmitting ? "Posting..." : "Post Comment"}
             </Button>
           </div>
         </div>
@@ -70,7 +79,9 @@ const CommentSection = ({ id }) => {
 
       {/* Comments List */}
       <div className="space-y-6">
-        {comments.length > 0 ? (
+        {loading ? (
+          <p className="text-gray-500 text-center py-6">Loading comments...</p>
+        ) : comments.length > 0 ? (
           [...comments].reverse().map((comment) => (
             <div key={comment?._id} className="border-b pb-6">
               <div className="flex items-start gap-3">
@@ -85,26 +96,25 @@ const CommentSection = ({ id }) => {
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">
-                        {comment?.createdby?.firstName} {comment?.createdby?.lastName}
-                      </p>
-                      {comment?.createdby?.role && (
-                        <span
-                          className={`text-[10px] uppercase px-2 py-0.5 rounded-full ${comment.createdby.role === "admin"
+                    <p className="font-medium">
+                      {comment?.createdby?.firstName} {comment?.createdby?.lastName}
+                    </p>
+                    {comment?.createdby?.role && (
+                      <span
+                        className={`text-[10px] uppercase px-2 py-0.5 rounded-full ${
+                          comment.createdby.role === "admin"
                             ? "bg-red-600 text-white"
                             : comment.createdby.role === "teacher"
-                              ? "bg-blue-600 text-white"
-                              : "bg-green-600 text-white"
-                            }`}
-                        >
-                          {comment.createdby.role}
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-500">{new Date(comment?.updatedAt).toLocaleDateString()}</span>
-
-
-                    </div>
+                            ? "bg-blue-600 text-white"
+                            : "bg-green-600 text-white"
+                        }`}
+                      >
+                        {comment.createdby.role}
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-500">
+                      {new Date(comment?.updatedAt).toLocaleDateString()}
+                    </span>
                   </div>
                   <p className="mt-1 text-gray-700">{comment?.text}</p>
                 </div>

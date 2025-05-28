@@ -41,7 +41,7 @@ const DeleteCourseModal = ({
     <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
       <DialogTrigger asChild>
         <Button
-          className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150"
+          className="bg-red-600 hover:bg-red-800 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150"
           onClick={() => setConfirmOpen(true)}
         >
           Delete Course

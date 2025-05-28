@@ -164,16 +164,16 @@ export default function TeacherCourseDetails() {
             icon={<Play className="h-5 w-5 text-orange-500" />}
             value={
               course.chapters?.reduce(
-                (total, chapter) => total + chapter.lessons?.length,
+                (total, chapter) => total + chapter.chapters?.length,
                 0
               ) || 0
             }
-            label="Lessons"
+            label="Chapters"
             bgColor="bg-orange-50"
           />
           <StatCard
             icon={<Users className="h-5 w-5 text-rose-500" />}
-            value={course.student?.length}
+            value={course.enrollments?.length}
             label="Students Enrolled"
             bgColor="bg-rose-50"
           />
