@@ -39,10 +39,8 @@ import ContactUs from "./Page/ContactUs";
 import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
 
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
 import { GlobalContext } from "./Context/GlobalProvider";
-import { useContext } from "react";
-import { Loader } from "lucide-react";
 import LoadingLoader from "./CustomComponent/LoadingLoader";
 import MainDetailPage from "./Page/StudentPortal/Courses/MainDetailPage";
 import ChapterDetail from "./Page/StudentPortal/Courses/MyCourseDetail";
@@ -53,6 +51,10 @@ import AssessmentSubmissionPage from "./Page/StudentPortal/Assessment/Assessment
 import SubmittedAssessment from "./Page/teacher/Assessment/submittedAssessment";
 import AssessmentReview from "./Page/teacher/Assessment/submittedAssessment";
 import AllSubmission from "./Page/teacher/Assessment/allSubmission";
+import VerifyOTP from "./Page/VerifyOTP";
+import ForgetPassword from "./Page/forgetPassword";
+import VerifyForgetPasswordOTP from "./Page/VerifyForgetPasswordOTP";
+import NewPassword from "./Page/NewPassword";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -63,19 +65,19 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (user) connectsocket();
     return () => {
-      connectsocket();
+      if (socket) socket.disconnect();
     };
   }, [user]);
 
-  if (Authloading) {
-    return <LoadingLoader />;
-  }
-
   const connectsocket = () => {
-    const newSocket = io("https://acewall-backend-school-instance-production.up.railway.app", {
-      query: { userId: user?._id || "" },
-    });
+    const newSocket = io(
+      "https://acewall-backend-school-instance-production.up.railway.app",
+      {
+        query: { userId: user?._id || "" },
+      }
+    );
 
     setSocket(newSocket);
 
@@ -88,23 +90,37 @@ function App() {
     });
   };
 
+  if (Authloading) {
+    return <LoadingLoader />;
+  }
+
   return (
     <>
       <ScrollToTop />
       <Routes>
+        {/* Public-only accessible pages */}
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<LandingPage />} /> {/* This makes / public */}
+          <Route path="about" element={<About />} />
+          <Route path="AdditionalServices" element={<AdditionalServices />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+
+        {/* Unauthenticated-only (login/signup) */}
         <Route
           element={
             <PublicRoute
               user={user}
-              redirectTo={
-                user?.role === "teacher" ? "/teacher" : "/student/mycourses"
-              }
+              redirectTo={user?.role === "teacher" ? "/teacher" : "/student/mycourses"}
             />
           }
         >
           <Route path="/login" element={<Login />}></Route>
           <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
           <Route path="/signup" element={<SignupPage />}></Route>
+          <Route path="/verifyOTP/:email" element={<VerifyOTP />} />
+
           <Route path="/" element={<MainLayout />}>
             <Route index element={<LandingPage />} />
             <Route path="/Courses">
@@ -114,6 +130,17 @@ function App() {
                 element={<GeneralCoursesDetail />}
               ></Route>
               <Route path="culinaryArts" element={<AllCoursesDetail />} />
+            </Route>
+            <Route path="/forgetPassword">
+              <Route index element={<ForgetPassword />} />
+              <Route
+                path="verifyOTP/:email"
+                element={<VerifyForgetPasswordOTP />}
+              />
+                <Route
+                path="resetPassword/:email"
+                element={<NewPassword />}
+              />
             </Route>
             <Route path="/about" element={<About />}></Route>
             <Route path="/Support" element={<GeneralSupport />}></Route>
@@ -129,22 +156,19 @@ function App() {
         {/* Student Routes */}
         <Route element={<PrivateRoute user={user} allowedRole="student" />}>
           <Route path="/student" element={<Layout />}>
+            <Route index element={<Deshboard />} />
             <Route path="mycourses">
               <Route index element={<Mycourses />} />
               <Route path=":id" element={<MainDetailPage />} />
               <Route path="chapter/:chapterId" element={<ChapterDetail />} />
             </Route>
-            <Route index element={<Deshboard />} />
             <Route path="assessment">
               <Route index element={<Assignment />} />
-              <Route
-                path="submission/:id"
-                element={<AssessmentSubmissionPage />}
-              />
+              <Route path="submission/:id" element={<AssessmentSubmissionPage />} />
             </Route>
-            <Route path="gradebook" element={<Gradebook />}></Route>
-            <Route path="announcements" element={<Announcement />}></Route>
-            <Route path="account" element={<Account />}></Route>
+            <Route path="gradebook" element={<Gradebook />} />
+            <Route path="announcements" element={<Announcement />} />
+            <Route path="account" element={<Account />} />
             <Route path="support" element={<Support />} />
             <Route path="ContactUs" element={<ContactUs />} />
             <Route path="courses/:subcategoryId" element={<AllCourses />} />
@@ -154,22 +178,18 @@ function App() {
               <Route path=":id" element={<ChatWindow />} />
             </Route>
           </Route>
-        </Route>  
+        </Route>
 
-        {/* Teachers Routes */}
+        {/* Teacher Routes */}
         <Route element={<PrivateRoute user={user} allowedRole="teacher" />}>
           <Route path="/teacher" element={<TeacherLayout />}>
             <Route index element={<TeacherDashboard />} />
             <Route path="account" element={<TeacherAccount />} />
-            {/* <Route path="messages" element={<TeacherMessages />} /> */}
             <Route path="assessments">
               <Route index element={<TeacherrAssessment />} />
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
-              <Route
-                path="create/:type/:id/:courseId"
-                element={<CreateAssessmentPage />}
-              />
+              <Route path="create/:type/:id/:courseId" element={<CreateAssessmentPage />} />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
@@ -180,10 +200,7 @@ function App() {
             </Route>
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
-              <Route
-                path="courseDetail/:id"
-                element={<TeacherCourseDetails />}
-              />
+              <Route path="courseDetail/:id" element={<TeacherCourseDetails />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />

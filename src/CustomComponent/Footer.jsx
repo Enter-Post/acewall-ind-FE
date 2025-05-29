@@ -1,20 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import TermsModal from "@/CustomComponent/Termsandcondition";
+import PrivacyPolicy from "./PrivacePolicy";
 import { Facebook, Twitter, Instagram, Youtube, Mail, ArrowUp } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import PrivacyPolicy from "./PrivacePolicy";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { GlobalContext } from "@/Context/GlobalProvider";
+import { FaXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
   const location = useLocation().pathname;
+  const { user } = useContext(GlobalContext);
+  const isGuest = !user;
+  const isTeacher = user?.role === "teacher";
+  const isStudent = user?.role === "student";
+
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [subcategories, setSubcategories] = useState([]);
-  const [email, setEmail] = useState(""); // State for email input
-  const [loading, setLoading] = useState(false); // Loading state for button
-  const [error, setError] = useState(""); // Error message state
-  const [success, setSuccess] = useState(""); // Success message state
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,11 +38,12 @@ export default function Footer() {
         const topTitles = response.data?.subcategories
           ?.map((item) => item.title)
           .filter(Boolean)
-          .slice(0, 5); // Get only top 5
+          .slice(0, 5);
         setSubcategories(topTitles);
+      console.log(subcategories);
+      
       })
-      .catch((error) => {
-        console.error("Error fetching subcategories:", error);
+      .catch(() => {
         setSubcategories([]);
       });
   }, []);
@@ -47,7 +55,7 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { Icon: Twitter, url: "https://twitter.com/AcewallScholars" },
+    { Icon: FaXTwitter, url: "https://twitter.com/AcewallScholars" },
     { Icon: Facebook, url: "https://www.facebook.com/acewallscholars" },
     { Icon: Instagram, url: "https://www.instagram.com/acewallscholarsonline/" },
     { Icon: Youtube, url: "https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ" },
@@ -57,25 +65,19 @@ export default function Footer() {
   const handleSubscribe = async () => {
     if (!email) {
       setError("Email is required");
+      setSuccess("");
       return;
     }
 
     setLoading(true);
-    setError(""); // Reset any previous errors
-    setSuccess(""); // Reset success message
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await axiosInstance.post("/newsletter/subscribe", { email });
-
-      // If subscription is successful
+      await axiosInstance.post("/newsletter/subscribe", { email });
       setSuccess("Subscribed successfully! Thank you for joining.");
-      console.log(response.data);
-      
-      setEmail(""); // Clear email input field after success
-
-    } catch (error) {
-      // If there’s an error
-      console.error("Error subscribing:", error);
+      setEmail("");
+    } catch {
       setError("Failed to subscribe. Please try again.");
     } finally {
       setLoading(false);
@@ -84,91 +86,145 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-black text-white mt-10">
+      <footer className="bg-black text-white mt-10" role="contentinfo">
         <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Column 1: Acewall Scholars */}
-            <div>
-              <h3 className="font-semibold text-white mb-4">Acewall Scholars</h3>
-              <div className="space-y-2 text-sm text-gray-300">
+          {/** Determine grid column count dynamically */}
+          <div className={`grid grid-cols-1 md:grid-cols-${isStudent ? 4 : 3} gap-8`}>
+
+            {/* Column 1: Address */}
+            <section aria-labelledby="footer-about-title">
+              <h3 id="footer-about-title" className="font-semibold text-white mb-4">
+                Acewall Scholars
+              </h3>
+              <address className="not-italic space-y-2 text-sm text-gray-300">
                 <p>Acewall Scholars</p>
                 <p>P.O. Box 445</p>
                 <p>Powhatan, VA 23139</p>
-                <p>Email: contact@acewallscholars.org</p>
-              </div>
-            </div>
+                <p>
+                  Email:{" "}
+                  <a
+                    href="mailto:contact@acewallscholars.org"
+                    className="text-green-500 hover:underline"
+                  >
+                    contact@acewallscholars.org
+                  </a>
+                </p>
+              </address>
+            </section>
 
             {/* Column 2: Useful Links */}
-            <div>
+            <nav aria-label="Useful Links">
               <h3 className="font-semibold text-white mb-4">Useful Links</h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {usefulLinks.map((link, index) => (
                   <li key={index}>
                     <Link to={link.url} className="flex items-center hover:text-white">
                       <span className="text-green-500 mr-2">›</span>
-                      <p>{link.name}</p>
+                      <span>{link.name}</span>
                     </Link>
                   </li>
                 ))}
-                <li className="flex cursor-pointer items-center">
+
+               
+
+                {isTeacher && (
+                  <li>
+                    <Link to="/teacher/dashboard" className="flex items-center hover:text-white">
+                      <span className="text-green-500 mr-2">›</span> Teacher Dashboard
+                    </Link>
+                  </li>
+                )}
+
+                {isStudent && (
+                  <li>
+                    <Link to="/student/dashboard" className="flex items-center hover:text-white">
+                      <span className="text-green-500 mr-2">›</span> Student Dashboard
+                    </Link>
+                  </li>
+                )}
+
+                <li className="flex items-center cursor-pointer">
                   <span className="text-green-500 mr-2">›</span> <TermsModal />
                 </li>
-                <li className="flex cursor-pointer items-center">
+                <li className="flex items-center cursor-pointer">
                   <span className="text-green-500 mr-2">›</span> <PrivacyPolicy />
                 </li>
               </ul>
-            </div>
+            </nav>
 
-            {/* Column 3: Popular Categories */}
-            <div>
-              <h3 className="font-semibold text-white mb-4">Popular Categories</h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                {subcategories.length > 0 ? (
-                  subcategories.map((title, index) => (
-                    <li key={index}>
-                      <Link
-                        to={`/courses?subcategory=${encodeURIComponent(title)}`}
-                        className="flex items-center hover:text-white"
-                      >
-                        <span className="text-green-500 mr-2">›</span> {title}
-                      </Link>
-                    </li>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">No subcategories found.</p>
-                )}
-              </ul>
-            </div>
+            {/* Column 3: Popular Categories - Only for Students */}
+            {isStudent && (
+              <nav aria-label="Popular Categories">
+                <h3 className="font-semibold text-white mb-4">Popular Categories</h3>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  {subcategories?.length > 0 ? (
+                    subcategories.map((title, index) => (
+                      <li key={index}>
+                        <Link
+                          to={`/courses?subcategory=${encodeURIComponent(title)}`}
+                          className="flex items-center hover:text-white"
+                        >
+                          <span className="text-green-500 mr-2">›</span> {title}
+                        </Link>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-sm text-gray-500">No subcategories found.</li>
+                  )}
+                </ul>
+              </nav>
+            )}
 
-            {/* Column 4: Newsletter */}
-            <div>
-              <h3 className="font-semibold text-white mb-4">Join Our Newsletter</h3>
-              <p className="text-sm text-gray-300 mb-4">Stay updated with our latest news and offers.</p>
-              <div className="flex">
+            {/* Column 4: Newsletter - For All Roles */}
+            <section aria-labelledby="newsletter-heading">
+              <h3 id="newsletter-heading" className="font-semibold text-white mb-4">
+                Join Our Newsletter
+              </h3>
+              <p className="text-sm text-gray-300 mb-4">
+                Stay updated with our latest news and offers.
+              </p>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubscribe();
+                }}
+                className="flex"
+                aria-live="polite"
+              >
                 <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className="rounded-l-md rounded-r-none border-gray-700 bg-black text-white focus:ring-0 focus:border-gray-600"
+                  aria-label="Email address"
+                  required
                 />
                 <Button
-                  onClick={handleSubscribe}
+                  type="submit"
                   className="rounded-l-none bg-green-500 hover:bg-green-600 text-white"
                   disabled={loading}
+                  aria-disabled={loading}
                 >
                   {loading ? "Subscribing..." : "Subscribe"}
                 </Button>
-              </div>
-
-              {/* Error and success messages */}
-              {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
-              {success && <p className="text-sm text-green-500 mt-2">{success}</p>}
-            </div>
+              </form>
+              {error && (
+                <p role="alert" className="text-sm text-red-500 mt-2">
+                  {error}
+                </p>
+              )}
+              {success && (
+                <p role="alert" className="text-sm text-green-500 mt-2">
+                  {success}
+                </p>
+              )}
+            </section>
           </div>
         </div>
 
-        {/* Bottom footer */}
+
+        {/* Bottom Footer */}
         <div className="bg-[#0c0c0c] py-4">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-center">
@@ -184,14 +240,15 @@ export default function Footer() {
                 </a>{" "}
                 All Rights Reserved
               </p>
-              <div className="flex space-x-2 mt-4 md:mt-0">
-                {socialLinks.map(({ Icon, url }, index) => (
+              <div className="flex space-x-2 mt-4 md:mt-0" aria-label="Social media links">
+                {socialLinks.map(({ Icon, url, label }, index) => (
                   <a
                     key={index}
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
+                    aria-label={label}
                   >
                     <Icon className="h-4 w-4" />
                   </a>

@@ -9,6 +9,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { toast } from "sonner";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
 
@@ -40,14 +41,20 @@ const formSchema = z
 const SignupForm = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
-  const { signUpdata, setSignupData, signup } = useContext(GlobalContext);
+  const {
+    signUpdata,
+    setSignupData,
+    signup,
+    setUser,
+    Authloading,
+    setAuthLoading,
+  } = useContext(GlobalContext);
   const methods = useForm({
     resolver: zodResolver(formSchema),
     mode: "onTouched",
   });
 
   useEffect(() => {
-    console.log(signUpdata.email);
     if (signUpdata.email === undefined && signUpdata.role === undefined) {
       navigate("/");
     }
@@ -57,15 +64,25 @@ const SignupForm = () => {
 
   const onSubmit = async (formdata) => {
     const completeData = { ...signUpdata, ...formdata };
-    setSignupData(completeData);
-    await signup(completeData);
+
+    setAuthLoading(true);
+    try {
+      const res = await axiosInstance.post("auth/register", completeData);
+      console.log(res, 'res')
+      toast.success(res.data.message);
+      navigate(`/verifyOTP/${signUpdata.email}`);
+      setAuthLoading(false);
+    } catch (error) {
+      setAuthLoading(false);
+      toast.error(error.response?.data?.message || "Something went wrong.");
+    }
   };
 
   const handleNext = async () => {
     const fieldsToValidate = {
-      0: ["firstName", "lastName", "pronouns", "gender"], // Personal Info fields
-      1: ["phone", "homeAddress", "mailingAddress"], // Address Info fields
-      2: ["password", "confirmPassword"], // Password Info fields
+      0: ["firstName", "lastName", "pronouns", "gender"],
+      1: ["phone", "homeAddress", "mailingAddress"],
+      2: ["password", "confirmPassword"],
     }[currentStep];
 
     // console.log(currentStep, "currentStep");
@@ -107,7 +124,7 @@ const SignupForm = () => {
               <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
                 Create an account
               </h1>
-              <h2 className="mb-2 font-medium text-gray-900 dark:text-white border  ">
+              <h2 className="mb-2 font-medium text-gray-900 dark:text-white">
                 {steps[currentStep]}
               </h2>
               <FormProvider {...methods}>

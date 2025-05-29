@@ -139,12 +139,17 @@ export default function Layout() {
                   </DropdownMenuItem>
                 ) : dropdownCourses.length > 0 ? (
                   dropdownCourses.map((enrollment) => (
-                    <DropdownMenuItem asChild key={enrollment._id}>
-                      {/* Updated link to match CourseCards linking style */}
+                    <DropdownMenuItem
+                      key={enrollment._id}
+                      asChild
+                      onSelect={(e) => {
+                        e.preventDefault(); // prevent dropdown closing from being interrupted
+                      }}
+                    >
                       <Link
                         to={`/student/mycourses/${enrollment.course._id}`}
+                        className="w-full text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 block"
                         onClick={() => setOpenDropdown(false)}
-                        className="w-full text-sm text-gray-800 hover:bg-gray-100 px-2 py-1"
                       >
                         {enrollment.course.courseTitle || "Untitled Course"}
                       </Link>
@@ -156,6 +161,7 @@ export default function Layout() {
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
+
             </DropdownMenu>
           </div>
 

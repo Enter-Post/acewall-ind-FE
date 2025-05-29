@@ -84,10 +84,12 @@ const Login = () => {
                       {errors.email.message}
                     </p>
                   )}
-
                 </div>
                 <div className="mb-8">
-                  <label htmlFor="password" className="block text-gray-600 mb-2">
+                  <label
+                    htmlFor="password"
+                    className="block text-gray-600 mb-2"
+                  >
                     Password
                   </label>
                   <div className="relative">
@@ -101,19 +103,23 @@ const Login = () => {
                       className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
-                      {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+                      {showPassword ? (
+                        <Eye size={20} />
+                      ) : (
+                        <EyeClosed size={20} />
+                      )}
                     </div>
                   </div>
                   {errors?.password && (
-                    <p className="text-xs text-red-600">{errors.password.message}</p>
+                    <p className="text-xs text-red-600">
+                      {errors.password.message}
+                    </p>
                   )}
                 </div>
-
 
                 {loginError && (
                   <p className="text-sm text-red-500 mb-4">{loginError}</p>
                 )}
-
 
                 <div className="flex justify-between items-center">
                   <Link
@@ -121,6 +127,12 @@ const Login = () => {
                     className="text-sm font-bold text-green-500"
                   >
                     Log in as Teacher
+                  </Link>
+                  <Link
+                    to={"/forgetPassword"}
+                    className="text-sm font-bold text-green-500"
+                  >
+                    forgotten Password?
                   </Link>
                   <button
                     type="submit"

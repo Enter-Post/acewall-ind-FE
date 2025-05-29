@@ -17,7 +17,6 @@ export const GlobalProvider = ({ children }) => {
   const [currentConversation, setCurrentConversation] = useState(null);
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
 
-
   // console.log(user, "Global provider");
   // console.log(onlineUser, "onlineUser");
 
@@ -29,21 +28,6 @@ export const GlobalProvider = ({ children }) => {
       console.log("Socket disconnected");
       setSocket(null);
     }
-  };
-
-  const signup = async (completeData) => {
-    setAuthLoading(true);
-    await axiosInstance
-      .post("auth/register", completeData)
-      .then((res) => {
-        setUser(res.data.user);
-        toast.success(res.data.message);
-        setAuthLoading(false);
-      })
-      .catch((error) => {
-        setAuthLoading(false);
-        toast.error(error.response?.data?.message);
-      });
   };
 
   const login = async (formdata) => {
@@ -66,7 +50,9 @@ export const GlobalProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       setAuthLoading(true);
-      const res = await axiosInstance.get("auth/checkAuth" , { withCredentials: true });
+      const res = await axiosInstance.get("auth/checkAuth", {
+        withCredentials: true,
+      });
       setUser(res.data.user);
       setAuthLoading(false);
     } catch (error) {
@@ -100,7 +86,6 @@ export const GlobalProvider = ({ children }) => {
         signUpdata,
         setSignupData,
         checkAuth,
-        signup,
         login,
         logout,
         user,
@@ -111,9 +96,9 @@ export const GlobalProvider = ({ children }) => {
         setOnlineUser,
         currentConversation,
         setCurrentConversation,
-        selectedSubcategoryId,          
-        setSelectedSubcategoryId,   
-        
+        selectedSubcategoryId,
+        setSelectedSubcategoryId,
+        setUser,
       }}
     >
       {children}

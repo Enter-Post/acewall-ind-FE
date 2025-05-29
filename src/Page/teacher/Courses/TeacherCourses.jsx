@@ -17,28 +17,26 @@ const TeacherCourses = () => {
   const searching = searchQuery.trim() !== "";
 
   useEffect(() => {
-    setLoading(true);
-    const delayDebounce = setTimeout(() => {
-      const getCourses = async () => {
+    const timeoutId = setTimeout(() => {
+      const fetchCourses = async () => {
+        setLoading(true);
         try {
-          const response = await axiosInstance.get(
-            "/course/getindividualcourse",
-            {
-              params: { search: searchQuery },
-            }
-          );
-          setAllCourses(response.data.courses);
+          const res = await axiosInstance.get("/course/getindividualcourse", {
+            params: { search: searchQuery },
+          });
+          setAllCourses(res.data.courses); // Corrected 'response' to 'res'
         } catch (error) {
           console.error("Error fetching courses:", error);
-          setAllCourses([]);
+          setAllCourses([]); // Corrected 'setEnrollment' to 'setAllCourses'
         } finally {
           setLoading(false);
         }
       };
-      getCourses();
-    }, 2000); // 500ms delay
 
-    return () => clearTimeout(delayDebounce); // cleanup
+      fetchCourses();
+    }, 500); // debounce delay
+
+    return () => clearTimeout(timeoutId); // cleanup
   }, [searchQuery]);
 
   return (
