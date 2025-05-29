@@ -265,11 +265,9 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                             <p
                                                               className="text-sm font-medium text-gray-800 mb-2"
                                                               dangerouslySetInnerHTML={{
-                                                                __html: `<strong>Q${
-                                                                  idx + 1
-                                                                }:</strong> ${
-                                                                  q.question
-                                                                }`,
+                                                                __html: `<strong>Q${idx + 1
+                                                                  }:</strong> ${q.question
+                                                                  }`,
                                                               }}
                                                             />
                                                             {type === "mcq" && (
@@ -280,9 +278,9 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                                       key={i}
                                                                       className={
                                                                         q.correctAnswer ===
-                                                                        (
-                                                                          i + 1
-                                                                        ).toString()
+                                                                          (
+                                                                            i + 1
+                                                                          ).toString()
                                                                           ? "font-semibold text-green-500"
                                                                           : ""
                                                                       }
@@ -310,16 +308,16 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                             )}
                                                             {type ===
                                                               "truefalse" && (
-                                                              <div className="text-sm text-gray-700">
-                                                                <span className="font-semibold">
-                                                                  Answer:
-                                                                </span>{" "}
-                                                                {q.correctAnswer ===
-                                                                "true"
-                                                                  ? "True"
-                                                                  : "False"}
-                                                              </div>
-                                                            )}
+                                                                <div className="text-sm text-gray-700">
+                                                                  <span className="font-semibold">
+                                                                    Answer:
+                                                                  </span>{" "}
+                                                                  {q.correctAnswer ===
+                                                                    "true"
+                                                                    ? "True"
+                                                                    : "False"}
+                                                                </div>
+                                                              )}
                                                           </div>
                                                         ))}
                                                       </AccordionContent>
@@ -543,8 +541,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                         <DialogHeader>
                                                           <DialogTitle>
                                                             {a.title ||
-                                                              `Assessment ${
-                                                                i + 1
+                                                              `Assessment ${i + 1
                                                               }`}
                                                           </DialogTitle>
                                                         </DialogHeader>
@@ -558,176 +555,175 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
 
                                                           {a.files?.length >
                                                             0 && (
-                                                            <div>
-                                                              <h4 className="text-sm font-semibold text-gray-600 mb-2">
-                                                                Files
-                                                              </h4>
-                                                              <div className="flex flex-wrap gap-2">
-                                                                {a.files.map(
-                                                                  (
-                                                                    file,
-                                                                    fi
-                                                                  ) => (
-                                                                    <a
-                                                                      key={fi}
-                                                                      href={
-                                                                        file
-                                                                      }
-                                                                      target="_blank"
-                                                                      rel="noopener noreferrer"
-                                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                                                    >
-                                                                      <FileText className="h-4 w-4" />
-                                                                      PDF{" "}
-                                                                      {fi + 1}
-                                                                    </a>
-                                                                  )
-                                                                )}
+                                                              <div>
+                                                                <h4 className="text-sm font-semibold text-gray-600 mb-2">
+                                                                  Files
+                                                                </h4>
+                                                                <div className="flex flex-wrap gap-2">
+                                                                  {a.files.map(
+                                                                    (
+                                                                      file,
+                                                                      fi
+                                                                    ) => (
+                                                                      <a
+                                                                        key={fi}
+                                                                        href={
+                                                                          file
+                                                                        }
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
+                                                                      >
+                                                                        <FileText className="h-4 w-4" />
+                                                                        PDF{" "}
+                                                                        {fi + 1}
+                                                                      </a>
+                                                                    )
+                                                                  )}
+                                                                </div>
                                                               </div>
-                                                            </div>
-                                                          )}
+                                                            )}
 
                                                           {a.questions?.length >
                                                             0 && (
-                                                            <Accordion
-                                                              type="multiple"
-                                                              className="w-full"
-                                                            >
-                                                              {[
-                                                                "mcq",
-                                                                "qa",
-                                                                "truefalse",
-                                                              ].map((type) => {
-                                                                const group =
-                                                                  a.questions.filter(
-                                                                    (q) =>
-                                                                      q.type ===
-                                                                      type
-                                                                  );
-                                                                if (
-                                                                  group.length ===
-                                                                  0
-                                                                )
-                                                                  return null;
+                                                              <Accordion
+                                                                type="multiple"
+                                                                className="w-full"
+                                                              >
+                                                                {[
+                                                                  "mcq",
+                                                                  "qa",
+                                                                  "truefalse",
+                                                                ].map((type) => {
+                                                                  const group =
+                                                                    a.questions.filter(
+                                                                      (q) =>
+                                                                        q.type ===
+                                                                        type
+                                                                    );
+                                                                  if (
+                                                                    group.length ===
+                                                                    0
+                                                                  )
+                                                                    return null;
 
-                                                                return (
-                                                                  <AccordionItem
-                                                                    key={type}
-                                                                    value={type}
-                                                                  >
-                                                                    <AccordionTrigger className="text-left text-sm font-medium text-gray-700">
-                                                                      {type.toUpperCase()}{" "}
-                                                                      (
-                                                                      {
-                                                                        group.length
-                                                                      }
-                                                                      )
-                                                                    </AccordionTrigger>
-                                                                    <AccordionContent className="space-y-4">
-                                                                      {group.map(
+                                                                  return (
+                                                                    <AccordionItem
+                                                                      key={type}
+                                                                      value={type}
+                                                                    >
+                                                                      <AccordionTrigger className="text-left text-sm font-medium text-gray-700">
+                                                                        {type.toUpperCase()}{" "}
                                                                         (
-                                                                          q,
-                                                                          qIdx
-                                                                        ) => (
-                                                                          <div
-                                                                            key={
-                                                                              q._id
-                                                                            }
-                                                                            className="border border-gray-200 rounded-lg p-4"
-                                                                          >
-                                                                            <p
-                                                                              className="text-sm font-medium text-gray-800 mb-2"
-                                                                              dangerouslySetInnerHTML={{
-                                                                                __html: `<strong>Q${
-                                                                                  qIdx +
-                                                                                  1
-                                                                                }:</strong> ${
-                                                                                  q.question
-                                                                                }`,
-                                                                              }}
-                                                                            />
-                                                                            {type ===
-                                                                              "mcq" && (
-                                                                              <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
-                                                                                {q.options?.map(
-                                                                                  (
-                                                                                    opt,
-                                                                                    oi
-                                                                                  ) => (
-                                                                                    <li
-                                                                                      key={
-                                                                                        oi
-                                                                                      }
-                                                                                      className={
-                                                                                        q.correctAnswer ===
-                                                                                        (
-                                                                                          oi +
-                                                                                          1
-                                                                                        ).toString()
-                                                                                          ? "font-semibold text-green-500"
-                                                                                          : ""
-                                                                                      }
-                                                                                    >
-                                                                                      {
-                                                                                        opt
-                                                                                      }
-                                                                                      {q.correctAnswer ===
-                                                                                        (
-                                                                                          oi +
-                                                                                          1
-                                                                                        ).toString() &&
-                                                                                        " (Correct)"}
-                                                                                    </li>
-                                                                                  )
-                                                                                )}
-                                                                              </ul>
-                                                                            )}
-                                                                            {type ===
-                                                                              "qa" && (
-                                                                              <div className="text-sm text-gray-700">
-                                                                                <span className="font-semibold">
-                                                                                  Answer:
-                                                                                </span>{" "}
-                                                                                {
-                                                                                  q.correctAnswer
-                                                                                }
-                                                                              </div>
-                                                                            )}
-                                                                            {type ===
-                                                                              "truefalse" && (
-                                                                              <div className="text-sm text-gray-700">
-                                                                                <span className="font-semibold">
-                                                                                  Answer:
-                                                                                </span>{" "}
-                                                                                {q.correctAnswer ===
-                                                                                "true"
-                                                                                  ? "True"
-                                                                                  : "False"}
-                                                                              </div>
-                                                                            )}
-                                                                          </div>
+                                                                        {
+                                                                          group.length
+                                                                        }
                                                                         )
-                                                                      )}
-                                                                    </AccordionContent>
-                                                                  </AccordionItem>
-                                                                );
-                                                              })}
-                                                            </Accordion>
-                                                          )}
+                                                                      </AccordionTrigger>
+                                                                      <AccordionContent className="space-y-4">
+                                                                        {group.map(
+                                                                          (
+                                                                            q,
+                                                                            qIdx
+                                                                          ) => (
+                                                                            <div
+                                                                              key={
+                                                                                q._id
+                                                                              }
+                                                                              className="border border-gray-200 rounded-lg p-4"
+                                                                            >
+                                                                              <p
+                                                                                className="text-sm font-medium text-gray-800 mb-2"
+                                                                                dangerouslySetInnerHTML={{
+                                                                                  __html: `<strong>Q${qIdx +
+                                                                                    1
+                                                                                    }:</strong> ${q.question
+                                                                                    }`,
+                                                                                }}
+                                                                              />
+                                                                              {type ===
+                                                                                "mcq" && (
+                                                                                  <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
+                                                                                    {q.options?.map(
+                                                                                      (
+                                                                                        opt,
+                                                                                        oi
+                                                                                      ) => (
+                                                                                        <li
+                                                                                          key={
+                                                                                            oi
+                                                                                          }
+                                                                                          className={
+                                                                                            q.correctAnswer ===
+                                                                                              (
+                                                                                                oi +
+                                                                                                1
+                                                                                              ).toString()
+                                                                                              ? "font-semibold text-green-500"
+                                                                                              : ""
+                                                                                          }
+                                                                                        >
+                                                                                          {
+                                                                                            opt
+                                                                                          }
+                                                                                          {q.correctAnswer ===
+                                                                                            (
+                                                                                              oi +
+                                                                                              1
+                                                                                            ).toString() &&
+                                                                                            " (Correct)"}
+                                                                                        </li>
+                                                                                      )
+                                                                                    )}
+                                                                                  </ul>
+                                                                                )}
+                                                                              {type ===
+                                                                                "qa" && (
+                                                                                  <div className="text-sm text-gray-700">
+                                                                                    <span className="font-semibold">
+                                                                                      Answer:
+                                                                                    </span>{" "}
+                                                                                    {
+                                                                                      q.correctAnswer
+                                                                                    }
+                                                                                  </div>
+                                                                                )}
+                                                                              {type ===
+                                                                                "truefalse" && (
+                                                                                  <div className="text-sm text-gray-700">
+                                                                                    <span className="font-semibold">
+                                                                                      Answer:
+                                                                                    </span>{" "}
+                                                                                    {q.correctAnswer ===
+                                                                                      "true"
+                                                                                      ? "True"
+                                                                                      : "False"}
+                                                                                  </div>
+                                                                                )}
+                                                                            </div>
+                                                                          )
+                                                                        )}
+                                                                      </AccordionContent>
+                                                                    </AccordionItem>
+                                                                  );
+                                                                })}
+                                                              </Accordion>
+                                                            )}
                                                         </div>
                                                       </DialogContent>
                                                     </Dialog>
 
-                                                    <Button
-                                                      variant="ghost"
-                                                      size="sm"
-                                                      className="h-8 text-gray-500 hover:text-red-600"
-                                                    >
-                                                      <Trash2 className="h-4 w-4" />
-                                                      <span className="sr-only">
-                                                        Delete
-                                                      </span>
-                                                    </Button>
+                                                    <DeleteModal deleteFunc={() => handleDeleteAssessment(a._id)}>
+                                                      <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-8 text-gray-500 hover:text-red-600"
+                                                      >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        <span className="sr-only">Delete</span>
+                                                      </Button>
+                                                    </DeleteModal>
+
                                                   </div>
                                                 </div>
 

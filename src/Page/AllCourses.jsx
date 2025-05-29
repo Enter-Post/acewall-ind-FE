@@ -28,7 +28,7 @@ const AllCourses = () => {
           })
           .then((res) => {
             setAllCourses(res.data.courses);
-            console.log(res, "res");
+            console.log("res",res );
             setLoading(false);
           })
           .catch((err) => {

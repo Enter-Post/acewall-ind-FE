@@ -39,8 +39,8 @@ const AllCoursesDetail = () => {
         .get(`/course/get/${id}`)
         .then((res) => {
           setCourseDetails(res.data.course);
-          console.log(res);
-          
+          console.log("course details", res);
+
           setLoading(false);
         })
         .catch((err) => {
@@ -95,6 +95,7 @@ const AllCoursesDetail = () => {
                       {courseDetails.createdby.lastName}
                     </div>
                   </div>
+                  
                 </div>
               </div>
             </div>
@@ -305,30 +306,11 @@ const AllCoursesDetail = () => {
                         {courseDetails.createdby.middleName}{" "}
                         {courseDetails.createdby.lastName}
                       </h3>
-{/* 
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-600 mt-2">
-                        <span>{courseDetails.createdby.gender}</span>
-                        <span>·</span>
-                        <span>{courseDetails.createdby.pronouns}</span>
-                        <span>·</span>
-                        <span className="truncate max-w-[200px]">
-                          {courseDetails.createdby.email}
-                        </span>
-                      </div>
+                    
 
-                      <div className="flex items-center gap-2 mt-3 text-gray-500 text-sm">
-                        <PlayCircle size={18} className="text-indigo-500" />
-                        <span>
-                          {courseDetails.createdby.courses?.length || 0}{" "}
-                          {courseDetails.createdby.courses?.length === 1
-                            ? "Course"
-                            : "Courses"}
-                        </span>
-                      </div> */}
-
-                      {/* <p className="text-gray-700 text-sm mt-4 leading-relaxed">
+                      <p className="text-gray-700 text-sm mt-4 leading-relaxed">
                         {courseDetails.createdby.Bio || "No bio provided."}
-                      </p> */}
+                      </p>
                     </div>
                   </div>
                 </TabsContent>

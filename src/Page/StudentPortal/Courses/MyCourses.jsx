@@ -20,25 +20,29 @@ const CourseCards = () => {
 
   const searching = searchQuery.trim() !== "";
 
-  useEffect(() => {
-    const getCourses = async () => {
-      setLoading(true);
-      await axiosInstance
-        .get(`/enrollment/studentCourses`, {
-          params: { search: searchQuery },
-        })
-        .then((res) => {
-          setEnrollment(res.data.enrolledCourses);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    };
+const handleSearch = async () => {
+  if (!searchQuery.trim() || loading) return;
 
-    getCourses();
-  }, [searchQuery]);
+  setLoading(true);
+  setOpenDropdown(false);
+
+  try {
+    const res = await axiosInstance.get("/enrollment/studentCourses", {
+      params: { search: searchQuery },
+    });
+
+    // Use enrolledCourses array from response
+    setDropdownCourses(res.data.enrolledCourses || []);
+    console.log("res", res);
+
+  } catch (error) {
+    console.error("Search error:", error);
+    setDropdownCourses([]);
+  } finally {
+    setLoading(false);
+    setOpenDropdown(true);
+  }
+};
 
   return (
     <section className="p-3 md:p-0">

@@ -39,8 +39,7 @@ const lessonSchema = z.object({
     .refine(
       (val) =>
         !val ||
-        /^https:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}(&.+)?$/
-          .test(val),
+        /^https:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}(&.+)?$/.test(val),
       {
         message: "Enter a valid YouTube video link",
       }
@@ -67,15 +66,15 @@ const lessonSchema = z.object({
 
 const LessonModal = ({ chapterID, fetchCourseDetail }) => {
   const [open, setOpen] = useState(false);
-  const [pdfInputs, setPdfInputs] = useState([null]);
+  const [pdfInputs, setPdfInputs] = useState([{ id: Date.now(), file: null }]);
   const [totalSize, setTotalSize] = useState(0);
   const [loading, setLoading] = useState(false);
+
   const MAX_TITLE_LENGTH = 100;
   const MAX_DESCRIPTION_LENGTH = 200;
 
   const [titleValue, setTitleValue] = useState("");
   const [descValue, setDescValue] = useState("");
-
 
   const {
     register,
@@ -97,7 +96,7 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
   const calculateTotalSize = (files) =>
     files.reduce((acc, f) => acc + (f?.size || 0), 0);
 
-  const handleFileChange = (index, file) => {
+  const handleFileChange = (id, file) => {
     if (!file) return;
 
     if (file.type !== "application/pdf") {
@@ -105,10 +104,11 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
       return;
     }
 
-    const updated = [...pdfInputs];
-    updated[index] = file;
+    const updated = pdfInputs.map((input) =>
+      input.id === id ? { ...input, file } : input
+    );
 
-    const newSize = calculateTotalSize(updated);
+    const newSize = calculateTotalSize(updated.map((i) => i.file));
     if (newSize > 5 * 1024 * 1024) {
       toast.error("Total file size exceeds 5MB");
       return;
@@ -116,29 +116,33 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
 
     setPdfInputs(updated);
     setTotalSize(newSize);
-    setValue("pdfFiles", updated.filter(Boolean), { shouldValidate: true });
+    setValue("pdfFiles", updated.map((i) => i.file).filter(Boolean), {
+      shouldValidate: true,
+    });
   };
 
   const handleAddField = () => {
-    const currentTotal = calculateTotalSize(pdfInputs);
+    const currentTotal = calculateTotalSize(pdfInputs.map((i) => i.file));
     if (currentTotal >= 5 * 1024 * 1024) {
       toast.error("Cannot add more files. 5MB limit reached.");
       return;
     }
-    setPdfInputs((prev) => [...prev, null]);
+
+    setPdfInputs((prev) => [...prev, { id: Date.now(), file: null }]);
   };
 
-  const handleRemoveField = (index) => {
-    const updated = [...pdfInputs];
-    updated.splice(index, 1);
-    const newSize = calculateTotalSize(updated);
+  const handleRemoveField = (id) => {
+    const updated = pdfInputs.filter((input) => input.id !== id);
+    const newSize = calculateTotalSize(updated.map((i) => i.file));
     setPdfInputs(updated);
     setTotalSize(newSize);
-    setValue("pdfFiles", updated.filter(Boolean), { shouldValidate: true });
+    setValue("pdfFiles", updated.map((i) => i.file).filter(Boolean), {
+      shouldValidate: true,
+    });
   };
 
   const onSubmit = async (data) => {
-    setLoading(true); // prevent multiple submissions
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("title", data.title);
@@ -147,27 +151,32 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
     formData.append("otherLink", data.otherLink || "");
     formData.append("chapter", chapterID);
 
-    pdfInputs.filter(Boolean).forEach((file) => {
-      formData.append("pdfFiles", file);
-    });
+    pdfInputs
+      .map((input) => input.file)
+      .filter(Boolean)
+      .forEach((file) => {
+        formData.append("pdfFiles", file);
+      });
 
     try {
       const res = await axiosInstance.post("/lesson/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+
       toast.success(res.data.message);
       fetchCourseDetail();
       reset();
-      setPdfInputs([null]);
+      setPdfInputs([{ id: Date.now(), file: null }]);
       setTotalSize(0);
+      setTitleValue("");
+      setDescValue("");
       setOpen(false);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
-      setLoading(false); // allow future submissions
+      setLoading(false);
     }
   };
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -200,14 +209,16 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
               onChange={(e) => {
                 if (e.target.value.length <= MAX_TITLE_LENGTH) {
                   setTitleValue(e.target.value);
-                  setValue("title", e.target.value); // sync with react-hook-form
+                  setValue("title", e.target.value);
                 }
               }}
             />
             <div className="text-sm text-muted-foreground text-right">
               {titleValue.length}/{MAX_TITLE_LENGTH}
             </div>
-            {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+            {errors.title && (
+              <p className="text-red-500 text-sm">{errors.title.message}</p>
+            )}
           </div>
 
           <div>
@@ -228,7 +239,9 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
             <div className="text-sm text-muted-foreground text-right">
               {descValue.length}/{MAX_DESCRIPTION_LENGTH}
             </div>
-            {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+            {errors.description && (
+              <p className="text-red-500 text-sm">{errors.description.message}</p>
+            )}
           </div>
 
           <div>
@@ -249,18 +262,18 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
 
           <div>
             <Label>Lesson PDF Files</Label>
-            {pdfInputs.map((file, index) => (
-              <div key={index} className="flex items-center gap-2 mt-2">
+            {pdfInputs.map((input) => (
+              <div key={input.id} className="flex items-center gap-2 mt-2">
                 <Input
                   type="file"
                   accept="application/pdf"
-                  onChange={(e) => handleFileChange(index, e.target.files?.[0])}
+                  onChange={(e) => handleFileChange(input.id, e.target.files?.[0])}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  onClick={() => handleRemoveField(index)}
+                  onClick={() => handleRemoveField(input.id)}
                   disabled={pdfInputs.length === 1}
                   className="text-red-500"
                 >
@@ -295,7 +308,9 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
               variant="outline"
               onClick={() => {
                 reset();
-                setPdfInputs([null]);
+                setPdfInputs([{ id: Date.now(), file: null }]);
+                setTitleValue("");
+                setDescValue("");
                 setTotalSize(0);
                 setOpen(false);
               }}
@@ -305,7 +320,6 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
             <Button type="submit" disabled={loading}>
               {loading ? "Saving..." : "Save Lesson"}
             </Button>
-
           </DialogFooter>
         </form>
       </DialogContent>

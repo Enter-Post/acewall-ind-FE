@@ -23,15 +23,18 @@ import {
 } from "@/components/ui/select";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { Link } from "react-router-dom";
 
 export default function TeacherDashboard() {
   const [courses, setCourses] = useState();
   const [students, setStudents] = useState();
-  const [recentActivity, setRecentActivity] = useState([]);
+  const [recentComments, setRecentComments] = useState([]);
+
+  console.log(recentComments, "recentComments");
 
   // console.log(courses);
-  const { user } = useContext(GlobalContext)
-  const teacherId = user._id
+  const { user } = useContext(GlobalContext);
+  const teacherId = user._id;
 
   ///courses
   useEffect(() => {
@@ -54,7 +57,6 @@ export default function TeacherDashboard() {
         .then((res) => {
           setStudents(res.data.students);
         })
-        // console.log(res.data.students, "students from new API")
 
         .catch((err) => {
           console.log(err);
@@ -65,32 +67,17 @@ export default function TeacherDashboard() {
 
   useEffect(() => {
     const getRecentComments = async () => {
-      try {
-        console.log(`Fetching comments for teacherId: ${teacherId}`);
-        const res = await axiosInstance.get(`/comment/teacher/${teacherId}/comments`);
-        console.log(res.data);  // Log the full response to inspect data structure
-
-        const comments = res.data.comments || [];
-        const formatted = comments.map((comment) => ({
-          user: `${comment.createdby.firstName} ${comment.createdby.lastName}`,
-          action: "commented on",
-          target: comment.course?.basics?.courseTitle || "a course",
-          time: new Date(comment.createdAt).toLocaleString("en-US", {
-            dateStyle: "medium",
-            timeStyle: "short",
-          }),
-        }));
-
-        setRecentActivity(formatted);
-      } catch (err) {
-        console.error("Error fetching recent comments:", err.response ? err.response.data : err);
-      }
+      await axiosInstance("comment/teacher/allComment")
+        .then((res) => {
+          console.log(res, "commments");
+          setRecentComments(res.data.recentComments);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
-
     getRecentComments();
-  }, [teacherId]);  // Don't forget to include teacherId in the dependency array
-
-
+  }, []); // Don't forget to include teacherId in the dependency array
 
   const metrics = [
     {
@@ -113,16 +100,12 @@ export default function TeacherDashboard() {
     },
   ];
 
-
   const recentSales = Array(3).fill({
     user: "Kevin",
     action: "purchased on your lecture",
     target: "What is ux 2021 UI/UX design with figma",
     time: "Just now",
   });
-
-
-
 
   return (
     <div className="min-h-screen">
@@ -137,50 +120,69 @@ export default function TeacherDashboard() {
           {metrics.map((metric, i) => (
             <Card key={i}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600">{metric.title}</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">
+                  {metric.title}
+                </CardTitle>
                 {metric.icon}
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-gray-800">{metric.value}</div>
+                <div className="text-2xl font-bold text-gray-800">
+                  {metric.value}
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Recent Activity</h2>
             </div>
             <div className="space-y-4">
-              {recentActivity.length > 0 ? (
-                recentActivity.map((activity, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-4 bg-white p-4 rounded-lg border"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
-                      <MessageSquare size={16} />
+              {recentComments.length > 0 ? (
+                recentComments.map((comment, i) => (
+                  <Link key={i} to={`/teacher/courses/courseDetail/${comment.course}`} className="flex flex-col gap-1">
+                    <div
+                      className="flex items-start gap-4 bg-white p-4 rounded-lg border"
+                    >
+                      {/* User Avatar */}
+                      <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                        <MessageSquare size={18} />
+                      </div>
+
+                      {/* Comment Content */}
+                      <div className="flex justify-between w-full">
+                        {/* User Name and Action */}
+                        <div className="">
+                          <p className="text-sm">
+                            <span className="font-sm text-gray-700">
+                              {`${comment.createdby.firstName} ${comment.createdby.middleName} ${comment.createdby.lastName}`}
+                            </span>{" "}
+                            {comment.action}
+                          </p>
+
+                          {/* Comment Text */}
+                          <span className="text-gray-800 font-medium mt-1 block">
+                            {comment.text}
+                          </span>
+                        </div>
+
+                        {/* Timestamp */}
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(comment.createdAt).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm">
-                        <span className="font-medium">{activity.user}</span> {activity.action}{" "}
-                        <span className="text-gray-800 font-medium">{activity.target}</span>
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                    </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
-                <p className="text-sm text-gray-500">No recent activity to show.</p>
+                <p className="text-sm text-gray-500">
+                  No recent activity to show.
+                </p>
               )}
             </div>
           </div>
-
-
-
 
           {/* Recent Courses */}
           <div>

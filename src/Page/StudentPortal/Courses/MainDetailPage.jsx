@@ -142,7 +142,12 @@ export default function CourseOverview() {
             </Avatar>
             <div>
               <p className="font-semibold text-gray-800">
-                {course.createdby.firstName} {course.createdby.lastName}
+                {course.createdby.firstName}{" "}
+
+                {course.createdby.middleName}{" "}
+
+                {course.createdby.lastName}
+
               </p>
               <p className="text-sm text-gray-500">{course.createdby.email}</p>
             </div>

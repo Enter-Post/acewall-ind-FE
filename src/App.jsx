@@ -154,7 +154,7 @@ function App() {
               <Route path=":id" element={<ChatWindow />} />
             </Route>
           </Route>
-        </Route>
+        </Route>  
 
         {/* Teachers Routes */}
         <Route element={<PrivateRoute user={user} allowedRole="teacher" />}>

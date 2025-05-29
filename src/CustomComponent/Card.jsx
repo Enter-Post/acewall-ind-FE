@@ -89,19 +89,19 @@ function DeshBoardCourseCard({ mainHeading, data, link, height }) {
               >
                 <div className="flex-1">
                   <Link to={`/student/mycourses/${item?._id}`}>
-                    {item.course?.courseTitle ? (
+                    {item?.course?.courseTitle ? (
                       <div>
                         <p className="font-semibold text-gray-800">
-                          {item.course.courseTitle}
+                          {item?.course?.courseTitle}
                         </p>
                       </div>
                     ) : (
                       <>
                         <p className="font-semibold text-gray-800">
-                          {item.course}
+                          {item?.course}
                         </p>
                         <p className="text-sm text-gray-600">
-                          {item.course.title}
+                          {item?.course?.title}
                         </p>
                       </>
                     )}
@@ -109,17 +109,17 @@ function DeshBoardCourseCard({ mainHeading, data, link, height }) {
                 </div>
 
                 <div className="text-right text-xs text-gray-500 whitespace-nowrap">
-                  {item.enrolledAt ? (
+                  {item?.enrolledAt ? (
                     <div>
                       <p>Enrolled at</p>
-                      <p>{new Date(item.enrolledAt).toLocaleDateString()}</p>
+                      <p>{new Date(item?.enrolledAt).toLocaleDateString()}</p>
                     </div>
                   ) : item.course.createdAt ? (
                     <p>
-                      {new Date(item.course.createdAt).toLocaleDateString()}
+                      {new Date(item?.course?.createdAt).toLocaleDateString()}
                     </p>
                   ) : null}
-                  {item.course.time && <p>{item.course.time}</p>}
+                  {item?.course?.time && <p>{item?.course?.time}</p>}
                 </div>
               </div>
             ))

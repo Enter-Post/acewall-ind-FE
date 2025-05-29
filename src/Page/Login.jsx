@@ -8,11 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { Eye, EyeClosed, EyeOff } from "lucide-react";
 
 const Login = () => {
   const { login } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const schema = z.object({
     email: z.string().email(),
@@ -88,19 +90,25 @@ const Login = () => {
                   <label htmlFor="password" className="block text-gray-600 mb-2">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    id="password"
-                    className="w-full p-2 border border-gray-300 rounded"
-                    {...register("password")}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      className="w-full p-2 border border-gray-300 rounded pr-10"
+                      {...register("password")}
+                    />
+                    <div
+                      className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                    >
+                      {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+                    </div>
+                  </div>
                   {errors?.password && (
-                    <p className="text-xs text-red-600">
-                      {errors.password.message}
-                    </p>
+                    <p className="text-xs text-red-600">{errors.password.message}</p>
                   )}
-
                 </div>
+
 
                 {loginError && (
                   <p className="text-sm text-red-500 mb-4">{loginError}</p>

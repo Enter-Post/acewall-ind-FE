@@ -167,7 +167,7 @@ export default function CoursesBasis() {
       return;
     }
 
-    const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+    const maxSizeInBytes = 5 * 1024 * 1024; // 2MB
     if (file.size > maxSizeInBytes) {
       toast.error("Image size must be less than 2MB.");
       return;
