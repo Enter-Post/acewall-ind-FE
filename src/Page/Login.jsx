@@ -121,25 +121,33 @@ const Login = () => {
                   <p className="text-sm text-red-500 mb-4">{loginError}</p>
                 )}
 
-                <div className="flex justify-between items-center">
-                  <Link
-                    to={"/TeacherLogin"}
-                    className="text-sm font-bold text-green-500"
-                  >
-                    Log in as Teacher
-                  </Link>
-                  <Link
-                    to={"/forgetPassword"}
-                    className="text-sm font-bold text-green-500"
-                  >
-                    forgotten Password?
-                  </Link>
-                  <button
-                    type="submit"
-                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
-                  >
-                    Login
-                  </button>
+                <div className="space-y-12">
+                  {/* Top row: Login as Student + Submit Button */}
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to="/TeacherLogin"
+                      className="text-sm font-semibold text-green-600 hover:underline"
+                    >
+                      Log in as a Teacher
+                    </Link>
+
+                    <button
+                      type="submit"
+                      className="bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-6 py-2 rounded transition-colors duration-200"
+                    >
+                      Login
+                    </button>
+                  </div>
+
+                  {/* Forget Password link */}
+                  <div className="text-right">
+                    <Link
+                      to="/forgetPassword"
+                      className="text-xs font-semibold text-green-600 hover:underline"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </div>
                 </div>
               </form>
             </div>

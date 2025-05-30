@@ -117,19 +117,13 @@ const ReviewsSlider = () => {
 
                   <div className="flex items-center justify-center gap-2 mt-auto">
                     <img
-                      src={item.image}
+                      src="https://cdn1.iconfinder.com/data/icons/logos-brands-in-colors/544/Google__G__Logo-1024.png"
                       alt={`${item.name}'s avatar`}
-                      className="bg-gray-300 rounded-full w-8 h-8"
+                      className=" rounded-full w-[14px] h-[14px]  "
                     />
                     <div>
                       <p className="text-sm font-medium text-gray-800">{item.name}</p>
                       <p className="text-xs text-gray-500 flex items-center gap-1">
-                        {item.time} on{" "}
-                        <img
-                          src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_92x30dp.png"
-                          alt="Google"
-                          className="h-4"
-                        />
                       </p>
 
 

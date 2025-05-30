@@ -127,26 +127,35 @@ const TeacherLogin = () => {
                   <p className="text-sm text-red-500 mb-4">{loginError}</p>
                 )}
 
-                <div className="flex justify-between items-center">
-                  <Link
-                    to={"/TeacherLogin"}
-                    className="text-sm font-bold text-green-500"
-                  >
-                    Log in as Teacher
-                  </Link>
-                  <Link
-                    to={"/forgetPassword"}
-                    className="text-sm font-bold text-green-500"
-                  >
-                    forgotten Password?
-                  </Link>
-                  <button
-                    type="submit"
-                    className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"
-                  >
-                    Login
-                  </button>
+                <div className="space-y-12">
+                  {/* Top row: Login as Student + Submit Button */}
+                  <div className="flex justify-between items-center">
+                    <Link
+                      to="/Login"
+                      className="text-sm font-semibold text-green-600 hover:underline"
+                    >
+                      Log in as a Student
+                    </Link>
+
+                    <button
+                      type="submit"
+                      className="bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-6 py-2 rounded transition-colors duration-200"
+                    >
+                      Login
+                    </button>
+                  </div>
+
+                  {/* Forget Password link */}
+                  <div className="text-right">
+                    <Link
+                      to="/forgetPassword"
+                      className="text-xs font-semibold text-green-600 hover:underline"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </div>
                 </div>
+
               </form>
             </div>
 
@@ -161,9 +170,7 @@ const TeacherLogin = () => {
                 Teachers Love Acewall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span className="text-2xl">"</span> This is one of the best Learning Management Platforms. Their supportteam is topnnotvch. The platform also supports various integrations as resources for classroom set up. I really enjoy making residual inome for the classes I create.
-
-                <span className="text-2xl">"</span>
+                <span >"This is one of the best Learning Management Platforms. Their support team is top-notch. The platform also supports various integrations as resources for classroom setup. I really enjoy making residual income from the classes I create."</span>
               </blockquote>
               <div className="text-center md:text-left">
                 <p className="font-medium text-gray-800">-Regina</p>

@@ -17,14 +17,14 @@ export default function ReviewModal({ data }) {
             <DialogContent className="max-w-md">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage src={data.image} alt="@shadcn" />
-                            <AvatarFallback>{data.name}</AvatarFallback>
+                        <Avatar className="w-[14px] h-[14px]">
+                            <AvatarImage src="https://cdn1.iconfinder.com/data/icons/logos-brands-in-colors/544/Google__G__Logo-1024.png"
+                                alt="
+                                Google" />
                         </Avatar>
                         {data.name}
                     </DialogTitle>
                 </DialogHeader>
-                <div className="text-sm text-muted-foreground mb-2">{data.time}</div>
                 <p className="text-base">
                     <div className="text-yellow-400 text-sm mb-2">
                         {Array(data.rating).fill(0).map((_, i) => (
