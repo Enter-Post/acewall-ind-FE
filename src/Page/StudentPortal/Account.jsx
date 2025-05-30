@@ -10,6 +10,8 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Pencil } from "lucide-react";
+
 import { useState } from "react";
 
 // Define the validation schema with Zod
@@ -96,38 +98,38 @@ const Account = () => {
 
 
   // Form submission handler
-const onSubmit = async (data) => {
-  const formData = new FormData();
-  formData.append("firstName", data.firstName);
-  formData.append("middleName", data.middleName);
-  formData.append("lastName", data.lastName);
-  formData.append("pronouns", data.pronouns);
-  formData.append("gender", data.gender);
-  formData.append("email", data.email);
-  formData.append("phone", data.phone);
-  formData.append("homeAddress", data.homeAddress);
-  formData.append("mailingAddress", data.mailingAddress);
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+    formData.append("firstName", data.firstName);
+    formData.append("middleName", data.middleName);
+    formData.append("lastName", data.lastName);
+    formData.append("pronouns", data.pronouns);
+    formData.append("gender", data.gender);
+    formData.append("email", data.email);
+    formData.append("phone", data.phone);
+    formData.append("homeAddress", data.homeAddress);
+    formData.append("mailingAddress", data.mailingAddress);
 
-  if (selectedImage) {
-    formData.append("profileImg", selectedImage); // Append the selected image
-  }
+    if (selectedImage) {
+      formData.append("profileImg", selectedImage); // Append the selected image
+    }
 
-  try {
-    // Make the PUT request to update user details
-    const response = await axiosInstance.put(`/auth/updateuser`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    console.log("Server response:", response.data);
+    try {
+      // Make the PUT request to update user details
+      const response = await axiosInstance.put(`/auth/updateuser`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("Server response:", response.data);
 
-    // ✅ Refresh the page after successful update
-    window.location.reload();
-  } catch (error) {
-    // Handle any errors that occur during the request
-    console.error("Failed to update profile:", error);
-  }
-};
+      // ✅ Refresh the page after successful update
+      window.location.reload();
+    } catch (error) {
+      // Handle any errors that occur during the request
+      console.error("Failed to update profile:", error);
+    }
+  };
 
 
   return (
@@ -148,7 +150,7 @@ const onSubmit = async (data) => {
               alt="Profile Preview"
               className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover" // Adjust image size for responsiveness
             />
-            <div className="text-center md:text-left"> {/* Center text on smaller screens */}
+            <div className="text-center md:text-right"> {/* Center text on smaller screens */}
               <Label htmlFor="profileImg" className="block">
                 Upload New Image
               </Label>
@@ -163,54 +165,34 @@ const onSubmit = async (data) => {
           </div>
 
         </section>
-
         <div className="space-y-8">
           {/* Personal Information */}
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Personal Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-sm font-medium">
-                  First Name
-                </Label>
-                <Input
-                  id="firstName"
-                  placeholder="Enter your first name"
-                  {...register("firstName")}
-                />
-                {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.firstName.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="middleName" className="text-sm font-medium">
-                  Middle Name
-                </Label>
-                <Input
-                  id="middleName"
-                  placeholder="Enter your middle name"
-                  {...register("middleName")}
-                />
-              </div>
-
-              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                <Label htmlFor="lastName" className="text-sm font-medium">
-                  Last Name
-                </Label>
-                <Input
-                  id="lastName"
-                  placeholder="Enter your last name"
-                  {...register("lastName")}
-                />
-                {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.lastName.message}
-                  </p>
-                )}
-              </div>
+              {[
+                { id: "firstName", label: "First Name", error: errors.firstName },
+                { id: "middleName", label: "Middle Name" },
+                { id: "lastName", label: "Last Name", error: errors.lastName },
+              ].map(({ id, label, error }) => (
+                <div key={id} className="space-y-2 sm:col-span-2 lg:col-span-1">
+                  <Label htmlFor={id} className="text-sm font-medium">
+                    {label}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id={id}
+                      placeholder={`Enter your ${label.toLowerCase()}`}
+                      className="pl-10"
+                      {...register(id)}
+                    />
+                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  {error && (
+                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
+                  )}
+                </div>
+              ))}
             </div>
           </section>
 
@@ -220,41 +202,27 @@ const onSubmit = async (data) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Pronouns */}
               <div className="space-y-2">
-               
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  {/* Pronouns */}
-                  <div className="space-y-2">
-                    <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                      Preferred Pronouns
-                    </Label>
-                    <div className="grid grid-cols-1 gap-2">
-                      {["He/Him", "She/Her", "They/Them", "Others"].map(
-                        (pronouns) => (
-                          <div
-                            key={pronouns}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="radio"
-                              id={`pronouns-${pronouns.toLowerCase()}`}
-                              value={pronouns.toLowerCase()}
-                              {...register("pronouns")}
-                              className="w-4 h-4 accent-blue-600"
-                            />
-                            <label
-                              htmlFor={`pronouns-${pronouns.toLowerCase()}`}
-                              className="text-sm text-gray-900 dark:text-white"
-                            >
-                              {pronouns}
-                            </label>
-                          </div>
-                        )
-                      )}
+                <Label className="block text-sm font-medium text-gray-900 dark:text-white">
+                  Preferred Pronouns
+                </Label>
+                <div className="grid grid-cols-1 gap-2">
+                  {["He/Him", "She/Her", "They/Them", "Others"].map((pronouns) => (
+                    <div key={pronouns} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id={`pronouns-${pronouns.toLowerCase()}`}
+                        value={pronouns.toLowerCase()}
+                        {...register("pronouns")}
+                        className="w-4 h-4 accent-blue-600"
+                      />
+                      <label
+                        htmlFor={`pronouns-${pronouns.toLowerCase()}`}
+                        className="text-sm text-gray-900 dark:text-white"
+                      >
+                        {pronouns}
+                      </label>
                     </div>
-                  </div>
-
-                  {/* Gender */}
-                  
+                  ))}
                 </div>
               </div>
 
@@ -290,39 +258,29 @@ const onSubmit = async (data) => {
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Contact Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium">
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  {...register("phone")}
-                />
-                {errors.phone && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.phone.message}
-                  </p>
-                )}
-              </div>
+              {[
+                { id: "email", label: "Email Address", type: "email", error: errors.email },
+                { id: "phone", label: "Phone Number", type: "tel", error: errors.phone },
+              ].map(({ id, label, type, error }) => (
+                <div key={id} className="space-y-2">
+                  <Label htmlFor={id} className="text-sm font-medium">
+                    {label}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id={id}
+                      type={type}
+                      placeholder={`Enter your ${label.toLowerCase()}`}
+                      className="pl-10"
+                      {...register(id)}
+                    />
+                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  {error && (
+                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
+                  )}
+                </div>
+              ))}
             </div>
           </section>
 
@@ -330,34 +288,32 @@ const onSubmit = async (data) => {
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Address Information</h3>
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="homeAddress" className="text-sm font-medium">
-                  Home Address
-                </Label>
-                <Textarea
-                  id="homeAddress"
-                  placeholder="Enter your home address"
-                  rows={3}
-                  {...register("homeAddress")}
-                />
-                {errors.homeAddress && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.homeAddress.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="mailingAddress" className="text-sm font-medium">
-                  Mailing Address
-                </Label>
-                <Textarea
-                  id="mailingAddress"
-                  placeholder="Enter your mailing address (if different from home address)"
-                  rows={3}
-                  {...register("mailingAddress")}
-                />
-              </div>
+              {[
+                { id: "homeAddress", label: "Home Address", error: errors.homeAddress },
+                {
+                  id: "mailingAddress",
+                  label: "Mailing Address",
+                },
+              ].map(({ id, label, error }) => (
+                <div key={id} className="space-y-2">
+                  <Label htmlFor={id} className="text-sm font-medium">
+                    {label}
+                  </Label>
+                  <div className="relative">
+                    <Textarea
+                      id={id}
+                      rows={3}
+                      placeholder={`Enter your ${label.toLowerCase()}`}
+                      className="pl-10 pt-2"
+                      {...register(id)}
+                    />
+                    <Pencil className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  {error && (
+                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
+                  )}
+                </div>
+              ))}
             </div>
           </section>
 

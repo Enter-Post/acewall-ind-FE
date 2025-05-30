@@ -78,11 +78,6 @@ const CourseCards = () => {
               <p className="text-lg text-muted-foreground mt-2">
                 When you enroll in a course, it will appear here.
               </p>
-              <Link to="/student/courses">
-                <Button className="mt-6 bg-green-500 text-white hover:bg-acewall-main">
-                  Explore Courses
-                </Button>
-              </Link>
             </>
           )}
         </div>

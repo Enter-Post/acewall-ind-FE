@@ -14,6 +14,7 @@ import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
 import { AssessmentIcon } from "@/assets/Icons/AssignmentIcon";
 import { Megaphone02Icon } from "@/assets/Icons/Announcement";
 import { Target02Icon } from "@/assets/Icons/grades";
+import avatar from '../../assets/avatar.png'; 
 
 import Footer from "@/CustomComponent/Footer";
 import MoreCoursesDropdown from "@/CustomComponent/MoreCoursesDropdown";
@@ -180,8 +181,8 @@ export default function Layout() {
               <Link to="/student/account" className="block">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
                   <img
-                    src={user.profileImg}
-                    alt={user.firstName}
+                    src={user.profileImg && user.profileImg.trim() !== "" ? user.profileImg : avatar}
+                    alt={user.firstName || "User Avatar"}
                     className="h-full w-full object-cover rounded-full"
                   />
                 </div>

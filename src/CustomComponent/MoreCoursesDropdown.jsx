@@ -16,6 +16,7 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 const MoreCoursesDropdown = () => {
   const [categories, setCategories] = useState([]);
   const [subCategoriesMap, setSubCategoriesMap] = useState({});
+  const [loadingSubCategories, setLoadingSubCategories] = useState({});
   const navigate = useNavigate();
   const { setSelectedSubcategoryId } = useContext(GlobalContext);
 
@@ -36,22 +37,25 @@ const MoreCoursesDropdown = () => {
   }, []);
 
   const fetchSubcategories = async (categoryId) => {
-    if (subCategoriesMap[categoryId]) return; // Already fetched
-
+    if (subCategoriesMap[categoryId] || loadingSubCategories[categoryId]) return;
+    setLoadingSubCategories((prev) => ({ ...prev, [categoryId]: true }));
+    
     try {
-      const response = await axiosInstance.get(
-        `/category/subcategories/${categoryId}`
-      );
-      if (response.data?.subcategories) {
-        setSubCategoriesMap((prev) => ({
-          ...prev,
-          [categoryId]: response.data.subcategories,
-        }));
-      } else {
-        console.error("Invalid subcategory response:", response.data);
-      }
-    } catch (error) {
+      const response = await axiosInstance.get(`/category/subcategories/${categoryId}`);
+      const subcategories = response.data?.subcategories || [];
+
+      setSubCategoriesMap((prev) => ({
+        ...prev,
+        [categoryId]: subcategories,
+      }));
+       } catch (error) {
       console.error("Error fetching subcategories:", error);
+      setSubCategoriesMap((prev) => ({
+        ...prev,
+        [categoryId]: [],
+      }));
+    } finally {
+      setLoadingSubCategories((prev) => ({ ...prev, [categoryId]: false }));
     }
   };
 
@@ -74,19 +78,17 @@ const MoreCoursesDropdown = () => {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="grid grid-cols-2   gap-4">
+      <DropdownMenuContent className="grid grid-cols-2 gap-4">
         {categories.length > 0 ? (
           categories.map((category, index) => (
             <DropdownMenuSub key={index}>
-              <DropdownMenuSubTrigger
-                onMouseEnter={() => fetchSubcategories(category._id)}
-              >
+              <DropdownMenuSubTrigger onMouseEnter={() => fetchSubcategories(category._id)}>
                 {category.title}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                {!subCategoriesMap[category._id] ? (
+                {loadingSubCategories[category._id] ? (
                   <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-                ) : subCategoriesMap[category._id].length > 0 ? (
+                ) : subCategoriesMap[category._id]?.length > 0 ? (
                   subCategoriesMap[category._id].map((sub) => (
                     <Link to={`/student/courses/${sub._id}`} key={sub._id}>
                       <DropdownMenuItem className="cursor-pointer">

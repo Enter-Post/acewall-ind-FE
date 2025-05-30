@@ -63,6 +63,11 @@ const GeneralCourses = () => {
           <div className="flex flex-col items-center justify-center text-center px-4">
             {searching ? (
               <>
+                <img
+                  src="https://img.freepik.com/free-vector/no-results-concept-illustration_114360-746.jpg?t=st=1745438134~exp=1745441734~hmac=0ad993dd85db23d3cdb0f0a9d208e591e764f1c7ef9f6bb8f7d384e05015d7aa&w=900"
+                  alt="No search results"
+                  className="w-72 h-72 object-contain mb-6"
+                />
                 <h1 className="text-2xl font-semibold text-muted-foreground">
                   No course found for "{searchQuery}"
                 </h1>
@@ -83,12 +88,15 @@ const GeneralCourses = () => {
             ) : (
               <>
                 <img
-                  src="https://img.freepik.com/free-vector/exclamation-illustration-concept_114360-23479.jpg?t=st=1745438134~exp=1745441734~hmac=008d4f2dacd0316f660b0c54d3c43bc0a6ccbcc5b622b0cddf56ccc61b482ba9&w=900"
-                  alt="No courses"
-                  className="w-full h-75 object-contain "
+                  src="https://img.freepik.com/free-vector/empty-concept-illustration_114360-1188.jpg?t=st=1745438134~exp=1745441734~hmac=8ed88b4d5e9025d3df84d88d611e12c44f8c73226e95ed6f116358984760b42d&w=900"
+                  alt="No courses available"
+                  className="w-72 h-72 object-contain mb-6"
                 />
-                <p className="text-2xl font-bold  text-muted-foreground">
-                  Something went wrong !
+                <p className="text-2xl font-bold text-muted-foreground">
+                  No courses available at the moment.
+                </p>
+                <p className="text-md mt-2 text-muted-foreground">
+                  Please check back later or contact support.
                 </p>
               </>
             )}
@@ -96,10 +104,7 @@ const GeneralCourses = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {allCourses?.map((course) => (
-              <Link
-                key={course._id}
-                to={`/courses/detail/${course._id}`}
-              >
+              <Link key={course._id} to={`/courses/detail/${course._id}`}>
                 <Card className="h-full pt-0 w-full overflow-hidden cursor-pointer">
                   <AspectRatio ratio={16 / 9}>
                     <img
@@ -113,15 +118,18 @@ const GeneralCourses = () => {
                       <div className="uppercase text-indigo-600 bg-indigo-100 text-xs font-medium h-fit w-fit px-2">
                         {course.basics.category?.title || "Development"}
                       </div>
-                      <div className="uppercase text-orange-500  text-xs font-bold  h-fit  mb-2 w-fit px-2">
+                      <div className="uppercase text-orange-500 text-xs font-bold h-fit mb-2 w-fit px-2">
                         {course.averageRating >= 4.7 ? (
-
                           <span>
-                            <span className="font-bold text-xs text-green-500 ">Top Rated</span> :{" "}
-                            {course.averageRating.toFixed(1)}
+                            <span className="font-bold text-xs text-green-500 ">
+                              Top Rated
+                            </span>{" "}
+                            : {course.averageRating.toFixed(1)}
                           </span>
+                        ) : course.averageRating > 0 ? (
+                          course.averageRating.toFixed(1)
                         ) : (
-                          course.averageRating > 0 ? course.averageRating.toFixed(1) : "0.0"
+                          "0.0"
                         )}
                       </div>
                     </div>
@@ -130,13 +138,10 @@ const GeneralCourses = () => {
                       Teacher: {course.createdby?.firstName}
                     </p>
                     <div className="text-xs flex items-center">
-
                       <span className="text-yellow-500 ml-1">★</span>
                       <span className="ml-1">{course.rating?.length || 0}</span>
                     </div>
-                    <p className="text-lg  font-bold ">
-                      ${course.basics.price}
-                    </p>
+                    <p className="text-lg font-bold">${course.basics.price}</p>
                   </CardHeader>
                 </Card>
               </Link>

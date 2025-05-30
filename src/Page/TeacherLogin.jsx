@@ -16,6 +16,8 @@ const schema = z.object({
 
 const TeacherLogin = () => {
   const { login } = useContext(GlobalContext);
+  const [loginError, setLoginError] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
 
   //  console.log(login, "login in teacherlogin");
@@ -29,15 +31,24 @@ const TeacherLogin = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
   });
 
-
   const onSubmit = async (formData) => {
-
-    login(formData);
+    try {
+      await login(formData);
+      setLoginError(""); // clear previous errors
+      // Optionally navigate somewhere on successful login
+      // navigate("/student/dashboard");
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "Login failed. Please try again.";
+      console.error(errorMessage);
+      setLoginError(errorMessage);
+    }
   };
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -75,13 +86,16 @@ const TeacherLogin = () => {
                     {...register("email")}
                   />
                   {errors?.email && (
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="text-xs text-red-600">
                       {errors.email.message}
                     </p>
                   )}
                 </div>
                 <div className="mb-8">
-                  <label htmlFor="password" className="block text-gray-600 mb-2">
+                  <label
+                    htmlFor="password"
+                    className="block text-gray-600 mb-2"
+                  >
                     Password
                   </label>
                   <div className="relative">
@@ -95,21 +109,37 @@ const TeacherLogin = () => {
                       className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
                       onClick={() => setShowPassword((prev) => !prev)}
                     >
-                      {showPassword ? <Eye size={20} /> : <EyeClosed size={20} />}
+                      {showPassword ? (
+                        <Eye size={20} />
+                      ) : (
+                        <EyeClosed size={20} />
+                      )}
                     </div>
                   </div>
                   {errors?.password && (
-                    <p className="text-xs text-red-600">{errors.password.message}</p>
+                    <p className="text-xs text-red-600">
+                      {errors.password.message}
+                    </p>
                   )}
                 </div>
+
+                {loginError && (
+                  <p className="text-sm text-red-500 mb-4">{loginError}</p>
+                )}
+
                 <div className="flex justify-between items-center">
                   <Link
-                    to={"/Login"}
+                    to={"/TeacherLogin"}
                     className="text-sm font-bold text-green-500"
                   >
-                    Login as Student
+                    Log in as Teacher
                   </Link>
-
+                  <Link
+                    to={"/forgetPassword"}
+                    className="text-sm font-bold text-green-500"
+                  >
+                    forgotten Password?
+                  </Link>
                   <button
                     type="submit"
                     className="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded transition-colors"

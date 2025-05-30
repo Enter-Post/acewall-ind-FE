@@ -10,7 +10,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Minus, Plus } from "lucide-react";
+import { Pencil } from "lucide-react";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -90,7 +90,7 @@ const Account = () => {
     }
 
     // ✅ Validate file size (limit to 1MB)
-   const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSizeInBytes) {
       alert("Image size must be less than 5MB.");
       return;
@@ -184,10 +184,10 @@ const Account = () => {
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-full">
             <img
               src={previewImage}
-              alt="Profile Image"
+              alt="Profile Preview"
               className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover"
             />
-            <div className="text-center md:text-left"> {/* Center text on smaller screens */}
+            <div className="text-center md:text-right"> {/* Center text on smaller screens */}
               <Label htmlFor="profileImg" className="block">
                 Upload New Image
               </Label>
@@ -207,64 +207,49 @@ const Account = () => {
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Personal Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-sm font-medium">
-                  First Name
-                </Label>
-                <Input
-                  id="firstName"
-                  placeholder="Enter your first name"
-                  {...register("firstName")}
-                />
-                {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.firstName.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="middleName" className="text-sm font-medium">
-                  Middle Name
-                </Label>
-                <Input
-                  id="middleName"
-                  placeholder="Enter your middle name"
-                  {...register("middleName")}
-                />
-              </div>
-
-              <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-                <Label htmlFor="lastName" className="text-sm font-medium">
-                  Last Name
-                </Label>
-                <Input
-                  id="lastName"
-                  placeholder="Enter your last name"
-                  {...register("lastName")}
-                />
-                {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.lastName.message}
-                  </p>
-                )}
-              </div>
+              {[
+                { id: "firstName", label: "First Name", error: errors.firstName },
+                { id: "middleName", label: "Middle Name" },
+                { id: "lastName", label: "Last Name", error: errors.lastName },
+              ].map(({ id, label, error }) => (
+                <div key={id} className="space-y-2 sm:col-span-2 lg:col-span-1">
+                  <Label htmlFor={id} className="text-sm font-medium">
+                    {label}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id={id}
+                      placeholder={`Enter your ${label.toLowerCase()}`}
+                      className="pl-10"
+                      {...register(id)}
+                    />
+                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
+             {error && (
+                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
+                  )}
+                </div>
+              ))}
             </div>
           </section>
           {/* Bio Field */}
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Bio</h3>
             <div className="space-y-2">
-              <Label htmlFor="Bio" className="text-sm font-medium">Tell us about yourself</Label>
-              <Textarea
-                id="Bio"
-                rows={5}
-                placeholder="Write a short Bio..."
-                maxLength={500}
-                {...register("Bio")}
-              />
-
-              {/* Character count */}
+              <Label htmlFor="Bio" className="text-sm font-medium">
+                Tell us about yourself
+              </Label>
+              <div className="relative">
+                <Textarea
+                  id="Bio"
+                  rows={5}
+                  placeholder="Write a short Bio..."
+                  maxLength={500}
+                  className="pl-10 pt-2"
+                  {...register("Bio")}
+                />
+                <Pencil className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
               <div className="flex justify-between text-xs text-gray-500">
                 <span>{watch("Bio")?.length || 0}/500 characters</span>
                 {errors.Bio && (
@@ -284,28 +269,23 @@ const Account = () => {
                   Preferred Pronouns
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others"].map(
-                    (pronouns) => (
-                      <div
-                        key={pronouns}
-                        className="flex items-center space-x-2"
+                  {["He/Him", "She/Her", "They/Them", "Others"].map((pronouns) => (
+                    <div key={pronouns} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id={`pronouns-${pronouns.toLowerCase()}`}
+                        value={pronouns.toLowerCase()}
+                        {...register("pronouns")}
+                        className="w-4 h-4 accent-blue-600"
+                      />
+                      <label
+                        htmlFor={`pronouns-${pronouns.toLowerCase()}`}
+                        className="text-sm text-gray-900 dark:text-white"
                       >
-                        <input
-                          type="radio"
-                          id={`pronouns-${pronouns.toLowerCase()}`}
-                          value={pronouns.toLowerCase()}
-                          {...register("pronouns")}
-                          className="w-4 h-4 accent-blue-600"
-                        />
-                        <label
-                          htmlFor={`pronouns-${pronouns.toLowerCase()}`}
-                          className="text-sm text-gray-900 dark:text-white"
-                        >
-                          {pronouns}
-                        </label>
-                      </div>
-                    )
-                  )}
+                        {pronouns}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -341,39 +321,27 @@ const Account = () => {
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Contact Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email address"
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.email.message}
-                  </p>
+              {[
+                { id: "email", label: "Email Address", type: "email", error: errors.email },
+                { id: "phone", label: "Phone Number", type: "tel", error: errors.phone },
+              ].map(({ id, label, type, error }) => (
+                <div key={id} className="space-y-2">
+                  <Label htmlFor={id} className="text-sm font-medium">
+                    {label}
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id={id}
+                      type={type}
+                      placeholder={`Enter your ${label.toLowerCase()}`}
+                      className="pl-10"
+                      {...register(id)}
+                    />
+                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />              </div>
+                  {error && (
+                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium">
-                  Phone Number
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  {...register("phone")}
-                />
-                {errors.phone && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.phone.message}
-                  </p>
-                )}
-              </div>
+              </div>             ))}
             </div>
           </section>
 
@@ -381,38 +349,30 @@ const Account = () => {
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Address Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="homeAddress" className="text-sm font-medium">
-                  Home Address
-                </Label>
-                <Textarea
-                  id="homeAddress"
-                  placeholder="Enter your home address"
-                  {...register("homeAddress")}
-                />
-                {errors.homeAddress && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.homeAddress.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="mailingAddress" className="text-sm font-medium">
-                  Mailing Address (Optional)
-                </Label>
-                <Textarea
-                  id="mailingAddress"
-                  placeholder="Enter your mailing address"
-                  {...register("mailingAddress")}
-                />
-              </div>
+              {[
+                { id: "homeAddress", label: "Home Address", error: errors.homeAddress },
+                { id: "mailingAddress", label: "Mailing Address (Optional)" },
+              ].map(({ id, label, error }) => (
+                <div key={id} className="space-y-2">
+                  <Label htmlFor={id} className="text-sm font-medium">
+                    {label}
+                  </Label>
+                  <div className="relative">
+                    <Textarea
+                      id={id}
+                      placeholder={`Enter your ${label.toLowerCase()}`}
+                      className="pl-10 pt-2"
+                      {...register(id)}
+                    />
+                    <Pencil className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  {error && (
+                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
+                  )}
+                </div>
+              ))}
             </div>
-
-
           </section>
-
-
 
           {/* Save Button */}
           <div className="flex justify-end">

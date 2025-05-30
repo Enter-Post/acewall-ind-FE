@@ -23,6 +23,8 @@ import Footer from "@/CustomComponent/Footer";
 import { useContext } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { useState } from "react";
+import avatar from '../../assets/avatar.png';
+
 
 import {
   DropdownMenu,
@@ -206,8 +208,7 @@ export default function TeacherLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-white ${
-            isSidebarOpen ? "block" : "hidden"
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
           } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
@@ -215,9 +216,9 @@ export default function TeacherLayout() {
               <Link to="/teacher/account" className="w-10">
                 <Avatar className="rounded-full w-10 h-10">
                   <AvatarImage
-                    className="rounded-full w-10 h-10 object-cover"
-                    src={user.profileImg}
-                    alt="@user"
+                    src={user.profileImg && user.profileImg.trim() !== "" ? user.profileImg : avatar}
+                    alt={user.firstName || "User Avatar"}
+                    className="h-full w-full object-cover rounded-full"
                   />
                   <AvatarFallback>UN</AvatarFallback>
                 </Avatar>
@@ -236,15 +237,13 @@ export default function TeacherLayout() {
                   onClick={() => {
                     setIsSidebarOpen(false);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location == tab.path ? "bg-green-500" : "text-black"
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
                   } `}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location == tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location == tab.path ? "text-white" : "text-green-600"
+                   }`}
                   >
                     {tab.name}
                   </span>

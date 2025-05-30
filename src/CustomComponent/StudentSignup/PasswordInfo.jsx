@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeClosed, EyeOff } from "lucide-react";
 
 const PasswordInfo = () => {
   const {
@@ -48,7 +48,7 @@ const PasswordInfo = () => {
           className="absolute right-3 top-[38px] text-gray-500 dark:text-gray-300"
           tabIndex={-1}
         >
-          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          {showPassword ?  <Eye size={18}/>  : <EyeClosed size={18}/>}
         </button>
         {errors?.password?.message && (
           <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>
