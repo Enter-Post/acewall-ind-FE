@@ -41,7 +41,7 @@ const Account = () => {
   console.log(user, "user");
 
   const [previewImage, setPreviewImage] = useState(
-    user?.profileImg || "/placeholder.svg"
+    user?.profileImg.url || "/placeholder.svg"
   );
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -144,7 +144,7 @@ const Account = () => {
     formData.append("mailingAddress", data.mailingAddress);
 
     if (selectedImage) {
-      formData.append("profileImg", selectedImage);
+      formData.append("profileImg.url", selectedImage);
     }
 
     if (data.documents && data.documents.length > 0) {
@@ -173,9 +173,9 @@ const Account = () => {
     <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
       {/* Page Title */}
       <div>
-        <h2 className="text-2xl font-bold text-foreground">
-          Account Information
-        </h2>
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+          Account Settings
+        </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -192,7 +192,7 @@ const Account = () => {
                 Upload New Image
               </Label>
               <Input
-                id="profileImg"
+                id="profileImg.url"
                 type="file"
                 accept="image/*"
                 className="mt-2"
@@ -224,8 +224,8 @@ const Account = () => {
                       {...register(id)}
                     />
                     <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-            </div>
-             {error && (
+                  </div>
+                  {error && (
                     <p className="text-red-500 text-xs mt-1">{error.message}</p>
                   )}
                 </div>
@@ -340,8 +340,8 @@ const Account = () => {
                     <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />              </div>
                   {error && (
                     <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                )}
-              </div>             ))}
+                  )}
+                </div>))}
             </div>
           </section>
 

@@ -216,7 +216,7 @@ export default function TeacherLayout() {
               <Link to="/teacher/account" className="w-10">
                 <Avatar className="rounded-full w-10 h-10">
                   <AvatarImage
-                    src={user.profileImg && user.profileImg.trim() !== "" ? user.profileImg : avatar}
+                    src={user?.profileImg !== "" ? user?.profileImg?.url : avatar}
                     alt={user.firstName || "User Avatar"}
                     className="h-full w-full object-cover rounded-full"
                   />

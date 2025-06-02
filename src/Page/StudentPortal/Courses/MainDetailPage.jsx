@@ -29,12 +29,19 @@ import LoadingLoader from "@/CustomComponent/LoadingLoader";
 import RatingStars from "@/CustomComponent/RatingStars";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
 import RatingSection from "@/CustomComponent/Student/RatingSection";
+import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
+import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export default function CourseOverview() {
-  const { id } = useParams() || { id: "68115952b4991f70a28c486f" }; // Default ID or from URL
+  const { id } = useParams(); // Default ID or from URL
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+
+  const [showModal, setShowModal] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("");
+  // const { courseId } = useParams();
 
   // console.log(course.teachingPoints, "course");
 
@@ -58,7 +65,9 @@ export default function CourseOverview() {
     getCourseDetails();
   }, [id]);
 
-  // console.log(course.createdby._id, "course");
+  console.log(course?._id, "course");
+
+  // console.log(courseId);
 
   const handleConversation = async () => {
     await axiosInstance
@@ -73,6 +82,28 @@ export default function CourseOverview() {
         console.log(err);
       });
   };
+
+
+  const handleUnenroll = async () => {
+    setLoading(true); // instantly trigger loading
+
+    try {
+      console.log("Unenrolling from course ID:", course._id);
+      const res = await axiosInstance.delete(`/enrollment/unenroll/${course?._id}`);
+      console.log("Unenrolled data:", res.data);
+      setShowModal(false);
+      window.location.reload(); // refresh page
+    } catch (err) {
+      console.error("Unenrollment failed:", err.response?.data || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+
+
 
   if (loading) {
     return (
@@ -131,7 +162,7 @@ export default function CourseOverview() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
             <Avatar className="h-12 w-12 rounded-full">
               <AvatarImage
-                src={course.createdby.profileImg || "/placeholder.svg"}
+                src={course.createdby.profileImg.url || "/placeholder.svg"}
                 alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
                 className="ring-2 ring-black ring-offset-2 rounded-full "
               />
@@ -209,6 +240,52 @@ export default function CourseOverview() {
               ))}
             </div>
           </section>
+          {/* unenroll section start  */}
+          <section>
+            <Button className="bg-green-500" onClick={() => setShowModal(true)}>
+              Unenroll
+            </Button>
+
+          </section>
+
+          <section>
+            <Dialog open={showModal} onOpenChange={setShowModal}>
+              <DialogContent className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ">
+                <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                  <DialogHeader>
+                    <DialogTitle>Confirm Unenrollment</DialogTitle>
+                    <DialogDescription>
+                      To confirm, type <strong>unenroll</strong> below. This action cannot be undone.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <Input
+                    placeholder="Type 'unenroll' to confirm"
+                    value={confirmationText}
+                    onChange={(e) => setConfirmationText(e.target.value)}
+                    className="mt-4"
+                  />
+
+                  <DialogFooter className="mt-6 flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      className="bg-red-600 text-white"
+                      disabled={confirmationText.trim().toLowerCase() !== "unenroll" || loading}
+                      onClick={handleUnenroll}
+                    >
+                      {loading ? "Unenrolling..." : "Unenroll"}
+                    </Button>
+
+                  </DialogFooter>
+                </div>
+              </DialogContent>
+            </Dialog>
+
+          </section>
+
+
         </TabsContent>
 
         {/* Content */}

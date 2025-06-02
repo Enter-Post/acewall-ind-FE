@@ -27,7 +27,7 @@ export default function MessageList({ messages, contactName, contactAvatar }) {
                 <div className="flex-shrink-0 mt-1">
                   <Avatar className="h-8 w-8">
                     <AvatarImage
-                      src={message.sender.profileImg}
+                      src={message.sender.profileImg.url}
                       alt={message.sender.name}
                     />
                     {/* <AvatarFallback>{message.sender.name[0]}</AvatarFallback> */}

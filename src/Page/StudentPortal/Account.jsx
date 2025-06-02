@@ -1,333 +1,172 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { useContext, useEffect } from "react";
+import { use, useContext, useEffect, useState } from "react";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { Loader, Pen } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Pencil } from "lucide-react";
-
-import { useState } from "react";
-
-// Define the validation schema with Zod
-const formSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  middleName: z.string().optional(),
-  lastName: z.string().min(1, "Last name is required"),
-  pronouns: z.string().optional(),
-  gender: z.string().optional(),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  homeAddress: z.string().min(1, "Home address is required"),
-  mailingAddress: z.string().optional(),
-});
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const Account = () => {
-  const { user } = useContext(GlobalContext);
+  const [user, setUser] = useState({});
+  const [profileImg, setprofileImg] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const [previewImage, setPreviewImage] = useState(
-    user?.profileImg || "/placeholder.svg"
-  );
-  const [selectedImage, setSelectedImage] = useState(null);
-
-  // Initialize React Hook Form with Zod resolver
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      pronouns: "",
-      gender: "",
-      email: "",
-      phone: "",
-      homeAddress: "",
-      mailingAddress: "",
-    },
-  });
-
-  // Populate form with user data when available
   useEffect(() => {
-    setValue("firstName", user.firstName || "");
-    setValue("middleName", user.middleName || "");
-    setValue("lastName", user.lastName || "");
-    setValue("pronouns", user.pronouns || "");
-    setValue("gender", user.gender || "");
-    setValue("email", user.email || "");
-    setValue("phone", user.phone || "");
-    setValue("homeAddress", user.homeAddress || "");
-    setValue("mailingAddress", user.mailingAddress || "");
-  }, [user, setValue]);
-
-  // Handle image change
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate MIME type
-    if (!file.type.startsWith("image/")) {
-      alert("Only image files are allowed.");
-      return;
-    }
-
-    // ✅ Validate file size (limit to 1MB)
-    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSizeInBytes) {
-      alert("Image size must be less than 5MB.");
-      return;
-    }
-
-    setSelectedImage(file);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPreviewImage(reader.result);
+    const setUserInfo = async () => {
+      try {
+        const res = await axiosInstance.get("auth/getUserInfo");
+        console.log(res);
+        setUser(res.data.user);
+      } catch (err) {
+        console.log(err);
+      }
     };
-    reader.readAsDataURL(file);
-  };
+    setUserInfo();
+  }, [loading]);
+  const handleImg = async () => {
+    if (!profileImg) return;
 
+    // Limit file size to 2MB
+    if (profileImg.size > 2 * 1024 * 1024) {
+      toast.error("Image size must be less than 2MB.");
+      profileImg(null);
+      return;
+    }
 
-  // Form submission handler
-  const onSubmit = async (data) => {
+    setLoading(true);
+
     const formData = new FormData();
-    formData.append("firstName", data.firstName);
-    formData.append("middleName", data.middleName);
-    formData.append("lastName", data.lastName);
-    formData.append("pronouns", data.pronouns);
-    formData.append("gender", data.gender);
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-    formData.append("homeAddress", data.homeAddress);
-    formData.append("mailingAddress", data.mailingAddress);
+    formData.append("profileImg", profileImg);
 
-    if (selectedImage) {
-      formData.append("profileImg", selectedImage); // Append the selected image
-    }
-
-    try {
-      // Make the PUT request to update user details
-      const response = await axiosInstance.put(`/auth/updateuser`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    await axiosInstance
+      .put(`auth/updateProfileImg`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((res) => {
+        setLoading(false);
+        toast.success(res.data.message);
+        setprofileImg(null);
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err?.response?.data?.message || "Something went wrong.");
+        setprofileImg(null);
       });
-      console.log("Server response:", response.data);
-
-      // ✅ Refresh the page after successful update
-      window.location.reload();
-    } catch (error) {
-      // Handle any errors that occur during the request
-      console.error("Failed to update profile:", error);
-    }
   };
 
+  const displayField = (label, value) => (
+    <div className="space-y-1">
+      <p className="text-sm font-medium text-gray-500">{label}</p>
+      <p className="text-base text-gray-900 dark:text-white">{value || "—"}</p>
+    </div>
+  );
 
   return (
     <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
-      {/* Page Title */}
       <div>
         <h2 className="text-2xl font-bold text-foreground">
           Account Information
         </h2>
       </div>
+      <section className="space-y-4 w-full">
+        <h3 className="text-lg font-semibold text-gray-800">Profile Image</h3>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        <section className="space-y-6">
-          <h3 className="text-lg font-semibold">Profile Image</h3>
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-full">
-            <img
-              src={previewImage}
-              alt="Profile Preview"
-              className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover" // Adjust image size for responsiveness
+        <div className="relative w-32 h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 border border-gray-300 rounded-full ">
+          <img
+            src={
+              profileImg
+                ? URL.createObjectURL(profileImg)
+                : user?.profileImg?.url
+            }
+            alt={user?.name}
+            className="w-full h-full rounded-full object-cover shadow-sm"
+          />
+
+          <label className="absolute bottom-2 right-2 bg-white border border-gray-300 rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100 transition">
+            <Pen className="w-4 h-4 text-gray-600" />
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => setprofileImg(e.target.files[0])}
             />
-            <div className="text-center md:text-right"> {/* Center text on smaller screens */}
-              <Label htmlFor="profileImg" className="block">
-                Upload New Image
-              </Label>
-              <Input
-                id="profileImg"
-                type="file"
-                accept="image/*"
-                className="mt-2"
-                onChange={handleImageChange} // Handle image change
-              />
-            </div>
-          </div>
+          </label>
+        </div>
 
-        </section>
-        <div className="space-y-8">
-          {/* Personal Information */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Personal Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {[
-                { id: "firstName", label: "First Name", error: errors.firstName },
-                { id: "middleName", label: "Middle Name" },
-                { id: "lastName", label: "Last Name", error: errors.lastName },
-              ].map(({ id, label, error }) => (
-                <div key={id} className="space-y-2 sm:col-span-2 lg:col-span-1">
-                  <Label htmlFor={id} className="text-sm font-medium">
-                    {label}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id={id}
-                      placeholder={`Enter your ${label.toLowerCase()}`}
-                      className="pl-10"
-                      {...register(id)}
-                    />
-                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                  {error && (
-                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Pronouns & Gender Selection */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Identity Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {/* Pronouns */}
-              <div className="space-y-2">
-                <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Preferred Pronouns
-                </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others"].map((pronouns) => (
-                    <div key={pronouns} className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id={`pronouns-${pronouns.toLowerCase()}`}
-                        value={pronouns.toLowerCase()}
-                        {...register("pronouns")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <label
-                        htmlFor={`pronouns-${pronouns.toLowerCase()}`}
-                        className="text-sm text-gray-900 dark:text-white"
-                      >
-                        {pronouns}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Gender */}
-              <div className="space-y-2">
-                <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Gender Identity
-                </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {["Male", "Female", "Non-binary", "Other"].map((gender) => (
-                    <div key={gender} className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id={`gender-${gender.toLowerCase()}`}
-                        value={gender.toLowerCase()}
-                        {...register("gender")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <label
-                        htmlFor={`gender-${gender.toLowerCase()}`}
-                        className="text-sm text-gray-900 dark:text-white"
-                      >
-                        {gender}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Contact Information */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Contact Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {[
-                { id: "email", label: "Email Address", type: "email", error: errors.email },
-                { id: "phone", label: "Phone Number", type: "tel", error: errors.phone },
-              ].map(({ id, label, type, error }) => (
-                <div key={id} className="space-y-2">
-                  <Label htmlFor={id} className="text-sm font-medium">
-                    {label}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id={id}
-                      type={type}
-                      placeholder={`Enter your ${label.toLowerCase()}`}
-                      className="pl-10"
-                      {...register(id)}
-                    />
-                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                  {error && (
-                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Address Information */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Address Information</h3>
-            <div className="space-y-4">
-              {[
-                { id: "homeAddress", label: "Home Address", error: errors.homeAddress },
-                {
-                  id: "mailingAddress",
-                  label: "Mailing Address",
-                },
-              ].map(({ id, label, error }) => (
-                <div key={id} className="space-y-2">
-                  <Label htmlFor={id} className="text-sm font-medium">
-                    {label}
-                  </Label>
-                  <div className="relative">
-                    <Textarea
-                      id={id}
-                      rows={3}
-                      placeholder={`Enter your ${label.toLowerCase()}`}
-                      className="pl-10 pt-2"
-                      {...register(id)}
-                    />
-                    <Pencil className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                  {error && (
-                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Save Button */}
-          <div className="flex justify-end">
+        {profileImg && (
+          <div className="flex gap-2">
             <Button
-              type="submit"
-              className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
+              onClick={handleImg}
+              className="bg-green-500 text-white hover:bg-green-600"
             >
-              Save Changes
+              {loading ? (
+                <div className="flex items-center">
+                  <Loader className="animate-spin mr-2" />
+                  Saving...
+                </div>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+            <Button
+              onClick={() => {
+                setprofileImg(null);
+              }}
+              variant="outline"
+              className="border-gray-300"
+            >
+              Cancel
             </Button>
           </div>
+        )}
+      </section>
+      <section className="flex gap-2 justify-end">
+        <Link to={`/${user.role}/account/editGeneralInfo`}>
+          <Button className="bg-green-500 text-white hover:bg-green-600">
+            Edit general Info
+          </Button>
+        </Link>
+        <Link to={`/${user.role}/account/editCredentials`}>
+          <Button className="bg-green-500 text-white hover:bg-green-600">
+            Edit Credencials
+          </Button>
+        </Link>
+      </section>
+
+      <section className="space-y-6">
+        <h3 className="text-lg font-semibold">Personal Information</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {displayField("First Name", user?.firstName)}
+          {displayField("Middle Name", user?.middleName)}
+          {displayField("Last Name", user?.lastName)}
         </div>
-      </form>
+      </section>
+
+      <section className="space-y-6">
+        <h3 className="text-lg font-semibold">Identity Information</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {displayField("Preferred Pronouns", user?.pronoun)}
+          {displayField("Gender Identity", user?.gender)}
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <h3 className="text-lg font-semibold">Contact Information</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {displayField("Email Address", user?.email)}
+          {displayField("Phone Number", user?.phone)}
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <h3 className="text-lg font-semibold">Address Information</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {displayField("Home Address", user?.homeAddress)}
+          {displayField("Mailing Address", user?.mailingAddress)}
+        </div>
+      </section>
     </div>
   );
 };

@@ -55,6 +55,8 @@ import VerifyOTP from "./Page/VerifyOTP";
 import ForgetPassword from "./Page/forgetPassword";
 import VerifyForgetPasswordOTP from "./Page/VerifyForgetPasswordOTP";
 import NewPassword from "./Page/NewPassword";
+import EditGeneralInfo from "./Page/Account/EditGeneralInfo";
+import { EditCredentials } from "./Page/Account/EditCredentials";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -106,13 +108,14 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
-
         {/* Unauthenticated-only (login/signup) */}
         <Route
           element={
             <PublicRoute
               user={user}
-              redirectTo={user?.role === "teacher" ? "/teacher" : "/student/mycourses"}
+              redirectTo={
+                user?.role === "teacher" ? "/teacher" : "/student/mycourses"
+              }
             />
           }
         >
@@ -137,10 +140,7 @@ function App() {
                 path="verifyOTP/:email"
                 element={<VerifyForgetPasswordOTP />}
               />
-                <Route
-                path="resetPassword/:email"
-                element={<NewPassword />}
-              />
+              <Route path="resetPassword/:email" element={<NewPassword />} />
             </Route>
             <Route path="/about" element={<About />}></Route>
             <Route path="/Support" element={<GeneralSupport />}></Route>
@@ -164,11 +164,18 @@ function App() {
             </Route>
             <Route path="assessment">
               <Route index element={<Assignment />} />
-              <Route path="submission/:id" element={<AssessmentSubmissionPage />} />
+              <Route
+                path="submission/:id"
+                element={<AssessmentSubmissionPage />}
+              />
             </Route>
             <Route path="gradebook" element={<Gradebook />} />
             <Route path="announcements" element={<Announcement />} />
-            <Route path="account" element={<Account />} />
+            <Route path="account">
+              <Route index element={<Account />} />
+              <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
+              <Route path="editCredentials" element={<EditCredentials />} />
+            </Route>
             <Route path="support" element={<Support />} />
             <Route path="ContactUs" element={<ContactUs />} />
             <Route path="courses/:subcategoryId" element={<AllCourses />} />
@@ -184,12 +191,19 @@ function App() {
         <Route element={<PrivateRoute user={user} allowedRole="teacher" />}>
           <Route path="/teacher" element={<TeacherLayout />}>
             <Route index element={<TeacherDashboard />} />
-            <Route path="account" element={<TeacherAccount />} />
+            <Route path="account">
+              <Route index element={<Account />} />
+              <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
+              <Route path="editCredentials" element={<EditCredentials />} />
+            </Route>
             <Route path="assessments">
               <Route index element={<TeacherrAssessment />} />
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
-              <Route path="create/:type/:id/:courseId" element={<CreateAssessmentPage />} />
+              <Route
+                path="create/:type/:id/:courseId"
+                element={<CreateAssessmentPage />}
+              />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
@@ -200,7 +214,10 @@ function App() {
             </Route>
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
-              <Route path="courseDetail/:id" element={<TeacherCourseDetails />} />
+              <Route
+                path="courseDetail/:id"
+                element={<TeacherCourseDetails />}
+              />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />

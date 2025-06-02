@@ -74,8 +74,9 @@ export default function TeacherAssessment() {
 
   return (
     <div className="flex w-full min-h-screen p-6">
-      <div className="w-full mx-auto space-y-4">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Assessments</h1>
+      <div className="w-full mx-auto ">
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+          Assessments</p>
 
         {/* Filters */}
         <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">

@@ -72,7 +72,7 @@ export default function ChatWindow() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={currentConversation?.otherMember.profileImg} />
+            <AvatarImage src={currentConversation?.otherMember.profileImg.url} />
             <AvatarFallback>{currentConversation?.otherMember.name}</AvatarFallback>
           </Avatar>
           <div>

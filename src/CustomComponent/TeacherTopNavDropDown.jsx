@@ -38,7 +38,7 @@ const handleLogout = async () => {
       <DropdownMenuTrigger asChild>
         <div className="flex items-center space-x-2 cursor-pointer">
           <Avatar className="w-5 h-5">
-            <AvatarImage src={user.profileImg} alt="User Avatar" />
+            <AvatarImage src={user.profileImg.url} alt="User Avatar" />
             <AvatarFallback><img src="../assets/avatar.png" alt="" /></AvatarFallback>
           </Avatar>
           <p className="text-white flex items-center">{user.firstName}</p>

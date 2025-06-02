@@ -125,7 +125,7 @@ const AllSubmission = () => {
               <div className="flex items-center gap-4">
                 <Avatar>
                   <AvatarImage
-                    src={item?.studentId?.profileImg}
+                    src={item?.studentId?.profileImg.url}
                     alt="Profile Picture"
                   />
                   <AvatarFallback>

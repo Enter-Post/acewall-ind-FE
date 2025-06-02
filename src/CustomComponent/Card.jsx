@@ -283,7 +283,7 @@ const StudentCard = ({ student }) => (
       <div className="relative">
         <Avatar className="w-24 h-24 ring-3 ring-gray-500 shadow-sm">
           <AvatarImage
-            src={student.profileImg}
+            src={student.profileImg.url}
             alt={student.name}
             className="rounded-full object-cover"
           />

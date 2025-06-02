@@ -232,7 +232,9 @@ export default function CoursesBasis() {
 
   return (
     <div>
-      <h1>Create New Course</h1>
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+          Course Course
+        </p>
       <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
 
         <section>

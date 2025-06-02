@@ -15,7 +15,7 @@ export default function ConversationItem({ conversation, isActive, onClick }) {
       >
       <Avatar className="h-16 w-16 flex items-center justify-center rounded-full border-2 border-green-200">
         <AvatarImage
-          src={conversation.otherMember.profileImg}
+          src={conversation.otherMember.profileImg.url}
           alt={conversation.otherMember.name}
           className="w-full h-full bg-cover rounded-full"
         />
