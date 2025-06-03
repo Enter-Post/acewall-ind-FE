@@ -82,7 +82,7 @@ const EditGeneralInfo = () => {
     try {
       const response = await axiosInstance.put(`/auth/updateuser`, formData);
       toast.success(response.data.message);
-      navigate("/student/account")
+      navigate(`/${user.role}/account`)
     } catch (error) {
       console.error("Failed to update profile:", error);
       toast.error(error.response?.data?.message || "Something went wrong.");

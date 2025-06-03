@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { Loader, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import SubCategorySelect from "@/CustomComponent/CreateCourse/SubCategorySelect";
 import TeachingPointInput from "@/CustomComponent/CreateCourse/TeachingPoints";
 import RequirementInput from "@/CustomComponent/CreateCourse/Requirment";
+import DateRangePicker from "@/CustomComponent/CreateCourse/DateRangePicker";
 
 // Define the form schema with Zod
 
@@ -44,6 +45,21 @@ const courseFormSchema = z.object({
       required_error: "Please select a subcategory",
     })
     .refine((val) => val !== "", { message: "Please select a subcategory" }),
+  courseDate: z
+    .object({
+      start: z.string().nonempty("Start date is required"),
+      end: z.string().nonempty("End date is required"),
+      range: z
+        .object({
+          start: z.string(),
+          end: z.string(),
+        })
+        .nullable(),
+    })
+    .refine((data) => new Date(data.end) > new Date(data.start), {
+      message: "End date must be after start date",
+      path: ["end"],
+    }),
   language: z
     .string()
     .nonempty({ message: "Please select a language" })
@@ -134,10 +150,6 @@ export default function CoursesBasis() {
 
   console.log(errors, "errors");
 
-  if (isSubmitting) {
-    toast.loading("Creating course...");
-  } else toast.dismiss();
-
   // Set up field arrays for teaching points and requirements,
   const {
     fields: teachingPointsFields,
@@ -186,9 +198,6 @@ export default function CoursesBasis() {
     const formData = new FormData();
     setLoading(true);
 
-    // Show loading toast
-    const loadingToastId = toast.loading("Creating course...");
-
     try {
       formData.append("thumbnail", data.thumbnail);
       formData.append("courseTitle", data.courseTitle);
@@ -204,13 +213,13 @@ export default function CoursesBasis() {
         "requirements",
         JSON.stringify(data.requirements.map((req) => req.value))
       );
+      formData.append("courseDate", JSON.stringify(data.courseDate));
 
       const res = await axiosInstance.post("/course/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       // Dismiss loading toast and show success
-      toast.dismiss(loadingToastId);
       toast.success(res.data.message || "Course created successfully!");
 
       reset();
@@ -224,7 +233,6 @@ export default function CoursesBasis() {
     }
   };
 
-
   const onError = (errors) => {
     toast.error("Please fill out all required fields correctly.");
     console.log(errors);
@@ -232,236 +240,254 @@ export default function CoursesBasis() {
 
   return (
     <div>
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-          Course Course
-        </p>
-      <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
-
-        <section>
-          <div className="space-y-6">
-            <div>
-              <Label htmlFor="thumbnail" className="block mb-2">
-                Thumbnail
-              </Label>
-              <div
-                className={` p-1 w-full max-w-md ${errors.thumbnail ? "border-red-500" : "border-gray-300"
-                  }`}
-              ></div>
-              {errors?.thumbnail && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.thumbnail.message}
-                </p>
-              )}
-
-              <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
-                {thumbnailPreview ? (
-                  <div className="relative">
-                    <img
-                      src={thumbnailPreview || "/placeholder.svg"}
-                      alt="Course thumbnail"
-                      className="w-full h-[300px] object-cover rounded"
-                    />
-                    <div className="absolute bottom-2 right-2 flex space-x-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="bg-white hover:bg-gray-100 text-red-500"
-                        onClick={() => {
-                          setThumbnailPreview(null);
-                          setValue("thumbnail", null); // Reset form value
-                        }}
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                ) : loading ? (
-                  <section className="flex justify-center items-center h-[300px]">
-                    <Loader size={48} className="animate-spin" />
-                  </section>
-                ) : (
-                  <div className="flex items-center justify-center h-[300px]">
-                    <input
-                      type="file"
-                      accept="image/jpeg, image/png"
-                      className="hidden"
-                      id="thumbnailInput"
-                      onChange={handleThumbnailChange}
-                    />
-                    <label htmlFor="thumbnailInput">
-                      <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
-                        <Upload size={16} />
-                        Upload Thumbnail
-                      </div>
-                    </label>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+        Course Course
+      </p>
+      <FormProvider
+        {...{
+          register,
+          handleSubmit,
+          control,
+          setValue,
+          reset,
+          formState: { errors, isSubmitting },
+          watch,
+        }}
+      >
+        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
+          <section>
+            <div className="space-y-6">
               <div>
-                <Label htmlFor="courseTitle" className="block mb-2">
-                  Course Title
+                <Label htmlFor="thumbnail" className="block mb-2">
+                  Thumbnail
                 </Label>
-                <Input
-                  id="courseTitle"
-                  maxLength={50}
-                  className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""
-                    }`}
-                  {...register("courseTitle")}
-                />
-                {errors.courseTitle && (
+                <div
+                  className={` p-1 w-full max-w-md ${
+                    errors.thumbnail ? "border-red-500" : "border-gray-300"
+                  }`}
+                ></div>
+                {errors?.thumbnail && (
                   <p className="text-xs text-red-500 mt-1">
-                    {errors.courseTitle.message}
+                    {errors.thumbnail.message}
+                  </p>
+                )}
+
+                <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
+                  {thumbnailPreview ? (
+                    <div className="relative">
+                      <img
+                        src={thumbnailPreview || "/placeholder.svg"}
+                        alt="Course thumbnail"
+                        className="w-full h-[300px] object-cover rounded"
+                      />
+                      <div className="absolute bottom-2 right-2 flex space-x-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          className="bg-white hover:bg-gray-100 text-red-500"
+                          onClick={() => {
+                            setThumbnailPreview(null);
+                            setValue("thumbnail", null); // Reset form value
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ) : loading ? (
+                    <section className="flex justify-center items-center h-[300px]">
+                      <Loader size={48} className="animate-spin" />
+                    </section>
+                  ) : (
+                    <div className="flex items-center justify-center h-[300px]">
+                      <input
+                        type="file"
+                        accept="image/jpeg, image/png"
+                        className="hidden"
+                        id="thumbnailInput"
+                        onChange={handleThumbnailChange}
+                      />
+                      <label htmlFor="thumbnailInput">
+                        <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
+                          <Upload size={16} />
+                          Upload Thumbnail
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="courseTitle" className="block mb-2">
+                    Course Title
+                  </Label>
+                  <Input
+                    id="courseTitle"
+                    maxLength={50}
+                    className={`bg-gray-50 ${
+                      errors.courseTitle ? "border border-red-500" : ""
+                    }`}
+                    {...register("courseTitle")}
+                  />
+                  {errors.courseTitle && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.courseTitle.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Category */}
+                <CategorySelect
+                  register={register}
+                  errors={errors}
+                  onCategoryChange={(value) => setSelectedCategory(value)}
+                />
+
+                <SubCategorySelect
+                  register={register}
+                  errors={errors}
+                  selectedCategory={selectedCategory}
+                />
+              </div>
+              <div>
+                <DateRangePicker name="courseDate" />
+              </div>
+              <div>
+                <Label htmlFor="language" className="block mb-2">
+                  Language
+                </Label>
+                <Select
+                  onValueChange={(value) => {
+                    console.log(value, "language");
+                    setValue("language", value, { shouldValidate: true });
+                  }}
+                  value={watchedLanguage}
+                  className="max-w-xs"
+                >
+                  <SelectTrigger className="bg-gray-50">
+                    <SelectValue
+                      placeholder="Select language"
+                      defaultValues={"english"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="spanish">Spanish</SelectItem>
+                    <SelectItem value="french">French</SelectItem>
+                    <SelectItem value="german">German</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.language && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.language.message}
                   </p>
                 )}
               </div>
 
-              {/* Category */}
-              <CategorySelect
-                register={register}
-                errors={errors}
-                onCategoryChange={(value) => setSelectedCategory(value)}
-              />
-
-              <SubCategorySelect
-                register={register}
-                errors={errors}
-                selectedCategory={selectedCategory}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="language" className="block mb-2">
-                Language
-              </Label>
-              <Select
-                onValueChange={(value) => {
-                  console.log(value, "language");
-                  setValue("language", value, { shouldValidate: true });
-                }}
-                value={watchedLanguage}
-                className="max-w-xs"
-              >
-                <SelectTrigger className="bg-gray-50">
-                  <SelectValue
-                    placeholder="Select language"
-                    defaultValues={"english"}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="english">English</SelectItem>
-                  <SelectItem value="spanish">Spanish</SelectItem>
-                  <SelectItem value="french">French</SelectItem>
-                  <SelectItem value="german">German</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.language && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.language.message}
-                </p>
-              )}
-            </div>
-
-            <div className="">
-              <Label htmlFor="courseDescription" className="block mb-2">
-                Course Description
-              </Label>
-              <Textarea
-                id="courseDescription"
-                className={`min-h-[100px] bg-gray-50  ${errors.courseDescription ? "border border-red-500" : ""
+              <div className="">
+                <Label htmlFor="courseDescription" className="block mb-2">
+                  Course Description
+                </Label>
+                <Textarea
+                  id="courseDescription"
+                  className={`min-h-[100px] bg-gray-50  ${
+                    errors.courseDescription ? "border border-red-500" : ""
                   }`}
-                maxLength={500}
-                {...register("courseDescription")}
-              />
-              {errors.courseDescription && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.courseDescription.message}
-                </p>
-              )}
+                  maxLength={500}
+                  {...register("courseDescription")}
+                />
+                {errors.courseDescription && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.courseDescription.message}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="mt-10 mb-6">
-            <h2 className="text-xl font-semibold">Make The Course</h2>
-          </div>
-          <section className="my-4">
-            <h3 className="text-lg font-medium mb-4">
-              What you will teach in this course{" "}
-              <span className="text-gray-500 text-xs">(max 6)</span>
-            </h3>
-            {teachingPointsFields.map((field, index) => (
-              <TeachingPointInput
-                key={field.id}
-                field={field}
-                index={index}
-                teachingPointsFields={teachingPointsFields}
-                remove={removeTeachingPoint}
-                error={errors.teachingPoints?.[index]?.value}
-                control={control}
-                register={register}
-              />
-            ))}
-            <div className="flex justify-end">
-              <button
-                type="button"
-                disabled={teachingPointsFields.length >= 6}
-                onClick={() => appendTeachingPoint({ value: "" })}
-                className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 6
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-                  }`}
-              >
-                + Add Teaching Point
-              </button>
+            <div className="mt-10 mb-6">
+              <h2 className="text-xl font-semibold">Make The Course</h2>
             </div>
+            <section className="my-4">
+              <h3 className="text-lg font-medium mb-4">
+                What you will teach in this course{" "}
+                <span className="text-gray-500 text-xs">(max 6)</span>
+              </h3>
+              {teachingPointsFields.map((field, index) => (
+                <TeachingPointInput
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  teachingPointsFields={teachingPointsFields}
+                  remove={removeTeachingPoint}
+                  error={errors.teachingPoints?.[index]?.value}
+                  control={control}
+                  register={register}
+                />
+              ))}
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  disabled={teachingPointsFields.length >= 6}
+                  onClick={() => appendTeachingPoint({ value: "" })}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
+                    teachingPointsFields.length >= 6
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                >
+                  + Add Teaching Point
+                </button>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-medium mb-4">
+                Course Requirements{" "}
+                <span className="text-gray-500 text-xs">(max 6)</span>
+              </h3>
+              {requirementsFields.map((field, index) => (
+                <RequirementInput
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  requirementsFields={requirementsFields}
+                  remove={removeRequirement}
+                  error={errors.requirements?.[index]?.value}
+                  register={register}
+                />
+              ))}
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => appendRequirement({ value: "" })}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
+                    requirementsFields.length >= 6
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  disabled={requirementsFields.length >= 6}
+                >
+                  + Add Requirement
+                </button>
+              </div>
+            </section>
           </section>
 
-          <section>
-            <h3 className="text-lg font-medium mb-4">
-              Course Requirements{" "}
-              <span className="text-gray-500 text-xs">(max 6)</span>
-            </h3>
-            {requirementsFields.map((field, index) => (
-              <RequirementInput
-                key={field.id}
-                field={field}
-                index={index}
-                requirementsFields={requirementsFields}
-                remove={removeRequirement}
-                error={errors.requirements?.[index]?.value}
-                register={register}
-              />
-            ))}
-
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => appendRequirement({ value: "" })}
-                className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 6
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-                  }`}
-                disabled={requirementsFields.length >= 6}
-              >
-                + Add Requirement
-              </button>
-            </div>
-          </section>
-        </section>
-
-        <Button
-          type="submit"
-          className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
-          disabled={loading}
-        >
-          {loading ? "Creating..." : "Create"}
-        </Button>
-
-
-      </form>
+          <div className="flex justify-end mt-25">
+            <Button
+              type="submit"
+              className="bg-green-500 hover:bg-green-600 disabled:opacity-50 "
+              disabled={loading}
+            >
+              {loading ? "Creating..." : "Create Course"}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
     </div>
   );
 }

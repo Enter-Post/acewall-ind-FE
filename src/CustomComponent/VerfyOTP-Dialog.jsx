@@ -78,7 +78,7 @@ const VerifyOTPDialog = ({
           toast.success(res.data.message);
           setOpen(false);
           setLoading(false);
-          navigate("/student/account");
+          navigate(`/${user.role}/account`);
         })
         .catch((err) => {
           console.log(err);

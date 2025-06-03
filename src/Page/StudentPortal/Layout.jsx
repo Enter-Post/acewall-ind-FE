@@ -1,392 +1,248 @@
-"use client";
+import * as React from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { useContext, useEffect, useState } from "react";
+import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
+import acewallshort from "../../assets/acewallshort.png";
+
+import { Menu, MessageCircleDashed, Search } from "lucide-react";
+import { Button } from "../../components/ui/button";
+import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
+import { Input } from "../../components/ui/input";
+
+import { DashboardCircleAddIcon } from "@/assets/Icons/deshboard";
+import { Book02Icon } from "@/assets/Icons/mycoursesIcon";
+import { AssessmentIcon } from "@/assets/Icons/AssignmentIcon";
+import { Megaphone02Icon } from "@/assets/Icons/Announcement";
+import { Target02Icon } from "@/assets/Icons/grades";
+
+import Footer from "@/CustomComponent/Footer";
+import MoreCoursesDropdown from "@/CustomComponent/MoreCoursesDropdown";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useFieldArray, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Pencil } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
-const formSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  middleName: z.string().optional(),
-  lastName: z.string().min(1, "Last name is required"),
-  Bio: z.string().min(1, "write your bio").max(300, "write your bio"),
-  pronouns: z.string().optional(),
-  gender: z.string().optional(),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  homeAddress: z.string().min(1, "Home address is required"),
-  mailingAddress: z.string().optional(),
-  documents: z
-    .array(
-      z
-        .instanceof(File)
-        .refine(
-          (file) => file.type === "application/pdf",
-          "Only PDF files are allowed"
-        )
-    )
-    .max(10, "You can upload up to 10 PDF files")
-    .optional(),
-});
+// Sidebar tabs configuration
+const sideBarTabs = [
+  { id: 1, name: "Dashboard", icon: <DashboardCircleAddIcon />, path: "/student" },
+  { id: 2, name: "My Courses", icon: <Book02Icon />, path: "/student/mycourses" },
+  { id: 3, name: "My Assessment", icon: <AssessmentIcon />, path: "/student/assessment" },
+  { id: 4, name: "Gradebook", icon: <Target02Icon />, path: "/student/gradebook" },
+  { id: 5, name: "Announcements", icon: <Megaphone02Icon />, path: "/student/announcements" },
+  { id: 6, name: "Messages", icon: <MessageCircleDashed />, path: "/student/messages" },
+];
 
-const Account = () => {
-  const { user } = useContext(GlobalContext);
-  console.log(user, "user");
+export default function Layout() {
+  const { user } = React.useContext(GlobalContext);
+  const location = useLocation().pathname;
 
-  const [previewImage, setPreviewImage] = useState(
-    user?.profileImg.url || "/placeholder.svg"
-  );
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [dropdownCourses, setDropdownCourses] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [openDropdown, setOpenDropdown] = React.useState(false);
 
-  console.log(selectedImage, "selectedImg");
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || loading) return;
 
-  // Initialize React Hook Form with Zod resolver
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors },
-    watch
-  } = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      pronouns: "",
-      gender: "",
-      email: "",
-      phone: "",
-      Bio: "",
-      homeAddress: "",
-      mailingAddress: "",
-      documents: [],
-    },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "documents",
-  });
-
-  const documents = watch("documents");
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    // Validate MIME type
-    if (!file.type.startsWith("image/")) {
-      alert("Only image files are allowed.");
-      return;
-    }
-
-    // ✅ Validate file size (limit to 1MB)
-    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSizeInBytes) {
-      alert("Image size must be less than 5MB.");
-      return;
-    }
-
-    setSelectedImage(file);
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPreviewImage(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
-
-
-
-
-  const handleDocumentChange = (e, index) => {
-    const files = Array.from(e.target.files); // Convert FileList to an array
-    setValue(`documents.${index}`, files[0]); // Set the specific file in the documents array
-  };
-
-  // Populate form with user data when available
-  useEffect(() => {
-    setValue("firstName", user.firstName || "");
-    setValue("middleName", user.middleName || "");
-    setValue("lastName", user.lastName || "");
-    setValue("Bio", user.Bio || "");
-    setValue("pronouns", user.pronouns || "");
-    setValue("gender", user.gender || "");
-    setValue("email", user.email || "");
-    setValue("phone", user.phone || "");
-    setValue("homeAddress", user.homeAddress || "");
-    setValue("mailingAddress", user.mailingAddress || "");
-  }, [user, setValue]);
-
-  // Form submission handler
-  const onSubmit = async (data) => {
-    console.log(data, "data");
-
-    const formData = new FormData();
-    formData.append("firstName", data.firstName);
-    formData.append("middleName", data.middleName);
-    formData.append("lastName", data.lastName);
-    formData.append("Bio", data.Bio);
-    formData.append("pronouns", data.pronouns);
-    formData.append("gender", data.gender);
-    formData.append("email", data.email);
-    formData.append("phone", data.phone);
-    formData.append("homeAddress", data.homeAddress);
-    formData.append("mailingAddress", data.mailingAddress);
-
-    if (selectedImage) {
-      formData.append("profileImg.url", selectedImage);
-    }
-
-    if (data.documents && data.documents.length > 0) {
-      data.documents.forEach((file) => {
-        formData.append("documents", file);
-      });
-    }
+    setLoading(true);
+    setOpenDropdown(false);
 
     try {
-      const response = await axiosInstance.put(`/auth/updateuser`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await axiosInstance.get("/enrollment/studentCourses", {
+        params: { search: searchQuery },
       });
-      console.log("Server response:", response.data);
 
-      // ✅ Refresh the page after successful update
-      window.location.reload();
+      // Use enrolledCourses array from response
+      setDropdownCourses(res.data.enrolledCourses || []);
+      console.log("res", res);
+
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      console.error("Search error:", error);
+      setDropdownCourses([]);
+    } finally {
+      setLoading(false);
+      setOpenDropdown(true);
     }
   };
 
 
   return (
-    <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
-      {/* Page Title */}
-      <div>
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-          Account Settings
-        </p>
+    <div className="flex flex-col">
+      {/* Top header */}
+      <header className="sticky top-0 z-10 bg-white">
+        <div className="h-8 bg-green-600 flex justify-end items-center px-5">
+          <TopNavbarDropDown />
+        </div>
+
+        <div className="flex h-16 items-center justify-between px-4 border">
+          {/* Sidebar toggle (mobile) */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle Sidebar</span>
+          </Button>
+
+          {/* Logos */}
+          <Link className="block md:hidden" to="/student">
+            <img src={acewallshort} alt="Mobile Logo" className="w-8 h-auto rounded-full" />
+          </Link>
+          <Link className="hidden md:block" to="/student">
+            <img src={acewallscholarslogo} alt="Desktop Logo" className="w-40 h-auto" />
+          </Link>
+
+          {/* Navigation links */}
+          <div className="flex gap-6 items-center">
+            <MoreCoursesDropdown />
+            <Link to="/student/support" className="text-sm font-medium text-gray-700">
+              SUPPORT
+            </Link>
+            <Link to="/student/ContactUs" className="text-sm font-medium text-gray-700">
+              CONTACT US
+            </Link>
+          </div>
+
+          {/* Search bar (desktop only) */}
+          <div className="relative w-64 hidden md:flex flex-col">
+            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
+              <DropdownMenuTrigger asChild>
+                <div className="relative flex gap-2 w-full">
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    placeholder="Search courses and lessons"
+                    className="w-full pr-10"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2"
+                  >
+                    <Search className="w-5 h-5" />
+                  </button>
+                </div>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="bg-white border mt-2 max-h-60 overflow-y-auto z-50 w-64">
+                {loading ? (
+                  <DropdownMenuItem disabled>
+                    <span className="text-sm text-gray-700">Searching...</span>
+                  </DropdownMenuItem>
+                ) : dropdownCourses.length > 0 ? (
+                  dropdownCourses.map((enrollment) => (
+                    <DropdownMenuItem
+                      key={enrollment._id}
+                      asChild
+                      onSelect={(e) => {
+                        e.preventDefault(); // prevent dropdown closing from being interrupted
+                      }}
+                    >
+                      <Link
+                        to={`/student/mycourses/${enrollment.course._id}`}
+                        className="w-full text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 block"
+                        onClick={() => setOpenDropdown(false)}
+                      >
+                        {enrollment.course.courseTitle || "Untitled Course"}
+                      </Link>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem disabled>
+                    <span className="text-sm text-gray-500">No results found</span>
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+
+            </DropdownMenu>
+          </div>
+
+        </div>
+      </header>
+
+      {/* Sidebar + Main Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"} w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+        >
+          <div className="p-4">
+            {/* User Info */}
+            <div className="flex items-center space-x-3 pb-4">
+              <Link to="/student/account" className="block">
+                <div className="h-12 w-12 rounded-full overflow-hidden">
+                  <img
+                    src={user.profileImg}
+                    alt={user.firstName}
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                </div>
+              </Link>
+              <div>
+                <p className="font-medium">{user.firstName}</p>
+                <p className="text-sm text-gray-600">{user.email}</p>
+              </div>
+            </div>
+
+            {/* Mobile search */}
+            <div className="flex md:hidden items-center space-x-4 mb-5">
+              <Input
+                type="text"
+                placeholder="Search"
+                className="flex-grow"
+              />
+              <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
+                <Search className="rounded-full" />
+              </div>
+            </div>
+
+            {/* Sidebar navigation */}
+            <nav className="space-y-2">
+              {sideBarTabs.map((tab) => (
+                <Link
+                  key={tab.id}
+                  to={tab.path}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
+                    }`}
+                >
+                  <p>{tab.icon}</p>
+                  <span className={`${location === tab.path ? "text-white" : "text-green-600"}`}>
+                    {tab.name}
+                  </span>
+                </Link>
+              ))}
+            </nav>
+
+            {/* Promo image */}
+            <div className="flex flex-col items-center justify-between mt-10 w-full">
+              <img src={acewallshort} alt="Acewall" className="w-1/2" />
+              <Link
+                to="https://www.acewallscholars.org/contact-Us"
+                className="text-center font-semibold text-sm mt-4 text-acewall-main"
+              >
+                Need Tutoring? Contact us
+              </Link>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Outlet */}
+        <main className="flex-1 p-2 md:p-4">
+          <Outlet />
+        </main>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        <section className="space-y-6">
-          <h3 className="text-lg font-semibold">Profile Image</h3>
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-full">
-            <img
-              src={previewImage}
-              alt="Profile Preview"
-              className="w-32 h-32 md:w-36 md:h-36 lg:w-42 lg:h-42 rounded-full object-cover"
-            />
-            <div className="text-center md:text-right"> {/* Center text on smaller screens */}
-              <Label htmlFor="profileImg" className="block">
-                Upload New Image
-              </Label>
-              <Input
-                id="profileImg.url"
-                type="file"
-                accept="image/*"
-                className="mt-2"
-                onChange={(e) => handleImageChange(e)}
-              />
-            </div>
-          </div>
-        </section>
-
-        <div className="space-y-8">
-          {/* Personal Information */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Personal Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {[
-                { id: "firstName", label: "First Name", error: errors.firstName },
-                { id: "middleName", label: "Middle Name" },
-                { id: "lastName", label: "Last Name", error: errors.lastName },
-              ].map(({ id, label, error }) => (
-                <div key={id} className="space-y-2 sm:col-span-2 lg:col-span-1">
-                  <Label htmlFor={id} className="text-sm font-medium">
-                    {label}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id={id}
-                      placeholder={`Enter your ${label.toLowerCase()}`}
-                      className="pl-10"
-                      {...register(id)}
-                    />
-                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                  {error && (
-                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-          {/* Bio Field */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Bio</h3>
-            <div className="space-y-2">
-              <Label htmlFor="Bio" className="text-sm font-medium">
-                Tell us about yourself
-              </Label>
-              <div className="relative">
-                <Textarea
-                  id="Bio"
-                  rows={5}
-                  placeholder="Write a short Bio..."
-                  maxLength={500}
-                  className="pl-10 pt-2"
-                  {...register("Bio")}
-                />
-                <Pencil className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>{watch("Bio")?.length || 0}/500 characters</span>
-                {errors.Bio && (
-                  <span className="text-red-500">{errors.Bio.message}</span>
-                )}
-              </div>
-            </div>
-          </section>
-
-          {/* Pronouns & Gender Selection */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Identity Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {/* Pronouns */}
-              <div className="space-y-2">
-                <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Preferred Pronouns
-                </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others"].map((pronouns) => (
-                    <div key={pronouns} className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id={`pronouns-${pronouns.toLowerCase()}`}
-                        value={pronouns.toLowerCase()}
-                        {...register("pronouns")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <label
-                        htmlFor={`pronouns-${pronouns.toLowerCase()}`}
-                        className="text-sm text-gray-900 dark:text-white"
-                      >
-                        {pronouns}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Gender */}
-              <div className="space-y-2">
-                <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Gender Identity
-                </Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {["Male", "Female", "Non-binary", "Other"].map((gender) => (
-                    <div key={gender} className="flex items-center space-x-2">
-                      <input
-                        type="radio"
-                        id={`gender-${gender.toLowerCase()}`}
-                        value={gender.toLowerCase()}
-                        {...register("gender")}
-                        className="w-4 h-4 accent-blue-600"
-                      />
-                      <label
-                        htmlFor={`gender-${gender.toLowerCase()}`}
-                        className="text-sm text-gray-900 dark:text-white"
-                      >
-                        {gender}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Contact Information */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Contact Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {[
-                { id: "email", label: "Email Address", type: "email", error: errors.email },
-                { id: "phone", label: "Phone Number", type: "tel", error: errors.phone },
-              ].map(({ id, label, type, error }) => (
-                <div key={id} className="space-y-2">
-                  <Label htmlFor={id} className="text-sm font-medium">
-                    {label}
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      id={id}
-                      type={type}
-                      placeholder={`Enter your ${label.toLowerCase()}`}
-                      className="pl-10"
-                      {...register(id)}
-                    />
-                    <Pencil className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />              </div>
-                  {error && (
-                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                  )}
-                </div>))}
-            </div>
-          </section>
-
-          {/* Address Information */}
-          <section className="space-y-6">
-            <h3 className="text-lg font-semibold">Address Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {[
-                { id: "homeAddress", label: "Home Address", error: errors.homeAddress },
-                { id: "mailingAddress", label: "Mailing Address (Optional)" },
-              ].map(({ id, label, error }) => (
-                <div key={id} className="space-y-2">
-                  <Label htmlFor={id} className="text-sm font-medium">
-                    {label}
-                  </Label>
-                  <div className="relative">
-                    <Textarea
-                      id={id}
-                      placeholder={`Enter your ${label.toLowerCase()}`}
-                      className="pl-10 pt-2"
-                      {...register(id)}
-                    />
-                    <Pencil className="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" />
-                  </div>
-                  {error && (
-                    <p className="text-red-500 text-xs mt-1">{error.message}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Save Button */}
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              className="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5"
-            >
-              Save Changes
-            </Button>
-          </div>
-        </div>
-      </form>
+      {/* Footer */}
+      <Footer />
     </div>
   );
-};
-
-export default Account;
+}
