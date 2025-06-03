@@ -13,15 +13,14 @@ const VerifyOTP = () => {
   const { email } = useParams();
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
-  const { setUser } = useContext(GlobalContext);
-  const navigate = useNavigate()
+  const { setUser, checkAuth } = useContext(GlobalContext);
+  const navigate = useNavigate();
 
   const handleChange = (index, value) => {
     if (/^\d?$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-
       // Move focus
       if (value && index < 5) {
         inputsRef.current[index + 1]?.focus();
@@ -50,6 +49,7 @@ const VerifyOTP = () => {
           setUser(res.data.user);
           setLoading(false);
           toast.success(res.data.message);
+          checkAuth();
         })
         .catch((err) => {
           console.log(err);

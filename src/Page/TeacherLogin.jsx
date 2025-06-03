@@ -8,14 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { Eye, EyeClosed } from "lucide-react";
 
-
 const schema = z.object({
   email: z.string().email(),
-  password: z.string()
+  password: z.string(),
 });
 
 const TeacherLogin = () => {
-  const { login } = useContext(GlobalContext);
+  const { login, checkAuth } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +24,6 @@ const TeacherLogin = () => {
   const schema = z.object({
     email: z.string().min(1).email(),
     password: z.string().min(8),
-
   });
 
   const {
@@ -43,6 +41,7 @@ const TeacherLogin = () => {
       setLoginError(""); // clear previous errors
       // Optionally navigate somewhere on successful login
       // navigate("/student/dashboard");
+      checkAuth();
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
@@ -155,7 +154,6 @@ const TeacherLogin = () => {
                     </Link>
                   </div>
                 </div>
-
               </form>
             </div>
 
@@ -170,7 +168,12 @@ const TeacherLogin = () => {
                 Teachers Love Acewall Scholars
               </h2>
               <blockquote className="text-gray-600 mb-4 text-center md:text-left">
-                <span >"This is one of the best Learning Management Platforms. Their support team is top-notch. The platform also supports various integrations as resources for classroom setup. I really enjoy making residual income from the classes I create."</span>
+                <span>
+                  "This is one of the best Learning Management Platforms. Their
+                  support team is top-notch. The platform also supports various
+                  integrations as resources for classroom setup. I really enjoy
+                  making residual income from the classes I create."
+                </span>
               </blockquote>
               <div className="text-center md:text-left">
                 <p className="font-medium text-gray-800">-Regina</p>

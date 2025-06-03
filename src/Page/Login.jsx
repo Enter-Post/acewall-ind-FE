@@ -11,7 +11,7 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 import { Eye, EyeClosed, EyeOff } from "lucide-react";
 
 const Login = () => {
-  const { login } = useContext(GlobalContext);
+  const { login, checkAuth } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +35,7 @@ const Login = () => {
       await login(formData);
       setLoginError(""); // clear previous errors
       // Optionally navigate somewhere on successful login
-      // navigate("/student/dashboard");
+      checkAuth();
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
