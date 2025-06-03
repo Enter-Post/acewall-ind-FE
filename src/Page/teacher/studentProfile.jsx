@@ -32,7 +32,7 @@ export default function StudentProfile() {
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
         <Avatar className="w-24 h-24 rounded-full overflow-hidden ring-3 ring-gray-500 shadow-sm">
           <AvatarImage
-            src={student?.profileImg.url}
+            src={student?.profileImg?.url || "/placeholder.svg"}
             alt={student?.firstName}
             className="w-full h-full object-cover"
           />

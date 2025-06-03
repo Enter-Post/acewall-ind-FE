@@ -283,7 +283,7 @@ const StudentCard = ({ student }) => (
       <div className="relative">
         <Avatar className="w-24 h-24 ring-3 ring-gray-500 shadow-sm">
           <AvatarImage
-            src={student.profileImg.url}
+            src={student.profileImg?.url || "/placeholder.svg"}
             alt={student.name}
             className="rounded-full object-cover"
           />
@@ -303,7 +303,6 @@ const StudentCard = ({ student }) => (
         <span className="text-right text-gray-700 font-medium">
           {new Date(student.createdAt).toLocaleDateString()}
         </span>
-       
       </div>
 
       {/* Optional CTA */}
@@ -397,9 +396,7 @@ const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
       </CardHeader>
       <CardContent className="flex flex-col flex-1">
         <div className="flex flex-col flex-1 gap-6">
-          <p className="text-muted-foreground  text-xs ">
-            {description}
-          </p>
+          <p className="text-muted-foreground  text-xs ">{description}</p>
           <a
             href={buttonUrl}
             className="inline-flex items-center justify-center w-full px-3 py-2 mt-auto text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
@@ -446,7 +443,6 @@ function StudentProfileCourseCard({ course }) {
         {/* <p className="text-white text-sm mt-1">{course?.description}</p> */}
       </div>
     </Card>
-
   );
 }
 

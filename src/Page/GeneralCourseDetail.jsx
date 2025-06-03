@@ -72,7 +72,7 @@ const GeneralCourseDetail = () => {
                       <Avatar className="h-10 w-10">
                         <AvatarImage
                           className=" rounded-full"
-                          src={courseDetails.createdby.profileImg.url}
+                          src={courseDetails.createdby.profileImg.url || "/placeholder.svg"}
                           alt="Instructor"
                         />
                         <AvatarFallback>IN</AvatarFallback>
@@ -267,7 +267,7 @@ const GeneralCourseDetail = () => {
                       <div className="flex items-start gap-4">
                         <Avatar className="h-20 w-20 shadow-md ring-green-500 ring-3 rounded-full">
                           <AvatarImage
-                            src={courseDetails.createdby.profileImg.url}
+                            src={courseDetails.createdby.profileImg.url || "/placeholder.svg"}
                             alt="Instructor"
                             className="object-cover rounded-full"
                           />

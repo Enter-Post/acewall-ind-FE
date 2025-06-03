@@ -180,7 +180,7 @@ export default function Layout() {
               <Link to="/student/account" className="block">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
                   <img
-                    src={user.profileImg.url}
+                    src={user.profileImg.url || "/placeholder.svg"}
                     alt={user.firstName}
                     className="h-full w-full object-cover rounded-full"
                   />

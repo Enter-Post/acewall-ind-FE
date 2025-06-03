@@ -4,7 +4,12 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { Loader } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const AllSubmission = () => {
   const [submission, setSubmission] = useState(null);
@@ -38,8 +43,7 @@ const AllSubmission = () => {
   }
 
   const filteredSubmissions = submission.filter((item) => {
-    const matchStatus =
-      statusFilter === "all" || item.status === statusFilter;
+    const matchStatus = statusFilter === "all" || item.status === statusFilter;
     const matchGraded =
       gradedFilter === "all" ||
       (gradedFilter === "graded" && item.graded) ||
@@ -77,7 +81,9 @@ const AllSubmission = () => {
             </SelectContent>
           </Select>
         </div>
-        <h1 className="text-2xl font-bold text-gray-800">No submissions found</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          No submissions found
+        </h1>
       </div>
     );
   }
@@ -125,7 +131,7 @@ const AllSubmission = () => {
               <div className="flex items-center gap-4">
                 <Avatar>
                   <AvatarImage
-                    src={item?.studentId?.profileImg.url}
+                    src={item?.studentId?.profileImg?.url || "/placeholder.svg"}
                     alt="Profile Picture"
                   />
                   <AvatarFallback>

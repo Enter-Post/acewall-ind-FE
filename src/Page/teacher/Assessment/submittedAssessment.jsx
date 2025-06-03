@@ -97,7 +97,7 @@ const AssessmentReview = () => {
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12 rounded-full overflow-hidden">
                 <AvatarImage
-                  src={submission?.studentId?.profileImg.url || "/placeholder.svg"}
+                  src={submission?.studentId?.profileImg?.url || "/placeholder.svg"}
                   alt={`${submission?.studentId?.firstName} ${submission?.studentId?.lastName}`}
                   className="object-cover"
                 />

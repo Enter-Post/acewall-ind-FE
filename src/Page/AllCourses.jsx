@@ -126,7 +126,7 @@ const AllCourses = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <img
-                        src={course.createdby?.profileImg}
+                        src={course.createdby?.profileImg?.url || "/placeholder.svg"}
                         className="w-5 h-5 rounded-full"
                         alt=""
                       />
