@@ -27,7 +27,7 @@ const AssessmentSubmissionPage = () => {
   const [submitted, setSubmitted] = useState(false)
   const [result, setResult] = useState(null)
   const [submitting, setSubmitting] = useState(false)
-  const navigate= useNavigate()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchAssessment = async () => {
@@ -80,16 +80,26 @@ const AssessmentSubmissionPage = () => {
     try {
       const res = await axiosInstance.post(`/assessmentSubmission/submission/${assessment._id}`, answers)
 
-      // Immediately set the result and submitted state
-      setResult(res.data)
+      // Check if the submission was auto-graded
+      const submission = res.data.submission
+      const isGraded = submission.graded
+
       setSubmitted(true)
-      toast.success(res.data.message || "Assessment submitted successfully")
+      setResult(submission)
+
+      if (isGraded) {
+        toast.success("Assessment graded and submitted successfully!")
+      } else {
+        toast.success("Submission recorded. Awaiting manual review.")
+      }
+
       navigate(`/student/assessment`)
     } catch (err) {
       toast.error(err.response?.data?.message || "Submission failed")
-      setSubmitting(false) // Only reset submitting on error
+      setSubmitting(false)
     }
-  }
+  } 
+
 
   // Show loading state
   if (loading) {

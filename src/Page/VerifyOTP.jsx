@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Key, Loader } from "lucide-react";
 import { toast } from "sonner";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
 const VerifyOTP = () => {
@@ -14,6 +14,7 @@ const VerifyOTP = () => {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const { setUser } = useContext(GlobalContext);
+  const navigate = useNavigate()
 
   const handleChange = (index, value) => {
     if (/^\d?$/.test(value)) {

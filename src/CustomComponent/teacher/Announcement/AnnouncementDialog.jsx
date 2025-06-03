@@ -27,7 +27,7 @@ import * as z from "zod";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
-// ✅ Zod Schema with limits
+// ✅ Zod Schema for validation
 const AnnouncementSchema = z.object({
   title: z.string().min(1, "Title is required").max(100, "Title cannot exceed 100 characters"),
   courseId: z.string().min(1, "Course is required"),
@@ -47,7 +47,6 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
     formState: { errors, isSubmitting },
     reset,
     setValue,
-    watch,
   } = useForm({
     resolver: zodResolver(AnnouncementSchema),
     defaultValues: {
@@ -86,6 +85,9 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
         "/announcements/createannouncement",
         payload
       );
+
+      alert("✅ Announcement created and email sent to enrolled students.");
+
       if (onCreated) onCreated(res.data.announcement);
 
       onOpenChange(false);
@@ -94,6 +96,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
       setMessageCharCount(0);
     } catch (err) {
       console.error("Error creating announcement:", err);
+      alert("❌ Failed to create announcement. Please try again.");
     }
   };
 
@@ -132,7 +135,9 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
           <div>
             <Label htmlFor="course">Select Course</Label>
             <Select
-              onValueChange={(value) => setValue("courseId", value, { shouldValidate: true })}
+              onValueChange={(value) =>
+                setValue("courseId", value, { shouldValidate: true })
+              }
               disabled={loading}
             >
               <SelectTrigger>
