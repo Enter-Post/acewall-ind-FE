@@ -8,6 +8,7 @@ import { useContext, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import avatar from "@/assets/avatar.png";
 
 const AllCourses = () => {
   const [allCourses, setAllCourses] = useState([]);
@@ -126,7 +127,7 @@ const AllCourses = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <img
-                        src={course.createdby?.profileImg?.url || "/placeholder.svg"}
+                        src={course.createdby?.profileImg?.url || avatar}
                         className="w-5 h-5 rounded-full"
                         alt=""
                       />

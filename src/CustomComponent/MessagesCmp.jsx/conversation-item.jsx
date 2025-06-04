@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import avatar from "../../assets/avatar.png"
 
 export default function ConversationItem({ conversation, isActive, onClick }) {
   // const { name, avatar, message, time, unread, online } = conversation
@@ -15,7 +16,7 @@ export default function ConversationItem({ conversation, isActive, onClick }) {
       >
       <Avatar className="h-16 w-16 flex items-center justify-center rounded-full border-2 border-green-200">
         <AvatarImage
-          src={conversation.otherMember.profileImg?.url || "/placeholder.svg"}
+          src={conversation.otherMember.profileImg?.url || avatar}
           alt={conversation.otherMember.name}
           className="w-full h-full bg-cover rounded-full"
         />

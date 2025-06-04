@@ -7,6 +7,7 @@ import { CheckCircle2, ChevronDown, Loader, PlayCircle, Star, StarHalf } from "l
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import avatar from "@/assets/avatar.png";
 
 
 const GeneralCourseDetail = () => {
@@ -72,7 +73,7 @@ const GeneralCourseDetail = () => {
                       <Avatar className="h-10 w-10">
                         <AvatarImage
                           className=" rounded-full"
-                          src={courseDetails.createdby.profileImg.url || "/placeholder.svg"}
+                          src={courseDetails.createdby.profileImg.url || avatar}
                           alt="Instructor"
                         />
                         <AvatarFallback>IN</AvatarFallback>
@@ -267,7 +268,7 @@ const GeneralCourseDetail = () => {
                       <div className="flex items-start gap-4">
                         <Avatar className="h-20 w-20 shadow-md ring-green-500 ring-3 rounded-full">
                           <AvatarImage
-                            src={courseDetails.createdby.profileImg.url || "/placeholder.svg"}
+                            src={courseDetails.createdby.profileImg.url || avatar}
                             alt="Instructor"
                             className="object-cover rounded-full"
                           />

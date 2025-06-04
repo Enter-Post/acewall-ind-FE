@@ -7,6 +7,7 @@ import MessageList from "./messages-list";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useParams } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import avatar from "../../assets/avatar.png";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState([]);
@@ -72,7 +73,7 @@ export default function ChatWindow() {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={currentConversation?.otherMember.profileImg?.url || "/placeholder.svg"} />
+            <AvatarImage src={currentConversation?.otherMember.profileImg?.url || avatar} />
             <AvatarFallback>{currentConversation?.otherMember.name}</AvatarFallback>
           </Avatar>
           <div>

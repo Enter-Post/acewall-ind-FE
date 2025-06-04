@@ -11,6 +11,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Pencil } from "lucide-react";
+import avatar from "@/assets/avatar.png";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -41,7 +42,7 @@ const Account = () => {
   console.log(user, "user");
 
   const [previewImage, setPreviewImage] = useState(
-    user?.profileImg.url || "/placeholder.svg"
+    user?.profileImg.url || avatar
   );
   const [selectedImage, setSelectedImage] = useState(null);
 

@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 
 import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
 import acewallshort from "../../assets/acewallshort.png";
+import avatar from "../../assets/avatar.png";
 
 import { Menu, MessageCircleDashed, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -28,12 +29,42 @@ import {
 
 // Sidebar tabs configuration
 const sideBarTabs = [
-  { id: 1, name: "Dashboard", icon: <DashboardCircleAddIcon />, path: "/student" },
-  { id: 2, name: "My Courses", icon: <Book02Icon />, path: "/student/mycourses" },
-  { id: 3, name: "My Assessment", icon: <AssessmentIcon />, path: "/student/assessment" },
-  { id: 4, name: "Gradebook", icon: <Target02Icon />, path: "/student/gradebook" },
-  { id: 5, name: "Announcements", icon: <Megaphone02Icon />, path: "/student/announcements" },
-  { id: 6, name: "Messages", icon: <MessageCircleDashed />, path: "/student/messages" },
+  {
+    id: 1,
+    name: "Dashboard",
+    icon: <DashboardCircleAddIcon />,
+    path: "/student",
+  },
+  {
+    id: 2,
+    name: "My Courses",
+    icon: <Book02Icon />,
+    path: "/student/mycourses",
+  },
+  {
+    id: 3,
+    name: "My Assessment",
+    icon: <AssessmentIcon />,
+    path: "/student/assessment",
+  },
+  {
+    id: 4,
+    name: "Gradebook",
+    icon: <Target02Icon />,
+    path: "/student/gradebook",
+  },
+  {
+    id: 5,
+    name: "Announcements",
+    icon: <Megaphone02Icon />,
+    path: "/student/announcements",
+  },
+  {
+    id: 6,
+    name: "Messages",
+    icon: <MessageCircleDashed />,
+    path: "/student/messages",
+  },
 ];
 
 export default function Layout() {
@@ -60,7 +91,6 @@ export default function Layout() {
       // Use enrolledCourses array from response
       setDropdownCourses(res.data.enrolledCourses || []);
       console.log("res", res);
-
     } catch (error) {
       console.error("Search error:", error);
       setDropdownCourses([]);
@@ -69,7 +99,6 @@ export default function Layout() {
       setOpenDropdown(true);
     }
   };
-
 
   return (
     <div className="flex flex-col">
@@ -93,26 +122,44 @@ export default function Layout() {
 
           {/* Logos */}
           <Link className="block md:hidden" to="/student">
-            <img src={acewallshort} alt="Mobile Logo" className="w-8 h-auto rounded-full" />
+            <img
+              src={acewallshort}
+              alt="Mobile Logo"
+              className="w-8 h-auto rounded-full"
+            />
           </Link>
           <Link className="hidden md:block" to="/student">
-            <img src={acewallscholarslogo} alt="Desktop Logo" className="w-40 h-auto" />
+            <img
+              src={acewallscholarslogo}
+              alt="Desktop Logo"
+              className="w-40 h-auto"
+            />
           </Link>
 
           {/* Navigation links */}
           <div className="flex gap-6 items-center">
             <MoreCoursesDropdown />
-            <Link to="/student/support" className="text-sm font-medium text-gray-700">
+            <Link
+              to="/student/support"
+              className="text-sm font-medium text-gray-700"
+            >
               SUPPORT
             </Link>
-            <Link to="/student/ContactUs" className="text-sm font-medium text-gray-700">
+            <Link
+              to="/student/ContactUs"
+              className="text-sm font-medium text-gray-700"
+            >
               CONTACT US
             </Link>
           </div>
 
           {/* Search bar (desktop only) */}
           <div className="relative w-64 hidden md:flex flex-col">
-            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
+            <DropdownMenu
+              open={openDropdown}
+              onOpenChange={setOpenDropdown}
+              modal={false}
+            >
               <DropdownMenuTrigger asChild>
                 <div className="relative flex gap-2 w-full">
                   <Input
@@ -157,14 +204,14 @@ export default function Layout() {
                   ))
                 ) : (
                   <DropdownMenuItem disabled>
-                    <span className="text-sm text-gray-500">No results found</span>
+                    <span className="text-sm text-gray-500">
+                      No results found
+                    </span>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
-
             </DropdownMenu>
           </div>
-
         </div>
       </header>
 
@@ -172,7 +219,9 @@ export default function Layout() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`bg-white ${isSidebarOpen ? "block" : "hidden"} w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             {/* User Info */}
@@ -180,7 +229,7 @@ export default function Layout() {
               <Link to="/student/account" className="block">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
                   <img
-                    src={user.profileImg.url || "/placeholder.svg"}
+                    src={user?.profileImg?.url || avatar}
                     alt={user.firstName}
                     className="h-full w-full object-cover rounded-full"
                   />
@@ -194,11 +243,7 @@ export default function Layout() {
 
             {/* Mobile search */}
             <div className="flex md:hidden items-center space-x-4 mb-5">
-              <Input
-                type="text"
-                placeholder="Search"
-                className="flex-grow"
-              />
+              <Input type="text" placeholder="Search" className="flex-grow" />
               <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
                 <Search className="rounded-full" />
               </div>
@@ -211,11 +256,16 @@ export default function Layout() {
                   key={tab.id}
                   to={tab.path}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
-                    }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                    location === tab.path ? "bg-green-500" : "text-black"
+                  }`}
                 >
                   <p>{tab.icon}</p>
-                  <span className={`${location === tab.path ? "text-white" : "text-green-600"}`}>
+                  <span
+                    className={`${
+                      location === tab.path ? "text-white" : "text-green-600"
+                    }`}
+                  >
                     {tab.name}
                   </span>
                 </Link>

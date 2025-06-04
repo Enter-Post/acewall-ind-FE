@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle, XCircle, AlertCircle, Loader } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useParams } from "react-router-dom";
+import avatar from "@/assets/avatar.png";
 
 const AssessmentReview = () => {
   const { id } = useParams();
@@ -97,7 +98,7 @@ const AssessmentReview = () => {
             <div className="flex items-center space-x-4">
               <Avatar className="h-12 w-12 rounded-full overflow-hidden">
                 <AvatarImage
-                  src={submission?.studentId?.profileImg?.url || "/placeholder.svg"}
+                  src={submission?.studentId?.profileImg?.url || avatar}
                   alt={`${submission?.studentId?.firstName} ${submission?.studentId?.lastName}`}
                   className="object-cover"
                 />
@@ -163,7 +164,7 @@ const AssessmentReview = () => {
               </TabsTrigger>
               <TabsTrigger value="manual">
                 Needs Grading (
-                {
+                { 
                   submission?.answers?.filter((a) => a.requiresManualCheck).length
                 }
                 )

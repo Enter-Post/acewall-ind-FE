@@ -5,6 +5,7 @@ import {
   StudentProfileStatCard,
 } from "@/CustomComponent/Card";
 import { Mail, Calendar, School } from "lucide-react";
+import avatar from "@/assets/avatar.png";
 
 export default function StudentProfile() {
   const { state } = useLocation();
@@ -32,7 +33,7 @@ export default function StudentProfile() {
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
         <Avatar className="w-24 h-24 rounded-full overflow-hidden ring-3 ring-gray-500 shadow-sm">
           <AvatarImage
-            src={student?.profileImg?.url || "/placeholder.svg"}
+            src={student?.profileImg?.url || avatar}
             alt={student?.firstName}
             className="w-full h-full object-cover"
           />

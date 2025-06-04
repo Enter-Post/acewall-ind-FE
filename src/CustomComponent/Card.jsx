@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import avatar from "../assets/avatar.png";
 
 function DeshboardAnnouncementCard({ mainHeading, data, link, height }) {
   console.log(data, "data");
@@ -283,7 +284,7 @@ const StudentCard = ({ student }) => (
       <div className="relative">
         <Avatar className="w-24 h-24 ring-3 ring-gray-500 shadow-sm">
           <AvatarImage
-            src={student.profileImg?.url || "/placeholder.svg"}
+            src={student.profileImg?.url || avatar}
             alt={student.name}
             className="rounded-full object-cover"
           />

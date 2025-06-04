@@ -5,6 +5,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { Send } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
+import avatar from "../../assets/avatar.png";
 
 const CommentSection = ({ id }) => {
   const [comment, setComment] = useState("");
@@ -86,7 +87,7 @@ const CommentSection = ({ id }) => {
               <div className="flex items-start gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage
-                    src={comment?.createdby?.profileImg?.url || "/placeholder.svg"}
+                    src={comment?.createdby?.profileImg?.url || avatar}
                     alt={comment?.createdby?.firstName}
                   />
                   <AvatarFallback>
