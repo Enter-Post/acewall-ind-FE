@@ -71,8 +71,8 @@ const AllSubmission = () => {
               {gradedFilter === "all"
                 ? "All Grading"
                 : gradedFilter === "graded"
-                ? "Graded"
-                : "Not Graded"}
+                  ? "Graded"
+                  : "Not Graded"}
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Grading</SelectItem>
@@ -108,8 +108,8 @@ const AllSubmission = () => {
             {gradedFilter === "all"
               ? "All Grading"
               : gradedFilter === "graded"
-              ? "Graded"
-              : "Not Graded"}
+                ? "Graded"
+                : "Not Graded"}
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Grading</SelectItem>
@@ -152,11 +152,10 @@ const AllSubmission = () => {
                 <p>
                   <span className="text-sm">Status:</span>
                   <p
-                    className={`${
-                      item?.status === "before due date"
+                    className={`${item?.status === "before due date"
                         ? "text-green-500"
                         : "text-red-500"
-                    } text-sm font-medium`}
+                      } text-sm font-medium`}
                   >
                     {item?.status}
                   </p>
@@ -164,9 +163,8 @@ const AllSubmission = () => {
                 <p>
                   <span className="text-sm">Grading:</span>{" "}
                   <p
-                    className={`${
-                      item?.graded ? "text-green-600" : "text-yellow-500"
-                    } text-sm font-medium`}
+                    className={`${item?.graded ? "text-green-600" : "text-yellow-500"
+                      } text-sm font-medium`}
                   >
                     {item?.graded ? "Graded" : "Not Graded"}
                   </p>

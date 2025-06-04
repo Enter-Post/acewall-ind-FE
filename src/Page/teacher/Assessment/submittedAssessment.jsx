@@ -70,16 +70,26 @@ const AssessmentReview = () => {
 
   const handleSubmitGrades = async () => {
     setLoading(true);
-    await axiosInstance
-      .put(`/assessmentSubmission/teacherGrading/${id}`, manualGrades)
-      .then((response) => {
-        console.log(response);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error submitting grades:", error);
-        setLoading(false);
-      });
+    try {
+      const response = await axiosInstance.put(
+        `/assessmentSubmission/teacherGrading/${id}`,
+        manualGrades
+      );
+      console.log(response.data);
+
+      // Optional: Notify teacher grading and email status
+      toast.success("Grades submitted and student notified via email.");
+
+      // Optional: reset UI state
+      setManualGrades({});
+      setError({});
+      setSubmission(response.data.submission); // refresh submission with graded=true
+    } catch (error) {
+      console.error("Error submitting grades:", error);
+      toast.error("Failed to submit grades.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatDate = (dateString) => {
