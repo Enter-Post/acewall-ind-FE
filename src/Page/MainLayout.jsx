@@ -1,5 +1,5 @@
 import { useNavigate, Link, Outlet } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Button } from "@/components/ui/button";
 
 import acewallscholarslogo from "../assets/acewallscholarslogo.webp";
@@ -8,6 +8,7 @@ import acewallshort from "../assets/acewallshort.png";
 import Footer from "@/CustomComponent/Footer";
 import ScrollToTop from "@/lib/scrolltop";
 import { GlobalContext } from "@/Context/GlobalProvider";
+  
 const MainLayout = () => {
   const navigate = useNavigate();
   const { user } = useContext(GlobalContext);
@@ -41,9 +42,12 @@ const MainLayout = () => {
             </Link>
 
             <div className="hidden md:flex items-center space-x-4">
-              <Button onClick={handleGoToAccount} className="bg-green-600 text-white hover:bg-green-700">
-                Go to your account
-              </Button>
+              {/* Conditionally render the button based on whether user is logged in */}
+              {user && (
+                <Button onClick={handleGoToAccount} className="bg-green-600 text-white hover:bg-green-700">
+                  Go to your account
+                </Button>
+              )}
             </div>
           </div>
         </header>

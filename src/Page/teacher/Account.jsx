@@ -270,7 +270,7 @@ const Account = () => {
                   Preferred Pronouns
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others"].map((pronouns) => (
+                  {["He/Him", "She/Her", "They/Them", "Others","prefer not to say"].map((pronouns) => (
                     <div key={pronouns} className="flex items-center space-x-2">
                       <input
                         type="radio"
@@ -296,7 +296,7 @@ const Account = () => {
                   Gender Identity
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["Male", "Female", "Non-binary", "Other"].map((gender) => (
+                  {["Male", "Female", "Non-binary", "Other","prefer not to say"].map((gender) => (
                     <div key={gender} className="flex items-center space-x-2">
                       <input
                         type="radio"

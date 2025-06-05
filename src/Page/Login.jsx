@@ -8,19 +8,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { GlobalContext } from "@/Context/GlobalProvider";
-import { Eye, EyeClosed, EyeOff } from "lucide-react";
+import { Eye, EyeClosed } from "lucide-react";
 
 const Login = () => {
   const { login, checkAuth } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordInput, setPasswordInput] = useState(""); // Track password input state
 
+  // Validation schema using zod
   const schema = z.object({
-    email: z.string().email(),
-    password: z.string(),
+    email: z
+      .string()
+      .min(1, "This field is required") // Ensure this field is not empty
+      .email("Invalid email format"), // Validate email format
+    password: z.string().min(1, "This field is required").min(8, "Password must be at least 8 characters"), // Ensure password is not empty and has a minimum length
   });
 
+  // useForm hook setup with zod validation
   const {
     register,
     handleSubmit,
@@ -34,14 +40,19 @@ const Login = () => {
     try {
       await login(formData);
       setLoginError(""); // clear previous errors
+      checkAuth(); // Check if user is authenticated
       // Optionally navigate somewhere on successful login
-      checkAuth();
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
       console.error(errorMessage);
       setLoginError(errorMessage);
     }
+  };
+
+  // Update the password input state as the user types
+  const handlePasswordChange = (e) => {
+    setPasswordInput(e.target.value);
   };
 
   return (
@@ -52,7 +63,7 @@ const Login = () => {
           <Link to={"/"} className="text-sm md:text-base">
             Return to Home
           </Link>
-          <Link to={"/"} className="text-sm  md:text-base">
+          <Link to={"/"} className="text-sm md:text-base">
             Create Account
           </Link>
         </div>
@@ -69,6 +80,7 @@ const Login = () => {
             {/* Login Form */}
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
               <form onSubmit={handleSubmit(onSubmit)}>
+                {/* Email Field */}
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
@@ -80,11 +92,13 @@ const Login = () => {
                     {...register("email")}
                   />
                   {errors?.email && (
-                    <p className="text-xs text-red-600">
-                      {errors.email.message}
+                    <p className="text-xs text-red-600 inline-block">
+                      {errors.email.message} {/* Error message here */}
                     </p>
                   )}
                 </div>
+
+                {/* Password Field */}
                 <div className="mb-8">
                   <label
                     htmlFor="password"
@@ -98,10 +112,12 @@ const Login = () => {
                       id="password"
                       className="w-full p-2 border border-gray-300 rounded pr-10"
                       {...register("password")}
+                      value={passwordInput}
+                      onChange={handlePasswordChange} // Track the password input
                     />
                     <div
-                      className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      className={`absolute inset-y-0 right-2 flex items-center cursor-pointer ${passwordInput ? "" : "opacity-50 cursor-not-allowed"}`}
+                      onClick={() => passwordInput && setShowPassword((prev) => !prev)} // Enable click only if passwordInput is not empty
                     >
                       {showPassword ? (
                         <Eye size={20} />
@@ -111,18 +127,20 @@ const Login = () => {
                     </div>
                   </div>
                   {errors?.password && (
-                    <p className="text-xs text-red-600">
-                      {errors.password.message}
+                    <p className="text-xs text-red-600 inline-block">
+                      {errors.password.message} {/* Error message here */}
                     </p>
                   )}
                 </div>
 
+                {/* Login Error */}
                 {loginError && (
                   <p className="text-sm text-red-500 mb-4">{loginError}</p>
                 )}
 
+                {/* Submit Button and Links */}
                 <div className="space-y-12">
-                  {/* Top row: Login as Student + Submit Button */}
+                  {/* Link to Teacher Login */}
                   <div className="flex justify-between items-center">
                     <Link
                       to="/TeacherLogin"

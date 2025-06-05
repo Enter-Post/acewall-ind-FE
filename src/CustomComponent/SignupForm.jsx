@@ -13,24 +13,25 @@ import { toast } from "sonner";
 
 const steps = ["Personal Information", "Address Information", "Password Info"];
 
-// const passwordValidation = new RegExp(
-//   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-// );
-
+// Update password validation schema in zod
 const formSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
     middleName: z.string().optional(),
     lastName: z.string().min(1, "Last name is required"),
-    pronouns: z.string(),
-    gender: z.string(),
+    pronouns: z.enum(["he/him", "she/her", "they/them", "prefer not to say"]),
+    gender: z.enum(["male", "female", "other", "non-binary", "prefer not to say"]),
     phone: z.string().min(10, "Phone number is required"),
     homeAddress: z.string().min(1, "Home address is required"),
     mailingAddress: z.string().optional(),
-    password: z.string().min(8),
-    // .regex(passwordValidation, {
-    //   message: "Your password is not valid",
-    // }),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/^(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
+      .regex(/^(?=.*[a-z])/, "Password must contain at least one lowercase letter")
+      .regex(/^(?=.*\d)/, "Password must contain at least one number")
+      .regex(/^(?=.*[#?!@$%^&*-])/, "Password must contain at least one special character")
+      .regex(/^(?!.*\s).*$/, "Password cannot contain spaces"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -60,7 +61,9 @@ const SignupForm = () => {
     }
   }, []);
 
-  const { handleSubmit, trigger } = methods;
+  const { handleSubmit, trigger, setValue, watch } = methods;
+
+  const formData = watch(); // Get current form data
 
   const onSubmit = async (formdata) => {
     const completeData = { ...signUpdata, ...formdata };
@@ -68,7 +71,6 @@ const SignupForm = () => {
     setAuthLoading(true);
     try {
       const res = await axiosInstance.post("auth/register", completeData);
-      console.log(res, 'res')
       toast.success(res.data.message);
       navigate(`/verifyOTP/${signUpdata.email}`);
       setAuthLoading(false);
@@ -85,8 +87,6 @@ const SignupForm = () => {
       2: ["password", "confirmPassword"],
     }[currentStep];
 
-    // console.log(currentStep, "currentStep");
-
     const valid = await trigger(fieldsToValidate);
 
     if (valid) {
@@ -97,7 +97,10 @@ const SignupForm = () => {
   const handlePrevious = () => {
     setCurrentStep((prev) => {
       const previousStep = prev - 1;
-      console.log("Returning to previous step:", previousStep);
+      if (previousStep === 0) {
+        setValue("pronouns", formData.pronouns || "");
+        setValue("gender", formData.gender || "");
+      }
       return previousStep;
     });
   };
@@ -116,9 +119,9 @@ const SignupForm = () => {
   };
 
   return (
-    <section className=" bg-[url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] dark:bg-gray-900">
-      <div className="bg-black/50 backdrop-blur-md h-screen ">
-        <div className="flex flex-col  items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <section className="bg-[url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] dark:bg-gray-900">
+      <div className="bg-black/50 backdrop-blur-md h-screen">
+        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="w-full bg-white border border-gray-300 rounded-lg shadow-md sm:max-w-2xl dark:bg-gray-800 dark:border-gray-700">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
@@ -128,18 +131,13 @@ const SignupForm = () => {
                 {steps[currentStep]}
               </h2>
               <FormProvider {...methods}>
-                <form
-                  className="space-y-4 md:space-y-6"
-                  onSubmit={handleSubmit(onSubmit)}
-                >
+                <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)}>
                   {renderStep()}
                   <div className="flex justify-between">
                     <button
                       type="button"
                       onClick={handlePrevious}
-                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
-                        currentStep === 0 ? "invisible" : ""
-                      }`}
+                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${currentStep === 0 ? "invisible" : ""}`}
                     >
                       Previous
                     </button>
@@ -164,10 +162,7 @@ const SignupForm = () => {
               </FormProvider>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                >
+                <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
                   Login here
                 </Link>
               </p>
