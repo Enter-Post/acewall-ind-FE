@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useParams } from "react-router-dom";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import avatar from  "../../assets/avatar.png";
 
 export default function MessageList({ messages, contactName, contactAvatar }) {
   const { user } = useContext(GlobalContext);
@@ -27,7 +28,7 @@ export default function MessageList({ messages, contactName, contactAvatar }) {
                 <div className="flex-shrink-0 mt-1">
                   <Avatar className="h-8 w-8">
                     <AvatarImage
-                      src={message.sender.profileImg?.url}
+                      src={message.sender.profileImg?.url || avatar}
                       alt={message.sender.name}
                     />
                     {/* <AvatarFallback>{message.sender.name[0]}</AvatarFallback> */}

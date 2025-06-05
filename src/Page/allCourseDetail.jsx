@@ -25,7 +25,7 @@ import {
 } from "@radix-ui/react-collapsible";
 import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
 import { toast } from "sonner";
-
+import avatar from "@/assets/avatar.png";
 // AllCoursesDetail Component
 const AllCoursesDetail = () => {
   const { id } = useParams(); // Grab the actual course ID from the URL
@@ -81,7 +81,7 @@ const AllCoursesDetail = () => {
                 <div className="flex items-center">
                   <Avatar className="h-10 w-10 rounded-full">
                     <AvatarImage
-                      src={courseDetails.createdby.profileImg.url || "/placeholder.svg"}
+                      src={courseDetails?.createdby?.profileImg?.url || avatar   }
                       alt="Instructor"
                       className="h-10 w-10 object-cover rounded-full"
                     />
@@ -290,7 +290,7 @@ const AllCoursesDetail = () => {
                   <div className="flex flex-col sm:flex-row items-start gap-6">
                     <Avatar className="h-15 w-15 shadow-md ring-green-500 ring-3 rounded-full">
                       <AvatarImage
-                        src={courseDetails.createdby.profileImg.url || "/placeholder.svg"}
+                        src={courseDetails.createdby.profileImg.url || avatar}
                         alt="Instructor"
                         className="h-15 w-15 object-cover rounded-full"
                       />

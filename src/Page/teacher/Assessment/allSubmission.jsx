@@ -10,6 +10,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import avatar from "@/assets/avatar.png";
 
 const AllSubmission = () => {
   const [submission, setSubmission] = useState(null);
@@ -131,7 +132,7 @@ const AllSubmission = () => {
               <div className="flex items-center gap-4">
                 <Avatar>
                   <AvatarImage
-                    src={item?.studentId?.profileImg?.url || "/placeholder.svg"}
+                    src={item?.studentId?.profileImg?.url || avatar}
                     alt="Profile Picture"
                   />
                   <AvatarFallback>

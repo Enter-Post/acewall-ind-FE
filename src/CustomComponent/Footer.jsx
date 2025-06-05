@@ -78,7 +78,7 @@ export default function Footer() {
       setSuccess("Subscribed successfully! Thank you for joining.");
       setEmail("");
     } catch {
-      setError("Failed to subscribe. Please try again.");
+      setError("This email is already subscribed.");
     } finally {
       setLoading(false);
     }

@@ -8,40 +8,39 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { GlobalContext } from "@/Context/GlobalProvider";
 import { Eye, EyeClosed } from "lucide-react";
 
+// Validation Schema using Zod
 const schema = z.object({
-  email: z.string().email(),
-  password: z.string(),
+  email: z
+    .string()
+    .min(1, "Email is required")  // Ensure field is not empty
+    .email("Invalid email format"), // Validate the format
+  password: z
+    .string()
+    .min(1, "Password is required")  // Ensure field is not empty
+    .min(8, "Password must be at least 8 characters"), // Ensure password is at least 8 characters long
 });
 
 const TeacherLogin = () => {
   const { login, checkAuth } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
+  const [passwordInput, setPasswordInput] = useState(""); // Track password input
 
-  //  console.log(login, "login in teacherlogin");
-
-  const schema = z.object({
-    email: z.string().min(1).email(),
-    password: z.string().min(8),
-  });
-
+  // React Hook Form setup with Zod Resolver
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
   });
 
+  // Handle form submission
   const onSubmit = async (formData) => {
     try {
       await login(formData);
       setLoginError(""); // clear previous errors
-      // Optionally navigate somewhere on successful login
-      // navigate("/student/dashboard");
-      checkAuth();
+      checkAuth(); // Check if the user is authenticated
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
@@ -49,6 +48,12 @@ const TeacherLogin = () => {
       setLoginError(errorMessage);
     }
   };
+
+  // Update the password input state as the user types
+  const handlePasswordChange = (e) => {
+    setPasswordInput(e.target.value);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Header */}
@@ -57,7 +62,7 @@ const TeacherLogin = () => {
           <Link to={"/"} className="text-sm md:text-base">
             Return to Home
           </Link>
-          <Link to={"/"} className="text-sm  md:text-base">
+          <Link to={"/"} className="text-sm md:text-base">
             Create Account
           </Link>
         </div>
@@ -74,6 +79,7 @@ const TeacherLogin = () => {
             {/* Login Form */}
             <div className="w-full md:w-1/2 bg-white p-6 rounded-lg">
               <form onSubmit={handleSubmit(onSubmit)}>
+                {/* Email Field */}
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
                     Email
@@ -85,11 +91,13 @@ const TeacherLogin = () => {
                     {...register("email")}
                   />
                   {errors?.email && (
-                    <p className="text-xs text-red-600">
-                      {errors.email.message}
+                    <p className="text-xs text-red-600 inline-block">
+                      {errors.email.message} {/* Error message */}
                     </p>
                   )}
                 </div>
+
+                {/* Password Field */}
                 <div className="mb-8">
                   <label
                     htmlFor="password"
@@ -103,10 +111,12 @@ const TeacherLogin = () => {
                       id="password"
                       className="w-full p-2 border border-gray-300 rounded pr-10"
                       {...register("password")}
+                      value={passwordInput}
+                      onChange={handlePasswordChange} // Track the password input
                     />
                     <div
-                      className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
-                      onClick={() => setShowPassword((prev) => !prev)}
+                      className={`absolute inset-y-0 right-2 flex items-center cursor-pointer ${passwordInput ? "" : "opacity-50 cursor-not-allowed"}`}
+                      onClick={() => passwordInput && setShowPassword((prev) => !prev)} // Enable click only if passwordInput is not empty
                     >
                       {showPassword ? (
                         <Eye size={20} />
@@ -116,18 +126,20 @@ const TeacherLogin = () => {
                     </div>
                   </div>
                   {errors?.password && (
-                    <p className="text-xs text-red-600">
-                      {errors.password.message}
+                    <p className="text-xs text-red-600 inline-block">
+                      {errors.password.message} {/* Error message */}
                     </p>
                   )}
                 </div>
 
+                {/* Login Error */}
                 {loginError && (
                   <p className="text-sm text-red-500 mb-4">{loginError}</p>
                 )}
 
+                {/* Submit Button and Links */}
                 <div className="space-y-12">
-                  {/* Top row: Login as Student + Submit Button */}
+                  {/* Link to Student Login */}
                   <div className="flex justify-between items-center">
                     <Link
                       to="/Login"
@@ -161,7 +173,7 @@ const TeacherLogin = () => {
             <div className="w-full md:w-1/2 flex flex-col justify-center">
               <div className="flex justify-center mb-4">
                 <div className="w-32 h-32">
-                  <img src={acewallshort} alt="" />
+                  <img src={acewallshort} alt="Acewall" />
                 </div>
               </div>
               <h2 className="text-xl text-gray-800 font-medium mb-2 text-center md:text-left">
@@ -172,7 +184,7 @@ const TeacherLogin = () => {
                   "This is one of the best Learning Management Platforms. Their
                   support team is top-notch. The platform also supports various
                   integrations as resources for classroom setup. I really enjoy
-                  making residual income from the classes I create."
+                  making residual income from the classes I create."
                 </span>
               </blockquote>
               <div className="text-center md:text-left">
@@ -183,7 +195,9 @@ const TeacherLogin = () => {
           </div>
         </div>
       </main>
-      <Footer></Footer>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

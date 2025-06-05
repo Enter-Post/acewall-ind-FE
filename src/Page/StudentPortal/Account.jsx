@@ -7,6 +7,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import avatar from "@/assets/avatar.png";
 
 const Account = () => {
   const [user, setUser] = useState({});
@@ -78,7 +79,7 @@ const Account = () => {
             src={
               profileImg
                 ? URL.createObjectURL(profileImg)
-                : user?.profileImg?.url
+                : user?.profileImg?.url ?? avatar
             }
             alt={user?.name}
             className="w-full h-full rounded-full object-cover shadow-sm"

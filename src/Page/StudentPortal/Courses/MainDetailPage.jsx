@@ -32,6 +32,7 @@ import RatingSection from "@/CustomComponent/Student/RatingSection";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
 import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import avatar from "@/assets/avatar.png";
 
 export default function CourseOverview() {
   const { id } = useParams(); // Default ID or from URL
@@ -162,7 +163,7 @@ export default function CourseOverview() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
             <Avatar className="h-12 w-12 rounded-full">
               <AvatarImage
-                src={course.createdby.profileImg.url || "/placeholder.svg"}
+                src={course.createdby.profileImg.url || avatar}
                 alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
                 className="ring-2 ring-black ring-offset-2 rounded-full "
               />
