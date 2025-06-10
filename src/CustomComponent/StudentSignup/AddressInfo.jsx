@@ -3,6 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "react-hook-form";
 
+const MAX_ADDRESS_LENGTH = 300;
+
 const AddressInfo = () => {
   const {
     register,
@@ -12,10 +14,12 @@ const AddressInfo = () => {
   } = useFormContext();
   const formData = watch();
 
-  // console.log(errors, "errors");
+  const homeAddress = formData?.homeAddress || "";
+  const mailingAddress = formData?.mailingAddress || "";
 
   return (
     <>
+      {/* Phone Number */}
       <div>
         <Label
           htmlFor="phone"
@@ -50,6 +54,7 @@ const AddressInfo = () => {
         <p className="text-xs text-red-600">{errors?.phone?.message}</p>
       </div>
 
+      {/* Home Address */}
       <div>
         <Label
           htmlFor="homeAddress"
@@ -60,20 +65,24 @@ const AddressInfo = () => {
         <Textarea
           name="homeAddress"
           id="homeAddress"
-          maxLength={300}
+          maxLength={MAX_ADDRESS_LENGTH}
           className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Enter your home address"
           rows={3}
           {...register("homeAddress", {
             maxLength: {
-              value: 300,
+              value: MAX_ADDRESS_LENGTH,
               message: "Home address must not exceed 300 characters",
             },
           })}
         />
-        <p className="text-xs text-red-600">{errors?.homeAddress?.message}</p>
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <span>{errors?.homeAddress?.message}</span>
+          <span>{homeAddress.length}/{MAX_ADDRESS_LENGTH}</span>
+        </div>
       </div>
 
+      {/* Mailing Address */}
       <div>
         <Label
           htmlFor="mailingAddress"
@@ -84,20 +93,22 @@ const AddressInfo = () => {
         <Textarea
           name="mailingAddress"
           id="mailingAddress"
-          maxLength={300}
+          maxLength={MAX_ADDRESS_LENGTH}
           className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           placeholder="Enter your mailing address"
           rows={3}
           {...register("mailingAddress", {
             maxLength: {
-              value: 300,
+              value: MAX_ADDRESS_LENGTH,
               message: "Mailing address must not exceed 300 characters",
             },
           })}
         />
-        <p className="text-xs text-red-600">{errors?.mailingAddress?.message}</p>
+        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <span>{errors?.mailingAddress?.message}</span>
+          <span>{mailingAddress.length}/{MAX_ADDRESS_LENGTH}</span>
+        </div>
       </div>
-
     </>
   );
 };

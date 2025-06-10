@@ -73,7 +73,7 @@ const Login = () => {
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-center text-2xl md:text-3xl text-gray-800 font-normal mb-8">
-            Student Log-in Page
+            Student Login Page
           </h1>
 
           <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
@@ -146,7 +146,7 @@ const Login = () => {
                       to="/TeacherLogin"
                       className="text-sm font-semibold text-green-600 hover:underline"
                     >
-                      Log in as a Teacher
+                      Login as a Teacher
                     </Link>
 
                     <button

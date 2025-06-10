@@ -220,7 +220,9 @@ export default function TeacherLayout() {
                     alt={user.firstName || "User Avatar"}
                     className="h-full w-full object-cover rounded-full"
                   />
-                  <AvatarFallback>UN</AvatarFallback>
+                  <AvatarFallback>
+                    {`${user.firstName[0]}${user.lastName[0]}`}
+                  </AvatarFallback>
                 </Avatar>
               </Link>
 

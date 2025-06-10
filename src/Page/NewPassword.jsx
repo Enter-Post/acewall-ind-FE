@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeClosed, EyeOff } from "lucide-react";
 
 const formSchema = z.object({
   password: z
@@ -96,7 +96,8 @@ const NewPassword = () => {
                 className="absolute right-3 top-[38px] text-gray-500"
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <Eye size={18} /> : <EyeClosed size={18} />
+                }
               </button>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">
