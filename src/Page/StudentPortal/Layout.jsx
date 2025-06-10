@@ -219,9 +219,8 @@ export default function Layout() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             {/* User Info */}
@@ -237,8 +236,12 @@ export default function Layout() {
               </Link>
               <div>
                 <p className="font-medium">{user.firstName}</p>
-                <p className="text-sm text-gray-600">{user.email}</p>
-              </div>
+                <p
+                  className="text-sm text-gray-600 w-full max-w-[150px]  break-words"
+                  title={user.email}
+                >
+                  {user.email}
+                </p>              </div>
             </div>
 
             {/* Mobile search */}
@@ -256,15 +259,13 @@ export default function Layout() {
                   key={tab.id}
                   to={tab.path}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location === tab.path ? "bg-green-500" : "text-black"
-                  }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
+                    }`}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location === tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location === tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

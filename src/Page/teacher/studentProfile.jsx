@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import {
   StudentProfileCourseCard,
@@ -6,8 +6,10 @@ import {
 } from "@/CustomComponent/Card";
 import { Mail, Calendar, School } from "lucide-react";
 import avatar from "@/assets/avatar.png";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 export default function StudentProfile() {
+  const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
   const student = state?.student;
@@ -44,11 +46,17 @@ export default function StudentProfile() {
 
         <div className="flex flex-col justify-center text-center md:text-left">
           <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-2 gap-y-1">
-            <p className="text-2xl font-bold text-gray-800">{student?.firstName}</p>
+            <p className="text-2xl font-bold text-gray-800">
+              {student?.firstName}
+            </p>
             {student?.middleName && (
-              <p className="text-2xl font-bold text-gray-800">{student.middleName}</p>
+              <p className="text-2xl font-bold text-gray-800">
+                {student.middleName}
+              </p>
             )}
-            <p className="text-2xl font-bold text-gray-800">{student?.lastName}</p>
+            <p className="text-2xl font-bold text-gray-800">
+              {student?.lastName}
+            </p>
           </div>
 
           <div className="mt-3 space-y-1 text-sm text-gray-600">
@@ -58,7 +66,9 @@ export default function StudentProfile() {
             </div>
             <div className="flex items-center justify-center md:justify-start gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
-              <span>Joined: {new Date(student?.createdAt).toLocaleDateString()}</span>
+              <span>
+                Joined: {new Date(student?.createdAt).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>
@@ -76,9 +86,17 @@ export default function StudentProfile() {
 
       {/* Course List */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
-        <h2 className="text-xl font-semibold text-gray-800 col-span-1 sm:col-span-3 mb-2">Enrolled Courses</h2>
+        <h2 className="text-xl font-semibold text-gray-800 col-span-1 sm:col-span-3 mb-2">
+          Enrolled Courses
+        </h2>
         {student?.courses?.map((course, index) => (
-          <StudentProfileCourseCard key={index} course={course} className="col-span-1" />
+          <Link to={`/teacher/courseGrades/${id}/${course._id}`}>
+            <StudentProfileCourseCard
+              key={index}
+              course={course}
+              className="col-span-1"
+            />
+          </Link>
         ))}
       </div>
     </div>

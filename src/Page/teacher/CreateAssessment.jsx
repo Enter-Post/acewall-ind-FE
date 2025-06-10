@@ -105,14 +105,28 @@ const formSchema = z.object({
     .string()
     .min(3, { message: "Title must be at least 3 characters" })
     .max(120, { message: "Title cannot exceed 120 characters" }),
+
   description: z
     .string()
     .min(10, { message: "Description must be at least 10 characters" })
     .max(1000, { message: "Description cannot exceed 1000 characters" }),
+
   category: z.string().min(1, { message: "Please select a category" }),
+
   questions: z
     .array(questionSchema)
-    .min(1, { message: "At least one question is required" }),
+    .refine(
+      (questions) => {
+        // allow empty array
+        if (questions.length === 0) return true;
+        // validate all questions
+        return questions.every((q) => questionSchema.safeParse(q).success);
+      },
+      {
+        message: "Invalid question data",
+      }
+    ),
+
   dueDate: z.object({
     date: z.string().min(1, { message: "Please select a date" }),
     time: z.string().min(1, { message: "Please select a time" }),
@@ -122,6 +136,7 @@ const formSchema = z.object({
       .nullable(),
   }),
 });
+
 
 export default function CreateAssessmentPage() {
   const navigate = useNavigate();
@@ -138,6 +153,11 @@ export default function CreateAssessmentPage() {
     },
   });
 
+
+
+  const handleRemoveFile = (index) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
   // Add this near the top of the component, after the useState declarations
   const handleOptionChange = useCallback((e, field) => {
     field.onChange(e.target.value);
@@ -153,15 +173,7 @@ export default function CreateAssessmentPage() {
       course: "",
       lesson: "",
       category: "",
-      questions: [
-        {
-          type: "mcq",
-          question: "",
-          options: ["", "", "", ""],
-          points: 0,
-          correctAnswer: "",
-        },
-      ],
+      questions: [],
       dueDate: {
         date: "",
         time: "",
@@ -183,8 +195,8 @@ export default function CreateAssessmentPage() {
     const validFiles = files.filter((file) => {
       const isValidType =
         file.type === "application/pdf" ||
-        file.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        file.type === "image/jpeg";
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       return isValidType && isValidSize;
     });
@@ -195,6 +207,7 @@ export default function CreateAssessmentPage() {
 
     setSelectedFiles(validFiles);
   };
+
 
   const addQuestion = () => {
     append({
@@ -390,9 +403,9 @@ export default function CreateAssessmentPage() {
           </div>
 
           {/* Questions Section */}
-          <div className="space-y-6">
-            {fields.map((question, questionIndex) => {
-              return (
+          {fields.length > 0 && (
+            <div className="space-y-6">
+              {fields.map((question, questionIndex) => (
                 <Card key={question.id} className="relative">
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-center">
@@ -669,14 +682,14 @@ export default function CreateAssessmentPage() {
                       )}
                   </CardContent>
                 </Card>
-              );
-            })}
-            {form.formState.errors.questions?.message && (
-              <p className="text-sm font-medium text-destructive">
-                {form.formState.errors.questions.message}
-              </p>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+          {form.formState.errors.questions?.message && (
+            <p className="text-sm font-medium text-destructive">
+              {form.formState.errors.questions.message}
+            </p>
+          )}
 
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Questions</h3>
@@ -689,14 +702,17 @@ export default function CreateAssessmentPage() {
               <Plus size={16} /> Add Question
             </Button>
           </div>
+
+
+
           {/* PDF and DOC Upload Section */}
           <div className="space-y-4 mt-6">
-            <Label htmlFor="fileUpload">Upload PDF or DOCX file</Label>
+            <Label htmlFor="fileUpload">Upload PDF, DOCX, or JPEG file</Label>
             <Input
               id="fileUpload"
               type="file"
               multiple
-              accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg"
               onChange={handleFileChange}
             />
             {selectedFiles.length > 0 && (
@@ -704,16 +720,20 @@ export default function CreateAssessmentPage() {
                 <Label>Selected Files:</Label>
                 <div className="space-y-4 mt-2">
                   {selectedFiles.map((file, idx) => (
-                    <div key={idx} className="border p-3 rounded">
-                      <p className="text-sm text-gray-700 truncate">
-                        {file.name}
-                      </p>
+                    <div key={idx} className="border p-3 rounded relative">
+                      <p className="text-sm text-gray-700 truncate">{file.name}</p>
 
                       {file.type === "application/pdf" ? (
                         <iframe
                           src={URL.createObjectURL(file)}
                           title={`PDF Preview ${idx}`}
                           className="w-full h-64 border rounded mt-2"
+                        />
+                      ) : file.type === "image/jpeg" ? (
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`JPEG Preview ${idx}`}
+                          className="w-full max-h-64 object-contain border rounded mt-2"
                         />
                       ) : (
                         <a
@@ -726,6 +746,14 @@ export default function CreateAssessmentPage() {
                           Download/View DOCX
                         </a>
                       )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveFile(idx)}
+                        className="absolute top-2 right-2 text-sm text-red-600 hover:text-red-800"
+                      >
+                        Remove
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -733,12 +761,13 @@ export default function CreateAssessmentPage() {
             )}
           </div>
 
+
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Assessment"}
           </Button>
 
         </form>
       </Form>
-    </div>
+    </div >
   );
 }

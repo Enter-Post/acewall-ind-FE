@@ -29,9 +29,10 @@ export function FinalCourseAssessmentCard({ assessment, handleDeleteAssessment }
       <CardHeader className="py-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Badge variant="outline" className="bg-green-50">
-            Final Assessment
+            Final {assessment?.category?.name || "Final Assessment"}
           </Badge>
         </CardTitle>
+
       </CardHeader>
 
       <CardContent className="py-2">

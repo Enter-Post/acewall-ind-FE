@@ -480,11 +480,8 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                   <Card className="mt-6">
                                     <CardHeader className="py-3">
                                       <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                        <Badge
-                                          variant="outline"
-                                          className="bg-blue-50"
-                                        >
-                                          Lesson Assessments
+                                        <Badge variant="outline" className="bg-blue-50">
+                                         lesson {lesson.lessonAssessments[0]?.category?.name || "Lesson Assessment"}
                                         </Badge>
                                       </CardTitle>
                                     </CardHeader>

@@ -37,6 +37,8 @@ export default function TeacherCourseDetails() {
 
   const [openLessons, setOpenLessons] = useState({});
 
+  console.log(course, "course");
+
   const toggleLesson = (lessonId) => {
     setOpenLessons((prev) => ({
       ...prev,

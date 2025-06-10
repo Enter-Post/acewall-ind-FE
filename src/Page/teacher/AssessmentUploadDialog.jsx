@@ -117,7 +117,7 @@ export function AssessmentUploadDialog() {
               </Select>
             </div>
 
-            <div className="items-center gap-2">
+            <div>
               <Label htmlFor="file">File</Label>
               <Input
                 id="file"
@@ -126,11 +126,20 @@ export function AssessmentUploadDialog() {
                 onChange={handleFileChange}
               />
               {file && (
-                <span className="text-sm text-muted-foreground">
-                  {file.name}
-                </span>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-sm text-muted-foreground">{file.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-700 px-2 py-0 h-6"
+                    onClick={() => setFile(null)}
+                  >
+                    Remove
+                  </Button>
+                </div>
               )}
             </div>
+
           </div>
         </div>
         <DialogFooter>

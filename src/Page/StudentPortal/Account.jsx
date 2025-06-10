@@ -29,9 +29,9 @@ const Account = () => {
   const handleImg = async () => {
     if (!profileImg) return;
 
-    // Limit file size to 2MB
-    if (profileImg.size > 2 * 1024 * 1024) {
-      toast.error("Image size must be less than 2MB.");
+    // Limit file size to 5MB
+    if (profileImg.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB.");
       profileImg(null);
       return;
     }

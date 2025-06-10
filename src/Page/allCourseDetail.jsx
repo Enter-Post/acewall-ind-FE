@@ -290,7 +290,7 @@ const AllCoursesDetail = () => {
                   <div className="flex flex-col sm:flex-row items-start gap-6">
                     <Avatar className="h-15 w-15 shadow-md ring-green-500 ring-3 rounded-full">
                       <AvatarImage
-                        src={courseDetails.createdby.profileImg.url || avatar}
+                        src={courseDetails?.createdby?.profileImg?.url || avatar}
                         alt="Instructor"
                         className="h-15 w-15 object-cover rounded-full"
                       />

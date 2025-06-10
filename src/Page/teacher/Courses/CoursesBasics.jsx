@@ -179,9 +179,9 @@ export default function CoursesBasis() {
       return;
     }
 
-    const maxSizeInBytes = 5 * 1024 * 1024; // 2MB
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSizeInBytes) {
-      toast.error("Image size must be less than 2MB.");
+      toast.error("Image size must be less than 5MB.");
       return;
     }
 
@@ -225,8 +225,6 @@ export default function CoursesBasis() {
       reset();
       navigate("/teacher/courses");
     } catch (err) {
-      // Dismiss loading toast and show error
-      toast.dismiss(loadingToastId);
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);

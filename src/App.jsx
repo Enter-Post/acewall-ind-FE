@@ -57,7 +57,7 @@ import VerifyForgetPasswordOTP from "./Page/VerifyForgetPasswordOTP";
 import NewPassword from "./Page/NewPassword";
 import EditGeneralInfo from "./Page/Account/EditGeneralInfo";
 import { EditCredentials } from "./Page/Account/EditCredentials";
-
+import StudentCourseGrades from "./Page/teacher/studentCourseGrades";
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
     useContext(GlobalContext);
@@ -208,6 +208,11 @@ function App() {
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
             <Route path="studentProfile/:id" element={<StudentProfile />} />
+            <Route
+              path="courseGrades/:studentId/:courseId"
+              element={<StudentCourseGrades />}
+            />
+
             <Route path="messages">
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />

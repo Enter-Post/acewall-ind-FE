@@ -39,7 +39,7 @@ const lessonSchema = z.object({
     .refine(
       (val) =>
         !val ||
-        /^https:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}(&.+)?$/.test(val),
+        /^https:\/\/(www\.|m\.)?(youtube\.com\/(watch\?v=|embed\/)[\w-]{11}(&[^ ]*)?|youtu\.be\/[\w-]{11}(\?[^ ]*)?)$/.test(val),
       {
         message: "Enter a valid YouTube video link",
       }
