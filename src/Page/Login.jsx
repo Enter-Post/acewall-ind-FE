@@ -13,46 +13,44 @@ import { Eye, EyeClosed } from "lucide-react";
 const Login = () => {
   const { login, checkAuth } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordInput, setPasswordInput] = useState(""); // Track password input state
+  const navigate = useNavigate();
 
   // Validation schema using zod
   const schema = z.object({
     email: z
       .string()
-      .min(1, "This field is required") // Ensure this field is not empty
-      .email("Invalid email format"), // Validate email format
-    password: z.string().min(1, "This field is required").min(8, "Password must be at least 8 characters"), // Ensure password is not empty and has a minimum length
+      .min(1, "This field is required")
+      .email("Invalid email format"),
+    password: z
+      .string()
+      .min(1, "This field is required")
+      .min(8, "Password must be at least 8 characters"),
   });
 
-  // useForm hook setup with zod validation
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: zodResolver(schema),
   });
 
+  const watchedPassword = watch("password");
+
   const onSubmit = async (formData) => {
     try {
       await login(formData);
-      setLoginError(""); // clear previous errors
-      checkAuth(); // Check if user is authenticated
-      // Optionally navigate somewhere on successful login
+      setLoginError("");
+      checkAuth();
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
       console.error(errorMessage);
       setLoginError(errorMessage);
     }
-  };
-
-  // Update the password input state as the user types
-  const handlePasswordChange = (e) => {
-    setPasswordInput(e.target.value);
   };
 
   return (
@@ -93,7 +91,7 @@ const Login = () => {
                   />
                   {errors?.email && (
                     <p className="text-xs text-red-600 inline-block">
-                      {errors.email.message} {/* Error message here */}
+                      {errors.email.message}
                     </p>
                   )}
                 </div>
@@ -112,23 +110,23 @@ const Login = () => {
                       id="password"
                       className="w-full p-2 border border-gray-300 rounded pr-10"
                       {...register("password")}
-                      value={passwordInput}
-                      onChange={handlePasswordChange} // Track the password input
                     />
-                    <div
-                      className={`absolute inset-y-0 right-2 flex items-center cursor-pointer ${passwordInput ? "" : "opacity-50 cursor-not-allowed"}`}
-                      onClick={() => passwordInput && setShowPassword((prev) => !prev)} // Enable click only if passwordInput is not empty
-                    >
-                      {showPassword ? (
-                        <Eye size={20} />
-                      ) : (
-                        <EyeClosed size={20} />
-                      )}
-                    </div>
+                    {watchedPassword && (
+                      <div
+                        className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? (
+                          <Eye size={20} />
+                        ) : (
+                          <EyeClosed size={20} />
+                        )}
+                      </div>
+                    )}
                   </div>
                   {errors?.password && (
                     <p className="text-xs text-red-600 inline-block">
-                      {errors.password.message} {/* Error message here */}
+                      {errors.password.message}
                     </p>
                   )}
                 </div>
@@ -140,7 +138,6 @@ const Login = () => {
 
                 {/* Submit Button and Links */}
                 <div className="space-y-12">
-                  {/* Link to Teacher Login */}
                   <div className="flex justify-between items-center">
                     <Link
                       to="/TeacherLogin"
@@ -157,7 +154,6 @@ const Login = () => {
                     </button>
                   </div>
 
-                  {/* Forget Password link */}
                   <div className="text-right">
                     <Link
                       to="/forgetPassword"
@@ -170,7 +166,7 @@ const Login = () => {
               </form>
             </div>
 
-            {/* Testimonial Section */}
+            {/* Testimonials */}
             <ReviewsSlider />
           </div>
         </div>

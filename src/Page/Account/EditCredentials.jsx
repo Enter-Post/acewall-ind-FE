@@ -1,4 +1,4 @@
-import { AppWindowIcon, CodeIcon, Eye, EyeOff } from "lucide-react";
+import { AppWindowIcon, CodeIcon, Eye, EyeClosed, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -66,7 +66,7 @@ export function EditCredentials() {
     },
   });
 
-//   console.log(sendingOTP, "sendingOTP");
+  //   console.log(sendingOTP, "sendingOTP");
 
   const newPassword = passwordForm.watch("newPassword") || "";
   const isMinLength = newPassword.length >= 8;
@@ -74,6 +74,10 @@ export function EditCredentials() {
   const hasLowercase = /[a-z]/.test(newPassword);
   const hasDigit = /\d/.test(newPassword);
   const hasSpecialChar = /[#?!@$%^&*-]/.test(newPassword);
+  const oldPassword = passwordForm.watch("oldPassword");
+  const newPasswordValue = passwordForm.watch("newPassword");
+  const confirmPassword = passwordForm.watch("confirmPassword");
+  const isSameAsOld = oldPassword && newPasswordValue && oldPassword === newPasswordValue;
 
   const handleEmailSubmit = async (data) => {
     setSendingOTP(true);
@@ -92,20 +96,24 @@ export function EditCredentials() {
   };
 
   const handlePasswordSubmit = async (data) => {
+    if (data.oldPassword === data.newPassword) {
+      toast.error("New password must be different from the old password");
+      return;
+    }
+
     setSendingOTP(true);
-    await axiosInstance
-      .post("auth/updatePasswordOTP", data)
-      .then((res) => {
-        toast.success(res.data.message);
-        setIsOTPDialogOpen(true);
-        setSendingOTP(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response?.data?.message);
-        setSendingOTP(false);
-      });
+    try {
+      const res = await axiosInstance.post("auth/updatePasswordOTP", data);
+      toast.success(res.data.message);
+      setIsOTPDialogOpen(true);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setSendingOTP(false);
+    }
   };
+
 
   const getClass = (condition) =>
     `text-xs font-medium ${condition ? "text-green-600" : "text-red-500"}`;
@@ -159,8 +167,8 @@ export function EditCredentials() {
                 <CardHeader>
                   <CardTitle>Password</CardTitle>
                   <CardDescription>
-                    Change your password here. After saving, you'll be logged
-                    out.
+                    Choose a password that you can remember,
+                    and make sure its strong.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-6">
@@ -172,15 +180,18 @@ export function EditCredentials() {
                       type={showPassword ? "text" : "password"}
                       {...passwordForm.register("oldPassword")}
                     />
-                    <button
-                      type="button"
-                      aria-label="Toggle current password visibility"
-                      className="absolute right-2 top-9 text-xs"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      tabIndex={-1}
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
+                    {oldPassword && (
+                      <button
+                        type="button"
+                        aria-label="Toggle current password visibility"
+                        className="absolute right-2 top-9 text-xs"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        tabIndex={-1}
+                      >
+                        {showPassword ? <Eye size={18} /> : <EyeClosed size={18} />}
+                      </button>
+                    )}
+
                     {passwordForm.formState.errors.oldPassword && (
                       <p className="text-xs text-red-600 mt-1">
                         {passwordForm.formState.errors.oldPassword.message}
@@ -196,19 +207,24 @@ export function EditCredentials() {
                       type={showNewPassword ? "text" : "password"}
                       {...passwordForm.register("newPassword")}
                     />
-                    <button
-                      type="button"
-                      aria-label="Toggle new password visibility"
-                      className="absolute right-2 top-9 text-xs"
-                      onClick={() => setShowNewPassword((prev) => !prev)}
-                      tabIndex={-1}
-                    >
-                      {showNewPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      )}
-                    </button>
+                    {isSameAsOld && (
+                      <p className="text-xs text-red-600 mt-1">
+                        New password must be different from the old password.
+                      </p>
+                    )}
+
+                    {newPasswordValue && (
+                      <button
+                        type="button"
+                        aria-label="Toggle new password visibility"
+                        className="absolute right-2 top-9 text-xs"
+                        onClick={() => setShowNewPassword((prev) => !prev)}
+                        tabIndex={-1}
+                      >
+                        {showNewPassword ? <Eye size={18} /> : <EyeClosed size={18} />}
+                      </button>
+                    )}
+
                     {passwordForm.formState.errors.newPassword && (
                       <p className="text-xs text-red-600 mt-1">
                         {passwordForm.formState.errors.newPassword.message}
@@ -229,19 +245,18 @@ export function EditCredentials() {
                       onCut={(e) => e.preventDefault()}
                       onContextMenu={(e) => e.preventDefault()}
                     />
-                    <button
-                      type="button"
-                      aria-label="Toggle confirm password visibility"
-                      className="absolute right-2 top-9 text-xs"
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      tabIndex={-1}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff size={18} />
-                      ) : (
-                        <Eye size={18} />
-                      )}
-                    </button>
+                    {confirmPassword && (
+                      <button
+                        type="button"
+                        aria-label="Toggle confirm password visibility"
+                        className="absolute right-2 top-9 text-xs"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        tabIndex={-1}
+                      >
+                        {showConfirmPassword ? <Eye size={18} /> : <EyeClosed size={18} />}
+                      </button>
+                    )}
+
                     {passwordForm.formState.errors.confirmPassword && (
                       <p className="text-xs text-red-600 mt-1">
                         {passwordForm.formState.errors.confirmPassword.message}

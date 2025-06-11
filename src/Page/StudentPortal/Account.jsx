@@ -49,6 +49,7 @@ const Account = () => {
         setLoading(false);
         toast.success(res.data.message);
         setprofileImg(null);
+        window.location.reload(); 
       })
       .catch((err) => {
         setLoading(false);
@@ -131,7 +132,7 @@ const Account = () => {
         </Link>
         <Link to={`/${user.role}/account/editCredentials`}>
           <Button className="bg-green-500 text-white hover:bg-green-600">
-            Edit Credencials
+            Edit Credentials
           </Button>
         </Link>
       </section>

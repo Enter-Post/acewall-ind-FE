@@ -29,6 +29,7 @@ const formSchema = z.object({
 const EditGeneralInfo = () => {
   const { user } = useContext(GlobalContext);
   const navigate = useNavigate();
+  const MAX_ADDRESS_LENGTH = 300;
 
   // Initialize React Hook Form with Zod resolver
   const {
@@ -83,6 +84,7 @@ const EditGeneralInfo = () => {
       const response = await axiosInstance.put(`/auth/updateuser`, formData);
       toast.success(response.data.message);
       navigate(`/${user.role}/account`)
+      window.location.reload();
     } catch (error) {
       console.error("Failed to update profile:", error);
       toast.error(error.response?.data?.message || "Something went wrong.");
@@ -109,9 +111,15 @@ const EditGeneralInfo = () => {
                   First Name
                 </Label>
                 <Input
+                  type="text"
+                  name="firstName"
                   id="firstName"
-                  placeholder="Enter your first name"
+                  maxLength={15}
+                  placeholder="John"
                   {...register("firstName")}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^A-Za-z]/g, "");
+                  }}
                 />
                 {errors.firstName && (
                   <p className="text-red-500 text-xs mt-1">
@@ -125,9 +133,15 @@ const EditGeneralInfo = () => {
                   Middle Name
                 </Label>
                 <Input
+                  type="text"
+                  name="middleName"
                   id="middleName"
-                  placeholder="Enter your middle name"
+                  maxLength={15}
+                  placeholder="M."
                   {...register("middleName")}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^A-Za-z]/g, "");
+                  }}
                 />
               </div>
 
@@ -136,9 +150,15 @@ const EditGeneralInfo = () => {
                   Last Name
                 </Label>
                 <Input
+                  type="text"
+                  name="lastName"
                   id="lastName"
-                  placeholder="Enter your last name"
+                  maxLength={15}
+                  placeholder="Doe"
                   {...register("lastName")}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^A-Za-z]/g, "");
+                  }}
                 />
                 {errors.lastName && (
                   <p className="text-red-500 text-xs mt-1">
@@ -159,7 +179,7 @@ const EditGeneralInfo = () => {
                   Preferred Pronoun
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others","prefer not to say"].map(
+                  {["He/Him", "She/Her", "They/Them", "Others", "prefer not to say"].map(
                     (pronoun, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <input
@@ -187,7 +207,7 @@ const EditGeneralInfo = () => {
                   Gender Identity
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["Male", "Female", "Non-binary", "Other","prefer not to say"].map((gender) => (
+                  {["Male", "Female", "Non-binary", "Other", "prefer not to say"].map((gender) => (
                     <div key={gender} className="flex items-center space-x-2">
                       <input
                         type="radio"
@@ -218,26 +238,52 @@ const EditGeneralInfo = () => {
                   Home Address
                 </Label>
                 <Textarea
+                  name="homeAddress"
                   id="homeAddress"
+                  type="text"
+                  maxLength={MAX_ADDRESS_LENGTH}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Enter your home address"
-                  {...register("homeAddress")}
+                  rows={3}
+                  {...register("homeAddress", {
+                  maxLength: {
+                      value: MAX_ADDRESS_LENGTH,
+                      message: "Home address must not exceed 300 characters",
+                    },
+                  })}
+                   onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^A-Za-z0-9#?!@$%^&*-]/g, "");
+                  }}
                 />
-                {errors.homeAddress && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.homeAddress.message}
-                  </p>
-                )}
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <span>{errors?.homeAddress?.message}</span>
+                </div>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="mailingAddress" className="text-sm font-medium">
                   Mailing Address (Optional)
                 </Label>
                 <Textarea
+                  name="mailingAddress"
                   id="mailingAddress"
+                  type="text"
+                  maxLength={MAX_ADDRESS_LENGTH}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Enter your mailing address"
-                  {...register("mailingAddress")}
+                  rows={3}
+                  {...register("mailingAddress", {
+                    maxLength: {
+                      value: MAX_ADDRESS_LENGTH,
+                      message: "Mailing address must not exceed 300 characters",
+                    },
+                  })}
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^A-Za-z0-9#?!@$%^&*-]/g, "");
+                  }}
                 />
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <span>{errors?.mailingAddress?.message}</span>
+                </div>
               </div>
             </div>
           </section>

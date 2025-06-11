@@ -55,6 +55,8 @@ const VerifyForgetPasswordOTP = () => {
         .catch((err) => {
           console.log(err);
           setLoading(false);
+          setOtp(["", "", "", "", "", ""]);
+
           toast.error(err?.response?.data?.message || "Something went wrong.");
         });
     }

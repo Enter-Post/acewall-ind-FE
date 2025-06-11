@@ -29,10 +29,24 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 
 // ✅ Zod Schema for validation
 const AnnouncementSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100, "Title cannot exceed 100 characters"),
-  courseId: z.string().min(1, "Course is required"),
-  message: z.string().min(1, "Message is required").max(500, "Message cannot exceed 500 characters"),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required")
+    .max(100, "Title cannot exceed 100 characters"),
+
+  courseId: z
+    .string()
+    .trim()
+    .min(1, "Course is required"),
+
+  message: z
+    .string()
+    .trim()
+    .min(1, "Message is required")
+    .max(500, "Message cannot exceed 500 characters"),
 });
+
 
 export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
   const { user } = useContext(GlobalContext);

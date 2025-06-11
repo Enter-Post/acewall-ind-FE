@@ -10,6 +10,7 @@ import {
   DollarSign,
   GraduationCap,
   Wallet,
+  MessagesSquare,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -57,6 +58,11 @@ const sideBarTabs = [
     name: "Announcements",
     icon: <Megaphone02Icon />,
     path: "/teacher/announcements",
+  },
+    {
+    name: "Discussion Rooms",
+    icon: <MessagesSquare />,
+    path: "/teacher/discussions",
   },
 
   {
@@ -163,7 +169,7 @@ export default function TeacherLayout() {
                       }
                     }}
                     placeholder="Search courses and lessons"
-                    className="w-full pr-10 border border-gray-300 focus:ring-2 focus:ring-green-400 focus:border-transparent rounded-md transition-all"
+                    className="w-full  border border-gray-300 focus:ring-2 focus:ring-green-400 focus:border-transparent rounded-md transition-all "
                   />
                   <button
                     onClick={handleSearch}
@@ -207,24 +213,21 @@ export default function TeacherLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
-              <Link to="/teacher/account" className="w-10">
-                <Avatar className="rounded-full w-10 h-10">
-                  <AvatarImage
+              <Link to="/teacher/account" className="w-10 h-10 block">
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img
                     src={user?.profileImg?.url || avatar}
-                    alt={user.firstName || "User Avatar"}
-                    className="h-full w-full object-cover rounded-full"
+                    alt={user?.firstName || "User Avatar"}
+                    className="w-full h-full object-cover rounded-full"
                   />
-                  <AvatarFallback>
-                    {`${user.firstName[0]}${user.lastName[0]}`}
-                  </AvatarFallback>
-                </Avatar>
+                </div>
               </Link>
+
 
               <div>
                 <p className="font-medium">{user.firstName}</p>
@@ -244,15 +247,13 @@ export default function TeacherLayout() {
                   onClick={() => {
                     setIsSidebarOpen(false);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location == tab.path ? "bg-green-500" : "text-black"
-                  } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
+                    } `}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location == tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location == tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

@@ -168,7 +168,7 @@ export default function Layout() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     placeholder="Search courses and lessons"
-                    className="w-full pr-10"
+                    className="w-full "
                   />
                   <button
                     onClick={handleSearch}

@@ -12,46 +12,43 @@ import { Eye, EyeClosed } from "lucide-react";
 const schema = z.object({
   email: z
     .string()
-    .min(1, "Email is required")  // Ensure field is not empty
-    .email("Invalid email format"), // Validate the format
+    .min(1, "Email is required")
+    .email("Invalid email format"),
   password: z
     .string()
-    .min(1, "Password is required")  // Ensure field is not empty
-    .min(8, "Password must be at least 8 characters"), // Ensure password is at least 8 characters long
+    .min(1, "Password is required")
+    .min(8, "Password must be at least 8 characters"),
 });
 
 const TeacherLogin = () => {
   const { login, checkAuth } = useContext(GlobalContext);
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordInput, setPasswordInput] = useState(""); // Track password input
 
   // React Hook Form setup with Zod Resolver
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: zodResolver(schema),
   });
+
+  const watchedPassword = watch("password");
 
   // Handle form submission
   const onSubmit = async (formData) => {
     try {
       await login(formData);
-      setLoginError(""); // clear previous errors
-      checkAuth(); // Check if the user is authenticated
+      setLoginError("");
+      checkAuth();
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "Login failed. Please try again.";
       console.error(errorMessage);
       setLoginError(errorMessage);
     }
-  };
-
-  // Update the password input state as the user types
-  const handlePasswordChange = (e) => {
-    setPasswordInput(e.target.value);
   };
 
   return (
@@ -92,17 +89,14 @@ const TeacherLogin = () => {
                   />
                   {errors?.email && (
                     <p className="text-xs text-red-600 inline-block">
-                      {errors.email.message} {/* Error message */}
+                      {errors.email.message}
                     </p>
                   )}
                 </div>
 
                 {/* Password Field */}
                 <div className="mb-8">
-                  <label
-                    htmlFor="password"
-                    className="block text-gray-600 mb-2"
-                  >
+                  <label htmlFor="password" className="block text-gray-600 mb-2">
                     Password
                   </label>
                   <div className="relative">
@@ -111,23 +105,23 @@ const TeacherLogin = () => {
                       id="password"
                       className="w-full p-2 border border-gray-300 rounded pr-10"
                       {...register("password")}
-                      value={passwordInput}
-                      onChange={handlePasswordChange} // Track the password input
                     />
-                    <div
-                      className={`absolute inset-y-0 right-2 flex items-center cursor-pointer ${passwordInput ? "" : "opacity-50 cursor-not-allowed"}`}
-                      onClick={() => passwordInput && setShowPassword((prev) => !prev)} // Enable click only if passwordInput is not empty
-                    >
-                      {showPassword ? (
-                        <Eye size={20} />
-                      ) : (
-                        <EyeClosed size={20} />
-                      )}
-                    </div>
+                    {watchedPassword && (
+                      <div
+                        className="absolute inset-y-0 right-2 flex items-center cursor-pointer"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        {showPassword ? (
+                          <Eye size={20} />
+                        ) : (
+                          <EyeClosed size={20} />
+                        )}
+                      </div>
+                    )}
                   </div>
                   {errors?.password && (
                     <p className="text-xs text-red-600 inline-block">
-                      {errors.password.message} {/* Error message */}
+                      {errors.password.message}
                     </p>
                   )}
                 </div>
@@ -139,7 +133,6 @@ const TeacherLogin = () => {
 
                 {/* Submit Button and Links */}
                 <div className="space-y-12">
-                  {/* Link to Student Login */}
                   <div className="flex justify-between items-center">
                     <Link
                       to="/Login"
@@ -156,7 +149,7 @@ const TeacherLogin = () => {
                     </button>
                   </div>
 
-                  {/* Forget Password link */}
+                  {/* Forgot Password link */}
                   <div className="text-right">
                     <Link
                       to="/forgetPassword"
@@ -188,7 +181,7 @@ const TeacherLogin = () => {
                 </span>
               </blockquote>
               <div className="text-center md:text-left">
-                <p className="font-medium text-gray-800">-Regina</p>
+                <p className="font-medium text-gray-800">- Regina</p>
                 <p className="text-gray-600 font-medium">Teacher</p>
               </div>
             </div>
