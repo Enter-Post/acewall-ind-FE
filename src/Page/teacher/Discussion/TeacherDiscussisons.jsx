@@ -7,7 +7,6 @@ const TeacherDiscussion = () => {
   const [discussion, setDiscussion] = useState([]);
   const [loading, setloading] = useState(true);
   const [refresh, setRefresh] = useState(false);
-
   useEffect(() => {
     const fetchDiscussions = async () => {
       setloading(true);
@@ -32,7 +31,7 @@ const TeacherDiscussion = () => {
         </p>
       </div>
       <div className="flex justify-end pb-5">
-        <CreateDiscussionDialog setRefresh={setRefresh} />
+        <CreateDiscussionDialog setRefresh={setRefresh} refresh={refresh} />
       </div>
       <div className="w-full flex justify-center">
         {loading ? (

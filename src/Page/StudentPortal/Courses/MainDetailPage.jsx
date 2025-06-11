@@ -121,79 +121,87 @@ export default function CourseOverview() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Course Header */}
-      <div className="space-y-6">
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900">
-          {course.courseTitle}
-        </h1>
+      <div
+        className="space-y-6 bg-cover bg-center bg-no-repeat px-6 py-10 rounded-lg"
+        style={{
+          backgroundImage: `url(${course.thumbnail?.url})`,
+        }}
+      >
+        <div className="bg-[#ffffffa0] backdrop-filter backdrop-blur-xs bg-backdrop-blur-md p-6 rounded-lg space-y-6">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-black">
+            {course.courseTitle}
+          </h1>
 
-        <p className="text-gray-600 text-base  leading-relaxed">
-          {course.courseDescription}
-        </p>
-        <div className="flex item-center gap-10 mt-4">
-          <div className="flex items-center justify-center gap-2">
-            <h3 className="text-gray-600 text-sm font-semibold mb-1">
-              Category
-            </h3>
-            <Badge className="bg-green-100 text-green-800 text-sm border-none">
-              {course?.category?.title}
-            </Badge>
-          </div>
+          <p className="text-gray-900 font-medium leading-relaxed">
+            {course.courseDescription}
+          </p>
 
-          <div className="flex items-center justify-center  gap-2">
-            <h3 className="text-gray-600 text-sm font-semibold mb-1">
-              Subcategory
-            </h3>
-            <Badge className="bg-green-100 text-green-800 text-sm border-none">
-              {course?.subcategory?.title}
-            </Badge>
-          </div>
+          <div className="flex items-center gap-10 mt-4">
+            <div className="flex items-center gap-2">
+              <h3 className="text-gray-900 text-sm font-semibold mb-1">
+                Category
+              </h3>
+              <Badge className="bg-green-100 text-green-800 text-sm border-none">
+                {course?.category?.title}
+              </Badge>
+            </div>
 
-          <div className="flex items-center justify-center gap-2">
-            <h3 className="text-gray-600 text-sm font-semibold mb-1">
-              Language
-            </h3>
-            <Badge className="bg-blue-100 text-blue-800 text-sm border-none capitalize">
-              {course.language}
-            </Badge>
-          </div>
-        </div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-gray-900 text-sm font-semibold mb-1">
+                Subcategory
+              </h3>
+              <Badge className="bg-green-100 text-green-800 text-sm border-none">
+                {course?.subcategory?.title}
+              </Badge>
+            </div>
 
-        {/* Instructor Info */}
-        <section className="flex items-center justify-between">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
-            <Avatar className="h-12 w-12 rounded-full">
-              <AvatarImage
-                src={course?.createdby?.profileImg?.url || avatar}
-                alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
-                className="ring-2 ring-black ring-offset-2 rounded-full "
-              />
-              <AvatarFallback>
-                {course.createdby.firstName.charAt(0)}
-                {course.createdby.lastName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-semibold text-gray-800">
-                {course.createdby.firstName}{" "}
-
-                {course.createdby.middleName}{" "}
-
-                {course.createdby.lastName}
-
-              </p>
-              <p className="text-sm text-gray-500">{course.createdby.email}</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-gray-900 text-sm font-semibold mb-1">
+                Language
+              </h3>
+              <Badge className="bg-blue-100 text-blue-800 text-sm border-none capitalize">
+                {course.language}
+              </Badge>
             </div>
           </div>
-          <div>
-            <Button
-              className="bg-green-500"
-              onClick={() => handleConversation()}
-            >
-              Message
-            </Button>
-          </div>
-        </section>
+        </div>
       </div>
+
+      {/* Instructor Info */}
+      <section className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6">
+          <Avatar className="h-15 w-15 rounded-full bg-cover bg-center">
+            <AvatarImage
+              src={course?.createdby?.profileImg?.url || avatar}
+              alt={`${course.createdby.firstName} ${course.createdby.lastName}`}
+              className="h-full w-full bg-cover bg-center rounded-full"
+            />
+            <AvatarFallback>
+              {course.createdby.firstName.charAt(0)}
+              {course.createdby.lastName.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-semibold text-gray-800">
+              {course.createdby.firstName}{" "}
+
+              {course.createdby.middleName}{" "}
+
+              {course.createdby.lastName}
+
+            </p>
+            <p className="text-sm text-gray-500">{course.createdby.email}</p>
+          </div>
+        </div>
+        <div>
+          <Button
+            className="bg-green-500"
+            onClick={() => handleConversation()}
+          >
+            Message
+          </Button>
+        </div>
+      </section>
 
       {/* Tabs */}
       <Tabs

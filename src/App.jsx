@@ -59,6 +59,7 @@ import EditGeneralInfo from "./Page/Account/EditGeneralInfo";
 import { EditCredentials } from "./Page/Account/EditCredentials";
 import StudentCourseGrades from "./Page/teacher/studentCourseGrades";
 import TeacherDiscussion from "./Page/teacher/Discussion/TeacherDiscussisons";
+import TeacherDiscussionChat from "./Page/teacher/Discussion/TeacherDiscussionChat";
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
     useContext(GlobalContext);
@@ -215,6 +216,7 @@ function App() {
             />
             <Route path="discussions">
               <Route index element={<TeacherDiscussion />} />
+              <Route path=":id" element={<TeacherDiscussionChat />} />
             </Route>
 
             <Route path="messages">

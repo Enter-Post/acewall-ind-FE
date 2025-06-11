@@ -59,7 +59,7 @@ const sideBarTabs = [
     icon: <Megaphone02Icon />,
     path: "/teacher/announcements",
   },
-    {
+  {
     name: "Discussion Rooms",
     icon: <MessagesSquare />,
     path: "/teacher/discussions",
@@ -111,6 +111,28 @@ export default function TeacherLayout() {
       setLoading(false);
       setOpenDropdown(true); // ✅ Open dropdown only after data is ready
     }
+  };
+
+  // Helper function (define this above return inside TeacherLayout)
+  const highlightMatch = (text, query) => {
+    if (!query) return text;
+
+    const regex = new RegExp(`(${query})`, "gi");
+    const parts = text.split(regex);
+
+    return (
+      <>
+        {parts.map((part, index) => (
+          <span key={index}>
+            {part.toLowerCase() === query.toLowerCase() ? (
+              <span className="text-green-600 font-semibold">{part}</span>
+            ) : (
+              part
+            )}
+          </span>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -181,7 +203,7 @@ export default function TeacherLayout() {
                 </div>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent className=" bg-white border  border-gray-200 shadow-md rounded-md mt-2 max-h-60 overflow-y-auto z-50 w-64">
+              <DropdownMenuContent className="bg-white border border-gray-200 shadow-md rounded-md mt-2 max-h-60 overflow-y-auto z-50 w-64">
                 {loading ? (
                   <DropdownMenuItem disabled>
                     <span className="text-sm text-gray-700">Searching...</span>
@@ -194,18 +216,17 @@ export default function TeacherLayout() {
                         onClick={() => setOpenDropdown(false)}
                         className="w-full block text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 rounded"
                       >
-                        {course.basics?.courseTitle || "Untitled Course"}
+                        {highlightMatch(course.courseTitle || "Untitled Course", searchQuery)}
                       </Link>
                     </DropdownMenuItem>
                   ))
                 ) : (
                   <DropdownMenuItem disabled>
-                    <span className="text-sm text-gray-500">
-                      No results found
-                    </span>
+                    <span className="text-sm text-gray-500">No results found</span>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
+
             </DropdownMenu>
           </div>
         </div>

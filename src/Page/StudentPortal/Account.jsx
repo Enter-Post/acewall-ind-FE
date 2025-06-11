@@ -1,7 +1,6 @@
 "use client";
 
-import { use, useContext, useEffect, useState } from "react";
-import { GlobalContext } from "@/Context/GlobalProvider";
+import { useEffect, useState } from "react";
 import { Loader, Pen } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Button } from "@/components/ui/button";
@@ -9,16 +8,18 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import avatar from "@/assets/avatar.png";
 
+const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+const maxSize = 5 * 1024 * 1024; // 5MB
+
 const Account = () => {
   const [user, setUser] = useState({});
-  const [profileImg, setprofileImg] = useState(null);
+  const [profileImg, setProfileImg] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const setUserInfo = async () => {
       try {
         const res = await axiosInstance.get("auth/getUserInfo");
-        console.log(res);
         setUser(res.data.user);
       } catch (err) {
         console.log(err);
@@ -26,36 +27,59 @@ const Account = () => {
     };
     setUserInfo();
   }, [loading]);
+
   const handleImg = async () => {
     if (!profileImg) return;
 
-    // Limit file size to 5MB
-    if (profileImg.size > 5 * 1024 * 1024) {
+    if (!allowedTypes.includes(profileImg.type)) {
+      toast.error("Only JPG, JPEG, PNG, or WEBP images are allowed.");
+      setProfileImg(null);
+      return;
+    }
+
+    if (profileImg.size > maxSize) {
       toast.error("Image size must be less than 5MB.");
-      profileImg(null);
+      setProfileImg(null);
       return;
     }
 
     setLoading(true);
-
     const formData = new FormData();
     formData.append("profileImg", profileImg);
 
-    await axiosInstance
-      .put(`auth/updateProfileImg`, formData, {
+    try {
+      const res = await axiosInstance.put("auth/updateProfileImg", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => {
-        setLoading(false);
-        toast.success(res.data.message);
-        setprofileImg(null);
-        window.location.reload(); 
-      })
-      .catch((err) => {
-        setLoading(false);
-        toast.error(err?.response?.data?.message || "Something went wrong.");
-        setprofileImg(null);
       });
+
+      toast.success(res.data.message);
+      setProfileImg(null);
+      window.location.reload();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Something went wrong.");
+      setProfileImg(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only JPG, JPEG, PNG, or WEBP images are allowed.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error("Image size must be less than 5MB.");
+      e.target.value = "";
+      return;
+    }
+
+    setProfileImg(file);
   };
 
   const displayField = (label, value) => (
@@ -68,14 +92,13 @@ const Account = () => {
   return (
     <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">
-          Account Information
-        </h2>
+        <h2 className="text-2xl font-bold text-foreground">Account Information</h2>
       </div>
+
       <section className="space-y-4 w-full">
         <h3 className="text-lg font-semibold text-gray-800">Profile Image</h3>
 
-        <div className="relative w-32 h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 border border-gray-300 rounded-full ">
+        <div className="relative w-32 h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 border border-gray-300 rounded-full overflow-hidden">
           <img
             src={
               profileImg
@@ -90,9 +113,9 @@ const Account = () => {
             <Pen className="w-4 h-4 text-gray-600" />
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg, image/png, image/webp, image/jpg"
               className="hidden"
-              onChange={(e) => setprofileImg(e.target.files[0])}
+              onChange={handleFileChange}
             />
           </label>
         </div>
@@ -113,9 +136,7 @@ const Account = () => {
               )}
             </Button>
             <Button
-              onClick={() => {
-                setprofileImg(null);
-              }}
+              onClick={() => setProfileImg(null)}
               variant="outline"
               className="border-gray-300"
             >
@@ -124,6 +145,7 @@ const Account = () => {
           </div>
         )}
       </section>
+
       <section className="flex gap-2 justify-end">
         <Link to={`/${user.role}/account/editGeneralInfo`}>
           <Button className="bg-green-500 text-white hover:bg-green-600">

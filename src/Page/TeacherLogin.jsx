@@ -134,12 +134,20 @@ const TeacherLogin = () => {
                 {/* Submit Button and Links */}
                 <div className="space-y-12">
                   <div className="flex justify-between items-center">
-                    <Link
-                      to="/Login"
-                      className="text-sm font-semibold text-green-600 hover:underline"
-                    >
-                      Login as a Student
-                    </Link>
+                    <div className="flex flex-col gap-3">
+                      <Link
+                        to="/Login"
+                        className="text-sm font-semibold text-green-600 hover:underline"
+                      >
+                        Login as a Student
+                      </Link>
+                      <Link
+                        to="/"
+                        className="text-sm text-green-600 hover:underline"
+                      >
+                        Create an Account as a Teacher
+                      </Link>
+                    </div>
 
                     <button
                       type="submit"

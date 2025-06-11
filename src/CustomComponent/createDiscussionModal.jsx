@@ -12,18 +12,49 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import { File, Image, Loader } from "lucide-react";
+import { toast } from "sonner";
 
-export function CreateDiscussionDialog({ setRefresh }) {
+export function CreateDiscussionDialog({ refresh, setRefresh }) {
   const [open, setOpen] = useState(false);
   const [courses, setcourse] = useState([]);
+  const [files, setFile] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
   } = useForm();
+
+  const handlefilechange = (e) => {
+    const file = e.target.files;
+    const allowedTypes = [
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "application/pdf",
+    ];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    for (let i = 0; i < file.length; i++) {
+      if (!allowedTypes.includes(file[i].type)) {
+        toast.error("Only PNG, JPEG, JPG, and PDF files are allowed.");
+        return;
+      }
+      if (file[i].size > maxSize) {
+        toast.error("File size must not exceed 2MB.");
+        return;
+      }
+      if (files.length >= 5) {
+        toast.error("You can only upload a maximum of 5 files.");
+        return;
+      }
+    }
+    setFile((prev) => [...prev, ...file]);
+  };
 
   useEffect(() => {
     const getCourses = async () => {
@@ -47,9 +78,12 @@ export function CreateDiscussionDialog({ setRefresh }) {
     formData.append("courseId", data.course);
     formData.append("topic", data.topic);
     formData.append("description", data.description);
-    if (data.file && data.file[0]) {
-      formData.append("files", data.file[0]);
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file) => {
+        formData.append("files", file);
+      });
     }
+
     setRefresh(true);
     axiosInstance
       .post("/discussion/create", formData, {
@@ -58,14 +92,13 @@ export function CreateDiscussionDialog({ setRefresh }) {
       .then((res) => {
         console.log(res);
         setRefresh(false);
+        reset();
         setOpen(false);
       })
       .catch((err) => {
         setRefresh(false);
         console.log(err);
       });
-
-    reset();
   };
 
   return (
@@ -128,13 +161,46 @@ export function CreateDiscussionDialog({ setRefresh }) {
           </div>
 
           <div>
-            <Label htmlFor="file">Attach File</Label>
-            <Input type="file" id="file" {...register("file")} />
+            <Label htmlFor="file">
+              Attach File (Only PNG, JPEG, JPG, and PDF files are allowed.)
+            </Label>
+            <Input
+              type="file"
+              id="file"
+              onChange={(e) => handlefilechange(e)}
+            />
+
+            <div className="flex flex-col gap-2 mt-3">
+              {files.map((file, index) => {
+                return (
+                  <div
+                    key={index}
+                    className="border p-3 rounded-lg border-gray-300 flex items-center gap-2"
+                  >
+                    {" "}
+                    {file.type === "application/pdf" ? (
+                      <File className="text-green-500" />
+                    ) : (
+                      <Image className="text-green-500" />
+                    )}
+                    <p className="text-sm">{file.name}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="pt-4">
-            <Button type="submit" className="w-full">
-              Submit
+            <Button
+              type="submit"
+              disabled={refresh}
+              className="w-full bg-green-500 hover:bg-green-600"
+            >
+              {refresh ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Create Discussion"
+              )}
             </Button>
           </div>
         </form>
