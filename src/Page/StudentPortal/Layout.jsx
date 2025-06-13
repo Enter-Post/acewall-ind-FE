@@ -5,7 +5,7 @@ import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
 import acewallshort from "../../assets/acewallshort.png";
 import avatar from "../../assets/avatar.png";
 
-import { Menu, MessageCircleDashed, Search } from "lucide-react";
+import { Menu, MessageCircleDashed, MessagesSquare, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
 import { Input } from "../../components/ui/input";
@@ -64,6 +64,12 @@ const sideBarTabs = [
     name: "Messages",
     icon: <MessageCircleDashed />,
     path: "/student/messages",
+  },
+    {
+    id: 7,
+    name: "Discussion Rooms",
+    icon: <MessagesSquare />,
+    path: "/student/discussions",
   },
 ];
 

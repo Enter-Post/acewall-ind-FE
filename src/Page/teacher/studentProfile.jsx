@@ -85,20 +85,28 @@ export default function StudentProfile() {
       </div>
 
       {/* Course List */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
-        <h2 className="text-xl font-semibold text-gray-800 col-span-1 sm:col-span-3 mb-2">
-          Enrolled Courses
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <h2 className="text-2xl font-semibold text-gray-900 col-span-full mb-4">
+          View Grade Book of Enrolled Courses
         </h2>
+
         {student?.courses?.map((course, index) => (
-          <Link to={`/teacher/courseGrades/${id}/${course._id}`}>
-            <StudentProfileCourseCard
-              key={index}
-              course={course}
-              className="col-span-1"
-            />
+          <Link
+            to={`/teacher/courseGrades/${id}/${course._id}`}
+            key={index}
+            className="group relative rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+          >
+            <div className="transform group-hover:scale-105 transition-transform duration-300">
+              <StudentProfileCourseCard course={course} />
+            </div>
+
+            <div className="absolute inset-0 bg-green-600 bg-opacity-80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span className="text-white text-lg font-semibold">View Grade Book</span>
+            </div>
           </Link>
         ))}
       </div>
+
     </div>
   );
 }

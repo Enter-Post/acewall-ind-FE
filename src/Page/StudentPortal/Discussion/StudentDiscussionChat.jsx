@@ -1,11 +1,10 @@
 import { GlobalContext } from "@/Context/GlobalProvider";
-import ChatBox from "@/CustomComponent/Discussion/ChatBox";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Files, Send } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const TeacherDiscussionChat = () => {
+const StudentDiscussionChat = () => {
   const { id } = useParams();
   const [discussion, setDiscussion] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,9 +69,36 @@ const TeacherDiscussionChat = () => {
           ))}
         </section>
       </section>
-      <ChatBox discussionId={id} />
+      <section className="w-full min-h-full p-6 bg-gray-100 rounded-lg shadow-lg">
+        <div className="">
+          <p className="text-xl font-bold">Comments</p>
+        </div>
+        <section>
+          {discussion?.comments?.length === 0 && (
+            <p className="text-center text-gray-600">No comments yet</p>
+          )}
+          {discussion?.comments?.map((comment) => (
+            <p>{comment.text}</p>
+          ))}
+        </section>
+        <div className="flex items-center gap-2 mt-10">
+          <img
+            src={user?.profileImg.url}
+            className="w-10 h-10 rounded-full"
+            alt=""
+          />
+          <input
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+
+          <div className="flex items-center justify-center gap-2 rounded-full bg-green-600 text-white p-2">
+            <Send />
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
 
-export default TeacherDiscussionChat;
+export default StudentDiscussionChat;

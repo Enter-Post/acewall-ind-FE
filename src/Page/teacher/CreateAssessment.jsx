@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -153,6 +153,31 @@ export default function CreateAssessmentPage() {
     },
   });
 
+  const [startingdate, setstartingdate] = useState()
+  const [endingdate, setendingdate] = useState()
+
+  const courseId = params.courseId;
+
+  useEffect(() => {
+    axiosInstance
+      .get(`course/getcourseDueDate/${courseId}`)
+      .then((res) => {
+        setstartingdate(new Date(res.data.startingDate));
+        setendingdate(new Date(res.data.endingDate));
+        const start = new Date(res.data.startingDate);
+        const end = new Date(res.data.endingDate);
+
+        const formattedStartDate = start.toISOString().split("T")[0];
+        const formattedEndDate = end.toISOString().split("T")[0];
+
+        console.log("Start Date:", formattedStartDate); // "2025-06-05"
+        console.log("End Date:", formattedEndDate);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch due date:", err);
+      });
+  }, [courseId]);
+
 
 
   const handleRemoveFile = (index) => {
@@ -270,9 +295,15 @@ export default function CreateAssessmentPage() {
       formData.append("title", data.title);
       formData.append("description", data.description);
       formData.append("category", data.category);
-      if (data.dueDate.dateTime) {
+      const dueDate = new Date(data.dueDate.dateTime);
+      if (dueDate >= startingdate && dueDate < endingdate) {
+
         formData.append("dueDate", data.dueDate.dateTime);
       }
+
+      console.log(formData.endingdate, "dueDate")
+      console.log(data.dueDate);
+
       formData.append(params.type, params.id);
       formData.append("questions", JSON.stringify(data.questions));
       if (selectedFiles.length > 0) {
@@ -280,7 +311,6 @@ export default function CreateAssessmentPage() {
           formData.append("files", file);
         });
       }
-
       const res = await axiosInstance.post("assessment/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -298,7 +328,14 @@ export default function CreateAssessmentPage() {
   };
 
 
+
+
+
+
   const { watch, control, formState } = form;
+
+
+
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg max-w-4xl">
@@ -399,7 +436,11 @@ export default function CreateAssessmentPage() {
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Due Date</h3>
-            <DueDatePicker name="dueDate" />
+            <DueDatePicker
+              name="dueDate"
+              minDate={startingdate}
+              maxDate={endingdate}
+            />
           </div>
 
           {/* Questions Section */}
@@ -608,7 +649,7 @@ export default function CreateAssessmentPage() {
                               `questions.${questionIndex}.correctAnswer`
                             )}
                             onValueChange={(val) => {
-                              console.log(val, "val");
+                              // console.log(val, "val");
                               form.setValue(
                                 `questions.${questionIndex}.correctAnswer`,
                                 val

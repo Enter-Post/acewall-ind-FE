@@ -20,6 +20,9 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
   const [courses, setcourse] = useState([]);
   const [files, setFile] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [type, setType] = useState("");
+
+  console.log(type, "type");
 
   const {
     register,
@@ -78,6 +81,7 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
     formData.append("courseId", data.course);
     formData.append("topic", data.topic);
     formData.append("description", data.description);
+    formData.append("type", type);
     if (files && files.length > 0) {
       Array.from(files).forEach((file) => {
         formData.append("files", file);
@@ -115,23 +119,47 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
-            <Label htmlFor="course">Course</Label>
+            <Label htmlFor="type">Type</Label>
             <select
-              id="course"
-              {...register("course", { required: "Course is required" })}
+              id="type"
+              {...register("type", { required: "Type is required" })}
+              onChange={(e) => setType(e.target.value)}
               className="w-full border rounded-md p-2 text-sm"
             >
-              <option value="">Select a course</option>
-              {courses?.map((course) => (
-                <option key={course.id} value={course._id}>
-                  {course.courseTitle}
-                </option>
-              ))}
+              <option value="">Select a type</option>
+              <option value="course">Course</option>
+              <option value="public">Public</option>
             </select>
-            {errors.course && (
-              <p className="text-xs text-red-500">{errors.course.message}</p>
+            {errors.type && (
+              <p className="text-xs text-red-500">{errors.type.message}</p>
             )}
           </div>
+          {type === "course" && (
+            <div>
+              <Label htmlFor="course">Course</Label>
+              <select
+                id="course"
+                {...register("course", {
+                  validate: (value) => {
+                    if (type === "course" && !value) {
+                      return "Course is required";
+                    }
+                  },
+                })}
+                className="w-full border rounded-md p-2 text-sm"
+              >
+                <option value="">Select a course</option>
+                {courses?.map((course) => (
+                  <option key={course.id} value={course._id}>
+                    {course.courseTitle}
+                  </option>
+                ))}
+              </select>
+              {errors.course && (
+                <p className="text-xs text-red-500">{errors.course.message}</p>
+              )}
+            </div>
+          )}
 
           <div>
             <Label htmlFor="topic">Topic</Label>

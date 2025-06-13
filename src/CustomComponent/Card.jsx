@@ -427,21 +427,20 @@ const LandingPageCard = ({ name, description, imageUrl, buttonUrl }) => {
 
 function StudentProfileCourseCard({ course }) {
   return (
-    <Card className="p-4 flex flex-col sm:flex-row items-center  gap-4 sm:gap-10 shadow-sm rounded-md">
+    <Card className="p-4 flex flex-col sm:flex-row items-center gap-4 sm:gap-6 shadow-md rounded-xl border hover:border-primary transition duration-300">
       {/* Thumbnail */}
-      <div className="w-full sm:w-36 h-24 rounded-md overflow-hidden shrink-0">
+      <div className="w-full sm:w-36 h-24 rounded-lg overflow-hidden flex items-center justify-center">
         <img
           src={course?.thumbnail?.url}
           alt="Course Thumbnail"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
       </div>
 
       {/* Course Info */}
       <div className="flex-1 w-full text-center sm:text-left">
-        <h3 className="font-bold text-black text-md">{course?.courseTitle}</h3>
-        {/* Optional subtitle or description */}
-        {/* <p className="text-white text-sm mt-1">{course?.description}</p> */}
+        <h3 className="text-lg font-semibold text-gray-900">{course?.courseTitle}</h3>
+        {/* <p className="text-sm text-gray-500 mt-1 line-clamp-2">{course?.description}</p> */}
       </div>
     </Card>
   );

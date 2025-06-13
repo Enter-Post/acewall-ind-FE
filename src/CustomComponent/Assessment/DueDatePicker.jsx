@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useFormContext, Controller } from "react-hook-form";
 
-export default function DueDatePicker({ name = "dueDate" }) {
+export default function DueDatePicker({ name = "dueDate", minDate, maxDate }) {
   const {
     control,
     setValue,
@@ -24,12 +24,10 @@ export default function DueDatePicker({ name = "dueDate" }) {
   const selectedDate = watch(`${name}.date`);
   const selectedTime = watch(`${name}.time`);
 
-  // Format the date for display
   const formattedDate = selectedDate 
     ? format(new Date(selectedDate), "PPP") 
     : "Pick a date";
 
-  // Handle time input validation
   const getMinTime = () => {
     if (selectedDate && isToday(new Date(selectedDate))) {
       const now = new Date();
@@ -38,7 +36,6 @@ export default function DueDatePicker({ name = "dueDate" }) {
     return undefined;
   };
 
-  // Update the combined date time whenever date or time changes
   useEffect(() => {
     if (selectedDate && selectedTime) {
       const [hours, minutes] = selectedTime.split(":").map(Number);
@@ -83,13 +80,24 @@ export default function DueDatePicker({ name = "dueDate" }) {
                 selected={field.value ? new Date(field.value) : undefined}
                 onSelect={(date) => {
                   if (!date) return;
-                  const now = new Date();
-                  if (isAfter(date, now) || isToday(date)) {
-                    field.onChange(date.toISOString());
+                  const selected = new Date(date);
+                  if (
+                    (!minDate || selected >= minDate) &&
+                    (!maxDate || selected <= maxDate) &&
+                    (isAfter(selected, new Date()) || isToday(selected))
+                  ) {
+                    field.onChange(selected.toISOString());
                     setOpen(false);
                   }
                 }}
-                disabled={(date) => date < new Date().setHours(0, 0, 0, 0)}
+                disabled={(date) => {
+                  const d = new Date(date);
+                  return (
+                    d < new Date().setHours(0, 0, 0, 0) ||
+                    (minDate && d < new Date(minDate).setHours(0, 0, 0, 0)) ||
+                    (maxDate && d > new Date(maxDate).setHours(23, 59, 59, 999))
+                  );
+                }}
                 initialFocus
               />
             </PopoverContent>

@@ -3,7 +3,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-const TeacherDiscussion = () => {
+const StudentDiscussion = () => {
   const [discussion, setDiscussion] = useState([]);
   const [loading, setloading] = useState(true);
   const [refresh, setRefresh] = useState(false);
@@ -57,13 +57,6 @@ const TeacherDiscussion = () => {
                   />
                 </div>
               )}
-              <div
-                className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 ${
-                  item?.type === "public" ? "bg-green-600" : "bg-indigo-600"
-                }`}
-              >
-                <p className={`text-xs text-white`}>{item?.type}</p>
-              </div>
 
               <div className="flex justify-between items-center mt-3">
                 <h2 className="font-semibold text-lg text-gray-800 truncate">
@@ -88,4 +81,4 @@ const TeacherDiscussion = () => {
   );
 };
 
-export default TeacherDiscussion;
+export default StudentDiscussion;
