@@ -13,15 +13,36 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesWithSubcategories = async () => {
       try {
-        const res = await axiosInstance.get("category/get");
-        setCategories(res.data.categories);
+        const categoryRes = await axiosInstance.get("/category/get");
+        const allCategories = categoryRes.data?.categories || [];
+
+        const validCategories = [];
+
+        const subcategoryFetches = allCategories.map(async (category) => {
+          if (!category._id) return;
+
+          try {
+            const subRes = await axiosInstance.get(`/category/subcategories/${category._id}`);
+            const subcategories = subRes.data?.subcategories || [];
+
+            if (subcategories.length > 0) {
+              validCategories.push(category);
+            }
+          } catch (err) {
+            console.error(`Failed to fetch subcategories for ${category.title}:`, err.message);
+          }
+        });
+
+        await Promise.allSettled(subcategoryFetches);
+        setCategories(validCategories);
       } catch (err) {
-        console.error("Failed to fetch categories:", err);
+        console.error("Failed to fetch categories:", err.message);
       }
     };
-    fetchCategories();
+
+    fetchCategoriesWithSubcategories();
   }, []);
 
   return (
@@ -33,7 +54,7 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
         onValueChange={(value) => {
           const event = { target: { name: "category", value } };
           register("category").onChange(event);
-          onCategoryChange?.(value); // notify parent of selection
+          onCategoryChange?.(value);
         }}
       >
         <SelectTrigger className="bg-gray-50">
@@ -47,7 +68,7 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
               </SelectItem>
             ))
           ) : (
-            <div className="p-2 text-sm text-gray-500">No categories found</div>
+            <div className="p-2 text-sm text-gray-500">No categories with subcategories</div>
           )}
         </SelectContent>
       </Select>

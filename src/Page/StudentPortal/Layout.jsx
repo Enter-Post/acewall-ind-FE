@@ -5,7 +5,13 @@ import acewallscholarslogo from "../../assets/acewallscholarslogo.webp";
 import acewallshort from "../../assets/acewallshort.png";
 import avatar from "../../assets/avatar.png";
 
-import { Menu, MessageCircleDashed, MessagesSquare, Search } from "lucide-react";
+import {
+  Menu,
+  MessageCircleDashed,
+  MessagesSquare,
+  MessagesSquareIcon,
+  Search,
+} from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
 import { Input } from "../../components/ui/input";
@@ -60,16 +66,15 @@ const sideBarTabs = [
     path: "/student/announcements",
   },
   {
+    name: "Discussion Rooms",
+    icon: <MessagesSquareIcon />,
+    path: "/student/discussions",
+  },
+  {
     id: 6,
     name: "Messages",
     icon: <MessageCircleDashed />,
     path: "/student/messages",
-  },
-    {
-    id: 7,
-    name: "Discussion Rooms",
-    icon: <MessagesSquare />,
-    path: "/student/discussions",
   },
 ];
 
@@ -225,8 +230,9 @@ export default function Layout() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
-            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             {/* User Info */}
@@ -247,7 +253,8 @@ export default function Layout() {
                   title={user.email}
                 >
                   {user.email}
-                </p>              </div>
+                </p>{" "}
+              </div>
             </div>
 
             {/* Mobile search */}
@@ -265,13 +272,15 @@ export default function Layout() {
                   key={tab.id}
                   to={tab.path}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
-                    }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                    location === tab.path ? "bg-green-500" : "text-black"
+                  }`}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${location === tab.path ? "text-white" : "text-green-600"
-                      }`}
+                    className={`${
+                      location === tab.path ? "text-white" : "text-green-600"
+                    }`}
                   >
                     {tab.name}
                   </span>

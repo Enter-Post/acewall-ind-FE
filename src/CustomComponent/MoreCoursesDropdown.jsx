@@ -10,58 +10,54 @@ import {
 import { ChevronDown } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
 const MoreCoursesDropdown = () => {
   const [categories, setCategories] = useState([]);
   const [subCategoriesMap, setSubCategoriesMap] = useState({});
-  const [loadingSubCategories, setLoadingSubCategories] = useState({});
   const navigate = useNavigate();
   const { setSelectedSubcategoryId } = useContext(GlobalContext);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategoriesAndSubcategories = async () => {
       try {
-        const response = await axiosInstance.get("/category/get");
-        if (response.data?.categories) {
-          setCategories(response.data.categories);
-        } else {
-          console.error("Invalid response:", response.data);
-        }
+        const categoryRes = await axiosInstance.get("/category/get");
+        const allCategories = categoryRes.data?.categories || [];
+
+        const validCategories = [];
+        const subcategoryMap = {};
+
+        // Use Promise.allSettled to handle errors gracefully
+        const subcategoryPromises = allCategories.map(async (category) => {
+          if (!category._id) return;
+
+          try {
+            const subRes = await axiosInstance.get(`/category/subcategories/${category._id}`);
+            const subcategories = subRes.data?.subcategories || [];
+
+            if (subcategories.length > 0) {
+              validCategories.push(category);
+              subcategoryMap[category._id] = subcategories;
+            }
+          } catch (err) {
+            console.error(`❌ Failed to load subcategories for ${category.title}:`, err.message);
+          }
+        });
+
+        await Promise.allSettled(subcategoryPromises);
+
+        setCategories(validCategories);
+        setSubCategoriesMap(subcategoryMap);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("❌ Error fetching categories:", error.message);
       }
     };
-    fetchCategories();
+
+    fetchCategoriesAndSubcategories();
   }, []);
 
-  const fetchSubcategories = async (categoryId) => {
-    if (subCategoriesMap[categoryId] || loadingSubCategories[categoryId]) return;
-    setLoadingSubCategories((prev) => ({ ...prev, [categoryId]: true }));
-    
-    try {
-      const response = await axiosInstance.get(`/category/subcategories/${categoryId}`);
-      const subcategories = response.data?.subcategories || [];
-
-      setSubCategoriesMap((prev) => ({
-        ...prev,
-        [categoryId]: subcategories,
-      }));
-       } catch (error) {
-      console.error("Error fetching subcategories:", error);
-      setSubCategoriesMap((prev) => ({
-        ...prev,
-        [categoryId]: [],
-      }));
-    } finally {
-      setLoadingSubCategories((prev) => ({ ...prev, [categoryId]: false }));
-    }
-  };
-
-  const handleNavigate = (categoryId, subcategoryId) => {
-    console.log(subcategoryId, "subcategoryId");
-
+  const handleNavigate = (subcategoryId) => {
     setSelectedSubcategoryId(subcategoryId);
     navigate(`/student/courses/${subcategoryId}`);
   };
@@ -78,27 +74,21 @@ const MoreCoursesDropdown = () => {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="grid grid-cols-2 gap-4">
+      <DropdownMenuContent className="grid grid-cols-2 gap-4 max-h-[400px] overflow-y-auto">
         {categories.length > 0 ? (
-          categories.map((category, index) => (
-            <DropdownMenuSub key={index}>
-              <DropdownMenuSubTrigger onMouseEnter={() => fetchSubcategories(category._id)}>
-                {category.title}
-              </DropdownMenuSubTrigger>
+          categories.map((category) => (
+            <DropdownMenuSub key={category._id}>
+              <DropdownMenuSubTrigger>{category.title}</DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                {loadingSubCategories[category._id] ? (
-                  <DropdownMenuItem disabled>Loading...</DropdownMenuItem>
-                ) : subCategoriesMap[category._id]?.length > 0 ? (
-                  subCategoriesMap[category._id].map((sub) => (
-                    <Link to={`/student/courses/${sub._id}`} key={sub._id}>
-                      <DropdownMenuItem className="cursor-pointer">
-                        {sub.title}
-                      </DropdownMenuItem>
-                    </Link>
-                  ))
-                ) : (
-                  <DropdownMenuItem disabled>No subcategories</DropdownMenuItem>
-                )}
+                {subCategoriesMap[category._id].map((sub) => (
+                  <DropdownMenuItem
+                    key={sub._id}
+                    className="cursor-pointer"
+                    onSelect={() => handleNavigate(sub._id)}
+                  >
+                    {sub.title}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuSubContent>
             </DropdownMenuSub>
           ))
@@ -106,7 +96,6 @@ const MoreCoursesDropdown = () => {
           <DropdownMenuItem disabled>No categories available</DropdownMenuItem>
         )}
       </DropdownMenuContent>
-
     </DropdownMenu>
   );
 };
