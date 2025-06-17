@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -27,6 +27,8 @@ import RatingSection from "@/CustomComponent/teacher/RatingSection";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const [course, setCourse] = useState(null);
   const [open, setOpen] = useState(false);
   const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
@@ -142,11 +144,21 @@ export default function TeacherCourseDetails() {
                 </h3>
               </DialogContent>
             </Dialog>
+
+
           </div>
 
           <AssessmentCategoryDialog courseId={id} />
-        </section>
 
+        </section>
+        <div>
+          <button
+            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
+            onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
+          >
+            Preview as a student
+          </button>
+        </div>
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard

@@ -38,9 +38,10 @@ const cardData = [
   {
     name: "Parent Aide",
     description:
-      "How did we determine the popular course? The college level courses that have been listed should not be there.If we just need a place holder than we should be putting in classes like, Algebra 1, English, Physics, etc.     ",
+      "Acewall Scholars’ parent aide program offers a holistic approach to developing effective parenting skills.This program provides education on supporting children through their emotional, physical, mental, and spiritual development.Our program imparts a deeper understanding of the core, individual needs of the child within each developmental stage.",
+
     imageUrl:
-    "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
+      "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
   },
   {
@@ -63,7 +64,7 @@ const cardData = [
   {
     name: "College Counseling",
     description:
-      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process.  ",
+      "Our college counseling service assists and empowers both students and parents by providing the necessary guidance and information to assist in navigating the college process.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/college+counseling-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/college-counseling",

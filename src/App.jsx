@@ -62,6 +62,7 @@ import TeacherDiscussion from "./Page/teacher/Discussion/TeacherDiscussisons";
 import TeacherDiscussionChat from "./Page/teacher/Discussion/TeacherDiscussionChat";
 import StudentDiscussion from "./Page/StudentPortal/Student Discussion/StudentDiscussisons";
 import StudentDiscussionChat from "./Page/StudentPortal/Student Discussion/StudentDiscussionChat";
+import StdPreview from "./Page/teacher/Courses/StdPreview";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -236,6 +237,7 @@ function App() {
                 path="courseDetail/:id"
                 element={<TeacherCourseDetails />}
               />
+              <Route path="stdPreview/:id" element={<StdPreview />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />

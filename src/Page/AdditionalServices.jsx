@@ -19,10 +19,11 @@ const cardData = [
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_355386233-834697fd-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/mentoring",
   },
- {
+  {
     name: "Parent Aide",
     description:
-      "How did we determine the popular course? The college level courses that have been listed should not be there.If we just need a place holder than we should be putting in classes like, Algebra 1, English, Physics, etc.     ",
+      "Acewall Scholars’ parent aide program offers a holistic approach to developing effective parenting skills.This program provides education on supporting children through their emotional, physical, mental, and spiritual development.Our program imparts a deeper understanding of the core, individual needs of the child within each developmental stage.",
+     
     imageUrl:
     "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
@@ -57,11 +58,11 @@ const cardData = [
 const AdditionalServices = () => {
   return (
     <section className="flex justify-center flex-col items-center ">
-     <div className=" w-[90%] text-center ">
-          <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Additional Services</p>
-        </div>
+      <div className=" w-[90%] text-center ">
+        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">Additional Services</p>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 justify-between gap-2 p-3 w-[80%]">
-        
+
         {cardData.map((card, index) => (
           <LandingPageCard
             key={index}

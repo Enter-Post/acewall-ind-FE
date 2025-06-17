@@ -36,7 +36,7 @@ export default function PurchaseConfirmationModal({ courseID }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
+        <Button 
           className={
             "w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300"
           }
@@ -48,7 +48,7 @@ export default function PurchaseConfirmationModal({ courseID }) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-green-400">
-            <CheckCircle2 className="h-5 w-5" /> Enroll in Course
+            <CheckCircle2 className="h-5 w-5 " /> Enroll in Course
           </DialogTitle>
           <DialogDescription>
             Click below to enroll and get started for free.
