@@ -10,27 +10,13 @@ export const CourseContext = createContext();
 export const CourseProvider = ({ children }) => {
   const [courseLoading, setCourseLoading] = useState(false);
   const { user } = useContext(GlobalContext);
-  let [course, setCourse] = useState({
-    basics: {},
-    chapters: [],
-    createdby: user?._id,
-  });
-
-// <<<<<<< Messages
-//   // console.log(course, "course");
-// =======
-//   // const uploadCourse = async () => {
-// >>>>>>> keshaUpdates-23/4
-
-//   // };
+  const [quarters, setQuarters] = useState({});
 
   return (
     <CourseContext.Provider
       value={{
-        course,
-        setCourse,
-        courseLoading,
-        setCourseLoading,
+        quarters,
+        setQuarters,
       }}
     >
       {children}

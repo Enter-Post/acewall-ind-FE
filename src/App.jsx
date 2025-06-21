@@ -63,6 +63,8 @@ import TeacherDiscussionChat from "./Page/teacher/Discussion/TeacherDiscussionCh
 import StudentDiscussion from "./Page/StudentPortal/Student Discussion/StudentDiscussisons";
 import StudentDiscussionChat from "./Page/StudentPortal/Student Discussion/StudentDiscussionChat";
 import StdPreview from "./Page/teacher/Courses/StdPreview";
+import SemesterDetail from "./Page/teacher/Courses/SemesterDetail";
+import QuarterDetail from "./Page/teacher/Courses/QuarterDetail";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -211,7 +213,7 @@ function App() {
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
               <Route
-                path="create/:type/:id/:courseId"
+                path="create/:type/:id/:courseId/:startDate/:endDate"
                 element={<CreateAssessmentPage />}
               />
             </Route>
@@ -237,6 +239,11 @@ function App() {
                 path="courseDetail/:id"
                 element={<TeacherCourseDetails />}
               />
+              <Route
+                path=":courseId/semester/:id"
+                element={<SemesterDetail />}
+              />
+              <Route path=":courseId/quarter/:id" element={<QuarterDetail />} />
               <Route path="stdPreview/:id" element={<StdPreview />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />

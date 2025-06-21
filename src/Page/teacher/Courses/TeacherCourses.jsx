@@ -11,7 +11,7 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 const TeacherCourses = () => {
   const [allCourses, setAllCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { user } = useContext(GlobalContext);
 
   const searching = searchQuery.trim() !== "";

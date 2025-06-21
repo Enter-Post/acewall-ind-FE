@@ -64,7 +64,7 @@ const lessonSchema = z.object({
     ),
 });
 
-const LessonModal = ({ chapterID, fetchCourseDetail }) => {
+const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
   const [open, setOpen] = useState(false);
   const [pdfInputs, setPdfInputs] = useState([{ id: Date.now(), file: null }]);
   const [totalSize, setTotalSize] = useState(0);
@@ -164,7 +164,7 @@ const LessonModal = ({ chapterID, fetchCourseDetail }) => {
       });
 
       toast.success(res.data.message);
-      fetchCourseDetail();
+      fetchQuarterDetail();
       reset();
       setPdfInputs([{ id: Date.now(), file: null }]);
       setTotalSize(0);

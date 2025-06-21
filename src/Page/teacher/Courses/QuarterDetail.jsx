@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import LessonModal from "./LessonModal";
+import LessonModal from "../../../CustomComponent/CreateCourse/LessonModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -30,17 +30,38 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { DeleteModal } from "./DeleteModal";
+import { DeleteModal } from "../../../CustomComponent/CreateCourse/DeleteModal";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
 
-const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
+const QuarterDetail = ({}) => {
+  const { id, courseId } = useParams();
   const [openLessons, setOpenLessons] = useState({});
   const [activeTab, setActiveTab] = useState("chapters");
   const [loading, setLoading] = useState(false);
-  const [openAssessmentModalId, setOpenAssessmentModalId] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const [quarterStartDate, setQuarterStartDate] = useState("");
+  const [quarterEndDate, setQuarterEndDate] = useState("");
 
-  console.log(chapters, "chapters");
+  const fetchQuarterDetail = async () => {
+    await axiosInstance
+      .get(`chapter/${courseId}/${id}`)
+      .then((res) => {
+        console.log(res);
+        setChapters(res.data.chapters);
+        setQuarterStartDate(res.data.quarterEndDate);
+        setQuarterEndDate(res.data.quarterStartDate);
+      })
+      .catch((err) => {
+        console.log(err);
+        setChapters([]);
+      });
+  };
+
+  useEffect(() => {
+    fetchQuarterDetail();
+  }, []);
 
   const toggleLesson = (lessonId) => {
     setOpenLessons((prev) => ({
@@ -70,7 +91,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
       .then((res) => {
         setLoading(false);
         toast.success(res.data.message);
-        fetchCourseDetail();
+        fetchQuarterDetail();
       })
       .catch((err) => {
         setLoading(false);
@@ -85,7 +106,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
       .then((res) => {
         setLoading(false);
         toast.success(res.data.message);
-        fetchCourseDetail();
+        fetchQuarterDetail();
       })
       .catch((err) => {
         setLoading(false);
@@ -108,6 +129,13 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
         </TabsList>
 
         <TabsContent value="chapters" className="mt-4">
+          <section className="mb-5">
+            <ChapterCreationModal
+              courseId={courseId}
+              quarterId={id}
+              fetchQuarterDetail={fetchQuarterDetail}
+            />
+          </section>
           <Accordion type="multiple" className="w-full space-y-4">
             {chapters?.map((chapter, chapterIndex) => (
               <AccordionItem
@@ -145,10 +173,10 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
 
                     <LessonModal
                       chapterID={chapter._id}
-                      fetchCourseDetail={fetchCourseDetail}
+                      fetchQuarterDetail={fetchQuarterDetail}
                     />
                     <Link
-                      to={`/teacher/assessments/create/chapter/${chapter._id}/${courseId}`}
+                      to={`/teacher/assessments/create/chapter/${chapter._id}/${courseId}/${quarterStartDate}/${quarterEndDate}`}
                     >
                       <Button variant="outline" className="text-green-600">
                         + Add Assessment
@@ -156,8 +184,8 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                     </Link>
                   </div>
 
-                  {Array.isArray(chapter.chapterAssessments) &&
-                    chapter.chapterAssessments.length > 0 && (
+                  {Array.isArray(chapter.chapter_assessments) &&
+                    chapter.chapter_assessments.length > 0 && (
                       <Card>
                         <CardHeader className="py-3">
                           <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -167,12 +195,15 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="py-2">
-                          {chapter.chapterAssessments.map((assess, aIdx) => (
+                          {chapter.chapter_assessments.map((assess, aIdx) => (
                             <div
                               key={aIdx}
                               className="pl-4 border-l-2 border-orange-400 mb-4 last:mb-0"
                             >
-                              <div className="mb-2">
+                              <Badge variant="outline" className="bg-blue-50">
+                                {assess.category.name}
+                              </Badge>
+                              <div className="my-4">
                                 <div className="flex items-center justify-between">
                                   <p className="text-base font-medium mb-1 text-gray-800">
                                     {assess.title}
@@ -265,9 +296,11 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                             <p
                                                               className="text-sm font-medium text-gray-800 mb-2"
                                                               dangerouslySetInnerHTML={{
-                                                                __html: `<strong>Q${idx + 1
-                                                                  }:</strong> ${q.question
-                                                                  }`,
+                                                                __html: `<strong>Q${
+                                                                  idx + 1
+                                                                }:</strong> ${
+                                                                  q.question
+                                                                }`,
                                                               }}
                                                             />
                                                             {type === "mcq" && (
@@ -278,9 +311,9 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                                       key={i}
                                                                       className={
                                                                         q.correctAnswer ===
-                                                                          (
-                                                                            i + 1
-                                                                          ).toString()
+                                                                        (
+                                                                          i + 1
+                                                                        ).toString()
                                                                           ? "font-semibold text-green-500"
                                                                           : ""
                                                                       }
@@ -308,16 +341,16 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                             )}
                                                             {type ===
                                                               "truefalse" && (
-                                                                <div className="text-sm text-gray-700">
-                                                                  <span className="font-semibold">
-                                                                    Answer:
-                                                                  </span>{" "}
-                                                                  {q.correctAnswer ===
-                                                                    "true"
-                                                                    ? "True"
-                                                                    : "False"}
-                                                                </div>
-                                                              )}
+                                                              <div className="text-sm text-gray-700">
+                                                                <span className="font-semibold">
+                                                                  Answer:
+                                                                </span>{" "}
+                                                                {q.correctAnswer ===
+                                                                "true"
+                                                                  ? "True"
+                                                                  : "False"}
+                                                              </div>
+                                                            )}
                                                           </div>
                                                         ))}
                                                       </AccordionContent>
@@ -391,7 +424,7 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                   }
                                 />
                                 <Link
-                                  to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}`}
+                                  to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}/${quarterStartDate}/${quarterEndDate}`}
                                 >
                                   <Button
                                     variant="outline"
@@ -476,19 +509,22 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                   </div>
                                 </div>
 
-                                {lesson.lessonAssessments?.length > 0 && (
+                                {lesson?.lesson_assessments?.length > 0 && (
                                   <Card className="mt-6">
                                     <CardHeader className="py-3">
                                       <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                        <Badge variant="outline" className="bg-blue-50">
-                                         lesson {lesson.lessonAssessments[0]?.category?.name || "Lesson Assessment"}
+                                        <Badge
+                                          variant="outline"
+                                          className="bg-oramge-50"
+                                        >
+                                          Lesson Assessments
                                         </Badge>
                                       </CardTitle>
                                     </CardHeader>
 
                                     <CardContent className="py-2">
                                       {Object.entries(
-                                        lesson.lessonAssessments.reduce(
+                                        lesson.lesson_assessments.reduce(
                                           (groups, assessment) => {
                                             const type =
                                               assessment.type || "Other";
@@ -504,54 +540,56 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                           key={type}
                                           className="mb-6 last:mb-0"
                                         >
-                                          <h6 className="text-xs font-semibold text-gray-500 uppercase mb-2">
-                                            {type}
-                                          </h6>
-
                                           <div className="space-y-4">
                                             {assessments.map((a, i) => (
-                                              <div
-                                                key={a._id || i}
-                                                className="pl-4 border-l-2 border-blue-400"
-                                              >
-                                                <div className="flex items-center justify-between">
-                                                  <p className="text-sm font-medium text-gray-800">
-                                                    {a.title ||
-                                                      `Assessment ${i + 1}`}
-                                                  </p>
+                                              <section key={a._id || i}>
+                                                <Badge
+                                                  variant="outline"
+                                                  className="bg-blue-50"
+                                                >
+                                                  {a.category.name}
+                                                </Badge>
+                                                <div className="pl-4 border-l-2 border-blue-400 my-4">
+                                                  <div className="flex items-center justify-between">
+                                                    <p className="text-sm font-medium text-gray-800">
+                                                      {a.title ||
+                                                        `Assessment ${i + 1}`}
+                                                    </p>
 
-                                                  <div className="flex items-center gap-2">
-                                                    <Dialog>
-                                                      <DialogTrigger asChild>
-                                                        <Button
-                                                          variant="ghost"
-                                                          size="sm"
-                                                          className="h-8 text-gray-500 hover:text-blue-600"
-                                                        >
-                                                          <BookOpen className="h-4 w-4" />
-                                                          <span className="sr-only">
-                                                            View
-                                                          </span>
-                                                        </Button>
-                                                      </DialogTrigger>
-                                                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                                                        <DialogHeader>
-                                                          <DialogTitle>
-                                                            {a.title ||
-                                                              `Assessment ${i + 1
-                                                              }`}
-                                                          </DialogTitle>
-                                                        </DialogHeader>
+                                                    <div className="flex items-center gap-2">
+                                                      {/* View Assessment Dialog */}
+                                                      <Dialog>
+                                                        <DialogTrigger asChild>
+                                                          <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-8 text-gray-500 hover:text-blue-600"
+                                                          >
+                                                            <BookOpen className="h-4 w-4" />
+                                                            <span className="sr-only">
+                                                              View
+                                                            </span>
+                                                          </Button>
+                                                        </DialogTrigger>
+                                                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                                                          <DialogHeader>
+                                                            <DialogTitle>
+                                                              {a.title ||
+                                                                `Assessment ${
+                                                                  i + 1
+                                                                }`}
+                                                            </DialogTitle>
+                                                          </DialogHeader>
 
-                                                        <div className="mt-2 space-y-4">
-                                                          {a.description && (
-                                                            <p className="text-sm text-gray-700">
-                                                              {a.description}
-                                                            </p>
-                                                          )}
+                                                          <div className="mt-2 space-y-4">
+                                                            {a.description && (
+                                                              <p className="text-sm text-gray-700">
+                                                                {a.description}
+                                                              </p>
+                                                            )}
 
-                                                          {a.files?.length >
-                                                            0 && (
+                                                            {a.files?.length >
+                                                              0 && (
                                                               <div>
                                                                 <h4 className="text-sm font-semibold text-gray-600 mb-2">
                                                                   Files
@@ -581,8 +619,8 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                               </div>
                                                             )}
 
-                                                          {a.questions?.length >
-                                                            0 && (
+                                                            {a.questions
+                                                              ?.length > 0 && (
                                                               <Accordion
                                                                 type="multiple"
                                                                 className="w-full"
@@ -591,55 +629,62 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                                   "mcq",
                                                                   "qa",
                                                                   "truefalse",
-                                                                ].map((type) => {
-                                                                  const group =
-                                                                    a.questions.filter(
-                                                                      (q) =>
-                                                                        q.type ===
-                                                                        type
-                                                                    );
-                                                                  if (
-                                                                    group.length ===
-                                                                    0
-                                                                  )
-                                                                    return null;
+                                                                ].map(
+                                                                  (type) => {
+                                                                    const group =
+                                                                      a.questions.filter(
+                                                                        (q) =>
+                                                                          q.type ===
+                                                                          type
+                                                                      );
+                                                                    if (
+                                                                      group.length ===
+                                                                      0
+                                                                    )
+                                                                      return null;
 
-                                                                  return (
-                                                                    <AccordionItem
-                                                                      key={type}
-                                                                      value={type}
-                                                                    >
-                                                                      <AccordionTrigger className="text-left text-sm font-medium text-gray-700">
-                                                                        {type.toUpperCase()}{" "}
-                                                                        (
-                                                                        {
-                                                                          group.length
+                                                                    return (
+                                                                      <AccordionItem
+                                                                        key={
+                                                                          type
                                                                         }
-                                                                        )
-                                                                      </AccordionTrigger>
-                                                                      <AccordionContent className="space-y-4">
-                                                                        {group.map(
+                                                                        value={
+                                                                          type
+                                                                        }
+                                                                      >
+                                                                        <AccordionTrigger className="text-left text-sm font-medium text-gray-700">
+                                                                          {type.toUpperCase()}{" "}
                                                                           (
-                                                                            q,
-                                                                            qIdx
-                                                                          ) => (
-                                                                            <div
-                                                                              key={
-                                                                                q._id
-                                                                              }
-                                                                              className="border border-gray-200 rounded-lg p-4"
-                                                                            >
-                                                                              <p
-                                                                                className="text-sm font-medium text-gray-800 mb-2"
-                                                                                dangerouslySetInnerHTML={{
-                                                                                  __html: `<strong>Q${qIdx +
-                                                                                    1
-                                                                                    }:</strong> ${q.question
+                                                                          {
+                                                                            group.length
+                                                                          }
+                                                                          )
+                                                                        </AccordionTrigger>
+                                                                        <AccordionContent className="space-y-4">
+                                                                          {group.map(
+                                                                            (
+                                                                              q,
+                                                                              qIdx
+                                                                            ) => (
+                                                                              <div
+                                                                                key={
+                                                                                  q._id
+                                                                                }
+                                                                                className="border border-gray-200 rounded-lg p-4"
+                                                                              >
+                                                                                <p
+                                                                                  className="text-sm font-medium text-gray-800 mb-2"
+                                                                                  dangerouslySetInnerHTML={{
+                                                                                    __html: `<strong>Q${
+                                                                                      qIdx +
+                                                                                      1
+                                                                                    }:</strong> ${
+                                                                                      q.question
                                                                                     }`,
-                                                                                }}
-                                                                              />
-                                                                              {type ===
-                                                                                "mcq" && (
+                                                                                  }}
+                                                                                />
+                                                                                {type ===
+                                                                                  "mcq" && (
                                                                                   <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
                                                                                     {q.options?.map(
                                                                                       (
@@ -652,10 +697,10 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                                                           }
                                                                                           className={
                                                                                             q.correctAnswer ===
-                                                                                              (
-                                                                                                oi +
-                                                                                                1
-                                                                                              ).toString()
+                                                                                            (
+                                                                                              oi +
+                                                                                              1
+                                                                                            ).toString()
                                                                                               ? "font-semibold text-green-500"
                                                                                               : ""
                                                                                           }
@@ -674,8 +719,8 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                                                     )}
                                                                                   </ul>
                                                                                 )}
-                                                                              {type ===
-                                                                                "qa" && (
+                                                                                {type ===
+                                                                                  "qa" && (
                                                                                   <div className="text-sm text-gray-700">
                                                                                     <span className="font-semibold">
                                                                                       Answer:
@@ -685,51 +730,61 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
                                                                                     }
                                                                                   </div>
                                                                                 )}
-                                                                              {type ===
-                                                                                "truefalse" && (
+                                                                                {type ===
+                                                                                  "truefalse" && (
                                                                                   <div className="text-sm text-gray-700">
                                                                                     <span className="font-semibold">
                                                                                       Answer:
                                                                                     </span>{" "}
                                                                                     {q.correctAnswer ===
-                                                                                      "true"
+                                                                                    "true"
                                                                                       ? "True"
                                                                                       : "False"}
                                                                                   </div>
                                                                                 )}
-                                                                            </div>
-                                                                          )
-                                                                        )}
-                                                                      </AccordionContent>
-                                                                    </AccordionItem>
-                                                                  );
-                                                                })}
+                                                                              </div>
+                                                                            )
+                                                                          )}
+                                                                        </AccordionContent>
+                                                                      </AccordionItem>
+                                                                    );
+                                                                  }
+                                                                )}
                                                               </Accordion>
                                                             )}
-                                                        </div>
-                                                      </DialogContent>
-                                                    </Dialog>
+                                                          </div>
+                                                        </DialogContent>
+                                                      </Dialog>
 
-                                                    <DeleteModal deleteFunc={() => handleDeleteAssessment(a._id)}>
-                                                      <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="h-8 text-gray-500 hover:text-red-600"
+                                                      {/* Delete Button */}
+                                                      <DeleteModal
+                                                        deleteFunc={() =>
+                                                          handleDeleteAssessment(
+                                                            a._id
+                                                          )
+                                                        }
                                                       >
-                                                        <Trash2 className="h-4 w-4" />
-                                                        <span className="sr-only">Delete</span>
-                                                      </Button>
-                                                    </DeleteModal>
-
+                                                        <Button
+                                                          variant="ghost"
+                                                          size="sm"
+                                                          className="h-8 text-gray-500 hover:text-red-600"
+                                                        >
+                                                          <Trash2 className="h-4 w-4" />
+                                                          <span className="sr-only">
+                                                            Delete
+                                                          </span>
+                                                        </Button>
+                                                      </DeleteModal>
+                                                    </div>
                                                   </div>
-                                                </div>
 
-                                                {a.description && (
-                                                  <p className="text-xs text-gray-600 mt-1">
-                                                    {a.description}
-                                                  </p>
-                                                )}
-                                              </div>
+                                                  {a.description && (
+                                                    <p className="text-xs text-gray-600 mt-1">
+                                                      {a.description}
+                                                    </p>
+                                                  )}
+                                                </div>
+                                              </section>
                                             ))}
                                           </div>
                                         </div>
@@ -754,4 +809,4 @@ const ChapterDetail = ({ courseId, chapters, fetchCourseDetail }) => {
   );
 };
 
-export default ChapterDetail;
+export default QuarterDetail;

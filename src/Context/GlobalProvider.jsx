@@ -17,11 +17,6 @@ export const GlobalProvider = ({ children }) => {
   const [currentConversation, setCurrentConversation] = useState(null);
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
 
-  // console.log(user, "Global provider");
-  // console.log(onlineUser, "onlineUser");
-
-  console.log(currentConversation, "currentConversation");
-
   const disconnectsocket = () => {
     if (socket && socket.connected) {
       socket.disconnect();

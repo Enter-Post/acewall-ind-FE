@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,15 +19,19 @@ import { CheckCircle } from "lucide-react";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
 import DeleteCourseModal from "@/CustomComponent/CreateCourse/DeleteCourseModal";
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
-import ChapterDetail from "@/CustomComponent/CreateCourse/ChapterDetail";
+import ChapterDetail from "@/Page/teacher/Courses/QuarterDetail";
 import { FinalCourseAssessmentCard } from "@/CustomComponent/CreateCourse/FinalCourseAssessmentCard";
 import { toast } from "sonner";
 import AssessmentCategoryDialog from "@/CustomComponent/teacher/AssessmentCategoryDialog";
 import RatingSection from "@/CustomComponent/teacher/RatingSection";
+import { format } from "date-fns";
+import { CourseContext } from "@/Context/CoursesProvider";
+import { SelectSemAndQuarDialog } from "@/CustomComponent/CreateCourse/SelectSemAndQuarDialog";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { quarters, setQuarters } = useContext(CourseContext);
 
   const [course, setCourse] = useState(null);
   const [open, setOpen] = useState(false);
@@ -36,10 +40,7 @@ export default function TeacherCourseDetails() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [openLessons, setOpenLessons] = useState({});
-
-  console.log(course, "course");
 
   const toggleLesson = (lessonId) => {
     setOpenLessons((prev) => ({
@@ -66,6 +67,7 @@ export default function TeacherCourseDetails() {
       .get(`course/details/${id}`)
       .then((res) => {
         setCourse(res.data.course);
+        setQuarters(res.data.course.quarter);
         console.log(res);
       })
       .catch((err) => {
@@ -77,6 +79,11 @@ export default function TeacherCourseDetails() {
   useEffect(() => {
     fetchCourseDetail();
   }, [id]); // Added id as a dependency to refetch when the id changes
+
+  // console.log(course?.semester, "course?.semester");
+
+  const prevSemesterIds = course?.semester?.map((sem) => sem._id) || [];
+  const prevQuarterIds = course?.quarter?.map((quarter) => quarter._id) || [];
 
   if (!course)
     return (
@@ -144,12 +151,9 @@ export default function TeacherCourseDetails() {
                 </h3>
               </DialogContent>
             </Dialog>
-
-
           </div>
 
           <AssessmentCategoryDialog courseId={id} />
-
         </section>
         <div>
           <button
@@ -176,8 +180,8 @@ export default function TeacherCourseDetails() {
 
           <StatCard
             icon={<Play className="h-5 w-5 text-orange-500" />}
-            value={course.chapters?.length || 0}
-            label="Chapters"
+            value={course.semester?.length || 0}
+            label="Semesters"
             bgColor="bg-orange-50"
           />
 
@@ -188,19 +192,11 @@ export default function TeacherCourseDetails() {
             bgColor="bg-rose-50"
           />
         </div>
-        <div className="flex justify-between items-center">
-          <section>
-            <ChapterCreationModal
-              courseId={id}
-              fetchCourseDetail={fetchCourseDetail}
-            />
-          </section>
-
+        {/* <div className="flex justify-between items-center">
           <div className="space-y-4">
-            {/* Add Final Assessment Button */}
             <div>
               <Link
-                to={`/teacher/assessments/create/course/${course._id}/${id}`}
+                to={`/teacher/assessments/create/course/${course._id}/${id}/${course.semester}`}
               >
                 <Button variant="outline" className="text-green-600">
                   + Add Assessment
@@ -208,18 +204,37 @@ export default function TeacherCourseDetails() {
               </Link>
             </div>
           </div>
-        </div>
-
-        {/* chapter detail */}
-        <ChapterDetail
+        </div> */}
+        <SelectSemAndQuarDialog
+          prevSelectedSemesters={prevSemesterIds}
+          prevSelectedQuarters={prevQuarterIds}
           courseId={id}
-          chapters={course.chapters}
           fetchCourseDetail={fetchCourseDetail}
         />
 
+        {course?.semester?.map((semester, index) => (
+          <Link
+            key={semester._id}
+            to={`/teacher/courses/${id}/semester/${semester._id}`}
+          >
+            <div
+              key={semester._id}
+              className="mb-4 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
+            >
+              <h3 className="font-semibold text-md">
+                Semester {index + 1}: {semester.title}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
+                {format(new Date(semester.endDate), "MMMM do, yyyy")}
+              </p>
+            </div>
+          </Link>
+        ))}
+
         {/* Final Assessment Cards */}
-        {Array.isArray(course.finalAssessments) &&
-          course.finalAssessments.map((assessment) => (
+        {Array.isArray(course.Assessments) &&
+          course.CourseAssessments.map((assessment) => (
             <FinalCourseAssessmentCard
               key={assessment._id} // Use unique id as key
               assessment={assessment}

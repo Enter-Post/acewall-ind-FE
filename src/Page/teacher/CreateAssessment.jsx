@@ -38,6 +38,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import DueDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
 import CategoryDropdown from "@/CustomComponent/Assessment/Assessment-category-dropdown";
+import StrictDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
 
 // Define the form schema with Zod
 const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
@@ -100,6 +101,21 @@ const questionSchema = z.discriminatedUnion("type", [
   qaQuestionSchema,
 ]);
 
+const dueDateSchema = z.object({
+  dateTime: z
+    .preprocess(
+      (val) =>
+        typeof val === "string" || val instanceof Date ? new Date(val) : val,
+      z.date({
+        required_error: "Due date is required",
+        invalid_type_error: "Invalid date format",
+      })
+    )
+    .refine((val) => val instanceof Date && !isNaN(val.getTime()), {
+      message: "Please select a valid due date",
+    }),
+});
+
 const formSchema = z.object({
   title: z
     .string()
@@ -113,35 +129,25 @@ const formSchema = z.object({
 
   category: z.string().min(1, { message: "Please select a category" }),
 
-  questions: z
-    .array(questionSchema)
-    .refine(
-      (questions) => {
-        // allow empty array
-        if (questions.length === 0) return true;
-        // validate all questions
-        return questions.every((q) => questionSchema.safeParse(q).success);
-      },
-      {
-        message: "Invalid question data",
-      }
-    ),
+  questions: z.array(questionSchema).refine(
+    (questions) => {
+      // allow empty array
+      if (questions.length === 0) return true;
+      // validate all questions
+      return questions.every((q) => questionSchema.safeParse(q).success);
+    },
+    {
+      message: "Invalid question data",
+    }
+  ),
 
-  dueDate: z.object({
-    date: z.string().min(1, { message: "Please select a date" }),
-    time: z.string().min(1, { message: "Please select a time" }),
-    dateTime: z
-      .string()
-      .min(1, { message: "Selected time must be in the future" })
-      .nullable(),
-  }),
+  dueDate: dueDateSchema,
 });
-
 
 export default function CreateAssessmentPage() {
   const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const params = useParams();
+  const { type, courseId, startDate, endDate, id } = useParams();
   const TITLE_LIMIT = 120;
   const DESC_LIMIT = 1000;
   const [editorConfig] = useState({
@@ -153,32 +159,14 @@ export default function CreateAssessmentPage() {
     },
   });
 
-  const [startingdate, setstartingdate] = useState()
-  const [endingdate, setendingdate] = useState()
+  const parsedStartDate = new Date(startDate);
+  const parsedEndDate = new Date(endDate);
 
-  const courseId = params.courseId;
-
-  useEffect(() => {
-    axiosInstance
-      .get(`course/getcourseDueDate/${courseId}`)
-      .then((res) => {
-        setstartingdate(new Date(res.data.startingDate));
-        setendingdate(new Date(res.data.endingDate));
-        const start = new Date(res.data.startingDate);
-        const end = new Date(res.data.endingDate);
-
-        const formattedStartDate = start.toISOString().split("T")[0];
-        const formattedEndDate = end.toISOString().split("T")[0];
-
-        console.log("Start Date:", formattedStartDate); // "2025-06-05"
-        console.log("End Date:", formattedEndDate);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch due date:", err);
-      });
-  }, [courseId]);
-
-
+  // ❗ Fix inverted range (if needed)
+  const minDate =
+    parsedStartDate < parsedEndDate ? parsedStartDate : parsedEndDate;
+  const maxDate =
+    parsedEndDate > parsedStartDate ? parsedEndDate : parsedStartDate;
 
   const handleRemoveFile = (index) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
@@ -220,7 +208,8 @@ export default function CreateAssessmentPage() {
     const validFiles = files.filter((file) => {
       const isValidType =
         file.type === "application/pdf" ||
-        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
         file.type === "image/jpeg";
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
       return isValidType && isValidSize;
@@ -232,7 +221,6 @@ export default function CreateAssessmentPage() {
 
     setSelectedFiles(validFiles);
   };
-
 
   const addQuestion = () => {
     append({
@@ -287,6 +275,8 @@ export default function CreateAssessmentPage() {
   const onSubmit = async (data) => {
     if (isSubmitting) return; // prevent double submission
 
+    console.log(type, courseId);
+
     setIsSubmitting(true);
     const toastId = toast.loading("Creating assessment...");
 
@@ -296,15 +286,11 @@ export default function CreateAssessmentPage() {
       formData.append("description", data.description);
       formData.append("category", data.category);
       const dueDate = new Date(data.dueDate.dateTime);
-      if (dueDate >= startingdate && dueDate < endingdate) {
-
+      if (dueDate >= startDate && dueDate < endDate) {
         formData.append("dueDate", data.dueDate.dateTime);
       }
 
-      console.log(formData.endingdate, "dueDate")
-      console.log(data.dueDate);
-
-      formData.append(params.type, params.id);
+      formData.append(type, id);
       formData.append("questions", JSON.stringify(data.questions));
       if (selectedFiles.length > 0) {
         selectedFiles.forEach((file) => {
@@ -319,23 +305,18 @@ export default function CreateAssessmentPage() {
       navigate(-1);
     } catch (err) {
       console.log(err);
-      toast.error(err?.response?.data?.message || "Failed to create assessment", {
-        id: toastId,
-      });
+      toast.error(
+        err?.response?.data?.message || "Failed to create assessment",
+        {
+          id: toastId,
+        }
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
-
-
-
-
-
   const { watch, control, formState } = form;
-
-
-
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg max-w-4xl">
@@ -423,7 +404,7 @@ export default function CreateAssessmentPage() {
                 <FormLabel>Category</FormLabel>
                 <FormControl>
                   <CategoryDropdown
-                    courseId={params.courseId}
+                    courseId={courseId}
                     value={field.value}
                     onValueChange={field.onChange}
                     error={form.formState.errors.category?.message}
@@ -436,10 +417,10 @@ export default function CreateAssessmentPage() {
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Due Date</h3>
-            <DueDatePicker
+            <StrictDatePicker
               name="dueDate"
-              minDate={startingdate}
-              maxDate={endingdate}
+              minDate={minDate}
+              maxDate={maxDate}
             />
           </div>
 
@@ -573,154 +554,154 @@ export default function CreateAssessmentPage() {
                     {/* Question-specific answer fields */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "truefalse" && (
-                        <FormField
-                          control={form.control}
-                          name={`questions.${questionIndex}.correctAnswer`}
-                          render={({ field }) => (
-                            <FormItem className="space-y-3">
-                              <FormLabel>Correct Answer</FormLabel>
-                              <FormControl>
-                                <RadioGroup
-                                  onValueChange={field.onChange}
-                                  value={field.value}
-                                  className="flex space-x-4"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                      value="true"
-                                      id={`true-${question.id}`}
-                                    />
-                                    <Label
-                                      htmlFor={`true-${question.id}`}
-                                      className="font-normal"
-                                    >
-                                      True
-                                    </Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                      value="false"
-                                      id={`false-${question.id}`}
-                                    />
-                                    <Label
-                                      htmlFor={`false-${question.id}`}
-                                      className="font-normal"
-                                    >
-                                      False
-                                    </Label>
-                                  </div>
-                                </RadioGroup>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
+                      <FormField
+                        control={form.control}
+                        name={`questions.${questionIndex}.correctAnswer`}
+                        render={({ field }) => (
+                          <FormItem className="space-y-3">
+                            <FormLabel>Correct Answer</FormLabel>
+                            <FormControl>
+                              <RadioGroup
+                                onValueChange={field.onChange}
+                                value={field.value}
+                                className="flex space-x-4"
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="true"
+                                    id={`true-${question.id}`}
+                                  />
+                                  <Label
+                                    htmlFor={`true-${question.id}`}
+                                    className="font-normal"
+                                  >
+                                    True
+                                  </Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <RadioGroupItem
+                                    value="false"
+                                    id={`false-${question.id}`}
+                                  />
+                                  <Label
+                                    htmlFor={`false-${question.id}`}
+                                    className="font-normal"
+                                  >
+                                    False
+                                  </Label>
+                                </div>
+                              </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                     {/* MCQs */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "mcq" && (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <Label>Answer Options</Label>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => addOption(questionIndex)}
-                              disabled={
-                                form.watch(`questions.${questionIndex}.options`)
-                                  ?.length >= 4
-                              }
-                              className="h-7 text-xs"
-                            >
-                              Add Option
-                            </Button>
-                          </div>
-
-                          {form.watch(`questions.${questionIndex}.options`)
-                            ?.length >= 4 && (
-                              <p className="text-xs text-muted-foreground">
-                                Maximum of 4 options allowed.
-                              </p>
-                            )}
-
-                          <RadioGroup
-                            value={form.watch(
-                              `questions.${questionIndex}.correctAnswer`
-                            )}
-                            onValueChange={(val) => {
-                              // console.log(val, "val");
-                              form.setValue(
-                                `questions.${questionIndex}.correctAnswer`,
-                                val
-                              );
-                            }}
-                            className="space-y-3"
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <Label>Answer Options</Label>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => addOption(questionIndex)}
+                            disabled={
+                              form.watch(`questions.${questionIndex}.options`)
+                                ?.length >= 4
+                            }
+                            className="h-7 text-xs"
                           >
-                            {form
-                              .watch(`questions.${questionIndex}.options`)
-                              ?.map((option, optionIndex) => (
-                                <div
-                                  key={optionIndex}
-                                  className="flex items-center gap-3"
-                                >
-                                  <RadioGroupItem
-                                    value={
-                                      form.watch(
-                                        `questions.${questionIndex}.options.${optionIndex}`
-                                      ) || ""
-                                    }
-                                    id={`option-${questionIndex}-${optionIndex}`}
-                                  />
-
-                                  <FormField
-                                    control={form.control}
-                                    name={`questions.${questionIndex}.options.${optionIndex}`}
-                                    render={({ field }) => (
-                                      <Input
-                                        {...field}
-                                        placeholder={`Option ${optionIndex + 1}`}
-                                        className="flex-1"
-                                        onChange={(e) => {
-                                          field.onChange(e.target.value);
-                                        }}
-                                      />
-                                    )}
-                                  />
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                      removeOption(questionIndex, optionIndex)
-                                    }
-                                    disabled={
-                                      form.watch(
-                                        `questions.${questionIndex}.options`
-                                      )?.length <= 2
-                                    }
-                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                                  >
-                                    <Trash2 size={16} />
-                                  </Button>
-                                </div>
-                              ))}
-                          </RadioGroup>
-
-                          <FormMessage>
-                            {
-                              form.formState.errors.questions?.[questionIndex]
-                                ?.options?.message
-                            }
-                          </FormMessage>
-                          <FormMessage>
-                            {
-                              form.formState.errors.questions?.[questionIndex]
-                                ?.correctAnswer?.message
-                            }
-                          </FormMessage>
+                            Add Option
+                          </Button>
                         </div>
-                      )}
+
+                        {form.watch(`questions.${questionIndex}.options`)
+                          ?.length >= 4 && (
+                          <p className="text-xs text-muted-foreground">
+                            Maximum of 4 options allowed.
+                          </p>
+                        )}
+
+                        <RadioGroup
+                          value={form.watch(
+                            `questions.${questionIndex}.correctAnswer`
+                          )}
+                          onValueChange={(val) => {
+                            // console.log(val, "val");
+                            form.setValue(
+                              `questions.${questionIndex}.correctAnswer`,
+                              val
+                            );
+                          }}
+                          className="space-y-3"
+                        >
+                          {form
+                            .watch(`questions.${questionIndex}.options`)
+                            ?.map((option, optionIndex) => (
+                              <div
+                                key={optionIndex}
+                                className="flex items-center gap-3"
+                              >
+                                <RadioGroupItem
+                                  value={
+                                    form.watch(
+                                      `questions.${questionIndex}.options.${optionIndex}`
+                                    ) || ""
+                                  }
+                                  id={`option-${questionIndex}-${optionIndex}`}
+                                />
+
+                                <FormField
+                                  control={form.control}
+                                  name={`questions.${questionIndex}.options.${optionIndex}`}
+                                  render={({ field }) => (
+                                    <Input
+                                      {...field}
+                                      placeholder={`Option ${optionIndex + 1}`}
+                                      className="flex-1"
+                                      onChange={(e) => {
+                                        field.onChange(e.target.value);
+                                      }}
+                                    />
+                                  )}
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    removeOption(questionIndex, optionIndex)
+                                  }
+                                  disabled={
+                                    form.watch(
+                                      `questions.${questionIndex}.options`
+                                    )?.length <= 2
+                                  }
+                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2 size={16} />
+                                </Button>
+                              </div>
+                            ))}
+                        </RadioGroup>
+
+                        <FormMessage>
+                          {
+                            form.formState.errors.questions?.[questionIndex]
+                              ?.options?.message
+                          }
+                        </FormMessage>
+                        <FormMessage>
+                          {
+                            form.formState.errors.questions?.[questionIndex]
+                              ?.correctAnswer?.message
+                          }
+                        </FormMessage>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -744,8 +725,6 @@ export default function CreateAssessmentPage() {
             </Button>
           </div>
 
-
-
           {/* PDF and DOC Upload Section */}
           <div className="space-y-4 mt-6">
             <Label htmlFor="fileUpload">Upload PDF, DOCX, or JPEG file</Label>
@@ -762,7 +741,9 @@ export default function CreateAssessmentPage() {
                 <div className="space-y-4 mt-2">
                   {selectedFiles.map((file, idx) => (
                     <div key={idx} className="border p-3 rounded relative">
-                      <p className="text-sm text-gray-700 truncate">{file.name}</p>
+                      <p className="text-sm text-gray-700 truncate">
+                        {file.name}
+                      </p>
 
                       {file.type === "application/pdf" ? (
                         <iframe
@@ -802,13 +783,11 @@ export default function CreateAssessmentPage() {
             )}
           </div>
 
-
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Assessment"}
           </Button>
-
         </form>
       </Form>
-    </div >
+    </div>
   );
 }

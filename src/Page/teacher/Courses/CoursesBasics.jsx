@@ -24,6 +24,9 @@ import SubCategorySelect from "@/CustomComponent/CreateCourse/SubCategorySelect"
 import TeachingPointInput from "@/CustomComponent/CreateCourse/TeachingPoints";
 import RequirementInput from "@/CustomComponent/CreateCourse/Requirment";
 import DateRangePicker from "@/CustomComponent/CreateCourse/DateRangePicker";
+import SelectSemAndQuar from "@/CustomComponent/CreateCourse/SelectSemester";
+import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
+import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
 
 // Define the form schema with Zod
 
@@ -42,24 +45,16 @@ const courseFormSchema = z.object({
     .refine((val) => val !== "", { message: "Please select a category" }),
   subcategory: z
     .string({
-      required_error: "Please select a subcategory",
+      message: "Please select a subcategory",
     })
     .refine((val) => val !== "", { message: "Please select a subcategory" }),
-  courseDate: z
-    .object({
-      start: z.string().nonempty("Start date is required"),
-      end: z.string().nonempty("End date is required"),
-      range: z
-        .object({
-          start: z.string(),
-          end: z.string(),
-        })
-        .nullable(),
-    })
-    .refine((data) => new Date(data.end) > new Date(data.start), {
-      message: "End date must be after start date",
-      path: ["end"],
-    }),
+  semester: z
+    .array(z.string().nonempty({ message: "Please select a semester" }))
+    .min(1, { message: "Please select a semester" }),
+  quarter: z
+    .array(z.string().nonempty({ message: "Please select a quarter" }))
+    .min(1, { message: "Please select a quarter" }),
+
   language: z
     .string()
     .nonempty({ message: "Please select a language" })
@@ -102,7 +97,8 @@ export default function CoursesBasis() {
   const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedsubCategory, setSubSelectedCategory] = useState("");
+  const [selectedSemester, setSelectedSemester] = useState("");
+  const [selectedQuarter, setSelectedQuarter] = useState("");
 
   useEffect(() => {
     axiosInstance
@@ -195,6 +191,7 @@ export default function CoursesBasis() {
   };
 
   const onSubmit = async (data) => {
+    console.log(data, "data");
     const formData = new FormData();
     setLoading(true);
 
@@ -206,6 +203,14 @@ export default function CoursesBasis() {
       formData.append("language", data.language);
       formData.append("courseDescription", data.courseDescription);
       formData.append(
+        "semester",
+        JSON.stringify(data.semester.map((sem) => sem))
+      );
+      formData.append(
+        "quarter",
+        JSON.stringify(data.quarter.map((q) => q))
+      );
+      formData.append(
         "teachingPoints",
         JSON.stringify(data.teachingPoints.map((tp) => tp.value))
       );
@@ -213,7 +218,7 @@ export default function CoursesBasis() {
         "requirements",
         JSON.stringify(data.requirements.map((req) => req.value))
       );
-      formData.append("courseDate", JSON.stringify(data.courseDate));
+      // formData.append("courseDate", JSON.stringify(data.courseDate));
 
       const res = await axiosInstance.post("/course/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -350,9 +355,22 @@ export default function CoursesBasis() {
                   selectedCategory={selectedCategory}
                 />
               </div>
-              <div>
-                <DateRangePicker name="courseDate" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SelectSemester
+                  register={register}
+                  errors={errors}
+                  selectedSemester={selectedSemester}
+                  setSelectedSemester={setSelectedSemester}
+                />
+                <SelectQuarter
+                  register={register}
+                  errors={errors}
+                  selectedSemester={selectedSemester}
+                />
               </div>
+              {/* <div>
+                <DateRangePicker name="courseDate" />
+              </div> */}
               <div>
                 <Label htmlFor="language" className="block mb-2">
                   Language

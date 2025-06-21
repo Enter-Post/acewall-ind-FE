@@ -32,13 +32,13 @@ const chapterSchema = z.object({
 
 export default function ChapterCreationModal({
   courseId,
+  quarterId,
   setChapters,
-  fetchCourseDetail,
+  fetchQuarterDetail,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { course, setCourse } = useContext(CourseContext);
   const [isLoading, setIsLoading] = useState(false); // Add this state
-
 
   const {
     register,
@@ -67,9 +67,12 @@ export default function ChapterCreationModal({
     formdata.append("description", data.description);
 
     try {
-      const res = await axiosInstance.post(`/chapter/create/${courseId}`, formdata);
+      const res = await axiosInstance.post(
+        `/chapter/create/${courseId}/${quarterId}`,
+        formdata
+      );
       toast.success(res.data.message);
-      fetchCourseDetail();
+      fetchQuarterDetail();
       setIsOpen(false);
       reset();
     } catch (err) {
@@ -79,7 +82,6 @@ export default function ChapterCreationModal({
       setIsLoading(false);
     }
   };
-
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -119,7 +121,9 @@ export default function ChapterCreationModal({
             <div className="flex justify-between text-sm mt-1">
               <p className="text-gray-500">{descriptionValue.length}/500</p>
               {errors.description && (
-                <p className="text-red-500 text-xs">{errors.description.message}</p>
+                <p className="text-red-500 text-xs">
+                  {errors.description.message}
+                </p>
               )}
             </div>
           </div>
@@ -136,7 +140,6 @@ export default function ChapterCreationModal({
             >
               {isLoading ? "Creating..." : "Create Chapter"}
             </Button>
-
           </DialogFooter>
         </form>
       </DialogContent>
