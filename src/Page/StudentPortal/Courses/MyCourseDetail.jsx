@@ -12,6 +12,7 @@ import {
   Star,
   FileText,
   ArrowLeft,
+  Loader,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import LoadingLoader from "@/CustomComponent/LoadingLoader";
@@ -67,7 +68,7 @@ export default function ChapterDetail() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <LoadingLoader />
+        <Loader className="animate-spin" />
       </div>
     );
   }

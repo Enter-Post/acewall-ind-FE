@@ -68,7 +68,6 @@ export default function TeacherCourseDetails() {
       .then((res) => {
         setCourse(res.data.course);
         setQuarters(res.data.course.quarter);
-        console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -155,14 +154,20 @@ export default function TeacherCourseDetails() {
 
           <AssessmentCategoryDialog courseId={id} />
         </section>
-        <div>
+        <div className="flex justify-between items-center">
           <button
             className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
             onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
           >
             Preview as a student
           </button>
-        </div>
+          <button
+  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
+  onClick={() => navigate(`/teacher/gradebook/${id}`)}
+>
+  Gradebook
+</button>
+</div>
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard

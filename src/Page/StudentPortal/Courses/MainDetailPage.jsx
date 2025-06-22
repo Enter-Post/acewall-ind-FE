@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,14 +25,21 @@ import {
   BookOpenCheck,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import LoadingLoader from "@/CustomComponent/LoadingLoader";
 import RatingStars from "@/CustomComponent/RatingStars";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
 import RatingSection from "@/CustomComponent/Student/RatingSection";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@radix-ui/react-dialog";
 import { DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import avatar from "@/assets/avatar.png";
+import { format } from "date-fns";
+import { CourseContext } from "@/Context/CoursesProvider";
 
 export default function CourseOverview() {
   const { id } = useParams(); // Default ID or from URL
@@ -42,11 +49,9 @@ export default function CourseOverview() {
 
   const [showModal, setShowModal] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
-  // const { courseId } = useParams();
-
-  // console.log(course.teachingPoints, "course");
 
   const Navigate = useNavigate();
+  const { quarters, setQuarters } = useContext(CourseContext);
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -56,6 +61,7 @@ export default function CourseOverview() {
         .then((res) => {
           console.log(res);
           setCourse(res.data.enrolledCourse.courseDetails);
+          setQuarters(res.data.enrolledCourse.courseDetails.quarter);
           setLoading(false);
         })
         .catch((err) => {
@@ -65,10 +71,6 @@ export default function CourseOverview() {
     };
     getCourseDetails();
   }, [id]);
-
-  console.log(course?._id, "course");
-
-  // console.log(courseId);
 
   const handleConversation = async () => {
     await axiosInstance
@@ -84,13 +86,14 @@ export default function CourseOverview() {
       });
   };
 
-
   const handleUnenroll = async () => {
     setLoading(true); // instantly trigger loading
 
     try {
       console.log("Unenrolling from course ID:", course._id);
-      const res = await axiosInstance.delete(`/enrollment/unenroll/${course?._id}`);
+      const res = await axiosInstance.delete(
+        `/enrollment/unenroll/${course?._id}`
+      );
       console.log("Unenrolled data:", res.data);
       setShowModal(false);
       window.location.reload(); // refresh page
@@ -100,11 +103,6 @@ export default function CourseOverview() {
       setLoading(false);
     }
   };
-
-
-
-
-
 
   if (loading) {
     return (
@@ -183,24 +181,40 @@ export default function CourseOverview() {
           </Avatar>
           <div>
             <p className="font-semibold text-gray-800">
-              {course.createdby.firstName}{" "}
-
-              {course.createdby.middleName}{" "}
-
+              {course.createdby.firstName} {course.createdby.middleName}{" "}
               {course.createdby.lastName}
-
             </p>
             <p className="text-sm text-gray-500">{course.createdby.email}</p>
           </div>
         </div>
         <div>
-          <Button
-            className="bg-green-500"
-            onClick={() => handleConversation()}
-          >
+          <Button className="bg-green-500" onClick={() => handleConversation()}>
             Message
           </Button>
         </div>
+      </section>
+
+      {/* Course Semester */}
+      <section className="mt-8">
+        {course?.semester?.map((semester, index) => (
+          <Link
+            key={semester._id}
+            to={`/student/mycourses/${course._id}/semester/${semester._id}`}
+          >
+            <div
+              key={semester._id}
+              className="mb-4 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
+            >
+              <h3 className="font-semibold text-md">
+                Semester: {semester.title}
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
+                {format(new Date(semester.endDate), "MMMM do, yyyy")}
+              </p>
+            </div>
+          </Link>
+        ))}
       </section>
 
       {/* Tabs */}
@@ -211,7 +225,7 @@ export default function CourseOverview() {
       >
         {/* Tab List */}
         <TabsList className="flex flex-wrap justify-center gap-4 w-full  sm:gap-10  bg-white p-1 shadow-inner">
-          {["Overview", "Content", "Reviews"].map((tab) => (
+          {["Overview", "Reviews"].map((tab) => (
             <TabsTrigger
               key={tab}
               value={tab.toLowerCase()}
@@ -254,7 +268,6 @@ export default function CourseOverview() {
             <Button className="bg-green-500" onClick={() => setShowModal(true)}>
               Unenroll
             </Button>
-
           </section>
 
           <section>
@@ -264,7 +277,8 @@ export default function CourseOverview() {
                   <DialogHeader>
                     <DialogTitle>Confirm Unenrollment</DialogTitle>
                     <DialogDescription>
-                      To confirm, type <strong>unenroll</strong> below. This action cannot be undone.
+                      To confirm, type <strong>unenroll</strong> below. This
+                      action cannot be undone.
                     </DialogDescription>
                   </DialogHeader>
 
@@ -276,93 +290,27 @@ export default function CourseOverview() {
                   />
 
                   <DialogFooter className="mt-6 flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setShowModal(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowModal(false)}
+                    >
                       Cancel
                     </Button>
                     <Button
                       className="bg-red-600 text-white"
-                      disabled={confirmationText.trim().toLowerCase() !== "unenroll" || loading}
+                      disabled={
+                        confirmationText.trim().toLowerCase() !== "unenroll" ||
+                        loading
+                      }
                       onClick={handleUnenroll}
                     >
                       {loading ? "Unenrolling..." : "Unenroll"}
                     </Button>
-
                   </DialogFooter>
                 </div>
               </DialogContent>
             </Dialog>
-
           </section>
-
-
-        </TabsContent>
-
-        {/* Content */}
-        <TabsContent value="content" className="py-8 space-y-6">
-          <div className="space-y-4">
-            {course.chapters.map((chapter, index) => (
-              <Card
-                key={chapter._id}
-                className="border border-gray-200 shadow-sm hover:shadow-md transition"
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-y-2">
-                    <div>
-                      <CardTitle className="text-lg font-semibold">
-                        Chapter {index + 1}: {chapter.title}
-                      </CardTitle>
-                      <CardDescription>{chapter.description}</CardDescription>
-                    </div>
-                    <Badge className="bg-gray-100 text-gray-800 self-start">
-                      {chapter?.lessonsCount} Lessons
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardFooter>
-                  <Link
-                    to={`/student/mycourses/chapter/${chapter._id}`}
-                    className="w-full"
-                  >
-                    <Button variant="outline" className="w-full">
-                      View Chapter
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
-            <div>
-              {course &&
-                course.finalAssessments &&
-                course.finalAssessments.length > 0 && (
-                  <div className="mt-6 pt-6 border-t border-gray-200 flex flex-col gap-3">
-                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                      Final Assessment
-                    </h3>
-                    {course.finalAssessments.map((assessment, i) => (
-                      <Link
-                        to={`/student/assessment/submission/${assessment._id}`}
-                      >
-                        <div
-                          key={i}
-                          className="p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 shadow-md"
-                        >
-                          <div className="flex items-center gap-4">
-                            <BookOpenCheck className="h-5 w-5 text-green-500" />
-                            <h3 className="text-lg font-semibold text-gray-800">
-                              {assessment.title}
-                            </h3>
-                          </div>
-
-                          <p className="text-gray-700 mt-4 text-sm">
-                            {assessment.description}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-            </div>
-          </div>
         </TabsContent>
 
         {/* Reviews */}

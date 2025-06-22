@@ -65,7 +65,9 @@ import StudentDiscussionChat from "./Page/StudentPortal/Student Discussion/Stude
 import StdPreview from "./Page/teacher/Courses/StdPreview";
 import SemesterDetail from "./Page/teacher/Courses/SemesterDetail";
 import QuarterDetail from "./Page/teacher/Courses/QuarterDetail";
-
+import StudentSemesterDetail from "./Page/StudentPortal/Courses/StudentSemesterDetail";
+import AllChapter from "./Page/StudentPortal/Courses/AllChapter";
+import CourseGradebookPage from "./Page/teacher/CourseGradebookPage"; 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
     useContext(GlobalContext);
@@ -167,8 +169,16 @@ function App() {
             <Route index element={<Deshboard />} />
             <Route path="mycourses">
               <Route index element={<Mycourses />} />
+              <Route
+                path=":courseId/semester/:semesterId"
+                element={<StudentSemesterDetail />}
+              />
+
+              <Route path=":courseId/quarter/:quarterId">
+                <Route index element={<AllChapter />} />
+                <Route path="chapter/:chapterId" element={<ChapterDetail />} />
+              </Route>
               <Route path=":id" element={<MainDetailPage />} />
-              <Route path="chapter/:chapterId" element={<ChapterDetail />} />
             </Route>
             <Route path="assessment">
               <Route index element={<Assignment />} />
@@ -233,6 +243,7 @@ function App() {
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />
             </Route>
+<Route path="gradebook/:courseId" element={<CourseGradebookPage />} />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route
@@ -248,7 +259,7 @@ function App() {
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />
-                <Route path="gradebook" element={<TeacherGradebook />} />
+                {/* <Route path="gradebook" element={<TeacherGradebook />} /> */}
               </Route>
             </Route>
           </Route>

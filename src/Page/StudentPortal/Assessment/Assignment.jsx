@@ -147,8 +147,8 @@ const Assessment = () => {
                       <TableCell>{assessment?.course?.courseTitle}</TableCell>
                       <TableCell>
                         {formatDueDate(
-                          assessment.dueDate.date,
-                          assessment.dueDate.time
+                          assessment?.dueDate?.date,
+                          assessment?.dueDate?.time
                         )}
                       </TableCell>
                       <TableCell>

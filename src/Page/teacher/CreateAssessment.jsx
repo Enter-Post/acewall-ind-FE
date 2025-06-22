@@ -273,10 +273,8 @@ export default function CreateAssessmentPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
+    console.log("Form Data:", data);
     if (isSubmitting) return; // prevent double submission
-
-    console.log(type, courseId);
-
     setIsSubmitting(true);
     const toastId = toast.loading("Creating assessment...");
 
@@ -285,18 +283,31 @@ export default function CreateAssessmentPage() {
       formData.append("title", data.title);
       formData.append("description", data.description);
       formData.append("category", data.category);
-      const dueDate = new Date(data.dueDate.dateTime);
-      if (dueDate >= startDate && dueDate < endDate) {
-        formData.append("dueDate", data.dueDate.dateTime);
-      }
-
       formData.append(type, id);
+
+      // Parse and validate dueDate
+      const dueDate = new Date(data.dueDate.dateTime);
+
+
+      if (dueDate >= minDate && dueDate <= maxDate) {
+        formData.append("dueDate", dueDate.toISOString());
+      } else {
+        toast.error(
+          "Due date must be within the Semester/Quarter start and end date.",
+          {
+            id: toastId,
+          }
+        );
+        setIsSubmitting(false);
+        return;
+      }
       formData.append("questions", JSON.stringify(data.questions));
       if (selectedFiles.length > 0) {
         selectedFiles.forEach((file) => {
           formData.append("files", file);
         });
       }
+
       const res = await axiosInstance.post("assessment/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
