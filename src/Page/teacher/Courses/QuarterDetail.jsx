@@ -48,7 +48,6 @@ const QuarterDetail = ({}) => {
     await axiosInstance
       .get(`chapter/${courseId}/${id}`)
       .then((res) => {
-        console.log(res);
         setChapters(res.data.chapters);
         setQuarterStartDate(res.data.quarterEndDate);
         setQuarterEndDate(res.data.quarterStartDate);
@@ -58,6 +57,8 @@ const QuarterDetail = ({}) => {
         setChapters([]);
       });
   };
+
+  console.log(chapters, "chapters");
 
   useEffect(() => {
     fetchQuarterDetail();
@@ -176,7 +177,7 @@ const QuarterDetail = ({}) => {
                       fetchQuarterDetail={fetchQuarterDetail}
                     />
                     <Link
-                      to={`/teacher/assessments/create/chapter/${chapter._id}/${courseId}/${quarterStartDate}/${quarterEndDate}`}
+                      to={`/teacher/assessments/create/chapter/${chapter._id}/${courseId}/${quarterStartDate}/${quarterEndDate}?semester=${chapter.semester._id}&quarter=${chapter.quarter._id}`}
                     >
                       <Button variant="outline" className="text-green-600">
                         + Add Assessment
@@ -424,7 +425,7 @@ const QuarterDetail = ({}) => {
                                   }
                                 />
                                 <Link
-                                  to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}/${quarterStartDate}/${quarterEndDate}`}
+                                  to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}/${quarterStartDate}/${quarterEndDate}?semester=${chapter.semester._id}&quarter=${chapter.quarter._id}`}
                                 >
                                   <Button
                                     variant="outline"

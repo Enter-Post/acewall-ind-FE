@@ -77,6 +77,12 @@ const sideBarTabs = [
     icon: <GraduationCap />,
     path: "/teacher/allStudent",
   },
+  {
+    id: 14,
+    name: "Pages",
+    icon: <GraduationCap />,
+    path: "/teacher/courses/posts",
+  },
 ];
 
 export default function TeacherLayout() {

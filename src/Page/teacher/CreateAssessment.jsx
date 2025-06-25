@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DueDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
 import CategoryDropdown from "@/CustomComponent/Assessment/Assessment-category-dropdown";
 import StrictDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
@@ -148,6 +148,7 @@ export default function CreateAssessmentPage() {
   const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState([]);
   const { type, courseId, startDate, endDate, id } = useParams();
+  const [searchParams] = useSearchParams();
   const TITLE_LIMIT = 120;
   const DESC_LIMIT = 1000;
   const [editorConfig] = useState({
@@ -158,6 +159,9 @@ export default function CreateAssessmentPage() {
       insertImageAsBase64URI: true,
     },
   });
+
+  const semester = searchParams.get("semester");
+  const quarter = searchParams.get("quarter");
 
   const parsedStartDate = new Date(startDate);
   const parsedEndDate = new Date(endDate);
@@ -284,10 +288,7 @@ export default function CreateAssessmentPage() {
       formData.append("description", data.description);
       formData.append("category", data.category);
       formData.append(type, id);
-
-      // Parse and validate dueDate
       const dueDate = new Date(data.dueDate.dateTime);
-
 
       if (dueDate >= minDate && dueDate <= maxDate) {
         formData.append("dueDate", dueDate.toISOString());
@@ -306,6 +307,12 @@ export default function CreateAssessmentPage() {
         selectedFiles.forEach((file) => {
           formData.append("files", file);
         });
+      }
+      if (semester) {
+        formData.append("semester", semester);
+      }
+      if (quarter) {
+        formData.append("quarter", quarter);
       }
 
       const res = await axiosInstance.post("assessment/create", formData, {

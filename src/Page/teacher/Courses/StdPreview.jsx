@@ -26,11 +26,13 @@ import {
 import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
 import { toast } from "sonner";
 import avatar from "@/assets/avatar.png";
-// AllCoursesDetail Component
+import { useNavigate } from "react-router-dom"; 
+
 const StdPreview = () => {
-  const { id } = useParams(); // Grab the actual course ID from the URL
+  const { id } = useParams(); 
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -69,6 +71,15 @@ const StdPreview = () => {
       <div className="grid lg:grid-cols-3 w-full  gap-2 ">
         <div className="lg:col-span-2 w-full ">
           <div className="  px-2  overflow-hidden mb-6">
+             <div className="mb-4">
+              <Button
+                variant="outline"
+                className="bg-gray-100 text-black hover:bg-gray-200"
+                onClick={() => navigate(-1)}
+              >
+                ← Back
+              </Button>
+            </div>
             <div className="p-2">
               <h1 className="text-3xl font-bold mb-2">
                 {courseDetails.courseTitle}
@@ -424,22 +435,7 @@ const StdPreview = () => {
                   </span>
                 </div>
               )}
-              {/* <div className="flex items-start gap-2 text-gray-700">
-                <CheckCircle2 size={18} className="mt-0.5" />
-                <span className="text-sm">
-                  Includes {courseDetails.level}{" "}
-                  {Array.isArray(courseDetails.chapters)
-                    ? `${courseDetails.chapters.reduce((total, chapter) => {
-                        return (
-                          total +
-                          (Array.isArray(chapter.Assessment)
-                            ? chapter.Assessment.length
-                            : 0)
-                        );
-                      }, 0)} Assessments`
-                    : "No Assessments available"}
-                </span>
-              </div> */}
+             
             </div>
           </div>
         </div>

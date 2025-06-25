@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dot } from "lucide-react";
 import {
@@ -26,7 +26,6 @@ const cardData = [
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/AdobeStock_357701907-1920w.jpeg",
     buttonUrl: "https://www.acewallscholars.org/academic-tutoring ",
   },
-
   {
     name: "Mentoring and Mental Health Support - a 360° approach",
     description:
@@ -38,8 +37,7 @@ const cardData = [
   {
     name: "Parent Aide",
     description:
-      "Acewall Scholars’ parent aide program offers a holistic approach to developing effective parenting skills.This program provides education on supporting children through their emotional, physical, mental, and spiritual development.Our program imparts a deeper understanding of the core, individual needs of the child within each developmental stage.",
-
+      "Acewall Scholars’ parent aide program offers a holistic approach to developing effective parenting skills. This program provides education on supporting children through their emotional, physical, mental, and spiritual development.",
     imageUrl:
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/shutterstock_2329065089-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/parent-aide",
@@ -60,7 +58,6 @@ const cardData = [
       "https://lirp.cdn-website.com/6602115c/dms3rep/multi/opt/internship+support-placement-1920w.jpg",
     buttonUrl: "https://www.acewallscholars.org/internship-support/placement",
   },
-
   {
     name: "College Counseling",
     description:
@@ -78,7 +75,8 @@ const schema = z.object({
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { signUpdata, setSignupData } = useContext(GlobalContext);
+  const { user, signUpdata, setSignupData } = useContext(GlobalContext);
+
   const {
     register,
     handleSubmit,
@@ -110,26 +108,15 @@ const LandingPage = () => {
     }
   };
 
-  console.log(signUpdata, "signUpdata");
-
-  const handleUserType = (value) => {
-
-    setUser(value);
-    console.log("Selected User type:", value); // Replace this with theme logic
-  };
-
   return (
     <>
-      {/* Top Bar */}
-
-      <div className="flex flex-col ">
-        <div className=" h-[50vh] sm:h-[70vh] md:h-[60vh] lg:h-[70vh] bg-cover bg-start bg-no-repeat bg-[url('assets/hero.webp')] ">
-          <div className="h-full  relative w-full bg-black/50 backdrop-blur- flex items-start  justify-start">
-            <div
-              className="flex  flex-col mt-10 justify-center  items-center px-2 md:px-10  md:mt-16 
-            text-center"
-            >
-              <h1 className="text-white text-lg sm:text-3xl font-semibold tracking-wide content-center ">              Where the vision is realized. Where the dream is achieved.
+      <div className="flex flex-col">
+        {/* Hero Section */}
+        <div className="h-[50vh] sm:h-[70vh] md:h-[60vh] lg:h-[70vh] bg-cover bg-start bg-no-repeat bg-[url('assets/hero.webp')]">
+          <div className="h-full w-full bg-black/50 flex items-start justify-start">
+            <div className="flex flex-col mt-10 justify-center items-center px-2 md:px-10 md:mt-16 text-center">
+              <h1 className="text-white text-lg sm:text-3xl font-semibold tracking-wide">
+                Where the vision is realized. Where the dream is achieved.
               </h1>
               <div className="flex items-center justify-center flex-wrap sm:flex-row flex-col gap-x-2 text-white ml-2">
                 <div className="flex items-center text-md whitespace-nowrap">
@@ -143,78 +130,84 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="bg-black flex flex-col lg:flex-row flex-wrap items-center justify-center gap-6 p-10 w-full"
-        >
-          {/* Heading */}
-          <div className="w-full lg:w-auto text-center lg:text-left">
-            <h1 className="text-white text-xl font-semibold whitespace-nowrap">
-              Create an account
-            </h1>
-          </div>
 
-          {/* Email Field */}
-          <div className="w-full lg:w-[200px]">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              {...register("email")}
-              className="bg-white text-black rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-            )}
-          </div>
+        {/* Conditional Form Section */}
+        {!user && (
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="bg-black flex flex-col lg:flex-row flex-wrap items-center justify-center gap-6 p-10 w-full"
+          >
+            <div className="w-full lg:w-auto text-center lg:text-left">
+              <h1 className="text-white text-xl font-semibold whitespace-nowrap">
+                Create an account
+              </h1>
+            </div>
 
-          {/* Role Select */}
-          <div className="w-full lg:w-[200px]">
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="bg-white rounded-lg px-4 py-2 w-full">
-                    <SelectValue placeholder="Select Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="teacher">Teacher</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Email Input */}
+            <div className="w-full lg:w-[200px]">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                {...register("email")}
+                className="bg-white text-black rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.email.message}
+                </p>
               )}
-            />
-            {errors.role && (
-              <p className="text-red-500 text-xs mt-1">Please enter the role</p>
-            )}
-          </div>
+            </div>
 
-          {/* Create Account Button */}
-          <div className="w-full lg:w-[200px]">
-            <button
-              type="submit"
-              className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-4 py-2 w-full"
-            >
-              Create an Account
-            </button>
-          </div>
+            {/* Role Select */}
+            <div className="w-full lg:w-[200px]">
+              <Controller
+                name="role"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="bg-white rounded-lg px-4 py-2 w-full">
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="teacher">Teacher</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.role && (
+                <p className="text-red-500 text-xs mt-1">
+                  Please enter the role
+                </p>
+              )}
+            </div>
 
-          {/* Login Button */}
-          <div className="w-full lg:w-[200px]">
-            <Link to="/login">
+            {/* Create Account Button */}
+            <div className="w-full lg:w-[200px]">
               <button
-                type="button"
+                type="submit"
                 className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-4 py-2 w-full"
               >
-                Login
+                Create an Account
               </button>
-            </Link>
-          </div>
-        </form>
+            </div>
 
+            {/* Login Button */}
+            <div className="w-full lg:w-[200px]">
+              <Link to="/login">
+                <button
+                  type="button"
+                  className="text-white bg-green-500 hover:bg-green-600 font-medium rounded-lg text-sm px-4 py-2 w-full"
+                >
+                  Login
+                </button>
+              </Link>
+            </div>
+          </form>
+        )}
 
-
-        <section className="flex justify-center">
+        {/* Services Cards */}
+        <section className="flex justify-center mt-10">
           <div
             id="additionalServices"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-3 w-[95%] md:w-[80%]"

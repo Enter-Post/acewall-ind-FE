@@ -27,6 +27,8 @@ import RatingSection from "@/CustomComponent/teacher/RatingSection";
 import { format } from "date-fns";
 import { CourseContext } from "@/Context/CoursesProvider";
 import { SelectSemAndQuarDialog } from "@/CustomComponent/CreateCourse/SelectSemAndQuarDialog";
+import Pages from "@/CustomComponent/teacher/Pages";
+import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
@@ -131,26 +133,7 @@ export default function TeacherCourseDetails() {
           </div>
         </div>
         <section className="flex justify-between items-center">
-          <div className="">
-            {/* Delete Confirmation Modal */}
-            <DeleteCourseModal
-              confirmOpen={confirmOpen}
-              setConfirmOpen={setConfirmOpen}
-              fetchCourseDetail={fetchCourseDetail}
-              id={id}
-              setSuccessOpen={setSuccessOpen}
-            />
 
-            {/* ✅ Success Confirmation Modal */}
-            <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
-              <DialogContent className="flex flex-col items-center justify-center text-center">
-                <CheckCircle className="w-12 h-12 text-green-500" />
-                <h3 className="text-lg font-semibold mt-2">
-                  Course deleted successfully!
-                </h3>
-              </DialogContent>
-            </Dialog>
-          </div>
 
           <AssessmentCategoryDialog courseId={id} />
         </section>
@@ -162,12 +145,12 @@ export default function TeacherCourseDetails() {
             Preview as a student
           </button>
           <button
-  className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
-  onClick={() => navigate(`/teacher/gradebook/${id}`)}
->
-  Gradebook
-</button>
-</div>
+            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
+            onClick={() => navigate(`/teacher/gradebook/${id}`)}
+          >
+            Gradebook
+          </button>
+        </div>
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard
@@ -197,19 +180,7 @@ export default function TeacherCourseDetails() {
             bgColor="bg-rose-50"
           />
         </div>
-        {/* <div className="flex justify-between items-center">
-          <div className="space-y-4">
-            <div>
-              <Link
-                to={`/teacher/assessments/create/course/${course._id}/${id}/${course.semester}`}
-              >
-                <Button variant="outline" className="text-green-600">
-                  + Add Assessment
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div> */}
+
         <SelectSemAndQuarDialog
           prevSelectedSemesters={prevSemesterIds}
           prevSelectedQuarters={prevQuarterIds}
@@ -236,7 +207,15 @@ export default function TeacherCourseDetails() {
             </div>
           </Link>
         ))}
-
+        {/* <div className="flex gap-4">
+          <Pages />
+          <button
+            onClick={() => navigate(`/teacher/courses/${id}/posts`)} // dynamic course ID
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          >
+            View Course Posts
+          </button>
+        </div> */}
         {/* Final Assessment Cards */}
         {Array.isArray(course.Assessments) &&
           course.CourseAssessments.map((assessment) => (

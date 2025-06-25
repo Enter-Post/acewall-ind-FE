@@ -1,6 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronRight, Loader, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { ChevronDown, ChevronRight, Loader, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -11,136 +13,188 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { axiosInstance } from "@/lib/AxiosInstance";
 
-const AssessmentTable = ({ title, items = [], isFinal = false }) => {
-  if (!items || items.length === 0) {
+const AssessmentTable = ({ assessments = [] }) => {
+  if (!assessments || assessments.length === 0) {
     return (
-      <div className="text-sm text-gray-500 italic">
-        No {title.toLowerCase()} available
+      <div className="text-sm text-gray-500 italic p-4">
+        No assessments available
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <h4 className="font-medium text-sm text-gray-700">{title}</h4>
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50">
-              <TableHead className="text-xs">Assessment</TableHead>
-              <TableHead className="text-xs">Category</TableHead>
-              <TableHead className="text-xs">Score</TableHead>
-              <TableHead className="text-xs">Max Points</TableHead>
-              <TableHead className="text-xs">Percentage</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item, index) => {
-              const percentage =
-                item.maxPoints > 0
-                  ? ((item.studentPoints / item.maxPoints) * 100).toFixed(1)
-                  : 0;
-              return (
-                <TableRow key={index} className="text-xs">
-                  <TableCell className="font-medium">
-                    {item.assessmentTitle}
-                  </TableCell>
-                  <TableCell>{item.category}</TableCell>
-                  <TableCell>{item.studentPoints}</TableCell>
-                  <TableCell>{item.maxPoints}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        percentage >= 90
-                          ? "bg-green-100 text-green-800"
-                          : percentage >= 80
-                          ? "bg-blue-100 text-blue-800"
-                          : percentage >= 70
-                          ? "bg-yellow-100 text-yellow-800"
-                          : percentage >= 60
-                          ? "bg-orange-100 text-orange-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {percentage}%
-                    </span>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </div>
+    <div className="border rounded-lg overflow-hidden mt-2">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-gray-50">
+            <TableHead className="text-xs">Assessment</TableHead>
+            <TableHead className="text-xs">Category</TableHead>
+            <TableHead className="text-xs">Score</TableHead>
+            <TableHead className="text-xs">Max Points</TableHead>
+            <TableHead className="text-xs">Percentage</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {assessments.map((assessment, index) => {
+            const percentage =
+              assessment.maxPoints > 0
+                ? (
+                    (assessment.studentPoints / assessment.maxPoints) *
+                    100
+                  ).toFixed(1)
+                : "0.0";
+
+            return (
+              <TableRow key={index} className="text-xs">
+                <TableCell className="font-medium">
+                  {assessment.assessmentTitle}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className="text-xs">
+                    {assessment.category}
+                  </Badge>
+                </TableCell>
+                <TableCell>{assessment.studentPoints}</TableCell>
+                <TableCell>{assessment.maxPoints}</TableCell>
+                <TableCell>
+                  <span
+                    className={`font-medium ${
+                      Number.parseFloat(percentage) >= 90
+                        ? "text-green-600"
+                        : Number.parseFloat(percentage) >= 80
+                        ? "text-blue-600"
+                        : Number.parseFloat(percentage) >= 70
+                        ? "text-yellow-600"
+                        : Number.parseFloat(percentage) >= 60
+                        ? "text-orange-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {percentage}%
+                  </span>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 };
 
-const tableHead = ["Course", "Average", "Grade"];
+const getLetterGradeColor = (letterGrade) => {
+  if (["A", "A-", "A+"].includes(letterGrade)) {
+    return "bg-green-100 text-green-800";
+  } else if (["B", "B-", "B+"].includes(letterGrade)) {
+    return "bg-blue-100 text-blue-800";
+  } else if (["C", "C-", "C+"].includes(letterGrade)) {
+    return "bg-yellow-100 text-yellow-800";
+  } else if (["D", "D-", "D+"].includes(letterGrade)) {
+    return "bg-orange-100 text-orange-800";
+  } else {
+    return "bg-red-100 text-red-800";
+  }
+};
 
 export default function Gradebook() {
-  const [expandedSubjectId, setExpandedSubjectId] = useState(null);
+  const [expandedCourseId, setExpandedCourseId] = useState(null);
+  const [expandedSemester, setExpandedSemester] = useState(null);
   const [gradeData, setGradeData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCourses, setTotalCourses] = useState(0);
+  const [coursesPerPage] = useState(5); // matches API default
 
   // Fetch grade data from API
-  useEffect(() => {
-    const fetchGradeData = async () => {
-      setLoading(true);
-
-      await axiosInstance
-        .get("gradebook/getOverallGradeReport")
-        .then((res) => {
-          console.log(res.data);
-          setGradeData(res.data);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    };
-
-    fetchGradeData();
-  }, []);
-
-  const toggleSubjectExpand = (courseId) => {
-    if (expandedSubjectId === courseId) {
-      setExpandedSubjectId(null);
-    } else {
-      setExpandedSubjectId(courseId);
+  const fetchGradeData = async (page = 1) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.get(
+        `gradebook/getOverallGradeReport?page=${page}&limit=${coursesPerPage}`
+      );
+      setGradeData(res.data);
+      setCurrentPage(res.data.currentPage);
+      setTotalPages(res.data.totalPages);
+      setTotalCourses(res.data.totalCourses);
+      console.log(res);
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Group assessments by category for display
-  const groupAssessmentsByCategory = (assessments) => {
-    const grouped = {};
-    assessments.forEach((assessment) => {
-      const category = assessment.category || "Other";
-      if (!grouped[category]) {
-        grouped[category] = [];
-      }
-      grouped[category].push(assessment);
-    });
-    return grouped;
+  useEffect(() => {
+    fetchGradeData(currentPage);
+  }, [currentPage]);
+
+  const toggleCourseExpand = (courseId) => {
+    setExpandedCourseId(expandedCourseId === courseId ? null : courseId);
+    setExpandedSemester(null); // Reset semester expansion when course changes
   };
+
+  const toggleSemesterExpand = (semesterId) => {
+    setExpandedSemester(expandedSemester === semesterId ? null : semesterId);
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      setExpandedCourseId(null); // Reset expanded states when changing pages
+      setExpandedSemester(null);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    handlePageChange(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    handlePageChange(currentPage + 1);
+  };
+
+  // const downloadPDF = async () => {
+  //   try {
+  //     const response = await fetch("/api/student/grade-report?format=pdf");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to download PDF");
+  //     }
+
+  //     const blob = await response.blob();
+  //     const url = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.style.display = "none";
+  //     a.href = url;
+  //     a.download = "grade-report.pdf";
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     window.URL.revokeObjectURL(url);
+  //     document.body.removeChild(a);
+  //   } catch (err) {
+  //     console.error("Error downloading PDF:", err);
+  //   }
+  // };
 
   if (loading) {
     return (
       <div className="justify-center items-center flex h-screen">
-        <Loader className="animate-spin" />
+        <Loader className="animate-spin h-8 w-8" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto space-y-6">
-        <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">
-          Grades
-        </p>
+      <div className="container mx-auto space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Student Grade Report</h1>
+        </div>
         <Alert variant="destructive">
           <AlertDescription>Error loading grade data: {error}</AlertDescription>
         </Alert>
@@ -150,10 +204,10 @@ export default function Gradebook() {
 
   if (!gradeData) {
     return (
-      <div className="container mx-auto space-y-6">
-        <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">
-          Grades
-        </p>
+      <div className="container mx-auto space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Student Grade Report</h1>
+        </div>
         <Alert>
           <AlertDescription>No grade data available.</AlertDescription>
         </Alert>
@@ -162,132 +216,263 @@ export default function Gradebook() {
   }
 
   return (
-    <div className="container mx-auto space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Student Grade Report</h1>
+        {/* <Button onClick={downloadPDF} className="flex items-center gap-2">
+          <Download className="h-4 w-4" />
+          Download PDF
+        </Button> */}
+      </div>
+
       {/* Overall Performance Card */}
-      <p className="text-xl py-4 mb-8 pl-6 rounded-lg font-semibold bg-acewall-main text-white">
-        Grades
-      </p>
       <Card>
         <CardHeader>
-          <CardTitle className="text-green-500">
+          <CardTitle className="text-green-600">
             Overall Academic Performance
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium">Overall GPA</span>
-                <span className="text-lg font-bold text-green-500">
-                  {gradeData.overallGPA.toFixed(2)}
-                </span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {gradeData.overallGPA.toFixed(2)}
+              </div>
+              <div className="text-sm text-muted-foreground">Overall GPA</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                {totalCourses}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Total Course{totalCourses !== 1 ? "s" : ""}
               </div>
             </div>
-            <div className="flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-sm text-muted-foreground">
-                  {gradeData.courses.length} Course
-                  {gradeData.courses.length !== 1 ? "s" : ""}
-                </div>
+            {/* <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600">
+                {gradeData.studentId}
               </div>
-            </div>
+              <div className="text-sm text-muted-foreground">Student ID</div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
 
-      {/* Subjects and Assessment Table */}
-      <div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {tableHead.map((item, idx) => (
-                  <TableHead key={idx}>{item}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {gradeData?.courses?.map((course) => (
-                <>
-                  <TableRow
-                    key={course.courseId}
-                    className="text-xs md:text-sm"
-                  >
-                    <TableCell
-                      className="cursor-pointer hover:text-green-600 flex items-center gap-2 font-medium"
-                      onClick={() => toggleSubjectExpand(course.courseId)}
-                    >
-                      {expandedSubjectId === course.courseId ? (
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4 text-gray-500" />
-                      )}
-                      <span>{course.courseName}</span>
-                    </TableCell>
-                    <TableCell>{course.grade.toFixed(2)}%</TableCell>
-                    <TableCell>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          course.letterGrade === "A" ||
-                          course.letterGrade === "A-" ||
-                          course.letterGrade === "A+"
-                            ? "bg-green-100 text-green-800"
-                            : course.letterGrade === "B" ||
-                              course.letterGrade === "B-" ||
-                              course.letterGrade === "B+"
-                            ? "bg-blue-100 text-blue-800"
-                            : course.letterGrade === "C" ||
-                              course.letterGrade === "C-" ||
-                              course.letterGrade === "C+"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : course.letterGrade === "D" ||
-                              course.letterGrade === "D-" ||
-                              course.letterGrade === "D+"
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {course.letterGrade}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                  {expandedSubjectId === course.courseId && (
-                    <TableRow className="bg-muted/50">
-                      <TableCell colSpan={3} className="p-0">
-                        <div className="p-4 space-y-6">
-                          {(() => {
-                            const groupedAssessments =
-                              groupAssessmentsByCategory(course.assessments);
-                            return Object.entries(groupedAssessments).map(
-                              ([category, assessments]) => (
-                                <AssessmentTable
-                                  key={category}
-                                  title={category}
-                                  items={assessments}
-                                  isFinal={category
-                                    .toLowerCase()
-                                    .includes("final")}
-                                />
-                              )
-                            );
-                          })()}
-                        </div>
+      {/* Courses Table */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Course Details</CardTitle>
+            <div className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Course</TableHead>
+                  <TableHead>Semesters</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {gradeData.courses.map((course) => (
+                  <>
+                    <TableRow key={course.courseId}>
+                      <TableCell className="font-medium">
+                        {course.courseName}
+                      </TableCell>
+                      <TableCell>
+                        {course.semesters.length} semester
+                        {course.semesters.length !== 1 ? "s" : ""}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleCourseExpand(course.courseId)}
+                          className="flex items-center gap-2"
+                        >
+                          {expandedCourseId === course.courseId ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                          {expandedCourseId === course.courseId
+                            ? "Hide"
+                            : "Show"}{" "}
+                          Details
+                        </Button>
                       </TableCell>
                     </TableRow>
-                  )}
-                </>
-              ))}
-              {gradeData?.courses?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={3} className="text-center py-6">
-                    No courses or assessments found matching your search.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+
+                    {expandedCourseId === course.courseId && (
+                      <TableRow>
+                        <TableCell colSpan={3} className="p-0">
+                          <div className="bg-muted/30 p-6 space-y-4">
+                            {course.semesters.map((semester) => (
+                              <div
+                                key={semester.semesterId}
+                                className="space-y-3"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <h3 className="text-lg font-semibold text-gray-800">
+                                    {semester.semesterTitle}
+                                  </h3>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      toggleSemesterExpand(semester.semesterId)
+                                    }
+                                    className="flex items-center gap-2"
+                                  >
+                                    {expandedSemester ===
+                                    semester.semesterId ? (
+                                      <ChevronDown className="h-4 w-4" />
+                                    ) : (
+                                      <ChevronRight className="h-4 w-4" />
+                                    )}
+                                    {semester.quarters.length} Quarter
+                                    {semester.quarters.length !== 1 ? "s" : ""}
+                                  </Button>
+                                </div>
+
+                                {expandedSemester === semester.semesterId && (
+                                  <div className="space-y-4">
+                                    {semester.quarters.map((quarter) => (
+                                      <Card
+                                        key={quarter.quarterId}
+                                        className="bg-white"
+                                      >
+                                        <CardHeader className="pb-3">
+                                          <div className="flex items-center justify-between">
+                                            <CardTitle className="text-base">
+                                              {quarter.quarterTitle}
+                                            </CardTitle>
+                                            <div className="flex items-center gap-4">
+                                              <div className="text-sm">
+                                                <span className="font-medium">
+                                                  Grade:{" "}
+                                                </span>
+                                                <span className="text-green-600 font-bold">
+                                                  {quarter.grade}%
+                                                </span>
+                                              </div>
+                                              <div className="text-sm">
+                                                <span className="font-medium">
+                                                  GPA:{" "}
+                                                </span>
+                                                <span className="text-blue-600 font-bold">
+                                                  {quarter.gpa}
+                                                </span>
+                                              </div>
+                                              <Badge
+                                                className={`${getLetterGradeColor(
+                                                  quarter.letterGrade
+                                                )}`}
+                                              >
+                                                {quarter.letterGrade}
+                                              </Badge>
+                                            </div>
+                                          </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                          <AssessmentTable
+                                            assessments={quarter.assessments}
+                                          />
+                                        </CardContent>
+                                      </Card>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </>
+                ))}
+
+                {gradeData.courses.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-8">
+                      No courses found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Showing {(currentPage - 1) * coursesPerPage + 1} to{" "}
+                {Math.min(currentPage * coursesPerPage, totalCourses)} of{" "}
+                {totalCourses} courses
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={
+                          currentPage === pageNum ? "default" : "outline"
+                        }
+                        size="sm"
+                        onClick={() => handlePageChange(pageNum)}
+                        className="w-8 h-8 p-0"
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

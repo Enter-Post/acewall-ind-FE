@@ -40,11 +40,12 @@ const Assessment = () => {
       await axiosInstance
         .get("assessment/getAllassessmentforStudent")
         .then((res) => {
-          console.log(res.data);
           setAssessments(res.data);
+          console.log("data assess",res);
+          
           setLoading(false);
         })
-        .catch((err) => {
+        .catch(() => {
           setError("Failed to fetch assessments");
           setLoading(false);
         });
@@ -56,7 +57,8 @@ const Assessment = () => {
   const formatDueDate = (date, time) => {
     try {
       const dateObj = new Date(date);
-      return `${format(dateObj, "MMM dd, yyyy")} at ${time}`;
+      if (isNaN(dateObj.getTime())) throw new Error("Invalid date");
+      return `${format(dateObj, "MMM dd, yyyy")} at ${time || "N/A"}`;
     } catch (error) {
       return "Invalid date";
     }
@@ -85,7 +87,7 @@ const Assessment = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center w-full h-screen">
-        <Loader className="animate-spin" />;
+        <Loader className="animate-spin" />
       </div>
     );
   }
@@ -95,12 +97,11 @@ const Assessment = () => {
   }
 
   return (
-    <div className="">
-      <div className="">
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-          Assessment
-        </p>
-      </div>
+    <div>
+      <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+        Assessment
+      </p>
+
       <div className="flex items-center py-4">
         <Input
           placeholder="Search by title"
@@ -144,7 +145,9 @@ const Assessment = () => {
                           {assessment.title}
                         </span>
                       </TableCell>
-                      <TableCell>{assessment?.course?.courseTitle}</TableCell>
+                      <TableCell>
+                        {assessment?.course?.courseTitle || "N/A"}
+                      </TableCell>
                       <TableCell>
                         {formatDueDate(
                           assessment?.dueDate?.date,
@@ -162,10 +165,11 @@ const Assessment = () => {
                       </TableCell>
                       <TableCell>
                         <span className="capitalize">
-                          {assessment.type.replace("-", " ")}
+                          {assessment.type?.replace("-", " ") || "N/A"}
                         </span>
                       </TableCell>
                     </TableRow>
+
                     {expandedAssessmentId === assessment._id && (
                       <TableRow className="bg-gray-50 border">
                         <TableCell colSpan={5} className="p-4">
@@ -186,7 +190,7 @@ const Assessment = () => {
                                 </h4>
                                 <p className="text-sm text-gray-600 flex items-center gap-2">
                                   <FileText className="h-4 w-4 text-gray-500" />
-                                  {assessment?.course?.courseTitle}
+                                  {assessment?.course?.courseTitle || "N/A"}
                                 </p>
                               </div>
                               <div>
@@ -196,14 +200,21 @@ const Assessment = () => {
                                 <div className="flex flex-col space-y-1">
                                   <p className="text-sm text-gray-600 flex items-center gap-2">
                                     <Calendar className="h-4 w-4 text-gray-500" />
-                                    {format(
-                                      new Date(assessment?.dueDate?.date),
-                                      "MMMM dd, yyyy"
-                                    )}
+                                    {assessment?.dueDate?.date &&
+                                    !isNaN(
+                                      new Date(
+                                        assessment.dueDate.date
+                                      ).getTime()
+                                    )
+                                      ? format(
+                                          new Date(assessment.dueDate.date),
+                                          "MMMM dd, yyyy"
+                                        )
+                                      : "Invalid date"}
                                   </p>
                                   <p className="text-sm text-gray-600 flex items-center gap-2">
                                     <Clock className="h-4 w-4 text-gray-500" />
-                                    {assessment.dueDate.time}
+                                    {assessment?.dueDate?.time || "N/A"}
                                   </p>
                                 </div>
                               </div>

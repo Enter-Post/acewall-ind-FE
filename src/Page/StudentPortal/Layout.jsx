@@ -76,6 +76,12 @@ const sideBarTabs = [
     icon: <MessageCircleDashed />,
     path: "/student/messages",
   },
+  {
+    id: 7,
+    name: "Pages",
+    icon: <MessageCircleDashed />,
+    path: "/student/stdPages",
+  },
 ];
 
 export default function Layout() {

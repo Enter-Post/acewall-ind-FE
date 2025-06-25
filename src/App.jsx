@@ -67,7 +67,10 @@ import SemesterDetail from "./Page/teacher/Courses/SemesterDetail";
 import QuarterDetail from "./Page/teacher/Courses/QuarterDetail";
 import StudentSemesterDetail from "./Page/StudentPortal/Courses/StudentSemesterDetail";
 import AllChapter from "./Page/StudentPortal/Courses/AllChapter";
-import CourseGradebookPage from "./Page/teacher/CourseGradebookPage"; 
+import CourseGradebookPage from "./Page/teacher/CourseGradebookPage";
+import ViewCoursePostsPage from "./Page/teacher/ViewCoursePosts";
+import StdPagesView from "./Page/StudentPortal/StdPagesView";
+
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
     useContext(GlobalContext);
@@ -180,6 +183,7 @@ function App() {
               </Route>
               <Route path=":id" element={<MainDetailPage />} />
             </Route>
+
             <Route path="assessment">
               <Route index element={<Assignment />} />
               <Route
@@ -188,6 +192,7 @@ function App() {
               />
             </Route>
             <Route path="gradebook" element={<Gradebook />} />
+            <Route path="stdPages" element={<StdPagesView />} />
             <Route path="announcements" element={<Announcement />} />
             <Route path="account">
               <Route index element={<Account />} />
@@ -227,6 +232,8 @@ function App() {
                 element={<CreateAssessmentPage />}
               />
             </Route>
+            <Route path="/teacher/courses/posts" element={<ViewCoursePostsPage />} />
+
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
             <Route path="studentProfile/:id" element={<StudentProfile />} />
@@ -243,7 +250,7 @@ function App() {
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />
             </Route>
-<Route path="gradebook/:courseId" element={<CourseGradebookPage />} />
+            <Route path="gradebook/:courseId" element={<CourseGradebookPage />} />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route
