@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import PaymentSuccess from "./Page/StudentPortal/PaymentSuccess";
+import PaymentCancelled from "./Page/StudentPortal/PaymentCancelled";
 import Layout from "./Page/StudentPortal/Layout";
 import Deshboard from "./Page/StudentPortal/Deshboard";
 import Mycourses from "./Page/StudentPortal/Courses/MyCourses";
@@ -169,6 +171,8 @@ function App() {
         {/* Student Routes */}
         <Route element={<PrivateRoute user={user} allowedRole="student" />}>
           <Route path="/student" element={<Layout />}>
+          <Route path="payment-success" element={<PaymentSuccess />} />
+          <Route path="payment-cancelled" element={<PaymentCancelled />} />
             <Route index element={<Deshboard />} />
             <Route path="mycourses">
               <Route index element={<Mycourses />} />
