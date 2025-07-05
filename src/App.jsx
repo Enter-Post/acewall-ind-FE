@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import PaymentSuccess from "./Page/StudentPortal/PaymentSuccess";
+import PaymentSuccess from "./Page/StudentPortal/payment-success";
 import PaymentCancelled from "./Page/StudentPortal/PaymentCancelled";
 import Layout from "./Page/StudentPortal/Layout";
 import Deshboard from "./Page/StudentPortal/Deshboard";
