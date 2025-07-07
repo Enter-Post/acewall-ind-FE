@@ -34,6 +34,7 @@ const studentID = user?._id;
   const { id } = useParams(); // Grab the actual course ID from the URL
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+ const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -55,6 +56,22 @@ const studentID = user?._id;
 
     getCourseDetails();
   }, [id]);
+  useEffect(() => {
+  const checkEnrollment = async () => {
+    try {
+      const res = await axiosInstance.get(`/enrollment/isEnrolled/${courseDetails?._id}`);
+      setIsEnrolled(res?.data?.enrolled);
+    } catch (err) {
+      console.error("Error checking enrollment:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (courseDetails?._id) {
+    checkEnrollment();
+  }
+}, [courseDetails?._id]);
 
   if (loading)
     return (
@@ -396,10 +413,11 @@ const studentID = user?._id;
             <div className="flex flex-col gap-6 mb-6">
               <PurchaseConfirmationModal
                   courseID={courseDetails._id}
-                  coursePrice={courseDetails.price}
+                  coursePrice={courseDetails.price? courseDetails.price : 0}
                   studentID={studentID}
                   courseName={courseDetails.courseTitle}
                   teacherID={courseDetails.createdby._id}
+                    isEnrolled= {isEnrolled}
               />
             </div>
 

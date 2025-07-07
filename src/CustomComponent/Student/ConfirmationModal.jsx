@@ -16,8 +16,9 @@ import { toast } from "sonner";
 
 export default function PurchaseConfirmationModal({
   courseID,
-  coursePrice = 10,
+  coursePrice,
   studentID,
+    isEnrolled,
 }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -35,7 +36,6 @@ export default function PurchaseConfirmationModal({
         toast.error(err?.response?.data?.error || "Enrollment failed");
       }
     } else {
-      // 💳 PAID COURSE: redirect to Stripe
       try {
         const res = await axiosInstance.post("/stripe/create-checkout-session", {
           courseId: courseID,
@@ -59,9 +59,9 @@ export default function PurchaseConfirmationModal({
       <DialogTrigger asChild>
         <Button
           className="w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300"
-          variant="default"
+          variant="default"   disabled={isEnrolled}
         >
-          Enroll Now
+    {isEnrolled ? "Enrolled" : "Enroll Now"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -80,9 +80,11 @@ export default function PurchaseConfirmationModal({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button variant="default" onClick={handleConfirm}>
-            {coursePrice === 0 ? "Enroll Now" : `Pay $${coursePrice}`}
-          </Button>
+  {!isEnrolled && (
+    <Button variant="default" onClick={handleConfirm}>
+      {coursePrice === 0 ? "Enroll Now" : `Pay $${coursePrice}`}
+    </Button>
+  )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
