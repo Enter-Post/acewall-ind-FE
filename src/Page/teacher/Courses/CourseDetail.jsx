@@ -130,6 +130,12 @@ export default function TeacherCourseDetails() {
                 {course.courseDescription || "Course description goes here..."}
               </p>
             </div>
+{              course.price ?       <div>
+              <p className="text-muted-foreground"> Price :  
+                {` ${course.price} $`|| "Course price goes here..."} 
+              </p>
+            </div>: 
+            <></>}
           </div>
         </div>
         <section className="flex justify-between items-center">

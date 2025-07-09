@@ -147,7 +147,7 @@ const CourseGradebook = () => {
                                             </TableRow>
                                           </TableHeader>
                                           <TableBody>
-                                            {quarter.assessments.map((assessment) => (
+                                            {quarter?.assessments?.map((assessment) => (
                                               <TableRow key={assessment.assessmentId}>
                                                 <TableCell className="text-sm">{assessment.assessmentTitle}</TableCell>
                                                 <TableCell className="text-sm">
