@@ -9,7 +9,12 @@ import {
 import { axiosInstance } from "@/lib/AxiosInstance";
 import React, { useEffect, useState } from "react";
 
-const CategorySelect = ({ register, errors, onCategoryChange }) => {
+const CategorySelect = ({
+  register,
+  errors,
+  onCategoryChange,
+  watchedCategory,
+}) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -24,14 +29,19 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
           if (!category._id) return;
 
           try {
-            const subRes = await axiosInstance.get(`/category/subcategories/${category._id}`);
+            const subRes = await axiosInstance.get(
+              `/category/subcategories/${category._id}`
+            );
             const subcategories = subRes.data?.subcategories || [];
 
             if (subcategories.length > 0) {
               validCategories.push(category);
             }
           } catch (err) {
-            console.error(`Failed to fetch subcategories for ${category.title}:`, err.message);
+            console.error(
+              `Failed to fetch subcategories for ${category.title}:`,
+              err.message
+            );
           }
         });
 
@@ -48,7 +58,7 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
   return (
     <div>
       <Label htmlFor="category" className="block mb-2">
-        Category
+        Category *
       </Label>
       <Select
         onValueChange={(value) => {
@@ -56,6 +66,7 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
           register("category").onChange(event);
           onCategoryChange?.(value);
         }}
+        value={watchedCategory}
       >
         <SelectTrigger className="bg-gray-50">
           <SelectValue placeholder="Select category" />
@@ -68,7 +79,9 @@ const CategorySelect = ({ register, errors, onCategoryChange }) => {
               </SelectItem>
             ))
           ) : (
-            <div className="p-2 text-sm text-gray-500">No categories with subcategories</div>
+            <div className="p-2 text-sm text-gray-500">
+              No categories with subcategories
+            </div>
           )}
         </SelectContent>
       </Select>

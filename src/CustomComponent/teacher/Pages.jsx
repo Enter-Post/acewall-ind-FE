@@ -92,7 +92,7 @@ const Pages = ({ onCreated }) => {
 
           <form onSubmit={handleCreatePage} className="space-y-4">
             <div>
-              <Label>Title</Label>
+              <Label>Title *</Label>
               <Input
                 type="text"
                 required
@@ -128,7 +128,7 @@ const Pages = ({ onCreated }) => {
             </div>
 
             <div>
-              <Label>Description</Label>
+              <Label>Description *</Label>
               <Textarea
                 required
                 value={pageData.description}

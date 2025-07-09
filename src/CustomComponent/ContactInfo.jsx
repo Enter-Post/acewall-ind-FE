@@ -6,7 +6,7 @@ const ContactInfo = ({ formData, handleInputChange }) => {
     <>
       <div>
         <Label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Email Address
+          Email Address*
         </Label>
         <Input
           type="email"

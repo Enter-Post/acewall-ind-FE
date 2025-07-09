@@ -50,17 +50,17 @@ const Support = () => {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="fullName">Full Name</Label>
+            <Label htmlFor="fullName">Full Name *</Label>
             <Input name="fullName" value={formData.fullName} onChange={handleChange} required />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email *</Label>
             <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="feedback">Feedback</Label>
+            <Label htmlFor="feedback">Feedback *</Label>
             <Textarea name="feedback" value={formData.feedback} onChange={handleChange} required />
           </div>
 

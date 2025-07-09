@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { Loader, Play, Users } from "lucide-react";
+import { CircleEllipsis, Loader, Play, Users } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
@@ -29,6 +29,7 @@ import { CourseContext } from "@/Context/CoursesProvider";
 import { SelectSemAndQuarDialog } from "@/CustomComponent/CreateCourse/SelectSemAndQuarDialog";
 import Pages from "@/CustomComponent/teacher/Pages";
 import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
+import ArchiveDialog from "@/CustomComponent/teacher/ArchivedModal";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
@@ -97,7 +98,9 @@ export default function TeacherCourseDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
+      <div className="flex item-center justify-between">
+        <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
+      </div>
 
       <div className="space-y-8">
         {/* Course Info */}
@@ -117,12 +120,27 @@ export default function TeacherCourseDetails() {
             <div className="space-y-1">
               <div className="flex justify-between text-sm mb-2 text-muted-foreground">
                 <span>
-                  Uploaded: {course.createdAt?.split("T")[0] || "N/A"}
+                  Uploaded:{" "}
+                  {course.createdAt
+                    ? new Date(course.createdAt).toLocaleDateString("en-US", {
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
+                    : "N/A"}
                 </span>
                 <span>
-                  Last Updated: {course.updatedAt?.split("T")[0] || "N/A"}
+                  Last Updated:{" "}
+                  {course.updatedAt
+                    ? new Date(course.updatedAt).toLocaleDateString("en-US", {
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
+                    : "N/A"}
                 </span>
               </div>
+
               <h2 className="text-2xl uppercase font-semibold">
                 {course.courseTitle || "Course Title"}
               </h2>
@@ -132,25 +150,35 @@ export default function TeacherCourseDetails() {
             </div>
           </div>
         </div>
-        <section className="flex justify-between items-center">
-
-
-          <AssessmentCategoryDialog courseId={id} />
-        </section>
-        <div className="flex justify-between items-center">
-          <button
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
-            onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
-          >
-            Preview as a student
-          </button>
-          <button
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
-            onClick={() => navigate(`/teacher/gradebook/${id}`)}
-          >
-            Gradebook
-          </button>
+        <div className="flex justify-between gap-4">
+          <section className="flex justify-between items-center">
+            <AssessmentCategoryDialog courseId={id} />
+          </section>
+          <div className="flex justify-between items-center gap-4">
+            <button
+              variant="outline"
+              className="bg-green-500 text-white py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
+              onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
+            >
+              Preview as a student
+            </button>
+            <button
+              variant="outline"
+              className="bg-blue-500 text-white py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
+              onClick={() => navigate(`/teacher/gradebook/${id}`)}
+            >
+              Gradebook
+            </button>
+             <button
+              variant="outline"
+              className="bg-blue-500 text-white py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
+              onClick={() => navigate(`/teacher/courses/edit/${id}`)}
+            >
+              Edit
+            </button>
+          </div>
         </div>
+
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard
@@ -231,6 +259,10 @@ export default function TeacherCourseDetails() {
       </div>
 
       <CommentSection id={id} />
+
+      <div className="flex justify-end">
+        <ArchiveDialog course={course} fetchCourseDetail={fetchCourseDetail} />
+      </div>
     </div>
   );
 }

@@ -9,7 +9,12 @@ import {
 import { axiosInstance } from "@/lib/AxiosInstance";
 import React, { useEffect, useState } from "react";
 
-const SubCategorySelect = ({ register, errors, selectedCategory }) => {
+const SubCategorySelect = ({
+  register,
+  errors,
+  selectedCategory,
+  watchedSubCategory,
+}) => {
   const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
@@ -32,7 +37,7 @@ const SubCategorySelect = ({ register, errors, selectedCategory }) => {
   return (
     <div>
       <Label htmlFor="subcategory" className="block mb-2">
-        Sub Category
+        Sub Category *
       </Label>
       <Select
         onValueChange={(value) => {
@@ -40,6 +45,7 @@ const SubCategorySelect = ({ register, errors, selectedCategory }) => {
           register("subcategory").onChange(event);
         }}
         disabled={!selectedCategory}
+        value={watchedSubCategory}
       >
         <SelectTrigger className="bg-gray-50">
           <SelectValue placeholder="Select sub category" />

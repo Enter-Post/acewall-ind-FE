@@ -126,7 +126,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
           {/* Title */}
           <div>
-            <Label htmlFor="title">Announcement Title</Label>
+            <Label htmlFor="title">Announcement Title *</Label>
             <Input
               id="title"
               maxLength={100}
@@ -147,7 +147,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
 
           {/* Course Selection */}
           <div>
-            <Label htmlFor="course">Select Course</Label>
+            <Label htmlFor="course">Select Course *</Label>
             <Select
               onValueChange={(value) =>
                 setValue("courseId", value, { shouldValidate: true })
@@ -178,7 +178,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
 
           {/* Message */}
           <div>
-            <Label htmlFor="message">Announcement Message</Label>
+            <Label htmlFor="message">Announcement Message *</Label>
             <Textarea
               id="message"
               maxLength={500}

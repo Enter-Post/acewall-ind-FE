@@ -63,7 +63,7 @@ const SelectQuarter = ({
   return (
     <div>
       <Label htmlFor="quarter" className="block mb-2">
-        Quarter
+        Quarter *
       </Label>
 
       <Popover open={open} onOpenChange={setOpen}>

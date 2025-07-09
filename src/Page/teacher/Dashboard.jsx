@@ -189,29 +189,31 @@ export default function TeacherDashboard() {
             <h2 className="text-lg font-semibold mb-4">Recent Courses</h2>
             <div className="space-y-4">
               {courses?.slice(0, 3).map((course, i) => (
-                <div
+                <Link
                   key={i}
-                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
+                  to={`/teacher/courses/courseDetail/${course._id}`}
+                  className="block"
                 >
-                  <img
-                    src={course?.thumbnail.url || "/placeholder.svg"}
-                    alt={course?.courseTitle}
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                  <div>
-                    <h3 className="font-medium text-sm mb-1">
-                      {course?.courseTitle}
-                    </h3>
-                    <div className="flex gap-2">
-                      <span className="text-xs text-gray-500">
-                        {course?.category?.title}
-                      </span>
+                  <div className="flex items-start gap-4 bg-white p-4 rounded-lg border hover:bg-gray-50 transition">
+                    <img
+                      src={course?.thumbnail?.url || "/placeholder.svg"}
+                      alt={course?.courseTitle}
+                      className="w-10 h-10 rounded-lg object-cover"
+                    />
+                    <div>
+                      <h3 className="font-medium text-sm mb-1">{course?.courseTitle}</h3>
+                      <div className="flex gap-2">
+                        <span className="text-xs text-gray-500">
+                          {course?.category?.title}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
+
         </div>
       </div>
     </div>

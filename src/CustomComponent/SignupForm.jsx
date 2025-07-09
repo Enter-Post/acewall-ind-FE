@@ -22,7 +22,7 @@ const formSchema = z
     pronouns: z.enum(["he/him", "she/her", "they/them", "prefer not to say"]),
     gender: z.enum(["male", "female", "other", "non-binary", "prefer not to say"]),
     phone: z.string().min(10, "Phone number is required"),
-    homeAddress: z.string().min(1, "Home address is required"),
+    homeAddress: z.string().min(1, "Home address "),
     mailingAddress: z.string().optional(),
     password: z
       .string()

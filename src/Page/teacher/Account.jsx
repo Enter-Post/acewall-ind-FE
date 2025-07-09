@@ -181,7 +181,7 @@ const Account = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <section className="space-y-6">
-          <h3 className="text-lg font-semibold">Profile Image</h3>
+          <h3 className="text-lg font-semibold">Profile Image *</h3>
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 rounded-full">
             <img
               src={previewImage}
@@ -267,7 +267,7 @@ const Account = () => {
               {/* Pronouns */}
               <div className="space-y-2">
                 <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Preferred Pronouns
+                  Preferred Pronouns *
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
                   {["He/Him", "She/Her", "They/Them", "Others","prefer not to say"].map((pronouns) => (

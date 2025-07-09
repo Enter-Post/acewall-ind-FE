@@ -20,7 +20,7 @@ const PersonalInfo = () => {
             htmlFor="firstName"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            First Name
+            First Name <span className="text-red-600">*</span>
           </Label>
           <Input
             type="text"
@@ -72,7 +72,7 @@ const PersonalInfo = () => {
             htmlFor="lastName"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Last Name
+            Last Name <span className="text-red-600">*</span>
           </Label>
           <Input
             type="text"
