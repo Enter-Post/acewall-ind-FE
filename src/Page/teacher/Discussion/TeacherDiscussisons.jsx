@@ -65,7 +65,7 @@ const TeacherDiscussion = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="course">
+        <TabsContent value="course" className="mt-10">
           <div className="w-full flex justify-center">
             {loading ? (
               <p className="text-center">Loading...</p>
