@@ -6,7 +6,6 @@ const PrivateRoute = ({
   redirectTo = "/login",
   loading,
 }) => {
-  console.log(loading)
   if (loading) return null; // or return a spinner if you prefer
   if (!user) return <Navigate to={redirectTo} />;
   return user.role === allowedRole ? <Outlet /> : <Navigate to="/" />;

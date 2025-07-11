@@ -1,811 +1,163 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import LessonModal from "../../../CustomComponent/CreateCourse/LessonModal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  FileText,
-  Youtube,
-  Link2,
-  Pencil,
-  Trash2,
-  ChevronDown,
-  ChevronUp,
-  BookOpen,
-} from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DeleteModal } from "../../../CustomComponent/CreateCourse/DeleteModal";
+import { toast } from "sonner";
+import { BookOpen, GraduationCap, Eye } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Link, useParams } from "react-router-dom";
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
+import EditChapterDialog from "@/CustomComponent/CreateCourse/EditChapter";
+import { DeleteModal } from "../../../CustomComponent/CreateCourse/DeleteModal";
 
-const QuarterDetail = ({}) => {
+const QuarterDetail = () => {
   const { id, courseId } = useParams();
-  const [openLessons, setOpenLessons] = useState({});
-  const [activeTab, setActiveTab] = useState("chapters");
   const [loading, setLoading] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [quarterStartDate, setQuarterStartDate] = useState("");
   const [quarterEndDate, setQuarterEndDate] = useState("");
 
-  const fetchQuarterDetail = async () => {
-    await axiosInstance
-      .get(`chapter/${courseId}/${id}`)
-      .then((res) => {
-        setChapters(res.data.chapters);
-        setQuarterStartDate(res.data.quarterEndDate);
-        setQuarterEndDate(res.data.quarterStartDate);
-      })
-      .catch((err) => {
-        console.log(err);
-        setChapters([]);
-      });
-  };
+  console.log(chapters, "setChapters");
 
-  console.log(chapters, "chapters");
+  const fetchQuarterDetail = async () => {
+    try {
+      const response = await axiosInstance.get(`chapter/${courseId}/${id}`);
+      setChapters(response.data.chapters);
+      setQuarterStartDate(response.data.quarterEndDate);
+      setQuarterEndDate(response.data.quarterStartDate);
+    } catch (err) {
+      console.error(err);
+      setChapters([]);
+      toast.error("Failed to fetch quarter details");
+    }
+  };
 
   useEffect(() => {
     fetchQuarterDetail();
   }, []);
 
-  const toggleLesson = (lessonId) => {
-    setOpenLessons((prev) => ({
-      ...prev,
-      [lessonId]: !prev[lessonId],
-    }));
-  };
-
-  const handleDeleteChapter = (chapterID) => {
+  const handleDeleteChapter = async (chapterID) => {
     setLoading(true);
-    axiosInstance
-      .delete(`chapter/${chapterID}`)
-      .then((res) => {
-        setLoading(false);
-        toast.success(res.data.message);
-        fetchCourseDetail();
-      })
-      .catch((err) => {
-        setLoading(false);
-        toast.error(err.response?.data?.message || "Error deleting chapter");
-      });
-  };
-  const handleDeleteAssessment = (assessmentID) => {
-    setLoading(true);
-    axiosInstance
-      .delete(`/assessment/delete/${assessmentID}`)
-      .then((res) => {
-        setLoading(false);
-        toast.success(res.data.message);
-        fetchQuarterDetail();
-      })
-      .catch((err) => {
-        setLoading(false);
-        toast.error(err.response?.data?.message || "Error deleting assessment");
-      });
-  };
-
-  const handleDeleteLesson = (lessonID) => {
-    setLoading(true);
-    axiosInstance
-      .delete(`lesson/${lessonID}`)
-      .then((res) => {
-        setLoading(false);
-        toast.success(res.data.message);
-        fetchQuarterDetail();
-      })
-      .catch((err) => {
-        setLoading(false);
-        toast.error(err.response?.data?.message || "Error deleting lesson");
-      });
+    try {
+      const response = await axiosInstance.delete(`chapter/${chapterID}`);
+      toast.success(response.data.message);
+      fetchQuarterDetail();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error deleting chapter");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <Tabs
-        defaultValue="chapters"
-        className="w-full"
-        onValueChange={setActiveTab}
-      >
-        <TabsList className="grid w-full grid-cols-1">
-          <TabsTrigger value="chapters" className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" />
-            Chapters & Lessons
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="chapters" className="mt-4">
-          <section className="mb-5">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <GraduationCap className="h-8 w-8 text-blue-600" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Quarter Management
+                </h1>
+                <p className="text-gray-600">
+                  Manage your chapters and course content
+                </p>
+              </div>
+            </div>
             <ChapterCreationModal
               courseId={courseId}
               quarterId={id}
               fetchQuarterDetail={fetchQuarterDetail}
             />
-          </section>
-          <Accordion type="multiple" className="w-full space-y-4">
-            {chapters?.map((chapter, chapterIndex) => (
-              <AccordionItem
-                key={chapter._id}
-                value={`chapter-${chapterIndex}`}
-                className="border rounded-xl overflow-hidden shadow-sm"
-              >
-                <AccordionTrigger className="text-left text-lg font-semibold px-6 py-4 hover:bg-gray-50 transition-all">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                      Chapter {chapterIndex + 1}
-                    </span>
-                    {chapter.title}
-                  </div>
-                </AccordionTrigger>
+          </div>
+        </div>
 
-                <AccordionContent className="px-6 pb-6 space-y-5 bg-white">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+        {/* Chapters Grid */}
+        {chapters.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No chapters yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Create your first chapter to get started with organizing your
+              course content.
+            </p>
+            <ChapterCreationModal
+              courseId={courseId}
+              quarterId={id}
+              fetchQuarterDetail={fetchQuarterDetail}
+            />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {chapters.map((chapter, index) => (
+              <Card
+                key={chapter._id}
+                className="hover:shadow-md transition-shadow"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant="secondary"
+                        className="bg-blue-100 text-blue-800"
+                      >
+                        Chapter {index + 1}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <DeleteModal
+                        what="chapter"
+                        deleteFunc={() => handleDeleteChapter(chapter._id)}
+                      />
+                    </div>
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2">
+                    {chapter.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600 line-clamp-3">
                     {chapter.description}
                   </p>
 
-                  <div className="flex items-center gap-4">
-                    {/* <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2 border-orange-200 text-orange-700 hover:bg-orange-50"
-                    >
-                      <Pencil className="h-4 w-4" />
-                      Edit Chapter
-                    </Button> */}
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <BookOpen className="h-4 w-4" />
+                      <span>{chapter.lessons?.length || 0} Lessons</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <GraduationCap className="h-4 w-4" />
+                      <span>
+                        {chapter.chapter_assessments?.length || 0} Assessments
+                      </span>
+                    </div>
+                  </div>
 
-                    <DeleteModal
-                      deleteFunc={() => handleDeleteChapter(chapter._id)}
-                    />
-
-                    <LessonModal
-                      chapterID={chapter._id}
-                      fetchQuarterDetail={fetchQuarterDetail}
-                    />
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-2">
                     <Link
-                      to={`/teacher/assessments/create/chapter/${chapter._id}/${courseId}/${quarterStartDate}/${quarterEndDate}?semester=${chapter.semester._id}&quarter=${chapter.quarter._id}`}
+                      to={`/teacher/courses/quarter/${id}/chapter/${chapter._id}?courseId=${courseId}&quarterStart=${quarterStartDate}&quarterEnd=${quarterEndDate}`}
+                      className="flex-1"
                     >
-                      <Button variant="outline" className="text-green-600">
-                        + Add Assessment
+                      <Button className="w-full" size="sm">
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
                       </Button>
                     </Link>
                   </div>
-
-                  {Array.isArray(chapter.chapter_assessments) &&
-                    chapter.chapter_assessments.length > 0 && (
-                      <Card>
-                        <CardHeader className="py-3">
-                          <CardTitle className="text-base font-semibold flex items-center gap-2">
-                            <Badge variant="outline" className="bg-orange-50">
-                              Chapter Assessment
-                            </Badge>
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="py-2">
-                          {chapter.chapter_assessments.map((assess, aIdx) => (
-                            <div
-                              key={aIdx}
-                              className="pl-4 border-l-2 border-orange-400 mb-4 last:mb-0"
-                            >
-                              <Badge variant="outline" className="bg-blue-50">
-                                {assess.category.name}
-                              </Badge>
-                              <div className="my-4">
-                                <div className="flex items-center justify-between">
-                                  <p className="text-base font-medium mb-1 text-gray-800">
-                                    {assess.title}
-                                  </p>
-                                  <div className="flex items-center gap-2">
-                                    {/* Trigger Modal */}
-                                    <Dialog>
-                                      <DialogTrigger asChild>
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          className="h-8 text-gray-500 hover:text-blue-600"
-                                        >
-                                          <BookOpen className="h-4 w-4" />
-                                          <span className="sr-only ">View</span>
-                                        </Button>
-                                      </DialogTrigger>
-                                      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                                        <DialogHeader>
-                                          <DialogTitle>
-                                            {assess.title}
-                                          </DialogTitle>
-                                        </DialogHeader>
-
-                                        <div className="mt-2 space-y-4">
-                                          {assess.description && (
-                                            <p className="text-sm text-gray-700">
-                                              {assess.description}
-                                            </p>
-                                          )}
-
-                                          {assess.files?.length > 0 && (
-                                            <div>
-                                              <h4 className="text-sm font-semibold text-gray-600 mb-2">
-                                                Files
-                                              </h4>
-                                              <div className="flex flex-wrap gap-2">
-                                                {assess.files
-                                                  .filter(
-                                                    (file) =>
-                                                      /\.(pdf|docx)$/i.test(
-                                                        file.filename
-                                                      ) // ✅ check extension from filename
-                                                  )
-                                                  .map((file, i) => (
-                                                    <a
-                                                      key={file._id || i}
-                                                      href={file.url} // ✅ use the actual URL
-                                                      target="_blank"
-                                                      rel="noopener noreferrer"
-                                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                                    >
-                                                      <FileText className="h-4 w-4" />
-                                                      {file.filename}
-                                                    </a>
-                                                  ))}
-                                              </div>
-                                            </div>
-                                          )}
-
-                                          {assess.questions?.length > 0 && (
-                                            <Accordion
-                                              type="multiple"
-                                              className="w-full"
-                                            >
-                                              {["mcq", "qa", "truefalse"].map(
-                                                (type) => {
-                                                  const group =
-                                                    assess.questions.filter(
-                                                      (q) => q.type === type
-                                                    );
-                                                  if (group.length === 0)
-                                                    return null;
-
-                                                  return (
-                                                    <AccordionItem
-                                                      key={type}
-                                                      value={type}
-                                                    >
-                                                      <AccordionTrigger className="text-left text-sm font-medium text-gray-700">
-                                                        {type.toUpperCase()} (
-                                                        {group.length})
-                                                      </AccordionTrigger>
-                                                      <AccordionContent className="space-y-4">
-                                                        {group.map((q, idx) => (
-                                                          <div
-                                                            key={q._id}
-                                                            className="border border-gray-200 rounded-lg p-4"
-                                                          >
-                                                            <p
-                                                              className="text-sm font-medium text-gray-800 mb-2"
-                                                              dangerouslySetInnerHTML={{
-                                                                __html: `<strong>Q${
-                                                                  idx + 1
-                                                                }:</strong> ${
-                                                                  q.question
-                                                                }`,
-                                                              }}
-                                                            />
-                                                            {type === "mcq" && (
-                                                              <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
-                                                                {q.options?.map(
-                                                                  (opt, i) => (
-                                                                    <li
-                                                                      key={i}
-                                                                      className={
-                                                                        q.correctAnswer ===
-                                                                        (
-                                                                          i + 1
-                                                                        ).toString()
-                                                                          ? "font-semibold text-green-500"
-                                                                          : ""
-                                                                      }
-                                                                    >
-                                                                      {opt}
-                                                                      {q.correctAnswer ===
-                                                                        (
-                                                                          i + 1
-                                                                        ).toString() &&
-                                                                        " (Correct)"}
-                                                                    </li>
-                                                                  )
-                                                                )}
-                                                              </ul>
-                                                            )}
-                                                            {type === "qa" && (
-                                                              <div className="text-sm text-gray-700">
-                                                                <span className="font-semibold">
-                                                                  Answer:
-                                                                </span>{" "}
-                                                                {
-                                                                  q.correctAnswer
-                                                                }
-                                                              </div>
-                                                            )}
-                                                            {type ===
-                                                              "truefalse" && (
-                                                              <div className="text-sm text-gray-700">
-                                                                <span className="font-semibold">
-                                                                  Answer:
-                                                                </span>{" "}
-                                                                {q.correctAnswer ===
-                                                                "true"
-                                                                  ? "True"
-                                                                  : "False"}
-                                                              </div>
-                                                            )}
-                                                          </div>
-                                                        ))}
-                                                      </AccordionContent>
-                                                    </AccordionItem>
-                                                  );
-                                                }
-                                              )}
-                                            </Accordion>
-                                          )}
-                                        </div>
-                                      </DialogContent>
-                                    </Dialog>
-
-                                    <DeleteModal
-                                      deleteFunc={() =>
-                                        handleDeleteAssessment(assess._id)
-                                      }
-                                    />
-                                  </div>
-                                </div>
-
-                                <p className="text-sm text-gray-600">
-                                  {assess.description}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </CardContent>
-                      </Card>
-                    )}
-
-                  {chapter.lessons?.length > 0 && (
-                    <div className="space-y-4">
-                      <h3 className="font-semibold text-base text-gray-900 flex items-center gap-2">
-                        <Badge variant="outline" className="bg-blue-50">
-                          Lessons
-                        </Badge>
-                      </h3>
-
-                      {chapter.lessons.map((lesson, lessonIndex) => (
-                        <section key={lesson._id}>
-                          <Card className="overflow-hidden">
-                            <div
-                              className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                              onClick={() => toggleLesson(lesson._id)}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                  Lesson {lessonIndex + 1}
-                                </span>
-                                <h4 className="font-medium text-gray-800">
-                                  {lesson.title}
-                                </h4>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {/* <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-8 text-gray-500 hover:text-blue-600"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    // Open edit lesson modal
-                                  }}
-                                >
-                                  <Pencil className="h-3.5 w-3.5" />
-                                  <span className="sr-only">Edit</span>
-                                </Button> */}
-                                <DeleteModal
-                                  deleteFunc={() =>
-                                    handleDeleteLesson(lesson._id)
-                                  }
-                                />
-                                <Link
-                                  to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}/${quarterStartDate}/${quarterEndDate}?semester=${chapter.semester._id}&quarter=${chapter.quarter._id}`}
-                                >
-                                  <Button
-                                    variant="outline"
-                                    className="text-green-600 text-xs"
-                                  >
-                                    + Add Assessment
-                                  </Button>
-                                </Link>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="gap-1 ml-2"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleLesson(lesson._id);
-                                  }}
-                                >
-                                  {openLessons[lesson._id] ? (
-                                    <ChevronUp className="h-4 w-4" />
-                                  ) : (
-                                    <ChevronDown className="h-4 w-4" />
-                                  )}
-                                </Button>
-                              </div>
-                            </div>
-
-                            {openLessons[lesson._id] && (
-                              <CardContent className="border-t pt-4">
-                                {lesson.description && (
-                                  <p className="text-sm text-gray-600 mb-4">
-                                    {lesson.description}
-                                  </p>
-                                )}
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  <div className="space-y-3">
-                                    <h5 className="text-sm font-semibold text-gray-700">
-                                      Resources
-                                    </h5>
-                                    <div className="flex flex-wrap gap-2">
-                                      {lesson.pdfFiles?.map(
-                                        (pdf, i) =>
-                                          pdf?.url &&
-                                          pdf?.filename && (
-                                            <a
-                                              key={i}
-                                              href={pdf.url}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                            >
-                                              <FileText className="h-4 w-4" />
-                                              {pdf.filename}
-                                            </a>
-                                          )
-                                      )}
-                                    </div>
-
-                                    {lesson.youtubeLinks && (
-                                      <a
-                                        href={lesson.youtubeLinks}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-red-600 hover:bg-red-50 transition-colors"
-                                      >
-                                        <Youtube className="h-4 w-4" />
-                                        Watch on YouTube
-                                      </a>
-                                    )}
-
-                                    {lesson.otherLink && (
-                                      <a
-                                        href={lesson.otherLink}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                      >
-                                        <Link2 className="h-4 w-4" />
-                                        Visit Link
-                                      </a>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {lesson?.lesson_assessments?.length > 0 && (
-                                  <Card className="mt-6">
-                                    <CardHeader className="py-3">
-                                      <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                        <Badge
-                                          variant="outline"
-                                          className="bg-oramge-50"
-                                        >
-                                          Lesson Assessments
-                                        </Badge>
-                                      </CardTitle>
-                                    </CardHeader>
-
-                                    <CardContent className="py-2">
-                                      {Object.entries(
-                                        lesson.lesson_assessments.reduce(
-                                          (groups, assessment) => {
-                                            const type =
-                                              assessment.type || "Other";
-                                            if (!groups[type])
-                                              groups[type] = [];
-                                            groups[type].push(assessment);
-                                            return groups;
-                                          },
-                                          {}
-                                        )
-                                      ).map(([type, assessments]) => (
-                                        <div
-                                          key={type}
-                                          className="mb-6 last:mb-0"
-                                        >
-                                          <div className="space-y-4">
-                                            {assessments.map((a, i) => (
-                                              <section key={a._id || i}>
-                                                <Badge
-                                                  variant="outline"
-                                                  className="bg-blue-50"
-                                                >
-                                                  {a.category.name}
-                                                </Badge>
-                                                <div className="pl-4 border-l-2 border-blue-400 my-4">
-                                                  <div className="flex items-center justify-between">
-                                                    <p className="text-sm font-medium text-gray-800">
-                                                      {a.title ||
-                                                        `Assessment ${i + 1}`}
-                                                    </p>
-
-                                                    <div className="flex items-center gap-2">
-                                                      {/* View Assessment Dialog */}
-                                                      <Dialog>
-                                                        <DialogTrigger asChild>
-                                                          <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-8 text-gray-500 hover:text-blue-600"
-                                                          >
-                                                            <BookOpen className="h-4 w-4" />
-                                                            <span className="sr-only">
-                                                              View
-                                                            </span>
-                                                          </Button>
-                                                        </DialogTrigger>
-                                                        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                                                          <DialogHeader>
-                                                            <DialogTitle>
-                                                              {a.title ||
-                                                                `Assessment ${
-                                                                  i + 1
-                                                                }`}
-                                                            </DialogTitle>
-                                                          </DialogHeader>
-
-                                                          <div className="mt-2 space-y-4">
-                                                            {a.description && (
-                                                              <p className="text-sm text-gray-700">
-                                                                {a.description}
-                                                              </p>
-                                                            )}
-
-                                                            {a.files?.length >
-                                                              0 && (
-                                                              <div>
-                                                                <h4 className="text-sm font-semibold text-gray-600 mb-2">
-                                                                  Files
-                                                                </h4>
-                                                                <div className="flex flex-wrap gap-2">
-                                                                  {a.files.map(
-                                                                    (
-                                                                      file,
-                                                                      fi
-                                                                    ) => (
-                                                                      <a
-                                                                        key={fi}
-                                                                        href={
-                                                                          file
-                                                                        }
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-md text-sm text-blue-600 hover:bg-blue-50 transition-colors"
-                                                                      >
-                                                                        <FileText className="h-4 w-4" />
-                                                                        PDF{" "}
-                                                                        {fi + 1}
-                                                                      </a>
-                                                                    )
-                                                                  )}
-                                                                </div>
-                                                              </div>
-                                                            )}
-
-                                                            {a.questions
-                                                              ?.length > 0 && (
-                                                              <Accordion
-                                                                type="multiple"
-                                                                className="w-full"
-                                                              >
-                                                                {[
-                                                                  "mcq",
-                                                                  "qa",
-                                                                  "truefalse",
-                                                                ].map(
-                                                                  (type) => {
-                                                                    const group =
-                                                                      a.questions.filter(
-                                                                        (q) =>
-                                                                          q.type ===
-                                                                          type
-                                                                      );
-                                                                    if (
-                                                                      group.length ===
-                                                                      0
-                                                                    )
-                                                                      return null;
-
-                                                                    return (
-                                                                      <AccordionItem
-                                                                        key={
-                                                                          type
-                                                                        }
-                                                                        value={
-                                                                          type
-                                                                        }
-                                                                      >
-                                                                        <AccordionTrigger className="text-left text-sm font-medium text-gray-700">
-                                                                          {type.toUpperCase()}{" "}
-                                                                          (
-                                                                          {
-                                                                            group.length
-                                                                          }
-                                                                          )
-                                                                        </AccordionTrigger>
-                                                                        <AccordionContent className="space-y-4">
-                                                                          {group.map(
-                                                                            (
-                                                                              q,
-                                                                              qIdx
-                                                                            ) => (
-                                                                              <div
-                                                                                key={
-                                                                                  q._id
-                                                                                }
-                                                                                className="border border-gray-200 rounded-lg p-4"
-                                                                              >
-                                                                                <p
-                                                                                  className="text-sm font-medium text-gray-800 mb-2"
-                                                                                  dangerouslySetInnerHTML={{
-                                                                                    __html: `<strong>Q${
-                                                                                      qIdx +
-                                                                                      1
-                                                                                    }:</strong> ${
-                                                                                      q.question
-                                                                                    }`,
-                                                                                  }}
-                                                                                />
-                                                                                {type ===
-                                                                                  "mcq" && (
-                                                                                  <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
-                                                                                    {q.options?.map(
-                                                                                      (
-                                                                                        opt,
-                                                                                        oi
-                                                                                      ) => (
-                                                                                        <li
-                                                                                          key={
-                                                                                            oi
-                                                                                          }
-                                                                                          className={
-                                                                                            q.correctAnswer ===
-                                                                                            (
-                                                                                              oi +
-                                                                                              1
-                                                                                            ).toString()
-                                                                                              ? "font-semibold text-green-500"
-                                                                                              : ""
-                                                                                          }
-                                                                                        >
-                                                                                          {
-                                                                                            opt
-                                                                                          }
-                                                                                          {q.correctAnswer ===
-                                                                                            (
-                                                                                              oi +
-                                                                                              1
-                                                                                            ).toString() &&
-                                                                                            " (Correct)"}
-                                                                                        </li>
-                                                                                      )
-                                                                                    )}
-                                                                                  </ul>
-                                                                                )}
-                                                                                {type ===
-                                                                                  "qa" && (
-                                                                                  <div className="text-sm text-gray-700">
-                                                                                    <span className="font-semibold">
-                                                                                      Answer:
-                                                                                    </span>{" "}
-                                                                                    {
-                                                                                      q.correctAnswer
-                                                                                    }
-                                                                                  </div>
-                                                                                )}
-                                                                                {type ===
-                                                                                  "truefalse" && (
-                                                                                  <div className="text-sm text-gray-700">
-                                                                                    <span className="font-semibold">
-                                                                                      Answer:
-                                                                                    </span>{" "}
-                                                                                    {q.correctAnswer ===
-                                                                                    "true"
-                                                                                      ? "True"
-                                                                                      : "False"}
-                                                                                  </div>
-                                                                                )}
-                                                                              </div>
-                                                                            )
-                                                                          )}
-                                                                        </AccordionContent>
-                                                                      </AccordionItem>
-                                                                    );
-                                                                  }
-                                                                )}
-                                                              </Accordion>
-                                                            )}
-                                                          </div>
-                                                        </DialogContent>
-                                                      </Dialog>
-
-                                                      {/* Delete Button */}
-                                                      <DeleteModal
-                                                        deleteFunc={() =>
-                                                          handleDeleteAssessment(
-                                                            a._id
-                                                          )
-                                                        }
-                                                      >
-                                                        <Button
-                                                          variant="ghost"
-                                                          size="sm"
-                                                          className="h-8 text-gray-500 hover:text-red-600"
-                                                        >
-                                                          <Trash2 className="h-4 w-4" />
-                                                          <span className="sr-only">
-                                                            Delete
-                                                          </span>
-                                                        </Button>
-                                                      </DeleteModal>
-                                                    </div>
-                                                  </div>
-
-                                                  {a.description && (
-                                                    <p className="text-xs text-gray-600 mt-1">
-                                                      {a.description}
-                                                    </p>
-                                                  )}
-                                                </div>
-                                              </section>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </CardContent>
-                                  </Card>
-                                )}
-                              </CardContent>
-                            )}
-                          </Card>
-                        </section>
-                      ))}
-                    </div>
-                  )}
-                </AccordionContent>
-              </AccordionItem>
+                </CardContent>
+              </Card>
             ))}
-          </Accordion>
-        </TabsContent>
-      </Tabs>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -27,13 +27,12 @@ import DateRangePicker from "@/CustomComponent/CreateCourse/DateRangePicker";
 import SelectSemAndQuar from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
+import { set } from "lodash";
+import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
 
 // Define the form schema with Zod
 
 const courseFormSchema = z.object({
-  thumbnail: z.any().refine((file) => file instanceof File, {
-    message: "Thumbnail is required",
-  }),
   courseTitle: z
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
@@ -91,30 +90,12 @@ export default function EditCourse() {
   const navigate = useNavigate();
   const { courseId } = useParams();
 
-  const { user } = useContext(GlobalContext);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  // const { user } = useContext(GlobalContext);
   const [selectedCategory, setSelectedCategory] = useState("");
-
-  useEffect(() => {
-    axiosInstance
-      .get("subcategory/get")
-      .then((res) => {
-        // console.log("subcategroy", res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch categories:", err);
-      });
-  }, []);
-
-  useEffect(() => {
-    axiosInstance
-      .get("category/get")
-      .then((res) => {
-        // console.log("category", res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch categories:", err);
-      });
-  }, []);
+  const [prevCategory, setPrevCategory] = useState(null);
+  const [prevSubCategory, setPrevSubCategory] = useState("");
 
   const {
     register,
@@ -141,11 +122,7 @@ export default function EditCourse() {
   const watchedCategory = watch("category");
   const watchedSubCategory = watch("subcategory");
 
-  console.log(errors, "errors");
-
-  console.log(watchedLanguage, "watchedLanguage");
-  console.log(watchedCategory, "watchedCategory");
-  console.log(watchedSubCategory, "watchedSubCategory");
+  // console.log(errors, "errors");
 
   useEffect(() => {
     const fetchCourseBasics = async () => {
@@ -169,6 +146,9 @@ export default function EditCourse() {
           requirements:
             courseData.requirements?.map((item) => ({ value: item })) || [],
         });
+        setPrevCategory(courseData.category);
+        setPrevSubCategory(courseData.subcategory);
+        setSelectedCategory(courseData.category);
 
         setThumbnailPreview(courseData.thumbnail?.url || null);
       } catch (error) {
@@ -176,7 +156,7 @@ export default function EditCourse() {
       }
     };
     fetchCourseBasics();
-  }, [reset, courseId]);
+  }, [reset, subcategories, courseId, categories]);
 
   // Set up field arrays for teaching points and requirements,
   const {
@@ -229,7 +209,6 @@ export default function EditCourse() {
     setLoading(true);
 
     try {
-      formData.append("thumbnail", data.thumbnail);
       formData.append("courseTitle", data.courseTitle);
       formData.append("category", data.category);
       formData.append("subcategory", data.subcategory);
@@ -245,15 +224,16 @@ export default function EditCourse() {
       );
       // formData.append("courseDate", JSON.stringify(data.courseDate));
 
-      const res = await axiosInstance.post("/course/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axiosInstance.put(
+        `course/editCourseBasics/${courseId}`,
+        formData,
+      );
 
       // Dismiss loading toast and show success
-      toast.success(res.data.message || "Course created successfully!");
+      toast.success(res.data.message || "Course updated successfully!");
 
       reset();
-      navigate("/teacher/courses");
+      navigate(`/teacher/courses/courseDetail/${courseId}`);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
@@ -269,7 +249,7 @@ export default function EditCourse() {
   return (
     <div>
       <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-        Edit Course
+        Edit Course Info
       </p>
       <FormProvider
         {...{
@@ -285,7 +265,7 @@ export default function EditCourse() {
         <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
           <section>
             <div className="space-y-6">
-              <div>
+              {/* <div>
                 <Label htmlFor="thumbnail" className="block mb-2">
                   Thumbnail
                 </Label>
@@ -345,7 +325,7 @@ export default function EditCourse() {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -371,6 +351,10 @@ export default function EditCourse() {
                 <CategorySelect
                   register={register}
                   errors={errors}
+                  control={control}
+                  setCategories={setCategories}
+                  categories={categories}
+                  prevCategory={prevCategory}
                   watchedCategory={watchedCategory}
                   onCategoryChange={(value) => setSelectedCategory(value)}
                 />
@@ -378,6 +362,10 @@ export default function EditCourse() {
                 <SubCategorySelect
                   register={register}
                   errors={errors}
+                  control={control}
+                  setSubcategories={setSubcategories}
+                  subcategories={subcategories}
+                  prevSubCategory={prevSubCategory}
                   watchedSubCategory={watchedSubCategory}
                   selectedCategory={selectedCategory}
                 />
@@ -512,7 +500,7 @@ export default function EditCourse() {
               className="bg-green-500 hover:bg-green-600 disabled:opacity-50 "
               disabled={loading}
             >
-              {loading ? "Creating..." : "Create Course"}
+              {loading ? "Creating..." : "Update Course Info"}
             </Button>
           </div>
         </form>

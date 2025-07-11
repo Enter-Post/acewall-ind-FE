@@ -71,6 +71,7 @@ import CourseGradebookPage from "./Page/teacher/CourseGradebookPage";
 import ViewCoursePostsPage from "./Page/teacher/ViewCoursePosts";
 import StdPagesView from "./Page/StudentPortal/StdPagesView";
 import EditCourse from "./Page/teacher/Courses/EditCoursesBasics";
+import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -287,6 +288,7 @@ function App() {
                 element={<SemesterDetail />}
               />
               <Route path=":courseId/quarter/:id" element={<QuarterDetail />} />
+              <Route path="quarter/:quarterId/chapter/:chapterId" element={<TeacherChapterDetail />} />
               <Route path="stdPreview/:id" element={<StdPreview />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />

@@ -27,6 +27,8 @@ import DateRangePicker from "@/CustomComponent/CreateCourse/DateRangePicker";
 import SelectSemAndQuar from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
+import SubCategorySelect_createCourse from "@/CustomComponent/CreateCourse/SelectSubcategory-createCourse";
+import SelectCategory_createCourse from "@/CustomComponent/CreateCourse/SelectCategory-createCourse";
 
 // Define the form schema with Zod
 
@@ -340,13 +342,13 @@ export default function CoursesBasis() {
                 </div>
 
                 {/* Category */}
-                <CategorySelect
+                <SelectCategory_createCourse
                   register={register}
                   errors={errors}
                   onCategoryChange={(value) => setSelectedCategory(value)}
                 />
 
-                <SubCategorySelect
+                <SubCategorySelect_createCourse
                   register={register}
                   errors={errors}
                   selectedCategory={selectedCategory}
@@ -425,7 +427,7 @@ export default function CoursesBasis() {
             </div>
             <section className="my-4">
               <h3 className="text-lg font-medium mb-4">
-                What you will teach in this course{" "} *
+                What you will teach in this course *
                 <span className="text-gray-500 text-xs"></span>
               </h3>
               {teachingPointsFields.map((field, index) => (
@@ -458,7 +460,7 @@ export default function CoursesBasis() {
 
             <section>
               <h3 className="text-lg font-medium mb-4">
-                Course Requirements{" "} *
+                Course Requirements *
                 <span className="text-gray-500 text-xs"></span>
               </h3>
               {requirementsFields.map((field, index) => (

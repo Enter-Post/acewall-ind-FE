@@ -40,8 +40,6 @@ export default function Footer() {
           .filter(Boolean)
           .slice(0, 5);
         setSubcategories(topTitles);
-      console.log(subcategories);
-      
       })
       .catch(() => {
         setSubcategories([]);
