@@ -79,7 +79,7 @@ const TeacherLogin = () => {
                 {/* Email Field */}
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
-                    Email
+                    Email *
                   </label>
                   <input
                     type="email"
@@ -97,7 +97,7 @@ const TeacherLogin = () => {
                 {/* Password Field */}
                 <div className="mb-8">
                   <label htmlFor="password" className="block text-gray-600 mb-2">
-                    Password
+                    Password *
                   </label>
                   <div className="relative">
                     <input
@@ -145,7 +145,7 @@ const TeacherLogin = () => {
                         to="/"
                         className="text-sm text-green-600 hover:underline"
                       >
-                        Create an Account as a Teacher
+                        Create an Account
                       </Link>
                     </div>
 

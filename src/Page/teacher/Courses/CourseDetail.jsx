@@ -13,7 +13,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { Loader, Play, Users } from "lucide-react";
+import {
+  BookPlus,
+  ChartBarStacked,
+  CircleEllipsis,
+  Languages,
+  LibraryBig,
+  Loader,
+  Pen,
+  Play,
+  Users,
+} from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
@@ -29,6 +39,10 @@ import { CourseContext } from "@/Context/CoursesProvider";
 import { SelectSemAndQuarDialog } from "@/CustomComponent/CreateCourse/SelectSemAndQuarDialog";
 import Pages from "@/CustomComponent/teacher/Pages";
 import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
+import ArchiveDialog from "@/CustomComponent/teacher/ArchivedModal";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { set } from "lodash";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
@@ -36,20 +50,11 @@ export default function TeacherCourseDetails() {
   const { quarters, setQuarters } = useContext(CourseContext);
 
   const [course, setCourse] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [openChapter, setOpenChapter] = useState(null); // Default to no chapter open
-  const [loadingChapters, setLoadingChapters] = useState(true);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [openLessons, setOpenLessons] = useState({});
+  const [Prevthumbnail, setPrevThumbnail] = useState(null);
+  const [newthumbnail, setNewThumbnail] = useState(null);
+  const [loadingThumbnail, setLoadingThumbnail] = useState(false);
 
-  const toggleLesson = (lessonId) => {
-    setOpenLessons((prev) => ({
-      ...prev,
-      [lessonId]: !prev[lessonId],
-    }));
-  };
   const handleDeleteAssessment = (assessmentID) => {
     setLoading(true);
     axiosInstance
@@ -83,46 +88,155 @@ export default function TeacherCourseDetails() {
 
   // console.log(course?.semester, "course?.semester");
 
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Image size must be less than 2MB.");
+      return;
+    }
+    if (
+      file.type !== "image/jpeg" &&
+      file.type !== "image/png" &&
+      file.type !== "image/jpg"
+    ) {
+      toast.error("Only JPEG and PNG images are allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPrevThumbnail(reader.result);
+    };
+    reader.readAsDataURL(file);
+
+    setNewThumbnail(file);
+  };
+
+  const confirmChange = async () => {
+    setLoadingThumbnail(true);
+    await axiosInstance
+      .put(
+        `course/thumbnail/${id}`,
+        { thumbnail: newthumbnail },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.message || "Thumbnail updated successfully!");
+        fetchCourseDetail();
+        setPrevThumbnail(null);
+        setNewThumbnail(null);
+        setLoadingThumbnail(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoadingThumbnail(false);
+      });
+  };
+
   const prevSemesterIds = course?.semester?.map((sem) => sem._id) || [];
   const prevQuarterIds = course?.quarter?.map((quarter) => quarter._id) || [];
 
   if (!course)
     return (
       <div>
-        <section className="flex justify-center items-center h-full w-full">
-          <Loader size={48} className={"animate-spin"} />
+        <section className="flex justify-center items-center h-screen w-full">
+          <Loader className={"animate-spin"} />
         </section>
       </div>
     );
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
+      <div className="flex item-center justify-between">
+        <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
+      </div>
 
       <div className="space-y-8">
-        {/* Course Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 flex flex-col gap-4">
             <img
               src={
-                course.thumbnail.url ||
-                "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
+                Prevthumbnail
+                  ? Prevthumbnail
+                  : course.thumbnail.url ||
+                    "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
               }
               alt="Course thumbnail"
-              className="w-full  rounded-md object-cover  aspect-video"
+              className="w-full rounded-md object-cover aspect-video"
             />
+            {Prevthumbnail ? (
+              <div className="flex items-center space-x-2">
+                <Button
+                  className={"bg-green-600 hover:bg-green-700"}
+                  onClick={confirmChange}
+                >
+                  {loadingThumbnail ? (
+                    <Loader className={"animate-spin"} />
+                  ) : (
+                    "Confirm"
+                  )}
+                </Button>
+                <Button
+                  className={"bg-red-600 hover:bg-red-700"}
+                  onClick={() => {
+                    setPrevThumbnail(null);
+                    setNewThumbnail(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <input
+                  type="file"
+                  className="hidden"
+                  id="thumbnail"
+                  onChange={handleThumbnailChange}
+                />
+                <label
+                  htmlFor="thumbnail"
+                  className="flex items-center space-x-2 px-4 py-2 border rounded-md cursor-pointer hover:bg-gray-100"
+                >
+                  <Pen className="h-4 w-4" />
+                  <span className="text-sm font-medium">Edit thumbnail</span>
+                </label>
+              </div>
+            )}
           </div>
 
           <div className="md:col-span-2 space-y-6">
             <div className="space-y-1">
               <div className="flex justify-between text-sm mb-2 text-muted-foreground">
                 <span>
-                  Uploaded: {course.createdAt?.split("T")[0] || "N/A"}
+                  Uploaded:{" "}
+                  {course.createdAt
+                    ? new Date(course.createdAt).toLocaleDateString("en-US", {
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                    : "N/A"}
                 </span>
                 <span>
-                  Last Updated: {course.updatedAt?.split("T")[0] || "N/A"}
+                  Last Updated:{" "}
+                  {course.updatedAt
+                    ? new Date(course.updatedAt).toLocaleDateString("en-US", {
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
+                    : "N/A"}
                 </span>
               </div>
+
               <h2 className="text-2xl uppercase font-semibold">
                 {course.courseTitle || "Course Title"}
               </h2>
@@ -138,62 +252,71 @@ export default function TeacherCourseDetails() {
             <></>}
           </div>
         </div>
-        <section className="flex justify-between items-center">
-
-
-          <AssessmentCategoryDialog courseId={id} />
-        </section>
-        <div className="flex justify-between items-center">
-          <button
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
-            onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
-          >
-            Preview as a student
-          </button>
-          <button
-            className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
-            onClick={() => navigate(`/teacher/gradebook/${id}`)}
-          >
-            Gradebook
-          </button>
+        <div className="flex flex-wrap justify-between gap-4">
+          <section className="flex justify-between items-center">
+            <AssessmentCategoryDialog courseId={id} />
+          </section>
+          <div className="flex justify-between items-center gap-4">
+            <button
+              variant="outline"
+              className="bg-green-500 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer"
+              onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
+            >
+              Preview as a student
+            </button>
+            <button
+              variant="outline"
+              className="flex gap-2 items-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer"
+              onClick={() => navigate(`/teacher/gradebook/${id}`)}
+            >
+              <BookPlus size={16} />
+              Gradebook
+            </button>
+            <button
+              variant="outline"
+              className="flex gap-2 items-center bg-slate-600 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer"
+              onClick={() => navigate(`/teacher/courses/edit/${id}`)}
+            >
+              <Pen size={16} />
+              Edit Course Info
+            </button>
+          </div>
         </div>
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            icon={<Play className="h-5 w-5  text-orange-500" />}
+            icon={<Languages className="h-5 w-5 text-orange-500" />}
             value={course.language?.toUpperCase()}
             label="Language"
-            bgColor="bg-orange-50"
+            bgColor="bg-slate-100 hover:bg-slate-200"
           />
           <StatCard
-            icon={<Play className="h-5 w-5 text-orange-500" />}
+            icon={<ChartBarStacked className="h-5 w-5 text-orange-500" />}
             value={course.category?.title?.toUpperCase()}
             label="Category"
-            bgColor="bg-orange-50"
+            bgColor="bg-slate-100 hover:bg-slate-200"
           />
 
           <StatCard
-            icon={<Play className="h-5 w-5 text-orange-500" />}
+            icon={<LibraryBig className="h-5 w-5 text-orange-500" />}
             value={course.semester?.length || 0}
             label="Semesters"
-            bgColor="bg-orange-50"
+            bgColor="bg-slate-100 hover:bg-slate-200"
           />
 
           <StatCard
-            icon={<Users className="h-5 w-5 text-rose-500" />}
+            icon={<Users className="h-5 w-5 text-orange-500" />}
             value={course.enrollments?.length}
             label="Students Enrolled"
-            bgColor="bg-rose-50"
+            bgColor="bg-slate-100 hover:bg-slate-200"
           />
         </div>
-
         <SelectSemAndQuarDialog
           prevSelectedSemesters={prevSemesterIds}
           prevSelectedQuarters={prevQuarterIds}
           courseId={id}
           fetchCourseDetail={fetchCourseDetail}
         />
-
         {course?.semester?.map((semester, index) => (
           <Link
             key={semester._id}
@@ -231,12 +354,15 @@ export default function TeacherCourseDetails() {
               handleDeleteAssessment={handleDeleteAssessment}
             />
           ))}
-
         {/* Rating */}
         <RatingSection courseId={id} />
       </div>
 
       <CommentSection id={id} />
+
+      <div className="flex justify-end">
+        <ArchiveDialog course={course} fetchCourseDetail={fetchCourseDetail} />
+      </div>
     </div>
   );
 }
@@ -244,7 +370,7 @@ export default function TeacherCourseDetails() {
 function StatCard({ icon, value, label, bgColor }) {
   return (
     <Card className={`border-0 shadow-sm ${bgColor}`}>
-      <CardContent className="p-4 flex items-center gap-4">
+      <CardContent className="p-2 flex items-center gap-4">
         <div className="p-2 rounded-md bg-white">{icon}</div>
         <div>
           <div className="font-semibold text-lg">{value}</div>
