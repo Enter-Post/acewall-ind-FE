@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import PaymentSuccess from "./Page/StudentPortal/PaymentSuccess";
+import PaymentCancelled from "./Page/StudentPortal/PaymentCancelled";
 import Layout from "./Page/StudentPortal/Layout";
 import Deshboard from "./Page/StudentPortal/Deshboard";
 import Mycourses from "./Page/StudentPortal/Courses/MyCourses";
@@ -71,6 +73,7 @@ import CourseGradebookPage from "./Page/teacher/CourseGradebookPage";
 import ViewCoursePostsPage from "./Page/teacher/ViewCoursePosts";
 import StdPagesView from "./Page/StudentPortal/StdPagesView";
 import EditCourse from "./Page/teacher/Courses/EditCoursesBasics";
+import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -179,6 +182,8 @@ function App() {
           }
         >
           <Route path="/student" element={<Layout />}>
+          <Route path="payment-success" element={<PaymentSuccess />} />
+          <Route path="payment-cancelled" element={<PaymentCancelled />} />
             <Route index element={<Deshboard />} />
             <Route path="mycourses">
               <Route index element={<Mycourses />} />
@@ -287,6 +292,7 @@ function App() {
                 element={<SemesterDetail />}
               />
               <Route path=":courseId/quarter/:id" element={<QuarterDetail />} />
+              <Route path="quarter/:quarterId/chapter/:chapterId" element={<TeacherChapterDetail />} />
               <Route path="stdPreview/:id" element={<StdPreview />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />

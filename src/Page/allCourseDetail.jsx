@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { reateContext, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -26,10 +26,12 @@ import {
 import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
 import { toast } from "sonner";
 import avatar from "@/assets/avatar.png";
-import RatingSection from "@/CustomComponent/teacher/RatingSection";
+import { GlobalContext } from "../Context/GlobalProvider";
 import TeacherProfileModal from "@/CustomComponent/Student/Teacherprofilemodal";
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const AllCoursesDetail = () => {  
+  const { user } = useContext(GlobalContext);
+const studentID = user?._id;
   const { id } = useParams(); // Grab the actual course ID from the URL
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -343,7 +345,11 @@ const AllCoursesDetail = () => {
           <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
             <div className="flex flex-col gap-6 mb-6">
               <PurchaseConfirmationModal
-                courseID={courseDetails._id}
+                  courseID={courseDetails._id}
+                  coursePrice={courseDetails.price}
+                  studentID={studentID}
+                  courseName={courseDetails.courseTitle}
+                  teacherID={courseDetails.createdby._id}
               />
             </div>
 
