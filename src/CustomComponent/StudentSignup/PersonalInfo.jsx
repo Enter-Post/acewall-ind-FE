@@ -96,7 +96,7 @@ const PersonalInfo = () => {
 
       <div className="space-y-4 sm:flex sm:space-y-0 sm:space-x-4">
         {/* Pronouns */}
-        <div className="w-full sm:w-1/2">
+        {/* <div className="w-full sm:w-1/2">
           <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Preferred Pronouns <span className="text-red-600">*</span>
           </Label>
@@ -125,10 +125,10 @@ const PersonalInfo = () => {
               </div>
             ))}
           </RadioGroup>
-        </div>
+        </div> */}
 
         {/* Gender */}
-        <div className="w-full sm:w-1/2">
+        {/* <div className="w-full sm:w-1/2">
           <Label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
             Gender Identification <span className="text-red-600">*</span>
           </Label>
@@ -157,8 +157,9 @@ const PersonalInfo = () => {
               </div>
             ))}
           </RadioGroup>
-        </div>
+        </div> */}
       </div>
+
     </>
   );
 };
