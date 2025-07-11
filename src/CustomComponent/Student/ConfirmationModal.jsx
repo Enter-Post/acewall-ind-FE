@@ -74,9 +74,10 @@ export default function PurchaseConfirmationModal({
             {coursePrice === 0
               ? "Click below to enroll in this free course immediately."
               : `You'll be redirected to Stripe's secure payment page to complete your purchase.`}
+
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
