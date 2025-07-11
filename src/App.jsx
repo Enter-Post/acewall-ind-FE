@@ -72,6 +72,11 @@ import AllChapter from "./Page/StudentPortal/Courses/AllChapter";
 import CourseGradebookPage from "./Page/teacher/CourseGradebookPage";
 import ViewCoursePostsPage from "./Page/teacher/ViewCoursePosts";
 import StdPagesView from "./Page/StudentPortal/StdPagesView";
+// import GradeScaleForm from "./Page/teacher/Courses/gradeScale/GradeScale";
+// import ManageGradeScale from "./Page/teacher/Courses/gradeScale/manageGradeScale";
+// import Semester from "./Page/teacher/Courses/semester/Semester";
+import Earning from "./Page/teacher/Earning/Earning";
+import EarningDetail from "./Page/teacher/Earning/EarningDetails";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -236,7 +241,10 @@ function App() {
                 element={<CreateAssessmentPage />}
               />
             </Route>
-            <Route path="/teacher/courses/posts" element={<ViewCoursePostsPage />} />
+            <Route
+              path="/teacher/courses/posts"
+              element={<ViewCoursePostsPage />}
+            />
 
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
@@ -254,7 +262,10 @@ function App() {
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />
             </Route>
-            <Route path="gradebook/:courseId" element={<CourseGradebookPage />} />
+            <Route
+              path="gradebook/:courseId"
+              element={<CourseGradebookPage />}
+            />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route
@@ -272,6 +283,15 @@ function App() {
                 <Route path="addChapter/:id" element={<CoursesChapter />} />
                 {/* <Route path="gradebook" element={<TeacherGradebook />} /> */}
               </Route>
+              {/* <Route path="semester/:courseId" element={<Semester />} />
+              <Route path="gradescale/:courseId">
+                <Route index element={<GradeScaleForm />} />
+                <Route path="managegradescale" element={<ManageGradeScale />} />
+              </Route> */}
+            </Route>
+             <Route path="wallet">
+              <Route index element={<Earning />} />
+              <Route path="detail" element={<EarningDetail />} />
             </Route>
           </Route>
         </Route>
