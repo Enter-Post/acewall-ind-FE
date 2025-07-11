@@ -25,7 +25,7 @@ const AddressInfo = () => {
           htmlFor="phone"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >
-          Phone Number
+          Phone Number <span className="text-red-600">*</span>
         </Label>
         <Input
           type="tel"

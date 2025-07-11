@@ -72,6 +72,8 @@ import AllChapter from "./Page/StudentPortal/Courses/AllChapter";
 import CourseGradebookPage from "./Page/teacher/CourseGradebookPage";
 import ViewCoursePostsPage from "./Page/teacher/ViewCoursePosts";
 import StdPagesView from "./Page/StudentPortal/StdPagesView";
+import EditCourse from "./Page/teacher/Courses/EditCoursesBasics";
+import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -90,7 +92,8 @@ function App() {
 
   const connectsocket = () => {
     const newSocket = io(
-      "https://acewall-backend-school-instance-production.up.railway.app",
+      // "https://acewall-backend-school-instance-production.up.railway.app",
+      import.meta.env.VITE_SOCKET_URL,
       {
         query: { userId: user?._id || "" },
       }
@@ -169,7 +172,15 @@ function App() {
         </Route>
 
         {/* Student Routes */}
-        <Route element={<PrivateRoute user={user} allowedRole="student" />}>
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              allowedRole="student"
+              loading={Authloading}
+            />
+          }
+        >
           <Route path="/student" element={<Layout />}>
           <Route path="payment-success" element={<PaymentSuccess />} />
           <Route path="payment-cancelled" element={<PaymentCancelled />} />
@@ -219,7 +230,15 @@ function App() {
         </Route>
 
         {/* Teacher Routes */}
-        <Route element={<PrivateRoute user={user} allowedRole="teacher" />}>
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              allowedRole="teacher"
+              loading={Authloading}
+            />
+          }
+        >
           <Route path="/teacher" element={<TeacherLayout />}>
             <Route index element={<TeacherDashboard />} />
             <Route path="account">
@@ -236,7 +255,10 @@ function App() {
                 element={<CreateAssessmentPage />}
               />
             </Route>
-            <Route path="/teacher/courses/posts" element={<ViewCoursePostsPage />} />
+            <Route
+              path="/teacher/courses/posts"
+              element={<ViewCoursePostsPage />}
+            />
 
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
@@ -254,18 +276,23 @@ function App() {
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />
             </Route>
-            <Route path="gradebook/:courseId" element={<CourseGradebookPage />} />
+            <Route
+              path="gradebook/:courseId"
+              element={<CourseGradebookPage />}
+            />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route
                 path="courseDetail/:id"
                 element={<TeacherCourseDetails />}
               />
+              <Route path="edit/:courseId" element={<EditCourse />} />
               <Route
                 path=":courseId/semester/:id"
                 element={<SemesterDetail />}
               />
               <Route path=":courseId/quarter/:id" element={<QuarterDetail />} />
+              <Route path="quarter/:quarterId/chapter/:chapterId" element={<TeacherChapterDetail />} />
               <Route path="stdPreview/:id" element={<StdPreview />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />

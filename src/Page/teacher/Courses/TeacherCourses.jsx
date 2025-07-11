@@ -7,12 +7,16 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const TeacherCourses = () => {
   const [allCourses, setAllCourses] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const { user } = useContext(GlobalContext);
+  const [ispublished, setIspublished] = useState(true);
+
+  console.log(ispublished, "setIspublished");
 
   const searching = searchQuery.trim() !== "";
 
@@ -21,13 +25,16 @@ const TeacherCourses = () => {
       const fetchCourses = async () => {
         setLoading(true);
         try {
-          const res = await axiosInstance.get("/course/getindividualcourse", {
-            params: { search: searchQuery },
-          });
+          const res = await axiosInstance.get(
+            `/course/getTeacherCourses?published=${ispublished}`,
+            {
+              params: { search: searchQuery },
+            }
+          );
           setAllCourses(res.data.courses); // Corrected 'response' to 'res'
         } catch (error) {
           console.error("Error fetching courses:", error);
-          setAllCourses([]); // Corrected 'setEnrollment' to 'setAllCourses'
+          setAllCourses([]); 
         } finally {
           setLoading(false);
         }
@@ -37,7 +44,7 @@ const TeacherCourses = () => {
     }, 500); // debounce delay
 
     return () => clearTimeout(timeoutId); // cleanup
-  }, [searchQuery]);
+  }, [searchQuery, ispublished]);
 
   return (
     <section className="p-3 md:p-0">
@@ -48,6 +55,15 @@ const TeacherCourses = () => {
           </p>
         </div>
         <SearchBox query={searchQuery} setQuery={setSearchQuery} />
+      </div>
+
+      <div className="mb-4">
+        <Tabs defaultValue="published" className="w-full">
+          <TabsList>
+            <TabsTrigger value="published" onClick={() => setIspublished(true)}>Published</TabsTrigger>
+            <TabsTrigger value="unpublished" onClick={() => setIspublished(false)}>Unpublished</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       {loading ? (

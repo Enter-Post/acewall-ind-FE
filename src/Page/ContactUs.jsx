@@ -95,14 +95,17 @@ export default function ContactUs() {
       {/* Right form */}
       <div className="p-8 md:w-3/5 bg-white">
         <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700" htmlFor="name">Name *</label>
           <Input
-            name="name"
+            name="name "
             value={formData.name}
             onChange={handleChange}
-            placeholder="John Doe"
+            placeholder="John Doe "
             required
             className="border-gray-300 focus:border-green-500"
           />
+          <label className="block text-sm font-medium text-gray-700" htmlFor="name">Email *</label>
+
           <Input
             name="email"
             value={formData.email}
@@ -112,6 +115,8 @@ export default function ContactUs() {
             required
             className="border-gray-300 focus:border-green-500"
           />
+          <label className="block text-sm font-medium text-gray-700" htmlFor="name">Phone</label>
+
           <Input
             name="phone"
             value={formData.phone}
@@ -120,6 +125,8 @@ export default function ContactUs() {
             placeholder="(123) 456-7890"
             className="border-gray-300 focus:border-green-500"
           />
+          <label className="block text-sm font-medium text-gray-700" htmlFor="name">Subject *</label>
+
           <Input
             name="subject"
             value={formData.subject}
@@ -128,6 +135,8 @@ export default function ContactUs() {
             required
             className="border-gray-300 focus:border-green-500"
           />
+          <label className="block text-sm font-medium text-gray-700" htmlFor="name">Message *</label>
+
           <Textarea
             name="message"
             value={formData.message}

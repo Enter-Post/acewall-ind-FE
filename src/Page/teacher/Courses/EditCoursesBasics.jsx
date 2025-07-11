@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CourseContext } from "@/Context/CoursesProvider";
 import CategorySelect from "@/CustomComponent/CreateCourse/CategorySelect";
 import { GlobalContext } from "@/Context/GlobalProvider";
@@ -27,18 +27,15 @@ import DateRangePicker from "@/CustomComponent/CreateCourse/DateRangePicker";
 import SelectSemAndQuar from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
-import SubCategorySelect_createCourse from "@/CustomComponent/CreateCourse/SelectSubcategory-createCourse";
-import SelectCategory_createCourse from "@/CustomComponent/CreateCourse/SelectCategory-createCourse";
+import { set } from "lodash";
+import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
 
 // Define the form schema with Zod
 
 const courseFormSchema = z.object({
-  thumbnail: z.any().refine((file) => file instanceof File, {
-    message: "Thumbnail is required",
-  }),
   courseTitle: z
     .string()
-    .min(1, { message: "Course title must be at least 5 characters" })
+    .min(5, { message: "Course title must be at least 5 characters" })
     .max(100, { message: "Course title must be less than 100 characters" }),
   category: z
     .string({
@@ -50,20 +47,13 @@ const courseFormSchema = z.object({
       message: "Please select a subcategory",
     })
     .refine((val) => val !== "", { message: "Please select a subcategory" }),
-  semester: z
-    .array(z.string().nonempty({ message: "Please select a semester" }))
-    .min(1, { message: "Please select a semester" }),
-  quarter: z
-    .array(z.string().nonempty({ message: "Please select a quarter" }))
-    .min(1, { message: "Please select a quarter" }),
-
   language: z
     .string()
     .nonempty({ message: "Please select a language" })
     .refine((val) => val !== "", { message: "Please select a language" }),
   courseDescription: z
     .string()
-    .min(1, { message: "Description must be at least 5 characters" })
+    .min(5, { message: "Description must be at least 5 characters" })
     .max(500, { message: "Description must be less than 500 characters" }),
   teachingPoints: z
     .array(
@@ -91,38 +81,21 @@ const courseFormSchema = z.object({
     .min(1, { message: "Add at least one requirement" }),
 });
 
-export default function CoursesBasis() {
-  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+export default function EditCourse() {
+  const [course, setCourse] = useState();
+  const [thumbnailPreview, setThumbnailPreview] = useState(
+    course?.thumbnail.url
+  );
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { courseId } = useParams();
 
-  const { user } = useContext(GlobalContext);
-  const { course, setCourse } = useContext(CourseContext);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  // const { user } = useContext(GlobalContext);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSemester, setSelectedSemester] = useState("");
-  const [selectedQuarter, setSelectedQuarter] = useState("");
-
-  useEffect(() => {
-    axiosInstance
-      .get("subcategory/get")
-      .then((res) => {
-        console.log("subcategroy", res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch categories:", err);
-      });
-  }, []);
-
-  useEffect(() => {
-    axiosInstance
-      .get("category/get")
-      .then((res) => {
-        console.log("category", res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch categories:", err);
-      });
-  }, []);
+  const [prevCategory, setPrevCategory] = useState(null);
+  const [prevSubCategory, setPrevSubCategory] = useState("");
 
   const {
     register,
@@ -135,18 +108,55 @@ export default function CoursesBasis() {
   } = useForm({
     resolver: zodResolver(courseFormSchema),
     defaultValues: {
+      thumbnail: "",
       courseTitle: "",
       category: "",
       subcategory: "",
-      language: "english",
+      language: "",
       courseDescription: "",
-      teachingPoints: [{ value: "" }],
-      requirements: [{ value: "" }],
+      teachingPoints: [],
+      requirements: [],
     },
   });
   const watchedLanguage = watch("language");
+  const watchedCategory = watch("category");
+  const watchedSubCategory = watch("subcategory");
 
-  console.log(errors, "errors");
+  // console.log(errors, "errors");
+
+  useEffect(() => {
+    const fetchCourseBasics = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `course/getCourseBasics/${courseId}`
+        );
+        const courseData = response.data.course;
+
+        setCourse(courseData);
+
+        reset({
+          thumbnail: courseData.thumbnail,
+          courseTitle: courseData.courseTitle,
+          category: courseData.category,
+          subcategory: courseData.subcategory,
+          language: courseData.language,
+          courseDescription: courseData.courseDescription,
+          teachingPoints:
+            courseData.teachingPoints?.map((item) => ({ value: item })) || [],
+          requirements:
+            courseData.requirements?.map((item) => ({ value: item })) || [],
+        });
+        setPrevCategory(courseData.category);
+        setPrevSubCategory(courseData.subcategory);
+        setSelectedCategory(courseData.category);
+
+        setThumbnailPreview(courseData.thumbnail?.url || null);
+      } catch (error) {
+        console.error("Failed to fetch course basics:", error);
+      }
+    };
+    fetchCourseBasics();
+  }, [reset, subcategories, courseId, categories]);
 
   // Set up field arrays for teaching points and requirements,
   const {
@@ -194,21 +204,16 @@ export default function CoursesBasis() {
 
   const onSubmit = async (data) => {
     console.log(data, "data");
+
     const formData = new FormData();
     setLoading(true);
 
     try {
-      formData.append("thumbnail", data.thumbnail);
       formData.append("courseTitle", data.courseTitle);
       formData.append("category", data.category);
       formData.append("subcategory", data.subcategory);
       formData.append("language", data.language);
       formData.append("courseDescription", data.courseDescription);
-      formData.append(
-        "semester",
-        JSON.stringify(data.semester.map((sem) => sem))
-      );
-      formData.append("quarter", JSON.stringify(data.quarter.map((q) => q)));
       formData.append(
         "teachingPoints",
         JSON.stringify(data.teachingPoints.map((tp) => tp.value))
@@ -219,15 +224,16 @@ export default function CoursesBasis() {
       );
       // formData.append("courseDate", JSON.stringify(data.courseDate));
 
-      const res = await axiosInstance.post("/course/create", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axiosInstance.put(
+        `course/editCourseBasics/${courseId}`,
+        formData,
+      );
 
       // Dismiss loading toast and show success
-      toast.success(res.data.message || "Course created successfully!");
+      toast.success(res.data.message || "Course updated successfully!");
 
       reset();
-      navigate("/teacher/courses");
+      navigate(`/teacher/courses/courseDetail/${courseId}`);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
@@ -243,7 +249,7 @@ export default function CoursesBasis() {
   return (
     <div>
       <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-        Create Course
+        Edit Course Info
       </p>
       <FormProvider
         {...{
@@ -259,9 +265,9 @@ export default function CoursesBasis() {
         <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
           <section>
             <div className="space-y-6">
-              <div>
+              {/* <div>
                 <Label htmlFor="thumbnail" className="block mb-2">
-                  Thumbnail *
+                  Thumbnail
                 </Label>
                 <div
                   className={` p-1 w-full max-w-md ${
@@ -319,12 +325,12 @@ export default function CoursesBasis() {
                     </div>
                   )}
                 </div>
-              </div>
+              </div> */}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label htmlFor="courseTitle" className="block mb-2">
-                    Course Title *
+                    Course Title
                   </Label>
                   <Input
                     id="courseTitle"
@@ -342,29 +348,26 @@ export default function CoursesBasis() {
                 </div>
 
                 {/* Category */}
-                <SelectCategory_createCourse
+                <CategorySelect
                   register={register}
                   errors={errors}
+                  control={control}
+                  setCategories={setCategories}
+                  categories={categories}
+                  prevCategory={prevCategory}
+                  watchedCategory={watchedCategory}
                   onCategoryChange={(value) => setSelectedCategory(value)}
                 />
 
-                <SubCategorySelect_createCourse
+                <SubCategorySelect
                   register={register}
                   errors={errors}
+                  control={control}
+                  setSubcategories={setSubcategories}
+                  subcategories={subcategories}
+                  prevSubCategory={prevSubCategory}
+                  watchedSubCategory={watchedSubCategory}
                   selectedCategory={selectedCategory}
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <SelectSemester
-                  register={register}
-                  errors={errors}
-                  selectedSemester={selectedSemester}
-                  setSelectedSemester={setSelectedSemester}
-                />
-                <SelectQuarter
-                  register={register}
-                  errors={errors}
-                  selectedSemester={selectedSemester}
                 />
               </div>
               {/* <div>
@@ -372,11 +375,10 @@ export default function CoursesBasis() {
               </div> */}
               <div>
                 <Label htmlFor="language" className="block mb-2">
-                  Language *
+                  Language
                 </Label>
                 <Select
                   onValueChange={(value) => {
-                    console.log(value, "language");
                     setValue("language", value, { shouldValidate: true });
                   }}
                   value={watchedLanguage}
@@ -404,7 +406,7 @@ export default function CoursesBasis() {
 
               <div className="">
                 <Label htmlFor="courseDescription" className="block mb-2">
-                  Course Description *
+                  Course Description
                 </Label>
                 <Textarea
                   id="courseDescription"
@@ -427,8 +429,8 @@ export default function CoursesBasis() {
             </div>
             <section className="my-4">
               <h3 className="text-lg font-medium mb-4">
-                What you will teach in this course *
-                <span className="text-gray-500 text-xs"></span>
+                What you will teach in this course{" "}
+                <span className="text-gray-500 text-xs">(max 6)</span>
               </h3>
               {teachingPointsFields.map((field, index) => (
                 <TeachingPointInput
@@ -460,8 +462,8 @@ export default function CoursesBasis() {
 
             <section>
               <h3 className="text-lg font-medium mb-4">
-                Course Requirements *
-                <span className="text-gray-500 text-xs"></span>
+                Course Requirements{" "}
+                <span className="text-gray-500 text-xs">(max 6)</span>
               </h3>
               {requirementsFields.map((field, index) => (
                 <RequirementInput
@@ -498,7 +500,7 @@ export default function CoursesBasis() {
               className="bg-green-500 hover:bg-green-600 disabled:opacity-50 "
               disabled={loading}
             >
-              {loading ? "Creating..." : "Create Course"}
+              {loading ? "Creating..." : "Update Course Info"}
             </Button>
           </div>
         </form>

@@ -56,7 +56,7 @@ const CourseGradebook = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {gradebook.map((student) => (
+            {gradebook?.map((student) => (
               <Fragment key={student.studentId}>
                 <TableRow>
                   <TableCell className="w-4">
@@ -84,7 +84,7 @@ const CourseGradebook = () => {
                       <div className="space-y-4">
                         <p className="text-sm font-medium text-muted-foreground mb-3">Academic Performance Breakdown</p>
 
-                        {student.semesters.map((semester) => (
+                        {student?.semesters?.map((semester) => (
                           <div key={semester.semesterId} className="border rounded-lg p-4 bg-white">
                             <div className="flex items-center gap-2 mb-3">
                               <Button
@@ -104,7 +104,7 @@ const CourseGradebook = () => {
 
                             {semesterExpanded[`${student.studentId}-${semester.semesterId}`] && (
                               <div className="ml-6 space-y-3">
-                                {semester.quarters.map((quarter) => (
+                                {semester?.quarters?.map((quarter) => (
                                   <div key={quarter.quarterId} className="border-l-2 border-gray-200 pl-4">
                                     <div className="flex items-center gap-2 mb-2">
                                       <Button
@@ -147,7 +147,7 @@ const CourseGradebook = () => {
                                             </TableRow>
                                           </TableHeader>
                                           <TableBody>
-                                            {quarter.assessments.map((assessment) => (
+                                            {quarter?.assessments?.map((assessment) => (
                                               <TableRow key={assessment.assessmentId}>
                                                 <TableCell className="text-sm">{assessment.assessmentTitle}</TableCell>
                                                 <TableCell className="text-sm">

@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { axiosInstance } from "@/lib/AxiosInstance";
 
+// ✅ Updated AssessmentTable
 const AssessmentTable = ({ assessments = [] }) => {
   if (!assessments || assessments.length === 0) {
     return (
@@ -38,43 +39,59 @@ const AssessmentTable = ({ assessments = [] }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {assessments.map((assessment, index) => {
-            const percentage =
-              assessment.maxPoints > 0
-                ? (
-                    (assessment.studentPoints / assessment.maxPoints) *
-                    100
-                  ).toFixed(1)
-                : "0.0";
+          {assessments?.map((assessment, index) => {
+            const hasValidPoints =
+              assessment.studentPoints != null &&
+              assessment.maxPoints != null &&
+              assessment.maxPoints > 0;
+
+            let percentage = "Pending";
+
+            if (hasValidPoints) {
+              const calcPercentage =
+                (assessment.studentPoints / assessment.maxPoints) * 100;
+              percentage = calcPercentage.toFixed(1);
+            }
 
             return (
               <TableRow key={index} className="text-xs">
                 <TableCell className="font-medium">
-                  {assessment.assessmentTitle}
+                  {assessment.assessmentTitle || "Untitled"}
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className="text-xs">
-                    {assessment.category}
+                    {assessment.category || "Uncategorized"}
                   </Badge>
                 </TableCell>
-                <TableCell>{assessment.studentPoints}</TableCell>
-                <TableCell>{assessment.maxPoints}</TableCell>
                 <TableCell>
-                  <span
-                    className={`font-medium ${
-                      Number.parseFloat(percentage) >= 90
+                  {assessment.studentPoints != null
+                    ? assessment.studentPoints
+                    : "Pending"}
+                </TableCell>
+                <TableCell>
+                  {assessment.maxPoints != null
+                    ? assessment.maxPoints
+                    : "Pending"}
+                </TableCell>
+                <TableCell>
+                  {percentage === "Pending" ? (
+                    <span className="text-gray-500 italic">Pending</span>
+                  ) : (
+                    <span
+                      className={`font-medium ${parseFloat(percentage) >= 90
                         ? "text-green-600"
-                        : Number.parseFloat(percentage) >= 80
-                        ? "text-blue-600"
-                        : Number.parseFloat(percentage) >= 70
-                        ? "text-yellow-600"
-                        : Number.parseFloat(percentage) >= 60
-                        ? "text-orange-600"
-                        : "text-red-600"
-                    }`}
-                  >
-                    {percentage}%
-                  </span>
+                        : parseFloat(percentage) >= 80
+                          ? "text-blue-600"
+                          : parseFloat(percentage) >= 70
+                            ? "text-yellow-600"
+                            : parseFloat(percentage) >= 60
+                              ? "text-orange-600"
+                              : "text-red-600"
+                        }`}
+                    >
+                      {percentage}%
+                    </span>
+                  )}
                 </TableCell>
               </TableRow>
             );
@@ -85,6 +102,7 @@ const AssessmentTable = ({ assessments = [] }) => {
   );
 };
 
+// 🟢 Grade Color Helper
 const getLetterGradeColor = (letterGrade) => {
   if (["A", "A-", "A+"].includes(letterGrade)) {
     return "bg-green-100 text-green-800";
@@ -99,6 +117,7 @@ const getLetterGradeColor = (letterGrade) => {
   }
 };
 
+// 📘 Main Component
 export default function Gradebook() {
   const [expandedCourseId, setExpandedCourseId] = useState(null);
   const [expandedSemester, setExpandedSemester] = useState(null);
@@ -108,9 +127,8 @@ export default function Gradebook() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCourses, setTotalCourses] = useState(0);
-  const [coursesPerPage] = useState(5); // matches API default
+  const [coursesPerPage] = useState(5);
 
-  // Fetch grade data from API
   const fetchGradeData = async (page = 1) => {
     setLoading(true);
     try {
@@ -121,7 +139,8 @@ export default function Gradebook() {
       setCurrentPage(res.data.currentPage);
       setTotalPages(res.data.totalPages);
       setTotalCourses(res.data.totalCourses);
-      console.log(res);
+      console.log(res.data);
+
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -136,7 +155,7 @@ export default function Gradebook() {
 
   const toggleCourseExpand = (courseId) => {
     setExpandedCourseId(expandedCourseId === courseId ? null : courseId);
-    setExpandedSemester(null); // Reset semester expansion when course changes
+    setExpandedSemester(null);
   };
 
   const toggleSemesterExpand = (semesterId) => {
@@ -146,40 +165,13 @@ export default function Gradebook() {
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
-      setExpandedCourseId(null); // Reset expanded states when changing pages
+      setExpandedCourseId(null);
       setExpandedSemester(null);
     }
   };
 
-  const handlePreviousPage = () => {
-    handlePageChange(currentPage - 1);
-  };
-
-  const handleNextPage = () => {
-    handlePageChange(currentPage + 1);
-  };
-
-  // const downloadPDF = async () => {
-  //   try {
-  //     const response = await fetch("/api/student/grade-report?format=pdf");
-  //     if (!response.ok) {
-  //       throw new Error("Failed to download PDF");
-  //     }
-
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.style.display = "none";
-  //     a.href = url;
-  //     a.download = "grade-report.pdf";
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     window.URL.revokeObjectURL(url);
-  //     document.body.removeChild(a);
-  //   } catch (err) {
-  //     console.error("Error downloading PDF:", err);
-  //   }
-  // };
+  const handlePreviousPage = () => handlePageChange(currentPage - 1);
+  const handleNextPage = () => handlePageChange(currentPage + 1);
 
   if (loading) {
     return (
@@ -192,9 +184,7 @@ export default function Gradebook() {
   if (error) {
     return (
       <div className="container mx-auto space-y-6 p-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Student Grade Report</h1>
-        </div>
+        <h1 className="text-2xl font-bold">Student Grade Report</h1>
         <Alert variant="destructive">
           <AlertDescription>Error loading grade data: {error}</AlertDescription>
         </Alert>
@@ -205,9 +195,7 @@ export default function Gradebook() {
   if (!gradeData) {
     return (
       <div className="container mx-auto space-y-6 p-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Student Grade Report</h1>
-        </div>
+        <h1 className="text-2xl font-bold">Student Grade Report</h1>
         <Alert>
           <AlertDescription>No grade data available.</AlertDescription>
         </Alert>
@@ -220,13 +208,9 @@ export default function Gradebook() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Student Grade Report</h1>
-        {/* <Button onClick={downloadPDF} className="flex items-center gap-2">
-          <Download className="h-4 w-4" />
-          Download PDF
-        </Button> */}
       </div>
 
-      {/* Overall Performance Card */}
+      {/* Overall GPA */}
       <Card>
         <CardHeader>
           <CardTitle className="text-green-600">
@@ -234,14 +218,22 @@ export default function Gradebook() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div>
               <div className="text-2xl font-bold text-green-600">
-                {gradeData.overallGPA.toFixed(2)}
+                {
+                  gradeData.overallGPA === 0
+                    ? "__"
+                    : (gradeData.overallGPA !== null && gradeData.overallGPA !== undefined
+                      ? gradeData.overallGPA.toFixed(2)
+                      : "--")
+                }
+
               </div>
               <div className="text-sm text-muted-foreground">Overall GPA</div>
             </div>
-            <div className="text-center">
+
+            <div>
               <div className="text-2xl font-bold text-blue-600">
                 {totalCourses}
               </div>
@@ -249,17 +241,11 @@ export default function Gradebook() {
                 Total Course{totalCourses !== 1 ? "s" : ""}
               </div>
             </div>
-            {/* <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {gradeData.studentId}
-              </div>
-              <div className="text-sm text-muted-foreground">Student ID</div>
-            </div> */}
           </div>
         </CardContent>
       </Card>
 
-      {/* Courses Table */}
+      {/* Course Details */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -315,10 +301,7 @@ export default function Gradebook() {
                         <TableCell colSpan={3} className="p-0">
                           <div className="bg-muted/30 p-6 space-y-4">
                             {course.semesters.map((semester) => (
-                              <div
-                                key={semester.semesterId}
-                                className="space-y-3"
-                              >
+                              <div key={semester.semesterId} className="space-y-3">
                                 <div className="flex items-center justify-between">
                                   <h3 className="text-lg font-semibold text-gray-800">
                                     {semester.semesterTitle}
@@ -331,8 +314,7 @@ export default function Gradebook() {
                                     }
                                     className="flex items-center gap-2"
                                   >
-                                    {expandedSemester ===
-                                    semester.semesterId ? (
+                                    {expandedSemester === semester.semesterId ? (
                                       <ChevronDown className="h-4 w-4" />
                                     ) : (
                                       <ChevronRight className="h-4 w-4" />
@@ -355,28 +337,35 @@ export default function Gradebook() {
                                               {quarter.quarterTitle}
                                             </CardTitle>
                                             <div className="flex items-center gap-4">
-                                              <div className="text-sm">
-                                                <span className="font-medium">
-                                                  Grade:{" "}
-                                                </span>
-                                                <span className="text-green-600 font-bold">
-                                                  {quarter.grade}%
-                                                </span>
+                                              <div className="flex items-center gap-4">
+                                                <div className="text-sm">
+                                                  <span className="font-medium">Grade: </span>
+                                                  <span className="text-green-600 font-bold">
+                                                    {quarter.grade === 0
+                                                      ? "Pending"
+                                                      : quarter.grade != null
+                                                        ? `${quarter.grade}%`
+                                                        : "__"}
+                                                  </span>
+                                                </div>
+                                                <div className="text-sm">
+                                                  <span className="font-medium">GPA: </span>
+                                                  <span className="text-blue-600 font-bold">
+                                                    {quarter.gpa === 0
+                                                      ? "Pending"
+                                                      : quarter.gpa != null
+                                                        ? quarter.gpa
+                                                        : "__"}
+                                                  </span>
+                                                </div>
                                               </div>
-                                              <div className="text-sm">
-                                                <span className="font-medium">
-                                                  GPA:{" "}
-                                                </span>
-                                                <span className="text-blue-600 font-bold">
-                                                  {quarter.gpa}
-                                                </span>
-                                              </div>
+
                                               <Badge
                                                 className={`${getLetterGradeColor(
                                                   quarter.letterGrade
                                                 )}`}
                                               >
-                                                {quarter.letterGrade}
+                                                {quarter.letterGrade || "N/A"}
                                               </Badge>
                                             </div>
                                           </div>
@@ -411,7 +400,8 @@ export default function Gradebook() {
           </div>
         </CardContent>
       </Card>
-      {/* Pagination Controls */}
+
+      {/* Pagination */}
       {totalPages > 1 && (
         <Card>
           <CardContent className="pt-6">
@@ -430,7 +420,6 @@ export default function Gradebook() {
                 >
                   Previous
                 </Button>
-
                 <div className="flex items-center gap-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
@@ -459,7 +448,6 @@ export default function Gradebook() {
                     );
                   })}
                 </div>
-
                 <Button
                   variant="outline"
                   size="sm"
