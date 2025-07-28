@@ -2,91 +2,92 @@ import { useContext, useEffect, useState } from "react";
 import { MoreHorizontal, Send, Edit } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { getContactByName, messages as initialMessages } from "@/lib/data";
+import MessageList from "./messages-list";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useParams } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
-import MessageList from "./messages-list";
 import avatar from "../../assets/avatar.png";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
+  const [chat, setChat] = useState();
 
   const { user, socket, currentConversation } = useContext(GlobalContext);
+
   const activeConversation = useParams().id;
 
-  // Real-time message subscription
+  const subscribeToMessages = () => {
+    socket.on("newMessage", (message) => {
+      setMessages([...messages, newMessage]);
+    });
+  };
+
+  const unsubscripteToMessages = () => {
+    socket.off("newMessage");
+  };
+
   useEffect(() => {
-    const getMessages = async () => {
-      try {
-        const res = await axiosInstance.get(`/messeges/get/${activeConversation}`);
-        setMessages(res.data.messages);
-      } catch (err) {
-        console.log(err);
-      }
+    const getMessaages = async () => {
+      await axiosInstance
+        .get(`/messeges/get/${activeConversation}`)
+        .then((res) => {
+          setMessages(res.data.messages);
+          // console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
+    getMessaages();
+    subscribeToMessages();
+  }, [activeConversation, subscribeToMessages, unsubscripteToMessages]);
 
-    const handleNewMessage = (message) => {
-      setMessages((prev) => [...prev, message]);
-    };
-
-    getMessages();
-    socket.on("newMessage", handleNewMessage);
-
-    return () => {
-      socket.off("newMessage", handleNewMessage);
-    };
-  }, [activeConversation, socket]);
-
-  // Handle message sending
+  // return;
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || isSending) return;
-
-    setIsSending(true);
-    try {
-      const res = await axiosInstance.post(`/messeges/create/${activeConversation}`, {
+    await axiosInstance
+      .post(`/messeges/create/${activeConversation}`, {
         text: newMessage,
+      })
+      .then((res) => {
+        // console.log(res.data, "res.datares.data");
+
+        setMessages([...messages, res.data.newMessage]);
+        setNewMessage("");
+      })
+      .catch((err) => {
+        console.log(err);
       });
 
-      setMessages((prev) => [...prev, res.data.newMessage]);
-      setNewMessage("");
-
-      socket.emit("sendMessage", {
-        senderId: user._id,
-        receiverId: activeConversation,
-        text: newMessage,
-      });
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setIsSending(false);
-    }
+    /// real time functinality
+    socket.emit("sendMessage", {
+      senderId: user._id,
+      receiverId: activeConversation,
+      text: newMessage,
+    });
   };
 
   return (
-    <div className="flex flex-col h-full overflow-auto hide-scrollbar">
-      {/* Header */}
+    <div className="flex flex-col h-full overflow-auto hide-scrollbar border-red-600">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={currentConversation?.otherMember?.profileImg?.url || avatar} />
-            <AvatarFallback>{currentConversation?.otherMember?.name}</AvatarFallback>
+            <AvatarImage src={currentConversation?.otherMember.profileImg?.url || avatar} />
+            <AvatarFallback>{currentConversation?.otherMember.name}</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">{currentConversation?.otherMember?.name}</h3>
+            <h3 className="font-medium">{currentConversation?.otherMember.name}</h3>
           </div>
         </div>
       </div>
 
-      {/* Messages */}
       <MessageList
         messages={messages}
         contactName={"contactName"}
         contactAvatar={"contact?.avatar"}
       />
 
-      {/* Input */}
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
@@ -97,23 +98,13 @@ export default function ChatWindow() {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-              disabled={isSending}
             />
           </div>
-
-          {/* Send Button */}
           <Button
-            disabled={isSending}
-            className={`bg-green-600 hover:bg-green-700 rounded-full h-12 w-12 flex items-center justify-center ${
-              isSending ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className="bg-green-600 hover:bg-green-700 rounded-full h-12 w-12 flex items-center justify-center"
             onClick={handleSendMessage}
           >
-            {isSending ? (
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
+            <Send className="h-5 w-5" />
           </Button>
         </div>
       </div>

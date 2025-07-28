@@ -89,7 +89,7 @@ export default function ChapterCreationModal({
         <Button className="bg-green-500 text-white">Create New Chapter</Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Chapter</DialogTitle>
         </DialogHeader>
@@ -99,8 +99,8 @@ export default function ChapterCreationModal({
           <div>
             <Input
               placeholder="Chapter Title"
-              maxLength={100}
               {...register("title")}
+              className=""
             />
             <div className="flex justify-between text-sm mt-1">
               <p className="text-gray-500">{titleValue.length}/100</p>
@@ -111,10 +111,9 @@ export default function ChapterCreationModal({
           </div>
 
           {/* Chapter Description */}
-          <div className="w-[28rem]">
+          <div className="">
             <Textarea
               placeholder="Chapter Description"
-              maxLength={500}
               className="w-full"
               {...register("description")}
             />
@@ -130,7 +129,7 @@ export default function ChapterCreationModal({
 
           {/* Footer */}
           <DialogFooter className="justify-between">
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button variant="outline" type="button" onClick={() => setIsOpen(false)}>
               Cancel
             </Button>
             <Button

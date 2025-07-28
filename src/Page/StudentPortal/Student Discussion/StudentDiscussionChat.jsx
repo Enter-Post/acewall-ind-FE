@@ -22,6 +22,8 @@ const StudentDiscussionChat = () => {
       try {
         const res = await axiosInstance.get(`discussion/${id}`);
         setDiscussion(res.data.discussion);
+        console.log("discussion", discussion);
+        
       } catch (err) {
         console.log(err);
       } finally {

@@ -18,6 +18,7 @@ const TeacherDiscussion = () => {
       try {
         const res = await axiosInstance.get("/discussion/");
         setDiscussion(res.data.discussions);
+        console.log("public discussions", publicDiscussions);
       } catch (err) {
         // handle error if needed
       } finally {
@@ -39,31 +40,32 @@ const TeacherDiscussion = () => {
         </p>
       </div>
 
-      <div className="flex justify-end pb-5">
-        <CreateDiscussionDialog setRefresh={setRefresh} refresh={refresh} />
-      </div>
-
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger
-            value="course"
-            className={cn(
-              "px-4 py-2 rounded-lg",
-              activeTab === "course" ? "bg-green-600 text-black" : ""
-            )}
-          >
-            Course Discussions
-          </TabsTrigger>
-          <TabsTrigger
-            value="public"
-            className={cn(
-              "px-4 py-2 rounded-lg",
-              activeTab === "public" ? "bg-green-600 text-black" : ""
-            )}
-          >
-            Public Discussions
-          </TabsTrigger>
-        </TabsList>
+        <section className="flex justify-between">
+          <TabsList>
+            <TabsTrigger
+              value="course"
+              className={cn(
+                "px-4 py-2 rounded-lg",
+                activeTab === "course" ? "bg-green-600 text-black" : ""
+              )}
+            >
+              Course Discussions
+            </TabsTrigger>
+            <TabsTrigger
+              value="public"
+              className={cn(
+                "px-4 py-2 rounded-lg",
+                activeTab === "public" ? "bg-green-600 text-black" : ""
+              )}
+            >
+              Public Discussions
+            </TabsTrigger>
+          </TabsList>
+          <div className="flex justify-end pb-5">
+            <CreateDiscussionDialog setRefresh={setRefresh} refresh={refresh} />
+          </div>
+        </section>
 
         <TabsContent value="course" className="mt-10">
           <div className="w-full flex justify-center">
@@ -135,6 +137,31 @@ const TeacherDiscussion = () => {
                   to={`/teacher/discussions/${item._id}`}
                   className="border border-gray-300 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition duration-300 p-4 bg-white group"
                 >
+                  {/* Show Files First */}
+                  {item.files.map((file) =>
+                    file.type.startsWith("image/") ? (
+                      <img
+                        key={file._id}
+                        src={file.url}
+                        alt={file.filename}
+                        className="w-full h-40 object-cover rounded-lg mb-2"
+                      />
+                    ) : file.type === "application/pdf" ? (
+                      <div
+                        key={file._id}
+                        className="w-full h-40 mb-2 rounded-lg overflow-hidden border border-gray-200"
+                      >
+                        <iframe
+                          src={file.url}
+                          title={file.filename}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    ) : null
+                  )}
+
+
+                  {/* Optional: Course Thumbnail if available */}
                   {item?.course?.thumbnail?.url && (
                     <div className="overflow-hidden rounded-md">
                       <img
@@ -144,9 +171,8 @@ const TeacherDiscussion = () => {
                       />
                     </div>
                   )}
-                  <div
-                    className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 bg-green-600`}
-                  >
+
+                  <div className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 bg-green-600`}>
                     <p className={`text-xs text-white`}>{item?.type}</p>
                   </div>
 
@@ -169,6 +195,7 @@ const TeacherDiscussion = () => {
                 </Link>
               ))}
           </div>
+
         </TabsContent>
       </Tabs>
     </div>

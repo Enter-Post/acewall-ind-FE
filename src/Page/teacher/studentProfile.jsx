@@ -67,7 +67,7 @@ export default function StudentProfile() {
             <div className="flex items-center justify-center md:justify-start gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
               <span>
-                Joined: {new Date(student?.createdAt).toLocaleString("en-US", { year: "2-digit", month: "2-digit", day: "2-digit" })}
+                Joined: {new Date(student?.createdAt).toLocaleDateString()}
               </span>
             </div>
           </div>

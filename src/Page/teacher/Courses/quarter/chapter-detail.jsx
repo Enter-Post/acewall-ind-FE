@@ -25,8 +25,11 @@ import {
 import LessonModal from "@/CustomComponent/CreateCourse/LessonModal";
 import EditLessonModal from "@/CustomComponent/CreateCourse/EditLesson";
 import { DeleteModal } from "@/CustomComponent/CreateCourse/DeleteModal";
-import { AssessmentDialog } from "./assessment-dialog";
+// import { AssessmentDialog } from "./assessment-dialog";
 import EditChapterDialog from "@/CustomComponent/CreateCourse/EditChapter";
+import AddMoreFile from "@/CustomComponent/CreateCourse/addMoreFile";
+import { ChapterCard } from "./chapter-card";
+import { AssessmentDialog } from "../Models/AssessmentFields";
 
 const TeacherChapterDetail = () => {
   const { chapterId } = useParams();
@@ -41,7 +44,7 @@ const TeacherChapterDetail = () => {
   const [chapter, setChapter] = useState(null);
   const [lessons, setLessons] = useState([]);
 
-  console.log(chapter, "chapter");
+
   console.log(lessons, "lessons");
 
   const fetchChapterDetail = async () => {
@@ -49,12 +52,10 @@ const TeacherChapterDetail = () => {
       const response = await axiosInstance.get(
         `chapter/chapter/chapter&lessons/${chapterId}`
       );
-      console.log(response, "response");
       setChapter(response.data.chapter);
       setLessons(response.data.chapter.lessons || []);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to fetch chapter details");
     }
   };
 
@@ -92,6 +93,19 @@ const TeacherChapterDetail = () => {
     }
   };
 
+  const handleDeleteFile = async (fileId, lessonId) => {
+    await axiosInstance
+      .delete(`lesson/delete/${lessonId}/${fileId}`)
+      .then((res) => {
+        toast.success(res.data.message);
+        fetchChapterDetail();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response?.data?.message || "Error deleting file");
+      });
+  };
+
   if (!chapter) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
@@ -107,18 +121,15 @@ const TeacherChapterDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-1">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="p-2">
+          <ArrowLeft className="h-5 w-5" />
+          Back
+        </Button>
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <section className="flex justify-between">
             <div className="flex items-center gap-4 mb-4">
-              <Button
-                variant="ghost"
-                onClick={() => navigate(-1)}
-                className="p-2"
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
               <div className="flex items-center gap-3">
                 <BookOpen className="h-8 w-8 text-blue-600" />
                 <div>
@@ -175,13 +186,23 @@ const TeacherChapterDetail = () => {
                   {chapter.chapter_assessments.map((assessment) => (
                     <div
                       key={assessment._id}
-                      className="border rounded-lg p-4 hover:shadow-sm transition-shadow"
+                      className="border rounded-lg hover:shadow-sm transition-shadow"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
+                      <div className="flex flex-col items-start justify-between mb-2 gap-5 p-4">
+                        <section className="flex justify-between w-full">
                           <Badge variant="outline" className="mb-2">
                             {assessment.category.name}
                           </Badge>
+                          <DeleteModal
+                            deleteFunc={() =>
+                              handleDeleteAssessment(assessment._id)
+                            }
+                          />
+                        </section>
+                        <Link
+                          to={`/teacher/courses/assessment/${assessment._id}`}
+                          className="w-full hover:bg-gray-200 p-4 rounded-lg transform transition-transform duration-300"
+                        >
                           <h4 className="font-semibold text-gray-900">
                             {assessment.title}
                           </h4>
@@ -190,16 +211,7 @@ const TeacherChapterDetail = () => {
                               {assessment.description}
                             </p>
                           )}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <AssessmentDialog assessment={assessment} />
-                          <DeleteModal
-                            what="Assessment"
-                            deleteFunc={() =>
-                              handleDeleteAssessment(assessment._id)
-                            }
-                          />
-                        </div>
+                        </Link>
                       </div>
                     </div>
                   ))}
@@ -241,8 +253,8 @@ const TeacherChapterDetail = () => {
                     className="border-l-4 border-l-blue-400"
                   >
                     <CardHeader className="pb-3">
-                      <div className="flex flex-wrap items-start justify-between">
-                        <div className="flex items-center gap-2">
+                      <div className="flex gap-3 flex-wrap items-start justify-between">
+                        <section className="flex items-center gap-2">
                           <Badge
                             variant="secondary"
                             className="bg-blue-100 text-blue-800"
@@ -252,8 +264,8 @@ const TeacherChapterDetail = () => {
                           <h4 className="font-semibold text-gray-900">
                             {lesson.title}
                           </h4>
-                        </div>
-                        <div className="flex items-center gap-1">
+                        </section>
+                        <section className="flex items-center gap-2 flex-wrap gap-1">
                           <EditLessonModal
                             lesson={lesson}
                             fetchChapterDetail={fetchChapterDetail}
@@ -273,7 +285,7 @@ const TeacherChapterDetail = () => {
                               Assessment
                             </Button>
                           </Link>
-                        </div>
+                        </section>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -283,29 +295,59 @@ const TeacherChapterDetail = () => {
                         </p>
                       )}
 
+                      <div>
+                        <section className="flex items-center justify-between">
+                          <h5 className="text-sm font-semibold text-gray-700 mb-2">
+                            Files
+                          </h5>
+                          <AddMoreFile
+                            lessonId={lesson._id}
+                            fetchChapterDetail={fetchChapterDetail}
+                          />
+                        </section>
+
+                        <div className="flex flex-col gap-2">
+                          {lesson.pdfFiles.length === 0 ? (
+                            <p className="text-sm text-gray-500">no files</p>
+                          ) : (
+                            lesson?.pdfFiles?.map(
+                              (pdf, i) =>
+                                pdf?.url &&
+                                pdf?.filename && (
+                                  <section
+                                    key={i}
+                                    className="flex items-center justify-between"
+                                  >
+                                    <a
+                                      key={i}
+                                      href={pdf.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition-colors"
+                                    >
+                                      <FileText className="h-4 w-4" />
+                                      {pdf.filename}
+                                    </a>
+
+                                    <DeleteModal
+                                      what="File"
+                                      deleteFunc={() =>
+                                        handleDeleteFile(pdf._id, lesson._id)
+                                      }
+                                    />
+                                  </section>
+                                )
+                            )
+                          )}
+                        </div>
+                      </div>
+
                       {/* Resources */}
                       <div>
                         <h5 className="text-sm font-semibold text-gray-700 mb-2">
                           Resources
                         </h5>
                         <div className="flex flex-wrap gap-2">
-                          {lesson.pdfFiles?.map(
-                            (pdf, i) =>
-                              pdf?.url &&
-                              pdf?.filename && (
-                                <a
-                                  key={i}
-                                  href={pdf.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition-colors"
-                                >
-                                  <FileText className="h-4 w-4" />
-                                  {pdf.filename}
-                                </a>
-                              )
-                          )}
-
                           {lesson.youtubeLinks && (
                             <a
                               href={lesson.youtubeLinks}
@@ -344,35 +386,33 @@ const TeacherChapterDetail = () => {
                               {lesson.lesson_assessments.map((assessment) => (
                                 <div
                                   key={assessment._id}
-                                  className="border rounded-lg p-3 bg-green-50"
+                                  className="border rounded-lg hover:shadow-sm transition-shadow"
                                 >
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <Badge
-                                        variant="outline"
-                                        className="mb-1 text-xs"
-                                      >
+                                  <div className="flex flex-col items-start justify-between mb-2 gap-5 p-4">
+                                    <section className="flex justify-between w-full">
+                                      <Badge variant="outline" className="mb-2">
                                         {assessment.category.name}
                                       </Badge>
-                                      <h6 className="font-medium text-gray-900 text-sm">
-                                        {assessment.title}
-                                      </h6>
-                                      {assessment.description && (
-                                        <p className="text-xs text-gray-600 mt-1">
-                                          {assessment.description}
-                                        </p>
-                                      )}
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <AssessmentDialog
-                                        assessment={assessment}
-                                      />
                                       <DeleteModal
+                                        what="Assessment"
                                         deleteFunc={() =>
                                           handleDeleteAssessment(assessment._id)
                                         }
                                       />
-                                    </div>
+                                    </section>
+                                    <Link
+                                      to={`/teacher/courses/assessment/${assessment._id}`}
+                                      className="w-full hover:bg-gray-200 p-4 rounded-lg transform transition-transform duration-300"
+                                    >
+                                      <h4 className="font-semibold text-gray-900">
+                                        {assessment.title}
+                                      </h4>
+                                      {assessment.description && (
+                                        <p className="text-sm text-gray-600 mt-1">
+                                          {assessment.description}
+                                        </p>
+                                      )}
+                                    </Link>
                                   </div>
                                 </div>
                               ))}

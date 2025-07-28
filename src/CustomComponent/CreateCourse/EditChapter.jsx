@@ -89,7 +89,6 @@ export default function EditChapterDialog({
       <DialogTrigger asChild>
         <Button className="bg-green-100 text-green-600 hover:bg-green-200">
           <Pen />
-          Edit
         </Button>
       </DialogTrigger>
 

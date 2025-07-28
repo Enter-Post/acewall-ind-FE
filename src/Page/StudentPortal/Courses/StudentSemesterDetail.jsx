@@ -10,26 +10,15 @@ const StudentSemesterDetail = () => {
   const { quarters } = useContext(CourseContext);
   const [allQuarter, setallQuarter] = useState([]);
 
-   useEffect(() => {
-    const fetchQuarters = async () => {
-      try {
-        const res = await axiosInstance.get(`quarter/get/${semesterId}`);
-        const fetchedQuarters = res.data.quarters;
-
-        const selectedQuarterIds = new Set(
-          quarters.map((quar) => quar?._id.toString())
-        );
-
-        console.log(selectedQuarterIds, "selectedQuarterIds");
-        const selectedQuarters = fetchedQuarters.filter((q) =>
-          selectedQuarterIds.has(q._id?.toString())
-        );
-
-        setallQuarter(selectedQuarters);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  const fetchQuarters = async () => {
+    try {
+      const res = await axiosInstance.get(`quarter/get/${semesterId}`);
+      console.log(res)
+      setallQuarter(res.data.quarters);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
     fetchQuarters();
   }, [semesterId, quarters]);

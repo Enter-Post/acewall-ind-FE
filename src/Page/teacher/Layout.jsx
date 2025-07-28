@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Wallet,
   MessagesSquare,
+  NotepadText,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -33,6 +34,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { axiosInstance } from "@/lib/AxiosInstance";
+
 const sideBarTabs = [
   {
     id: 1,
@@ -64,7 +66,6 @@ const sideBarTabs = [
     icon: <MessagesSquare />,
     path: "/teacher/discussions",
   },
-
   {
     id: 12,
     name: "Messages",
@@ -80,7 +81,7 @@ const sideBarTabs = [
   {
     id: 14,
     name: "Pages",
-    icon: <GraduationCap />,
+    icon: <NotepadText />,
     path: "/teacher/courses/posts",
   },
     {
@@ -93,10 +94,10 @@ const sideBarTabs = [
 
 export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { checkAuth, user, Authloading, setAuthLoading } =
-    useContext(GlobalContext);
-
+  const { checkAuth, user, Authloading, setAuthLoading } = useContext(GlobalContext);
   const location = useLocation().pathname;
+
+  const isVerified = user?.isVarified === true;
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
@@ -107,7 +108,7 @@ export default function TeacherLayout() {
     if (!searchQuery.trim() || loading) return;
 
     setLoading(true);
-    setOpenDropdown(false); // Ensure dropdown is closed while loading
+    setOpenDropdown(false);
 
     try {
       const res = await axiosInstance.get("/course/getindividualcourse", {
@@ -118,14 +119,13 @@ export default function TeacherLayout() {
       setDropdownCourses(courses);
     } catch (error) {
       console.error("Search error:", error);
-      setDropdownCourses([]); // To show "No results found"
+      setDropdownCourses([]);
     } finally {
       setLoading(false);
-      setOpenDropdown(true); // ✅ Open dropdown only after data is ready
+      setOpenDropdown(true);
     }
   };
 
-  // Helper function (define this above return inside TeacherLayout)
   const highlightMatch = (text, query) => {
     if (!query) return text;
 
@@ -178,13 +178,8 @@ export default function TeacherLayout() {
             />
           </Link>
 
-          {/* Search Dropdown */}
           <div className="relative w-64 hidden md:flex flex-col">
-            <DropdownMenu
-              open={openDropdown}
-              onOpenChange={setOpenDropdown}
-              modal={false}
-            >
+            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
               <DropdownMenuTrigger asChild>
                 <div className="relative flex gap-2 w-full">
                   <Input
@@ -203,7 +198,7 @@ export default function TeacherLayout() {
                       }
                     }}
                     placeholder="Search courses and lessons"
-                    className="w-full  border border-gray-300 focus:ring-2 focus:ring-green-400 focus:border-transparent rounded-md transition-all "
+                    className="w-full border border-gray-300 focus:ring-2 focus:ring-green-400 focus:border-transparent rounded-md transition-all"
                   />
                   <button
                     onClick={handleSearch}
@@ -214,7 +209,6 @@ export default function TeacherLayout() {
                   </button>
                 </div>
               </DropdownMenuTrigger>
-
               <DropdownMenuContent className="bg-white border border-gray-200 shadow-md rounded-md mt-2 max-h-60 overflow-y-auto z-50 w-64">
                 {loading ? (
                   <DropdownMenuItem disabled>
@@ -238,17 +232,18 @@ export default function TeacherLayout() {
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
-
             </DropdownMenu>
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside
-          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
-            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
-        >
+        <aside className={`relative bg-white ${isSidebarOpen ? "block" : "hidden"} w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}>
+          {!isVerified && (
+            <div className="text-center text-sm text-red-600 font-medium p-2">
+              Your account is not verified yet. You have limited access.
+            </div>
+          )}
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
               <Link to="/teacher/account" className="w-10 h-10 block">
@@ -260,12 +255,10 @@ export default function TeacherLayout() {
                   />
                 </div>
               </Link>
-
-
               <div>
                 <p className="font-medium">{user.firstName}</p>
                 <p
-                  className="text-sm text-gray-600 w-full max-w-[150px]  break-words"
+                  className="text-sm text-gray-600 w-full max-w-[150px] break-words"
                   title={user.email}
                 >
                   {user.email}
@@ -276,20 +269,14 @@ export default function TeacherLayout() {
               {sideBarTabs.map((tab) => (
                 <Link
                   key={tab.name}
-                  to={tab.path}
+                  to={isVerified ? tab.path : "#"}
                   onClick={() => {
-                    setIsSidebarOpen(false);
+                    if (isVerified) setIsSidebarOpen(false);
                   }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location == tab.path ? "bg-green-500" : "text-black"
-                    } `}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"} ${!isVerified && tab.name !== "Dashboard" ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <p>{tab.icon}</p>
-                  <span
-                    className={`${location == tab.path ? "text-white" : "text-green-600"
-                      }`}
-                  >
-                    {tab.name}
-                  </span>
+                  <span className={`${location === tab.path ? "text-white" : "text-green-600"}`}>{tab.name}</span>
                 </Link>
               ))}
             </nav>
@@ -304,6 +291,7 @@ export default function TeacherLayout() {
             </div>
           </div>
         </aside>
+
         <main className="flex-1 p-2 md:p-4 hide-scrollbar overflow-y-scroll w-full">
           <Outlet />
         </main>

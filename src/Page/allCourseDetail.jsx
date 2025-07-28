@@ -26,18 +26,11 @@ import {
 import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
 import { toast } from "sonner";
 import avatar from "@/assets/avatar.png";
-import { GlobalContext } from "../Context/GlobalProvider";
-import TeacherProfileModal from "@/CustomComponent/Student/Teacherprofilemodal";
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {  
-  const { user } = useContext(GlobalContext);
-const studentID = user?._id;
+const AllCoursesDetail = () => {
   const { id } = useParams(); // Grab the actual course ID from the URL
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const instructor = courseDetails?.createdby || {};
- const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -104,7 +97,7 @@ const studentID = user?._id;
                 <div className="flex items-center">
                   <Avatar className="h-10 w-10 rounded-full">
                     <AvatarImage
-                      src={courseDetails?.createdby?.profileImg?.url || avatar}
+                      src={courseDetails?.createdby?.profileImg?.url || avatar   }
                       alt="Instructor"
                       className="h-10 w-10 object-cover rounded-full"
                     />
@@ -118,7 +111,7 @@ const studentID = user?._id;
                       {courseDetails.createdby.lastName}
                     </div>
                   </div>
-
+                  
                 </div>
               </div>
             </div>
@@ -313,45 +306,97 @@ const studentID = user?._id;
                   <div className="flex flex-col sm:flex-row items-start gap-6">
                     <Avatar className="h-15 w-15 shadow-md ring-green-500 ring-3 rounded-full">
                       <AvatarImage
-                        src={instructor?.profileImg?.url || avatar}
+                        src={courseDetails?.createdby?.profileImg?.url || avatar}
                         alt="Instructor"
                         className="h-15 w-15 object-cover rounded-full"
                       />
                       <AvatarFallback className="h-20 w-20 flex items-center justify-center rounded-full bg-gray-200 text-lg font-semibold">
-                        {instructor.firstName?.charAt(0)}
-                        {instructor.lastName?.charAt(0)}
+                        {courseDetails.createdby.firstName?.charAt(0)}
+                        {courseDetails.createdby.lastName?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className="flex-1">
-                      <h3
-                        className="text-xl font-semibold text-gray-900 cursor-pointer hover:underline"
-                        onClick={() => setIsModalOpen(true)}
-                      >
-                        {instructor.firstName}{" "}
-                        {instructor.middleName}{" "}
-                        {instructor.lastName}
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {courseDetails.createdby.firstName}{" "}
+                        {courseDetails.createdby.middleName}{" "}
+                        {courseDetails.createdby.lastName}
                       </h3>
+                    
+
                       <p className="text-gray-700 text-sm mt-4 leading-relaxed">
-                        {instructor.Bio || "No bio provided."}
+                        {courseDetails.createdby.Bio || "No bio provided."}
                       </p>
                     </div>
                   </div>
-
-                  <TeacherProfileModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    instructor={instructor}
-                    avatar={avatar}
-                  />
                 </TabsContent>
-
-
-
 
                 {/* reviews */}
                 <TabsContent value="reviews" className="p-6">
-                  <RatingSection courseId={courseDetails._id}/>
+                  <div className="flex flex-col gap-8">
+                    <div className="">
+                      <div className="text-center">
+                        <div className="text-4xl font-bold">
+                          {courseDetails.rating}
+                        </div>
+                        <div className="flex justify-center my-2">
+                          {[...Array(4)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={16}
+                              className="text-yellow-400 fill-yellow-400"
+                            />
+                          ))}
+                          <StarHalf
+                            size={16}
+                            className="text-yellow-400 fill-yellow-400"
+                          />
+                        </div>
+
+                        <div className="text-sm text-gray-500">
+                          Course Rating
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="md:w-2/3">
+                      <h3 className="text-lg font-bold mb-4">
+                        Students Feedback
+                      </h3>
+                      <div className="space-y-6">
+                        {Array.isArray(courseDetails.reviews) &&
+                          courseDetails.reviews.length > 0 ? (
+                          courseDetails.reviews.map((review, index) => (
+                            <div
+                              key={index}
+                              className="border-b border-gray-200 pb-6"
+                            >
+                              <div className="flex items-start gap-4">
+                                <Avatar className="h-30 w-30">
+                                  <AvatarImage
+                                    src={`/placeholder.svg?height=40&width=40&text=S${index}`}
+                                    alt="Student"
+                                  />
+                                  <AvatarFallback>S{index}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium">
+                                    {review.student}
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-1"></div>
+                                  <p className="text-sm mt-2">
+                                    {review.comment}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No reviews available</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>

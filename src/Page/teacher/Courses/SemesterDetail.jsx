@@ -14,23 +14,11 @@ const SemesterDetail = () => {
     const fetchQuarters = async () => {
       try {
         const res = await axiosInstance.get(`quarter/get/${id}`);
-        const fetchedQuarters = res.data.quarters;
-
-        const selectedQuarterIds = new Set(
-          quarters.map((quar) => quar?._id.toString())
-        );
-
-        console.log(selectedQuarterIds, "selectedQuarterIds");
-        const selectedQuarters = fetchedQuarters.filter((q) =>
-          selectedQuarterIds.has(q._id?.toString())
-        );
-
-        setallQuarter(selectedQuarters);
+        setallQuarter(res.data.quarters);
       } catch (err) {
-        console.error(err);
+        console.log(err);
       }
     };
-
     fetchQuarters();
   }, [id, quarters]);
 
@@ -57,7 +45,7 @@ const SemesterDetail = () => {
           </Link>
         ))
       ) : (
-        <p className="text-sm text-muted-foreground">No quarters selected.</p>
+        <p className="text-sm text-muted-foreground">No quarters added. Please add quarters for adding chapters</p>
       )}
     </div>
   );

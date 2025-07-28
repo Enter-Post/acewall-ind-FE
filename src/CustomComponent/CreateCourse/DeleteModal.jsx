@@ -14,7 +14,10 @@ import { toast } from "sonner";
 import LoadingLoader from "../LoadingLoader";
 import { Loader, Trash2 } from "lucide-react";
 
-export function DeleteModal({ chapterID, deleteFunc, what }) {
+export function DeleteModal({
+  chapterID,
+  deleteFunc
+}) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -24,14 +27,14 @@ export function DeleteModal({ chapterID, deleteFunc, what }) {
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 text-gray-500 hover:text-red-600 bg-gray-200 hover:bg-red-200"
+          className="h-8 text-gray-500 hover:text-red-600"
           onClick={(e) => {
             e.stopPropagation();
             /* Open delete confirmation */
           }}
         >
           <Trash2 className="h-3.5 w-3.5" />
-          <span className="">Delete {what}</span>
+          <span className="sr-only">Delete</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

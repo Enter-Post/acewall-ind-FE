@@ -159,7 +159,6 @@ const PersonalInfo = () => {
           </RadioGroup>
         </div> */}
       </div>
-
     </>
   );
 };

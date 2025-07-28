@@ -108,7 +108,7 @@ const EditGeneralInfo = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="text-sm font-medium">
-                  First Name *
+                  First Name
                 </Label>
                 <Input
                   type="text"
@@ -147,7 +147,7 @@ const EditGeneralInfo = () => {
 
               <div className="space-y-2 sm:col-span-2 lg:col-span-1">
                 <Label htmlFor="lastName" className="text-sm font-medium">
-                  Last Name *
+                  Last Name
                 </Label>
                 <Input
                   type="text"
@@ -176,7 +176,7 @@ const EditGeneralInfo = () => {
               {/* Pronouns */}
               <div className="space-y-2">
                 <Label className="block text-sm font-medium text-gray-900 dark:text-white">
-                  Preferred Pronoun *
+                  Preferred Pronoun
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
                   {["He/Him", "She/Her", "They/Them", "Others", "prefer not to say"].map(

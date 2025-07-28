@@ -81,7 +81,7 @@ const Login = () => {
                 {/* Email Field */}
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-gray-600 mb-2">
-                    Email *
+                    Email
                   </label>
                   <input
                     type="email"
@@ -102,7 +102,7 @@ const Login = () => {
                     htmlFor="password"
                     className="block text-gray-600 mb-2"
                   >
-                    Password *
+                    Password
                   </label>
                   <div className="relative">
                     <input

@@ -26,12 +26,12 @@ const TeacherCourses = () => {
         setLoading(true);
         try {
           const res = await axiosInstance.get(
-            `/course/getTeacherCourses?published=${ispublished}`,
+            `/course/getindividualcourse?published=${ispublished}`,
             {
               params: { search: searchQuery },
             }
           );
-          setAllCourses(res.data.courses); // Corrected 'response' to 'res'
+          setAllCourses(res.data.courses); 
         } catch (error) {
           console.error("Error fetching courses:", error);
           setAllCourses([]); 

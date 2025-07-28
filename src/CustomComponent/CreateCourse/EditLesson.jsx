@@ -112,7 +112,6 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
           className="flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 ml-auto"
         >
           <Pen size={16} />
-          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] h-[80dvh] overflow-y-auto">

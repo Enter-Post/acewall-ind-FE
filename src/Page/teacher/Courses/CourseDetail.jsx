@@ -13,17 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import {
-  BookPlus,
-  ChartBarStacked,
-  CircleEllipsis,
-  Languages,
-  LibraryBig,
-  Loader,
-  Pen,
-  Play,
-  Users,
-} from "lucide-react";
+import { Loader, Pen, Play, Users } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
@@ -39,22 +29,27 @@ import { CourseContext } from "@/Context/CoursesProvider";
 import { SelectSemAndQuarDialog } from "@/CustomComponent/CreateCourse/SelectSemAndQuarDialog";
 import Pages from "@/CustomComponent/teacher/Pages";
 import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
-import ArchiveDialog from "@/CustomComponent/teacher/ArchivedModal";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { set } from "lodash";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
-
-  const [course, setCourse] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [Prevthumbnail, setPrevThumbnail] = useState(null);
   const [newthumbnail, setNewThumbnail] = useState(null);
   const [loadingThumbnail, setLoadingThumbnail] = useState(false);
 
+
+
+
+
+  const [course, setCourse] = useState(null);
+
+  const toggleLesson = (lessonId) => {
+    setOpenLessons((prev) => ({
+      ...prev,
+      [lessonId]: !prev[lessonId],
+    }));
+  };
   const handleDeleteAssessment = (assessmentID) => {
     setLoading(true);
     axiosInstance
@@ -146,7 +141,7 @@ export default function TeacherCourseDetails() {
   if (!course)
     return (
       <div>
-        <section className="flex justify-center items-center h-screen w-full">
+        <section className="flex justify-center items-center h-full w-full ">
           <Loader className={"animate-spin"} />
         </section>
       </div>
@@ -154,11 +149,10 @@ export default function TeacherCourseDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="flex item-center justify-between">
-        <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
-      </div>
+      <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
 
       <div className="space-y-8">
+        {/* Course Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1 flex flex-col gap-4">
             <img
@@ -166,7 +160,7 @@ export default function TeacherCourseDetails() {
                 Prevthumbnail
                   ? Prevthumbnail
                   : course.thumbnail.url ||
-                    "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
+                  "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
               }
               alt="Course thumbnail"
               className="w-full rounded-md object-cover aspect-video"
@@ -219,20 +213,20 @@ export default function TeacherCourseDetails() {
                   Uploaded:{" "}
                   {course.createdAt
                     ? new Date(course.createdAt).toLocaleDateString("en-US", {
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                     : "N/A"}
                 </span>
                 <span>
                   Last Updated:{" "}
                   {course.updatedAt
                     ? new Date(course.updatedAt).toLocaleDateString("en-US", {
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
+                      year: "2-digit",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                     : "N/A"}
                 </span>
               </div>
@@ -252,26 +246,43 @@ export default function TeacherCourseDetails() {
             <></>}
           </div>
         </div>
-        <div className="flex flex-wrap justify-between gap-4">
-          <section className="flex justify-between items-center">
+
+        <section className="flex flex-wrap gap-4 justify-between items-center">
+          <section className="flex gap-4 flex-wrap">
             <AssessmentCategoryDialog courseId={id} />
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                navigate(`/teacher/courses/gradescale/${id}`);
+              }}
+            >
+              Manage GradeScale
+            </Button>
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                navigate(`/teacher/courses/semester/${id}`);
+              }}
+            >
+              Manage Semesters & Quarters
+            </Button>
           </section>
-          <div className="flex justify-between items-center gap-4">
-            <button
+
+          <div className="flex justify-between flex-wrap items-center gap-3">
+            <Button
+              className="hover:bg-gray-100 font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
               variant="outline"
-              className="bg-green-500 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer"
               onClick={() => navigate(`/teacher/courses/stdPreview/${id}`)}
             >
               Preview as a student
-            </button>
-            <button
+            </Button>
+            <Button
+              className="hover:bg-gray-100 font-bold py-2 px-4 rounded shadow-md transition-all duration-150 text-sm cursor-pointer"
               variant="outline"
-              className="flex gap-2 items-center bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer"
               onClick={() => navigate(`/teacher/gradebook/${id}`)}
             >
-              <BookPlus size={16} />
               Gradebook
-            </button>
+            </Button>
             <button
               variant="outline"
               className="flex gap-2 items-center bg-slate-600 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer"
@@ -281,61 +292,65 @@ export default function TeacherCourseDetails() {
               Edit Course Info
             </button>
           </div>
-        </div>
+        </section>
+
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
           <StatCard
-            icon={<Languages className="h-5 w-5 text-orange-500" />}
+            icon={<Play className="h-5 w-5  text-orange-500" />}
             value={course.language?.toUpperCase()}
             label="Language"
-            bgColor="bg-slate-100 hover:bg-slate-200"
+            bgColor="bg-orange-50"
           />
           <StatCard
-            icon={<ChartBarStacked className="h-5 w-5 text-orange-500" />}
+            icon={<Play className="h-5 w-5 text-orange-500" />}
             value={course.category?.title?.toUpperCase()}
             label="Category"
-            bgColor="bg-slate-100 hover:bg-slate-200"
+            bgColor="bg-orange-50"
           />
 
           <StatCard
-            icon={<LibraryBig className="h-5 w-5 text-orange-500" />}
+            icon={<Play className="h-5 w-5 text-orange-500" />}
             value={course.semester?.length || 0}
             label="Semesters"
-            bgColor="bg-slate-100 hover:bg-slate-200"
+            bgColor="bg-orange-50"
           />
 
           <StatCard
-            icon={<Users className="h-5 w-5 text-orange-500" />}
+            icon={<Users className="h-5 w-5 text-rose-500" />}
             value={course.enrollments?.length}
             label="Students Enrolled"
-            bgColor="bg-slate-100 hover:bg-slate-200"
+            bgColor="bg-rose-50"
           />
         </div>
-        <SelectSemAndQuarDialog
-          prevSelectedSemesters={prevSemesterIds}
-          prevSelectedQuarters={prevQuarterIds}
-          courseId={id}
-          fetchCourseDetail={fetchCourseDetail}
-        />
-        {course?.semester?.map((semester, index) => (
-          <Link
-            key={semester._id}
-            to={`/teacher/courses/${id}/semester/${semester._id}`}
-          >
-            <div
-              key={semester._id}
-              className="mb-4 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
-            >
-              <h3 className="font-semibold text-md">
-                Semester {index + 1}: {semester.title}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
-                {format(new Date(semester.endDate), "MMMM do, yyyy")}
-              </p>
-            </div>
-          </Link>
-        ))}
+
+        <section>
+          <p className="font-semibold text-xl">Semester :</p>
+          {course?.semester?.length > 0 ? (
+            course?.semester?.map((semester, index) => (
+              <Link
+                key={semester._id}
+                to={`/teacher/courses/${id}/semester/${semester._id}`}
+              >
+                <div
+                  key={semester._id}
+                  className="mb-4 mt-5 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                >
+                  <h3 className="font-semibold text-md">
+                    Semester {index + 1}: {semester.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
+                    {format(new Date(semester.endDate), "MMMM do, yyyy")}
+                  </p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground mt-5">No Semesters found</p>
+          )}
+        </section>
+
         {/* <div className="flex gap-4">
           <Pages />
           <button
@@ -354,15 +369,12 @@ export default function TeacherCourseDetails() {
               handleDeleteAssessment={handleDeleteAssessment}
             />
           ))}
+
         {/* Rating */}
         <RatingSection courseId={id} />
       </div>
 
       <CommentSection id={id} />
-
-      <div className="flex justify-end">
-        <ArchiveDialog course={course} fetchCourseDetail={fetchCourseDetail} />
-      </div>
     </div>
   );
 }
@@ -370,7 +382,7 @@ export default function TeacherCourseDetails() {
 function StatCard({ icon, value, label, bgColor }) {
   return (
     <Card className={`border-0 shadow-sm ${bgColor}`}>
-      <CardContent className="p-2 flex items-center gap-4">
+      <CardContent className="p-4 flex items-center gap-4">
         <div className="p-2 rounded-md bg-white">{icon}</div>
         <div>
           <div className="font-semibold text-lg">{value}</div>

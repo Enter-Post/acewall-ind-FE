@@ -119,7 +119,7 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
 
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
-            <Label htmlFor="type">Type*</Label>
+            <Label htmlFor="type">Type</Label>
             <select
               id="type"
               {...register("type", { required: "Type is required" })}
@@ -136,7 +136,7 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
           </div>
           {type === "course" && (
             <div>
-              <Label htmlFor="course">Course*</Label>
+              <Label htmlFor="course">Course</Label>
               <select
                 id="course"
                 {...register("course", {
@@ -162,7 +162,7 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
           )}
 
           <div>
-            <Label htmlFor="topic">Topic*</Label>
+            <Label htmlFor="topic">Topic</Label>
             <Input
               id="topic"
               {...register("topic", { required: "Topic is required" })}
@@ -173,7 +173,7 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
           </div>
 
           <div>
-            <Label htmlFor="description">Description*</Label>
+            <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
               rows={4}

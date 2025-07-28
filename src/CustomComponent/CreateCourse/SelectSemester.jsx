@@ -50,7 +50,7 @@ const SelectSemester = ({ register, errors, setSelectedSemester }) => {
   return (
     <div>
       <Label htmlFor="semester" className="block mb-2">
-        Semester *
+        Semester
       </Label>
 
       <Popover open={open} onOpenChange={setOpen} className="w-screen">

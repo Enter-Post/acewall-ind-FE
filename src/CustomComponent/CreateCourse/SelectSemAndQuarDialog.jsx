@@ -53,6 +53,10 @@ export function SelectSemAndQuarDialog({
     },
   });
 
+  console.log(selectedSemester, "selectedSemester");
+
+  console.log(errors, "errors");
+
   const onSubmit = async (data) => {
     console.log(data, "submitted data");
 

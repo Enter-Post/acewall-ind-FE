@@ -1,104 +1,186 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { useNavigate, useParams } from "react-router-dom"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 // shadcn/ui components
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { FileText, Loader } from "lucide-react"
-import { axiosInstance } from "@/lib/AxiosInstance"
-import AssessmentResultCard from "@/CustomComponent/Assessment/AssessmentResultCard"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FileText, Loader, X } from "lucide-react";
+import { axiosInstance } from "@/lib/AxiosInstance";
+import AssessmentResultCard from "@/CustomComponent/Assessment/AssessmentResultCard";
+import { Input } from "@/components/ui/input";
 
 const AssessmentSubmissionPage = () => {
-  const { id } = useParams()
-  const [assessment, setAssessment] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [submitted, setSubmitted] = useState(false)
-  const [result, setResult] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
-  const navigate = useNavigate()
+  const { id } = useParams();
+  const [assessment, setAssessment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [totalFileSize, setTotalFileSize] = useState(0);
+  const navigate = useNavigate();
+
+  // console.log(totalFileSize, "total file size");
+
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+
+    const allowedTypes = [
+      "application/pdf",
+      ...["image/png", "image/jpeg", "image/jpg"].map(
+        (type) => `image/${type}`
+      ),
+    ];
+
+    const invalidFiles = selectedFiles.filter(
+      (file) => !allowedTypes.includes(file.type)
+    );
+
+    if (invalidFiles.length > 0) {
+      toast.error(
+        `${invalidFiles[0].name}: Only PDF and image files are allowed`
+      );
+      return;
+    }
+
+    const newTotalFileSize =
+      totalFileSize + selectedFiles.reduce((sum, file) => sum + file.size, 0);
+
+    if (newTotalFileSize > 5 * 1024 * 1024) {
+      toast.error("Total file size must be less than 5MB");
+      return;
+    }
+
+    setTotalFileSize(newTotalFileSize);
+    setFiles((prev) => [...prev, ...selectedFiles]);
+  };
+
+  const handleRemove = (index) => {
+    const newTotalFileSize = totalFileSize - files[index].size;
+    setTotalFileSize(newTotalFileSize);
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   useEffect(() => {
     const fetchAssessment = async () => {
       try {
-        const res = await axiosInstance.get(`/assessment/${id}`)
-        setAssessment(res.data.assessment)
+        const res = await axiosInstance.get(`/assessment/${id}`);
+        setAssessment(res.data.assessment);
 
         // If there's already a submission, set it and mark as submitted
         if (res.data.submission) {
-          setResult(res.data.submission)
-          setSubmitted(true)
+          setResult(res.data.submission);
+          setSubmitted(true);
         }
       } catch (err) {
-        setError("Failed to load assessment. Please try again later.")
+        setError("Failed to load assessment. Please try again later.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchAssessment()
-  }, [id])
+    };
+    fetchAssessment();
+  }, [id]);
 
   const createValidationSchema = (assessment) => {
-    if (!assessment || !assessment.questions) return z.object({})
-    const schemaShape = {}
+    if (!assessment || !assessment.questions) return z.object({});
+    const schemaShape = {};
     assessment.questions.forEach((question) => {
-      const key = `question-${question._id}`
+      const key = `question-${question._id}`;
       if (question.type === "mcq" || question.type === "truefalse") {
-        schemaShape[key] = z.string().min(1, "Please select an answer")
+        schemaShape[key] = z.string().min(1, "Please select an answer");
       } else if (question.type === "qa") {
-        schemaShape[key] = z.string().min(1, "Answer cannot be empty")
+        schemaShape[key] = z.string().min(1, "Answer cannot be empty");
       }
-    })
-    return z.object(schemaShape)
-  }
+    });
+    return z.object(schemaShape);
+  };
 
   const form = useForm({
     resolver: zodResolver(createValidationSchema(assessment)),
     defaultValues: { studentId: "" },
-  })
+  });
 
-  const onSubmit = async (data) => {
-    if (submitting) return
-    setSubmitting(true)
+const onSubmit = async (data) => {
+  if (submitting) return;
+  setSubmitting(true);
 
-    const answers = assessment.questions.map((question) => ({
+  let answers;
+  const formData = new FormData();
+
+  if (assessment.assessmentType === "file") {
+    if (!files || files.length === 0) {
+      toast.error("Please upload at least one file");
+      setSubmitting(false);
+      return;
+    }
+
+    files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    const questionIds = assessment.questions.map((question) => question._id);
+    formData.append("questionId", questionIds);
+  } else {
+    answers = assessment.questions.map((question) => ({
       questionId: question._id,
       selectedAnswer: data[`question-${question._id}`],
-    }))
+    }));
+  }
 
-    try {
-      const res = await axiosInstance.post(`/assessmentSubmission/submission/${assessment._id}`, answers)
-
-      // Check if the submission was auto-graded
-      const submission = res.data.submission
-      const isGraded = submission.graded
-
-      setSubmitted(true)
-      setResult(submission)
-
-      if (isGraded) {
-        toast.success("Assessment graded and submitted successfully!")
-      } else {
-        toast.success("Submission recorded. Awaiting manual review.")
+  try {
+    const res = await axiosInstance.post(
+      `/assessmentSubmission/submission/${assessment._id}`,
+      assessment.assessmentType === "file" ? formData : { answers },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
+    );
 
-      navigate(`/student/assessment`)
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Submission failed")
-      setSubmitting(false)
+    const submission = res.data.submission;
+    const isGraded = submission.graded;
+
+    setSubmitted(true);
+    setResult(submission);
+
+    if (isGraded) {
+      toast.success("Assessment graded and submitted successfully!");
+    } else {
+      toast.success("Submission recorded. Awaiting manual review.");
     }
-  } 
+
+    navigate(`/student/assessment`);
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Submission failed");
+    setSubmitting(false);
+  }
+};
 
 
   // Show loading state
@@ -107,7 +189,7 @@ const AssessmentSubmissionPage = () => {
       <div className="flex justify-center items-center min-h-screen">
         <Loader className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   // Show error if assessment couldn't be loaded
@@ -116,7 +198,7 @@ const AssessmentSubmissionPage = () => {
       <Alert variant="destructive" className="max-w-md mx-auto mt-8">
         <AlertDescription>{error}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   // Show error if assessment not found
@@ -125,12 +207,12 @@ const AssessmentSubmissionPage = () => {
       <Alert variant="destructive" className="max-w-md mx-auto mt-8">
         <AlertDescription>Assessment not found</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   // Render the result card if we have a result
   if (submitted && result) {
-    return <AssessmentResultCard submission={result} />
+    return <AssessmentResultCard submission={result} />;
   }
 
   return (
@@ -166,10 +248,14 @@ const AssessmentSubmissionPage = () => {
               <div className="space-y-6 ">
                 {assessment?.questions?.map((question, index) => (
                   <Card key={question._id} className="border shadow-sm">
-                    <CardHeader className="pb-2">
+                    <CardHeader className="">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-base">Question {index + 1}</CardTitle>
-                        <span className="text-sm text-muted-foreground">Points: {question.points}</span>
+                        <CardTitle className="text-base">
+                          Question {index + 1}
+                        </CardTitle>
+                        <span className="text-sm text-muted-foreground">
+                          Points: {question.points}
+                        </span>
                       </div>
                       <p
                         className="text-sm font-medium text-gray-800 mb-2"
@@ -189,11 +275,25 @@ const AssessmentSubmissionPage = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <RadioGroup onValueChange={field.onChange} value={field.value} className="space-y-2">
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="space-y-2"
+                                >
                                   {question.options.map((option, optIndex) => (
-                                    <div key={optIndex} className="flex items-center space-x-2">
-                                      <RadioGroupItem value={option} id={`q${question._id}-opt${optIndex}`} />
-                                      <Label htmlFor={`q${question._id}-opt${optIndex}`}>{option}</Label>
+                                    <div
+                                      key={optIndex}
+                                      className="flex items-center space-x-2"
+                                    >
+                                      <RadioGroupItem
+                                        value={option}
+                                        id={`q${question._id}-opt${optIndex}`}
+                                      />
+                                      <Label
+                                        htmlFor={`q${question._id}-opt${optIndex}`}
+                                      >
+                                        {option}
+                                      </Label>
                                     </div>
                                   ))}
                                 </RadioGroup>
@@ -211,14 +311,28 @@ const AssessmentSubmissionPage = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <RadioGroup onValueChange={field.onChange} value={field.value} className="space-y-2">
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="space-y-2"
+                                >
                                   <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="true" id={`q${question._id}-true`} />
-                                    <Label htmlFor={`q${question._id}-true`}>True</Label>
+                                    <RadioGroupItem
+                                      value="true"
+                                      id={`q${question._id}-true`}
+                                    />
+                                    <Label htmlFor={`q${question._id}-true`}>
+                                      True
+                                    </Label>
                                   </div>
                                   <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="false" id={`q${question._id}-false`} />
-                                    <Label htmlFor={`q${question._id}-false`}>False</Label>
+                                    <RadioGroupItem
+                                      value="false"
+                                      id={`q${question._id}-false`}
+                                    />
+                                    <Label htmlFor={`q${question._id}-false`}>
+                                      False
+                                    </Label>
                                   </div>
                                 </RadioGroup>
                               </FormControl>
@@ -235,7 +349,66 @@ const AssessmentSubmissionPage = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Textarea placeholder="Type your answer here..." className="min-h-[120px]" {...field} />
+                                <Textarea
+                                  placeholder="Type your answer here..."
+                                  className="min-h-[120px]"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                      {question.type === "file" && (
+                        <FormField
+                          control={form.control}
+                          name={`question-${question._id}`}
+                          render={({ field }) => (
+                            <FormItem>
+                              {question.files.map((file, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-2 mb-1 border p-2 w-fit rounded-lg bg-blue-50"
+                                >
+                                  <FileText className="text-blue-500" />
+                                  <a
+                                    href={file.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {file.filename}
+                                  </a>
+                                </div>
+                              ))}
+                              <FormControl>
+                                <section>
+                                  <Input
+                                    type={"file"}
+                                    onChange={(e) => {
+                                      handleFileChange(e);
+                                    }}
+                                    multiple
+                                  />
+
+                                  {files.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mt-4">
+                                      {files.map((file, index) => (
+                                        <div
+                                          key={index}
+                                          className="flex items-center gap-2 mb-1 border p-2 w-fit rounded-lg bg-blue-50"
+                                        >
+                                          <FileText className="text-red-500" />
+                                          <span>{file.name}</span>
+                                          <X
+                                            size={16}
+                                            onClick={() => handleRemove(index)}
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </section>
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -252,8 +425,8 @@ const AssessmentSubmissionPage = () => {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <CardFooter className="flex justify-between">
-              <Button type="submit" disabled={submitting}>
+            <CardFooter className="flex justify-end">
+              <Button type="submit" disabled={submitting} className="bg-green-500 hover:bg-green-600">
                 {submitting ? (
                   <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -268,7 +441,7 @@ const AssessmentSubmissionPage = () => {
         </form>
       </Form>
     </div>
-  )
-}
+  );
+};
 
-export default AssessmentSubmissionPage
+export default AssessmentSubmissionPage;

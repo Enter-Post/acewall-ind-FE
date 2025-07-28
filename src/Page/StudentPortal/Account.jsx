@@ -96,8 +96,9 @@ const Account = () => {
         <h2 className="text-2xl font-bold text-foreground">Account Information</h2>
         {user?.role === "teacher" && user?.isVarified !== undefined && (
           <span
-            className={`text-sm px-3 py-1 rounded-full ${user.isVarified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-              }`}
+            className={`text-sm px-3 py-1 rounded-full ${
+              user.isVarified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
           >
             {user.isVarified ? "Verified" : "Not Verified"}
           </span>
@@ -107,51 +108,26 @@ const Account = () => {
       {/* Profile Image */}
       <section className="space-y-4">
         <h3 className="text-lg font-semibold text-gray-800">Profile Image</h3>
-
-        <div className="relative w-32 h-32">
-  {/* Profile Image */}
-  <div className="w-full h-full rounded-full overflow-hidden border border-gray-300">
-    <img
-      src={
-        profileImg
-          ? URL.createObjectURL(profileImg)
-          : user?.profileImg?.url ?? avatar
-      }
-      alt="Profile"
-      className="w-full h-full object-cover"
-    />
-  </div>
-
-  {/* Edit Icon - NOT inside the clipped circle anymore */}
-  <label className="absolute bottom-0 right-0 z-10 bg-white border border-gray-300 rounded-full p-2 shadow-md cursor-pointer hover:bg-gray-100 transition">
-    <Pen className="w-4 h-4 text-gray-600" />
-    <input
-      type="file"
-      className="hidden"
-      accept={allowedTypes.join(",")}
-      onChange={(e) => setProfileImg(e.target.files[0])}
-    />
-  </label>
-</div>
-
-
+        <div className="relative w-32 h-32 border border-gray-300 rounded-full overflow-hidden">
+          <img
+            src={profileImg ? URL.createObjectURL(profileImg) : user?.profileImg?.url ?? avatar}
+            alt="Profile"
+            className="w-full h-full object-cover rounded-full shadow-sm"
+          />
+          <label className="absolute bottom-2 right-2 bg-white border rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100">
+            <Pen className="w-4 h-4 text-gray-600" />
+            <input
+              type="file"
+              className="hidden"
+              accept={allowedTypes.join(",")}
+              onChange={(e) => setProfileImg(e.target.files[0])}
+            />
+          </label>
+        </div>
         {profileImg && (
           <div className="flex gap-2">
-            <Button
-              onClick={handleImg}
-              className="bg-green-500 text-white hover:bg-green-600"
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <Loader className="animate-spin w-4 h-4 mr-2" />
-                  Saving...
-                </div>
-              ) : (
-                "Save Changes"
-              )}
-            </Button>
-            <Button onClick={() => setProfileImg(null)} variant="outline">
-              Cancel
+            <Button onClick={handleImg} className="bg-green-500 text-white hover:bg-green-600">
+              {loading ? <Loader className="animate-spin w-4 h-4 mr-2" /> : "Save Changes"}
             </Button>
           </div>
         )}
@@ -163,7 +139,7 @@ const Account = () => {
           <Button className="bg-green-500 text-white hover:bg-green-600">Edit Info</Button>
         </Link>
         <Link to={`/${user.role}/account/editCredentials`}>
-          <Button className="bg-green-500 text-white hover:bg-green-600">Edit Login Details</Button>
+          <Button className="bg-green-500 text-white hover:bg-green-600">Edit Credentials</Button>
         </Link>
       </section>
 

@@ -11,6 +11,7 @@ import { Link, useParams } from "react-router-dom";
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
 import EditChapterDialog from "@/CustomComponent/CreateCourse/EditChapter";
 import { DeleteModal } from "../../../CustomComponent/CreateCourse/DeleteModal";
+import BackButton from "@/CustomComponent/BackButton";
 
 const QuarterDetail = () => {
   const { id, courseId } = useParams();
@@ -24,15 +25,24 @@ const QuarterDetail = () => {
   const fetchQuarterDetail = async () => {
     try {
       const response = await axiosInstance.get(`chapter/${courseId}/${id}`);
-      setChapters(response.data.chapters);
-      setQuarterStartDate(response.data.quarterEndDate);
-      setQuarterEndDate(response.data.quarterStartDate);
+
+      // Validate the structure of response
+      if (response?.data?.chapters) {
+        setChapters(response.data.chapters);
+        setQuarterStartDate(response.data.quarterStartDate);
+        setQuarterEndDate(response.data.quarterEndDate);
+      } else {
+        // Fallback if response is malformed
+        setChapters([]);
+        toast.error("Invalid response format from server.");
+      }
     } catch (err) {
-      console.error(err);
+      console.error("API Error:", err);
       setChapters([]);
-      toast.error("Failed to fetch quarter details");
+      response.data.chapters.length == 0 ? (toast.error("Error fetching chapters.")) : (toast.error("failed to load quarter "));
     }
   };
+
 
   useEffect(() => {
     fetchQuarterDetail();
@@ -56,12 +66,13 @@ const QuarterDetail = () => {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center justify-between">
+          <BackButton className="mb-10"/>
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <GraduationCap className="h-8 w-8 text-blue-600" />
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Quarter Management
+                  Chapters
                 </h1>
                 <p className="text-gray-600">
                   Manage your chapters and course content
@@ -94,7 +105,7 @@ const QuarterDetail = () => {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {chapters.map((chapter, index) => (
               <Card
                 key={chapter._id}
@@ -128,15 +139,15 @@ const QuarterDetail = () => {
 
                   {/* Stats */}
                   <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
+                    <div className="flex flex-wrap items-center gap-1">
                       <BookOpen className="h-4 w-4" />
-                      <span>{chapter.lessons?.length || 0} Lessons</span>
+                      <p>{chapter.lessons?.length || 0} Lessons</p>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex flex-wrap items-center gap-1">
                       <GraduationCap className="h-4 w-4" />
-                      <span>
+                      <p className="">
                         {chapter.chapter_assessments?.length || 0} Assessments
-                      </span>
+                      </p>
                     </div>
                   </div>
 
@@ -146,7 +157,7 @@ const QuarterDetail = () => {
                       to={`/teacher/courses/quarter/${id}/chapter/${chapter._id}?courseId=${courseId}&quarterStart=${quarterStartDate}&quarterEnd=${quarterEndDate}`}
                       className="flex-1"
                     >
-                      <Button className="w-full" size="sm">
+                      <Button className="w-full bg-green-500 bg-green-600" size="sm">
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
                       </Button>

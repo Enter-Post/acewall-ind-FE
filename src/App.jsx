@@ -72,13 +72,14 @@ import AllChapter from "./Page/StudentPortal/Courses/AllChapter";
 import CourseGradebookPage from "./Page/teacher/CourseGradebookPage";
 import ViewCoursePostsPage from "./Page/teacher/ViewCoursePosts";
 import StdPagesView from "./Page/StudentPortal/StdPagesView";
-// import GradeScaleForm from "./Page/teacher/Courses/gradeScale/GradeScale";
-// import ManageGradeScale from "./Page/teacher/Courses/gradeScale/manageGradeScale";
-// import Semester from "./Page/teacher/Courses/semester/Semester";
+import GradeScaleForm from "./Page/teacher/Courses/gradeScale/GradeScale";
+import ManageGradeScale from "./Page/teacher/Courses/gradeScale/manageGradeScale";
+import Semester from "./Page/teacher/Courses/semester/Semester";
 import Earning from "./Page/teacher/Earning/Earning";
 import EarningDetail from "./Page/teacher/Earning/EarningDetails";
 import EditCourse from "./Page/teacher/Courses/EditCoursesBasics";
 import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail";
+import { AssessmentPage } from "./Page/teacher/Courses/quarter/assessment-dialog";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -97,8 +98,7 @@ function App() {
 
   const connectsocket = () => {
     const newSocket = io(
-      // "https://acewall-backend-school-instance-production.up.railway.app",
-      import.meta.env.VITE_SOCKET_URL,
+      "https://acewall-backend-school-instance-production.up.railway.app",
       {
         query: { userId: user?._id || "" },
       }
@@ -177,15 +177,7 @@ function App() {
         </Route>
 
         {/* Student Routes */}
-        <Route
-          element={
-            <PrivateRoute
-              user={user}
-              allowedRole="student"
-              loading={Authloading}
-            />
-          }
-        >
+        <Route element={<PrivateRoute user={user} allowedRole="student" />}>
           <Route path="/student" element={<Layout />}>
           <Route path="payment-success" element={<PaymentSuccess />} />
           <Route path="payment-cancelled" element={<PaymentCancelled />} />
@@ -287,28 +279,38 @@ function App() {
             />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
+
               <Route
                 path="courseDetail/:id"
                 element={<TeacherCourseDetails />}
               />
-              <Route path="edit/:courseId" element={<EditCourse />} />
+
               <Route
                 path=":courseId/semester/:id"
                 element={<SemesterDetail />}
               />
               <Route path=":courseId/quarter/:id" element={<QuarterDetail />} />
-              <Route path="quarter/:quarterId/chapter/:chapterId" element={<TeacherChapterDetail />} />
+              <Route
+                path="quarter/:quarterId/chapter/:chapterId"
+                element={<TeacherChapterDetail />}
+              />
+              <Route path="edit/:courseId" element={<EditCourse />} />
+              <Route
+                path="assessment/:assessmentid"
+                element={<AssessmentPage />}
+              />
               <Route path="stdPreview/:id" element={<StdPreview />} />
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />
+
+
                 {/* <Route path="gradebook" element={<TeacherGradebook />} /> */}
               </Route>
-              {/* <Route path="semester/:courseId" element={<Semester />} />
+              <Route path="semester/:courseId" element={<Semester />} />
               <Route path="gradescale/:courseId">
                 <Route index element={<GradeScaleForm />} />
                 <Route path="managegradescale" element={<ManageGradeScale />} />
-              </Route> */}
             </Route>
              <Route path="wallet">
               <Route index element={<Earning />} />

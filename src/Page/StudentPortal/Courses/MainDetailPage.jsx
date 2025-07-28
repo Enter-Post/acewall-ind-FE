@@ -53,13 +53,14 @@ export default function CourseOverview() {
   const Navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
 
+
+
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
       await axiosInstance
         .get(`/enrollment/studentCourseDetails/${id}`)
         .then((res) => {
-          console.log(res);
           setCourse(res.data.enrolledCourse.courseDetails);
           setQuarters(res.data.enrolledCourse.courseDetails.quarter);
           setLoading(false);
@@ -78,7 +79,6 @@ export default function CourseOverview() {
         memberId: course?.createdby._id,
       })
       .then((res) => {
-        console.log(res);
         Navigate("/student/messages");
       })
       .catch((err) => {
@@ -90,11 +90,9 @@ export default function CourseOverview() {
     setLoading(true); // instantly trigger loading
 
     try {
-      console.log("Unenrolling from course ID:", course._id);
       const res = await axiosInstance.delete(
         `/enrollment/unenroll/${course?._id}`
       );
-      console.log("Unenrolled data:", res.data);
       setShowModal(false);
       window.location.reload(); // refresh page
     } catch (err) {

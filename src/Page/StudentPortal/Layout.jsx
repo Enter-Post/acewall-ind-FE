@@ -10,6 +10,7 @@ import {
   MessageCircleDashed,
   MessagesSquare,
   MessagesSquareIcon,
+  NotepadText,
   Search,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -79,7 +80,7 @@ const sideBarTabs = [
   {
     id: 7,
     name: "Pages",
-    icon: <MessageCircleDashed />,
+    icon: <NotepadText />,
     path: "/student/stdPages",
   },
 ];

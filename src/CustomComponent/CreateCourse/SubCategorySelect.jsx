@@ -8,40 +8,38 @@ import {
 } from "@/components/ui/select";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import React, { useEffect, useState } from "react";
-import { Controller } from "react-hook-form";
 
-const SubCategorySelect = ({
-  control,
-  errors,
-  selectedCategory,
-  prevSubCategory,
-  setSubcategories,
-  subcategories,
-}) => {
+const SubCategorySelect = ({ register, errors, selectedCategory }) => {
+  const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
-    axiosInstance
-      .get("subcategory/get")
-      .then((res) => setSubcategories(res.data.subcategories))
-      .catch((err) => console.error("Failed to fetch subcategories:", err));
+    const getSubcategories = async () => {
+      try {
+        const res = await axiosInstance.get("subcategory/get");
+        setSubcategories(res.data.subcategories);
+      } catch (err) {
+        console.error("Failed to fetch subcategories:", err);
+      }
+    };
+    getSubcategories();
   }, []);
 
+  // Filter subcategories based on selected category
   const filteredSubcategories = subcategories.filter(
     (sub) => sub.category === selectedCategory
   );
 
   return (
     <div>
-      <Label className="block mb-2">Sub Category *</Label>
-      <Controller
-        name="subcategory"
-        control={control}
-        defaultValue={prevSubCategory || ""}
-        render={({ field }) => (
+      <Label htmlFor="subcategory" className="block mb-2">
+        Sub Category
+      </Label>
           <Select
-            // disabled={!selectedCategory}
-            value={field.value}
-            onValueChange={field.onChange}
+        onValueChange={(value) => {
+          const event = { target: { name: "subcategory", value } };
+          register("subcategory").onChange(event);
+        }}
+        disabled={!selectedCategory}
           >
             <SelectTrigger className="bg-gray-50">
               <SelectValue placeholder="Select sub category" />
@@ -54,8 +52,7 @@ const SubCategorySelect = ({
               ))}
             </SelectContent>
           </Select>
-        )}
-      />
+      <input type="hidden" {...register("subcategory")} />
       {errors?.subcategory && (
         <p className="text-xs text-red-500 mt-1">
           {errors.subcategory.message}
