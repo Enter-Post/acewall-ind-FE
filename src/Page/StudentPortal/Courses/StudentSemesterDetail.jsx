@@ -1,7 +1,7 @@
 import { CourseContext } from "@/Context/CoursesProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { format } from "date-fns";
-import React, { use, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -10,6 +10,7 @@ const StudentSemesterDetail = () => {
   const { quarters } = useContext(CourseContext);
   const [allQuarter, setallQuarter] = useState([]);
 
+useEffect(() => {
   const fetchQuarters = async () => {
     try {
       const res = await axiosInstance.get(`quarter/get/${semesterId}`);

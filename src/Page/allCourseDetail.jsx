@@ -26,11 +26,19 @@ import {
 import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
 import { toast } from "sonner";
 import avatar from "@/assets/avatar.png";
+import { GlobalContext } from "../Context/GlobalProvider";
+import TeacherProfileModal from "@/CustomComponent/Student/Teacherprofilemodal";
+import RatingSection from "@/CustomComponent/Student/RatingSection";
 // AllCoursesDetail Component
-const AllCoursesDetail = () => {
+const AllCoursesDetail = () => {  
+  const { user } = useContext(GlobalContext);
+const studentID = user?._id;
   const { id } = useParams(); // Grab the actual course ID from the URL
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const instructor = courseDetails?.createdby || {};
+ const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     const getCourseDetails = async () => {
