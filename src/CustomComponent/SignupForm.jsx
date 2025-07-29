@@ -19,10 +19,8 @@ const formSchema = z
     firstName: z.string().min(1, "First name is required"),
     middleName: z.string().optional(),
     lastName: z.string().min(1, "Last name is required"),
-    pronouns: z.enum(["he/him", "she/her", "they/them", "prefer not to say"]),
-    gender: z.enum(["male", "female", "other", "non-binary", "prefer not to say"]),
     phone: z.string().min(10, "Phone number is required"),
-    homeAddress: z.string().min(1, "Home address is required"),
+    homeAddress: z.string().min(1, "Home address "),
     mailingAddress: z.string().optional(),
     password: z
       .string()
@@ -82,7 +80,7 @@ const SignupForm = () => {
 
   const handleNext = async () => {
     const fieldsToValidate = {
-      0: ["firstName", "lastName", "pronouns", "gender"],
+      0: ["firstName", "lastName"],
       1: ["phone", "homeAddress", "mailingAddress"],
       2: ["password", "confirmPassword"],
     }[currentStep];
@@ -94,16 +92,16 @@ const SignupForm = () => {
     }
   };
 
-  const handlePrevious = () => {
-    setCurrentStep((prev) => {
-      const previousStep = prev - 1;
-      if (previousStep === 0) {
-        setValue("pronouns", formData.pronouns || "");
-        setValue("gender", formData.gender || "");
-      }
-      return previousStep;
-    });
-  };
+  // const handlePrevious = () => {
+  //   setCurrentStep((prev) => {
+  //     const previousStep = prev - 1;
+  //     if (previousStep === 0) {
+  //       setValue("pronouns", formData.pronouns || "");
+  //       setValue("gender", formData.gender || "");
+  //     }
+  //     return previousStep;
+  //   });
+  // };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -136,7 +134,6 @@ const SignupForm = () => {
                   <div className="flex justify-between">
                     <button
                       type="button"
-                      onClick={handlePrevious}
                       className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${currentStep === 0 ? "invisible" : ""}`}
                     >
                       Previous
@@ -144,7 +141,9 @@ const SignupForm = () => {
                     {currentStep === steps.length - 1 ? (
                       <button
                         type="submit"
-                        className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5"
+                        disabled={!watch("agreeToTerms")}
+                        className={`text-white font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${watch("agreeToTerms") ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
+                          }`}
                       >
                         Create Account
                       </button>

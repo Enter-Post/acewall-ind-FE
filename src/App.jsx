@@ -256,7 +256,10 @@ function App() {
               path="/teacher/courses/posts"
               element={<ViewCoursePostsPage />}
             />
-
+             <Route path="wallet">
+              <Route index element={<Earning />} />
+              <Route path="detail" element={<EarningDetail />} />
+            </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
             <Route path="studentProfile/:id" element={<StudentProfile />} />
@@ -311,10 +314,6 @@ function App() {
               <Route path="gradescale/:courseId">
                 <Route index element={<GradeScaleForm />} />
                 <Route path="managegradescale" element={<ManageGradeScale />} />
-            </Route>
-             <Route path="wallet">
-              <Route index element={<Earning />} />
-              <Route path="detail" element={<EarningDetail />} />
             </Route>
           </Route>
         </Route>
