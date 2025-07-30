@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { axiosInstance } from "@/lib/AxiosInstance"
 import { useParams } from "react-router-dom"
+import BackButton from "../BackButton"
 
 const CourseGradebook = () => {
   const { courseId } = useParams()
@@ -40,6 +41,8 @@ const CourseGradebook = () => {
   }
 
   return (
+    <>
+    <BackButton label="Back" className="mb-4" />
     <Card className="p-6 shadow-lg rounded-2xl">
       <CardHeader>
         <CardTitle className="text-2xl font-semibold">Gradebook</CardTitle>
@@ -185,6 +188,7 @@ const CourseGradebook = () => {
         </Table>
       </CardContent>
     </Card>
+    </>
   )
 }
 

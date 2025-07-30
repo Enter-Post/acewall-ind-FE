@@ -85,7 +85,7 @@ const sideBarTabs = [
     icon: <NotepadText />,
     path: "/teacher/courses/posts",
   },
-    {
+  {
     id: 15,
     name: "Wallet",
     icon: <Wallet />,
@@ -97,8 +97,6 @@ export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { checkAuth, user, Authloading, setAuthLoading } = useContext(GlobalContext);
   const location = useLocation().pathname;
-
-  const isVerified = user?.isVarified === true;
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
@@ -240,11 +238,6 @@ export default function TeacherLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside className={`relative bg-white ${isSidebarOpen ? "block" : "hidden"} w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}>
-          {!isVerified && (
-            <div className="text-center text-sm text-red-600 font-medium p-2">
-              Your account is not verified yet. You have limited access.
-            </div>
-          )}
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
               <Link to="/teacher/account" className="w-10 h-10 block">
@@ -261,26 +254,33 @@ export default function TeacherLayout() {
                 <p
                   className="text-sm text-gray-600 w-full max-w-[150px] break-words"
                   title={user.email}
+
                 >
                   {user.email}
                 </p>
               </div>
             </div>
+
             <nav className="space-y-2">
               {sideBarTabs.map((tab) => (
                 <Link
                   key={tab.name}
-                  to={isVerified ? tab.path : "#"}
-                  onClick={() => {
-                    if (isVerified) setIsSidebarOpen(false);
-                  }}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"} ${!isVerified && tab.name !== "Dashboard" ? "opacity-50 cursor-not-allowed" : ""}`}
+                  to={tab.path ?? "#"}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
+                    }`}
                 >
                   <p>{tab.icon}</p>
-                  <span className={`${location === tab.path ? "text-white" : "text-green-600"}`}>{tab.name}</span>
+                  <span
+                    className={`${location === tab.path ? "text-white" : "text-green-600"
+                      }`}
+                  >
+                    {tab.name}
+                  </span>
                 </Link>
               ))}
             </nav>
+
             <div className="rounded-full flex flex-col items-center justify-between mt-10 w-full">
               <img src={acewallshort} alt="" className="w-1/2" />
               <Link
@@ -297,6 +297,7 @@ export default function TeacherLayout() {
           <Outlet />
         </main>
       </div>
+
       <Footer />
     </div>
   );

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useParams } from "react-router-dom";
+import BackButton from "@/CustomComponent/BackButton";
 
 const formatDate = (dateString) => {
   if (!dateString) return "";
@@ -245,6 +246,7 @@ const Semester = () => {
 
   return (
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
+      <BackButton className="mb-10" />
       <header className="flex items-center justify-between border-b pb-4">
         <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
           <Calendar className="w-6 h-6 text-green-600" />

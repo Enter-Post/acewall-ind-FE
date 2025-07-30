@@ -29,6 +29,7 @@ import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
 import { set } from "lodash";
 import ConfirmationModal from "@/CustomComponent/CreateCourse/ConfirmationModal";
+import BackButton from "@/CustomComponent/BackButton";
 
 // Define the form schema with Zod
 
@@ -248,6 +249,7 @@ export default function EditCourse() {
 
   return (
     <div>
+      <BackButton className="mb-10" />
       <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
         Edit Course Info
       </p>

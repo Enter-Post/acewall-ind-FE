@@ -25,6 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CourseContext } from "@/Context/CoursesProvider";
+import BackButton from "@/CustomComponent/BackButton";
 
 // Define the form schema with Zod
 const gradebookSchema = z.object({
@@ -169,6 +170,7 @@ export default function TeacherGradebook() {
 
   return (
     <div className="mx-auto p-6 bg-white rounded-lg">
+      <BackButton className="mb-10" />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-6 border-b">
           <h2 className="text-2xl font-semibold flex items-center">
