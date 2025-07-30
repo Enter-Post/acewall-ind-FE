@@ -20,7 +20,7 @@ const formSchema = z
     middleName: z.string().optional(),
     lastName: z.string().min(1, "Last name is required"),
     phone: z.string().min(10, "Phone number is required"),
-    homeAddress: z.string().min(1, "Home address "),
+    homeAddress: z.string().optional(),
     mailingAddress: z.string().optional(),
     password: z
       .string()
@@ -92,16 +92,12 @@ const SignupForm = () => {
     }
   };
 
-  // const handlePrevious = () => {
-  //   setCurrentStep((prev) => {
-  //     const previousStep = prev - 1;
-  //     if (previousStep === 0) {
-  //       setValue("pronouns", formData.pronouns || "");
-  //       setValue("gender", formData.gender || "");
-  //     }
-  //     return previousStep;
-  //   });
-  // };
+  const handlePrevious = () => {
+    setCurrentStep((prev) => {
+      const previousStep = prev - 1;
+      return previousStep;
+    });
+  };
 
   const renderStep = () => {
     switch (currentStep) {
@@ -133,11 +129,14 @@ const SignupForm = () => {
                   {renderStep()}
                   <div className="flex justify-between">
                     <button
+                      onClick={handlePrevious}
+
                       type="button"
                       className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${currentStep === 0 ? "invisible" : ""}`}
                     >
                       Previous
                     </button>
+
                     {currentStep === steps.length - 1 ? (
                       <button
                         type="submit"
@@ -156,6 +155,7 @@ const SignupForm = () => {
                         Next
                       </button>
                     )}
+
                   </div>
                 </form>
               </FormProvider>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ChevronDown, ChevronRight } from "lucide-react"
+import BackButton from "@/CustomComponent/BackButton"
 
 const StudentCourseGrades = () => {
   const { studentId, courseId } = useParams()
@@ -74,6 +75,7 @@ const StudentCourseGrades = () => {
 
   return (
     <div>
+      <BackButton className="mb-10"/>
       <div className="mb-6 p-4 bg-white shadow-md rounded-2xl transition duration-300 hover:shadow-lg">
         <h2 className="font-extrabold text-2xl text-gray-800 mb-2">{gradeData?.course?.courseTitle}</h2>
 

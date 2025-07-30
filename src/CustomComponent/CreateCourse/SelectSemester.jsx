@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,6 +15,8 @@ const SelectSemester = ({ register, errors, setSelectedSemester }) => {
   const [semesters, setSemesters] = useState([]);
   const [selectedSemesters, setSelectedSemesters] = useState([]);
   const [open, setOpen] = useState(false);
+
+  console.log(selectedSemesters, "selectedSemesters");
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -38,7 +44,9 @@ const SelectSemester = ({ register, errors, setSelectedSemester }) => {
 
   const confirmSelection = () => {
     setSelectedSemester(selectedSemesters);
-    register("semester").onChange({ target: { name: "semester", value: selectedSemesters } });
+    register("semester").onChange({
+      target: { name: "semester", value: selectedSemesters },
+    });
     setOpen(false);
   };
 
@@ -56,7 +64,9 @@ const SelectSemester = ({ register, errors, setSelectedSemester }) => {
       <Popover open={open} onOpenChange={setOpen} className="w-screen">
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
-            {selectedSemesters.length > 0 ? selectedTitles : "Select semester(s)"}
+            {selectedSemesters.length > 0
+              ? selectedTitles
+              : "Select semester(s)"}
             <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -64,7 +74,10 @@ const SelectSemester = ({ register, errors, setSelectedSemester }) => {
         <PopoverContent className="w-[500px] p-4 space-y-2">
           <ScrollArea className="h-48 pr-2 w-full">
             {semesters.map((semester) => (
-              <div key={semester._id} className="flex items-center space-x-2 mb-2 w-full">
+              <div
+                key={semester._id}
+                className="flex items-center space-x-2 mb-2 w-full"
+              >
                 <Checkbox
                   id={semester._id}
                   checked={selectedSemesters.includes(semester._id)}
@@ -83,7 +96,11 @@ const SelectSemester = ({ register, errors, setSelectedSemester }) => {
         </PopoverContent>
       </Popover>
 
-      <input type="hidden" {...register("semester")} value={selectedSemesters} />
+      <input
+        type="hidden"
+        {...register("semester")}
+        value={selectedSemesters}
+      />
 
       {errors?.semester && (
         <p className="text-xs text-red-500 mt-1">{errors.semester.message}</p>

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
+import JoditEditor from "jodit-react";
 
 // Zod schema
 const pdfFileSchema = z
@@ -75,6 +76,15 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
 
   const [titleValue, setTitleValue] = useState("");
   const [descValue, setDescValue] = useState("");
+  const [editorConfig] = useState({
+    readonly: false,
+    height: 200,
+    toolbar: true,
+    uploader: {
+      insertImageAsBase64URI: true,
+    },
+  });
+
 
   const {
     register,
@@ -221,27 +231,18 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
             )}
           </div>
 
+
           <div>
             <Label htmlFor="description">Lesson Description</Label>
-            <Textarea
-              id="description"
-              {...register("description")}
+            <JoditEditor
+              config={editorConfig}
               value={descValue}
-              maxLength={MAX_DESCRIPTION_LENGTH}
-              onChange={(e) => {
-                if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
-                  setDescValue(e.target.value);
-                  setValue("description", e.target.value);
-                }
+              onChange={(newContent) => {
+                setDescValue(newContent);
+                setValue("description", newContent);
               }}
-              rows={4}
             />
-            <div className="text-sm text-muted-foreground text-right">
-              {descValue.length}/{MAX_DESCRIPTION_LENGTH}
-            </div>
-            {errors.description && (
-              <p className="text-red-500 text-sm">{errors.description.message}</p>
-            )}
+
           </div>
 
           <div>

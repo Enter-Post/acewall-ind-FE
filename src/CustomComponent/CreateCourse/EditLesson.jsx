@@ -133,13 +133,18 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
 
           <div>
             <Label htmlFor="description">Lesson Description</Label>
-            <Textarea id="description" {...register("description")} />
+            <div
+              id="description"
+              className="border rounded p-3 bg-gray-50"
+              dangerouslySetInnerHTML={{ __html: lesson.description }}
+            />
             {errors.description && (
               <p className="text-red-500 text-sm">
                 {errors.description.message}
               </p>
             )}
           </div>
+
 
           <div>
             <Label htmlFor="youtubeLinks">YouTube Link</Label>

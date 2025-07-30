@@ -265,7 +265,7 @@ const TeacherChapterDetail = () => {
                             {lesson.title}
                           </h4>
                         </section>
-                        <section className="flex items-center gap-2 flex-wrap gap-1">
+                        <section className="flex items-center flex-wrap gap-1">
                           <EditLessonModal
                             lesson={lesson}
                             fetchChapterDetail={fetchChapterDetail}
@@ -290,9 +290,7 @@ const TeacherChapterDetail = () => {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {lesson.description && (
-                        <p className="text-sm text-gray-600">
-                          {lesson.description}
-                        </p>
+                        <p className="text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: lesson.description }} />
                       )}
 
                       <div>

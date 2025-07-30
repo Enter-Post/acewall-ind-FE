@@ -7,6 +7,7 @@ import {
 import { Mail, Calendar, School } from "lucide-react";
 import avatar from "@/assets/avatar.png";
 import { axiosInstance } from "@/lib/AxiosInstance";
+import BackButton from "@/CustomComponent/BackButton";
 
 export default function StudentProfile() {
   const { id } = useParams();
@@ -31,6 +32,7 @@ export default function StudentProfile() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-white rounded-xl shadow-md">
+      <BackButton className="mb-10"/>
       {/* Profile Section */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
         <Avatar className="w-24 h-24 rounded-full overflow-hidden ring-3 ring-gray-500 shadow-sm">

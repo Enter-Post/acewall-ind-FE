@@ -35,7 +35,7 @@ export default function ConversationList({
   };
 
   return (
-    <div className="flex flex-col h-full overflow-auto hide-scrollbar p-4 items-center">
+    <div className="flex flex-col h-full hide-scrollbar p-4">
 
       {conversations && conversations.length > 0 ? (
         <div className="overflow-y-auto gap-3 flex flex-wrap">
@@ -51,7 +51,6 @@ export default function ConversationList({
             >
               <ConversationItem
                 conversation={conversation}
-                // isActive={conversation.name === activeConversation}
               />
             </Link>
           ))}

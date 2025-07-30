@@ -39,12 +39,13 @@ export default function TeacherDashboard() {
   ///courses
   useEffect(() => {
     const getTeacherCourse = async () => {
-      await axiosInstance("/course/getindividualcourse")
+      await axiosInstance("course/getTeacherCoursesForDesboard")
         .then((res) => {
-          setCourses(res.data.courses);
+          // console.log(res, "res");
+          setCourses(res.data);
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err, "courses error");
         });
     };
     getTeacherCourse();
@@ -81,8 +82,8 @@ export default function TeacherDashboard() {
 
   const metrics = [
     {
-      title: "Courses",
-      value: courses?.length || 0,
+      title: "Total Courses",
+      value: courses?.total || 0,
       icon: (
         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
           <BookOpen size={16} className="text-green-600" />
@@ -99,13 +100,6 @@ export default function TeacherDashboard() {
       ),
     },
   ];
-
-  const recentSales = Array(3).fill({
-    user: "Kevin",
-    action: "purchased on your lecture",
-    target: "What is ux 2021 UI/UX design with figma",
-    time: "Just now",
-  });
 
   return (
     <div className="min-h-screen">
@@ -142,10 +136,12 @@ export default function TeacherDashboard() {
             <div className="space-y-4">
               {recentComments.length > 0 ? (
                 recentComments.map((comment, i) => (
-                  <Link key={i} to={`/teacher/courses/courseDetail/${comment.course}`} className="flex flex-col gap-1">
-                    <div
-                      className="flex items-start gap-4 bg-white p-4 rounded-lg border"
-                    >
+                  <Link
+                    key={i}
+                    to={`/teacher/courses/courseDetail/${comment.course}`}
+                    className="flex flex-col gap-1"
+                  >
+                    <div className="flex items-start gap-4 bg-white p-4 rounded-lg border">
                       {/* User Avatar */}
                       <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
                         <MessageSquare size={18} />
@@ -185,33 +181,36 @@ export default function TeacherDashboard() {
           </div>
 
           {/* Recent Courses */}
+
           <div>
             <h2 className="text-lg font-semibold mb-4">Recent Courses</h2>
             <div className="space-y-4">
               {courses?.slice(0, 3).map((course, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-4 bg-white p-4 rounded-lg border"
-                >
-                  <img
-                    src={course?.thumbnail.url || "/placeholder.svg"}
-                    alt={course?.courseTitle}
-                    className="w-10 h-10 rounded-lg object-cover"
-                  />
-                  <div>
-                    <h3 className="font-medium text-sm mb-1">
-                      {course?.courseTitle}
-                    </h3>
-                    <div className="flex gap-2">
-                      <span className="text-xs text-gray-500">
-                        {course?.category?.title}
-                      </span>
+                <Link
+                  key={course._id}
+                  to={`/teacher/courses/courseDetail/${course._id}`}
+                >                  <div className="flex items-start gap-4 bg-white p-4 rounded-lg border hover:cursor-pointer hover:shadow">
+                    <img
+                      src={course?.thumbnail.url || "/placeholder.svg"}
+                      alt={course?.courseTitle}
+                      className="w-10 h-10 rounded-lg object-cover"
+                    />
+                    <div>
+                      <h3 className="font-medium text-sm mb-1">
+                        {course?.courseTitle}
+                      </h3>
+                      <div className="flex gap-2">
+                        <span className="text-xs text-gray-500">
+                          {course?.category?.title}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
+
         </div>
       </div>
     </div>

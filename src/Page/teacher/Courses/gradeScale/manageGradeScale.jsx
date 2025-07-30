@@ -9,11 +9,14 @@ import { AlertCircle, Plus, RefreshCw, Check } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
+import BackButton from "@/CustomComponent/BackButton";
 
 export default function ManageGradeScale() {
   const { courseId } = useParams();
   const [grades, setGrades] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const {
@@ -26,82 +29,90 @@ export default function ManageGradeScale() {
   } = useForm({
     defaultValues: {
       grade: "",
-      min: grades.length > 0 ? grades[grades.length - 1].max + 1 : 0,
-      max:
-        grades.length > 0
-          ? Math.min(grades[grades.length - 1].max + 10, 100)
-          : 50,
+      min: 91,
+      max: 100,
     },
   });
 
   const watchMin = watch("min");
-  const watchMax = watch("max");
 
-  const hadleCreateGradeScale = async () => {
-    await axiosInstance
-      .post(`gradebook/gradingScale/${courseId}`, { scale: grades })
-      .then((res) => {
-        console.log(res);
-        toast.success(res.data.message);
-        navigate(`/teacher/courses/gradescale/${courseId}`);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err.response.data.message || "Something went wrong");
-      });
+  const handleCreateGradeScale = async () => {
+    setIsLoading(true);
+    try {
+      const res = await axiosInstance.post(`gradebook/gradingScale/${courseId}`, { scale: grades });
+      toast.success(res.data.message);
+      navigate(`/teacher/courses/gradescale/${courseId}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+
   const onSubmit = (data) => {
-    const totalMax = grades.length > 0 ? grades[grades.length - 1].max : -1;
-    if (data.min <= totalMax) {
-      toast.error("Min value must be greater than the previous max value.");
+    const newMin = parseInt(data.min);
+    const newMax = parseInt(data.max);
+
+    if (newMin >= newMax) {
+      toast.error("Min must be less than Max.");
+      return;
+    }
+
+    if (newMin < 0 || newMax > 100) {
+      toast.error("Values must be within 0 to 100.");
+      return;
+    }
+
+    // Check for overlapping ranges
+    const hasOverlap = grades.some(
+      (g) =>
+        (newMin >= g.min && newMin <= g.max) ||
+        (newMax >= g.min && newMax <= g.max) ||
+        (newMin <= g.min && newMax >= g.max)
+    );
+
+    if (hasOverlap) {
+      toast.error("This range overlaps with an existing grade.");
       return;
     }
 
     const newEntry = {
       grade: data.grade.toUpperCase(),
-      min: Number.parseInt(data.min),
-      max: Number.parseInt(data.max),
+      min: newMin,
+      max: newMax,
     };
 
-    setGrades([...grades, newEntry]);
-    setSuccessMessage(`Grade ${data.grade.toUpperCase()} added successfully!`);
+    // Add new entry and sort descending by max
+    const updatedGrades = [...grades, newEntry].sort((a, b) => b.max - a.max);
+    setGrades(updatedGrades);
+    setSuccessMessage(`Grade ${newEntry.grade} added: ${newMax}% to ${newMin}%`);
 
     setTimeout(() => {
       setSuccessMessage("");
     }, 3000);
 
-    // Set next values
-    if (data.max < 100) {
-      const nextMin = Number.parseInt(data.max) + 1;
-      setValue("min", nextMin);
-      setValue("max", Math.min(nextMin + 10, 100));
-      setValue("grade", "");
-    } else {
-      // Reset form if we reached 100%
-      reset({
-        grade: "",
-        min: 0,
-        max: 50,
-      });
-    }
+    reset({
+      grade: "",
+      min: newMin > 10 ? newMin - 10 : 0,
+      max: newMin - 1,
+    });
   };
 
   const handleReset = () => {
     setGrades([]);
     reset({
       grade: "",
-      min: 0,
-      max: 50,
+      min: 91,
+      max: 100,
     });
     setSuccessMessage("");
   };
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Create Grade Scale
-      </h1>
+      <BackButton/>
+      <h1 className="text-2xl font-bold text-center mb-6">Create Grade Scale</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Form Section */}
@@ -112,9 +123,7 @@ export default function ManageGradeScale() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-1">
-                <label className="block text-sm font-medium">
-                  Letter Grade
-                </label>
+                <label className="block text-sm font-medium">Letter Grade</label>
                 <Input
                   {...register("grade", {
                     required: "Grade is required",
@@ -127,62 +136,43 @@ export default function ManageGradeScale() {
                   className={errors.grade ? "border-red-500" : ""}
                 />
                 {errors.grade && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.grade.message}
-                  </p>
+                  <p className="text-red-500 text-xs mt-1">{errors.grade.message}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">
-                    Min Percentage
-                  </label>
+                  <label className="block text-sm font-medium">Min Percentage</label>
                   <Input
                     type="number"
                     {...register("min", {
                       required: "Min is required",
-                      min: {
-                        value: 0,
-                        message: "Min cannot be less than 0",
-                      },
-                      max: {
-                        value: 99,
-                        message: "Min must be less than 100",
-                      },
+                      min: { value: 0, message: "Min must be at least 0" },
+                      max: { value: 99, message: "Min must be below 100" },
                     })}
                     className={errors.min ? "border-red-500" : ""}
                   />
                   {errors.min && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.min.message}
-                    </p>
+                    <p className="text-red-500 text-xs mt-1">{errors.min.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">
-                    Max Percentage
-                  </label>
+                  <label className="block text-sm font-medium">Max Percentage</label>
                   <Input
                     type="number"
                     {...register("max", {
                       required: "Max is required",
                       min: {
-                        value: watchMin ? Number.parseInt(watchMin) + 1 : 1,
+                        value: watchMin ? Number(watchMin) + 1 : 1,
                         message: "Max must be greater than Min",
                       },
-                      max: {
-                        value: 100,
-                        message: "Max cannot exceed 100",
-                      },
+                      max: { value: 100, message: "Max cannot exceed 100" },
                     })}
                     className={errors.max ? "border-red-500" : ""}
                   />
                   {errors.max && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.max.message}
-                    </p>
+                    <p className="text-red-500 text-xs mt-1">{errors.max.message}</p>
                   )}
                 </div>
               </div>
@@ -229,9 +219,7 @@ export default function ManageGradeScale() {
                     key={index}
                     className="grid grid-cols-3 gap-2 items-center border-b border-gray-100 pb-2"
                   >
-                    <Badge
-                      className={`font-bold text-sm px-3 py-1 bg-green-500 `}
-                    >
+                    <Badge className="font-bold text-sm px-3 py-1 bg-green-500">
                       {grade.grade}
                     </Badge>
                     <div className="text-sm">
@@ -246,23 +234,23 @@ export default function ManageGradeScale() {
                   </div>
                 ))}
 
-                {grades[grades.length - 1]?.max === 100 && (
+                {grades.find((g) => g.min === 0) && (
                   <div>
                     <Alert className="mt-4 bg-green-50 border-green-200">
                       <Check className="h-4 w-4 text-green-600" />
                       <AlertDescription className="text-green-600">
-                        Grade scale completed to 100%!
+                        Grade scale completed to 0%!
                       </AlertDescription>
                     </Alert>
 
                     <Button
-                      onClick={() => {
-                        hadleCreateGradeScale();
-                      }}
+                      onClick={handleCreateGradeScale}
                       className="mt-4 w-full bg-green-500 hover:bg-green-600"
+                      disabled={isLoading}
                     >
-                      Create
+                      {isLoading ? "Creating..." : "Create"}
                     </Button>
+
                   </div>
                 )}
               </div>

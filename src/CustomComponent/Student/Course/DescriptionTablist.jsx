@@ -32,9 +32,8 @@ const DescriptionTablist = ({
                 Current Lesson: <br /> {activeLesson.title}
               </span>
               <svg
-                className={`w-5 h-5 transition-transform duration-200 ${
-                  isLessonVisible ? "transform rotate-180" : ""
-                }`}
+                className={`w-5 h-5 transition-transform duration-200 ${isLessonVisible ? "transform rotate-180" : ""
+                  }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -50,7 +49,7 @@ const DescriptionTablist = ({
             </button>
             {isLessonVisible && (
               <div className="text-gray-600 mt-3 text-sm">
-                <p>{activeLesson.description}</p>
+                <div dangerouslySetInnerHTML={{ __html: activeLesson.description }} />
               </div>
             )}
           </div>

@@ -80,6 +80,7 @@ import EarningDetail from "./Page/teacher/Earning/EarningDetails";
 import EditCourse from "./Page/teacher/Courses/EditCoursesBasics";
 import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail";
 import { AssessmentPage } from "./Page/teacher/Courses/quarter/assessment-dialog";
+import UnverifiedCourses from "./Page/teacher/Courses/unverifiedCourse";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -89,6 +90,8 @@ function App() {
     checkAuth();
   }, []);
 
+  console.log(Authloading, "Authloading in App.jsx");
+
   useEffect(() => {
     if (user) connectsocket();
     return () => {
@@ -97,12 +100,9 @@ function App() {
   }, [user]);
 
   const connectsocket = () => {
-    const newSocket = io(
-      "https://acewall-backend-school-instance-production.up.railway.app",
-      {
-        query: { userId: user?._id || "" },
-      }
-    );
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+      query: { userId: user?._id || "" },
+    });
 
     setSocket(newSocket);
 
@@ -177,10 +177,18 @@ function App() {
         </Route>
 
         {/* Student Routes */}
-        <Route element={<PrivateRoute user={user} allowedRole="student" />}>
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              allowedRole="student"
+              loading={Authloading}
+            />
+          }
+        >
           <Route path="/student" element={<Layout />}>
-          <Route path="payment-success" element={<PaymentSuccess />} />
-          <Route path="payment-cancelled" element={<PaymentCancelled />} />
+            <Route path="payment-success" element={<PaymentSuccess />} />
+            <Route path="payment-cancelled" element={<PaymentCancelled />} />
             <Route index element={<Deshboard />} />
             <Route path="mycourses">
               <Route index element={<Mycourses />} />
@@ -256,7 +264,7 @@ function App() {
               path="/teacher/courses/posts"
               element={<ViewCoursePostsPage />}
             />
-             <Route path="wallet">
+            <Route path="wallet">
               <Route index element={<Earning />} />
               <Route path="detail" element={<EarningDetail />} />
             </Route>
@@ -282,6 +290,7 @@ function App() {
             />
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
+              <Route path="unverifiedCourse" element={<UnverifiedCourses />} />
 
               <Route
                 path="courseDetail/:id"
@@ -307,19 +316,21 @@ function App() {
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />
 
-
                 {/* <Route path="gradebook" element={<TeacherGradebook />} /> */}
               </Route>
               <Route path="semester/:courseId" element={<Semester />} />
               <Route path="gradescale/:courseId">
                 <Route index element={<GradeScaleForm />} />
                 <Route path="managegradescale" element={<ManageGradeScale />} />
+              </Route>
+            </Route>
+             <Route path="wallet">
+              <Route index element={<Earning />} />
+              <Route path="detail" element={<EarningDetail />} />
             </Route>
           </Route>
         </Route>
-      </Route>
-            </Routes>
-
+      </Routes>
     </>
   );
 }

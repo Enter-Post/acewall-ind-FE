@@ -63,7 +63,7 @@ const mcqQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z
     .string()
     .min(1, { message: "Please select the correct answer" }),
-  points: z.number({ required_error: "Points are required" }).min(1).max(9),
+  points: z.number({ required_error: "Points are required" }).min(1).max(100),
 });
 
 const trueFalseQuestionSchema = baseQuestionSchema.extend({
@@ -74,7 +74,7 @@ const trueFalseQuestionSchema = baseQuestionSchema.extend({
   correctAnswer: z.enum(["true", "false"], {
     required_error: "Please select the correct answer",
   }),
-  points: z.number().min(1).max(9),
+  points: z.number().min(1).max(100),
 });
 
 const qaQuestionSchema = baseQuestionSchema.extend({
@@ -82,7 +82,7 @@ const qaQuestionSchema = baseQuestionSchema.extend({
   question: z
     .string()
     .min(5, { message: "Question must be at least 5 characters" }),
-  points: z.number().min(1).max(9),
+  points: z.number().min(1).max(100),
 });
 
 // New file question schema for PDF/Image uploads
@@ -116,7 +116,7 @@ const fileQuestionSchema = baseQuestionSchema.extend({
         message: "Total file size must be less than 5MB",
       }
     ),
-  points: z.number().min(1).max(9),
+  points: z.number().min(1).max(100),
 });
 
 const questionSchema = z.discriminatedUnion("type", [
@@ -715,10 +715,10 @@ export default function CreateAssessmentPage() {
                               {...field}
                               type="number"
                               min={1}
-                              max={9}
+                              max={100}
                               onChange={(e) => {
                                 const value = Number(e.target.value);
-                                if (value >= 1 && value <= 9) {
+                                if (value >= 1 && value <= 100) {
                                   field.onChange(value);
                                 } else {
                                   field.onChange("");

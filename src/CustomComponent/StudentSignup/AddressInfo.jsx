@@ -2,6 +2,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormContext } from "react-hook-form";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 const MAX_ADDRESS_LENGTH = 300;
 
@@ -20,39 +22,27 @@ const AddressInfo = () => {
   return (
     <>
       {/* Phone Number */}
-      <div>
+      <div className="mb-6">
         <Label
           htmlFor="phone"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >
           Phone Number <span className="text-red-600">*</span>
         </Label>
-        <Input
-          type="tel"
-          name="phone"
-          id="phone"
-          maxLength={15}
-          inputMode="numeric"
-          pattern="[0-9]*"
-          onInput={(e) => {
-            e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
-          }}
-          className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Enter phone number"
-          {...register("phone", {
-            required: "Phone number is required",
-            maxLength: {
-              value: 15,
-              message: "Phone number must not exceed 15 digits",
-            },
-            pattern: {
-              value: /^[0-9]*$/,
-              message: "Phone number must contain only digits",
-            },
-          })}
-        />
-        <p className="text-xs text-red-600">{errors?.phone?.message}</p>
+        <div className="relative ">
+          <PhoneInput
+            country={'us'}
+            value={formData?.phone || ""}
+            onChange={(value) => setValue("phone", value)}
+            
+            inputClass="w-full rounded-lg pl-12 py-2 bg-gray-50 " 
+            disableDropdown={false}
+          />
+          <p className="text-xs text-red-600 mt-1">{errors?.phone?.message}</p>
+        </div>
       </div>
+
+
 
       {/* Home Address */}
       <div>

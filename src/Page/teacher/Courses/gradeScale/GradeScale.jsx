@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Plus, RefreshCw, Check, Loader } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Link, useParams } from "react-router-dom";
+import BackButton from "@/CustomComponent/BackButton";
 
 export default function GradeScaleForm() {
   const { courseId } = useParams();
@@ -37,6 +38,7 @@ export default function GradeScaleForm() {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
+      <BackButton className="mb-10"/>
       <Card>
         <CardHeader>
           <section className="flex justify-between">

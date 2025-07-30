@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { MoreHorizontal, Send, Edit } from "lucide-react";
+import { MoreHorizontal, Send, Edit, Loader } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getContactByName, messages as initialMessages } from "@/lib/data";
@@ -10,53 +10,76 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 import avatar from "../../assets/avatar.png";
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [chat, setChat] = useState();
-
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { user, socket, currentConversation } = useContext(GlobalContext);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState(false);
 
   const activeConversation = useParams().id;
 
+  console.log(socket, "socket");
+
   const subscribeToMessages = () => {
-    socket.on("newMessage", (message) => {
-      setMessages([...messages, newMessage]);
+    socket?.on("newMessage", (message) => {
+      setMessages((prev) => [message, ...prev]);
     });
   };
 
   const unsubscripteToMessages = () => {
-    socket.off("newMessage");
+    socket?.off("newMessage");
+  };
+
+  const getMessages = async (page = 1, limit = 10) => {
+    try {
+      const res = await axiosInstance.get(
+        `/messeges/get/${activeConversation}?page=${page}&limit=${limit}`
+      );
+      const initialMessages = res.data.messages;
+
+      setMessages(initialMessages);
+      setHasMore(initialMessages.length === limit); // ✅ correct comparison
+      setPage(page); // reset to 1
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+    }
   };
 
   useEffect(() => {
-    const getMessaages = async () => {
-      await axiosInstance
-        .get(`/messeges/get/${activeConversation}`)
-        .then((res) => {
-          setMessages(res.data.messages);
-          // console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-    getMessaages();
-    subscribeToMessages();
-  }, [activeConversation, subscribeToMessages, unsubscripteToMessages]);
+    if (activeConversation) {
+      setHasMore(true); // ✅ reset
+      setPage(1); // ✅ reset
+      getMessages();
+      subscribeToMessages();
+    }
+
+    return () => unsubscripteToMessages(); // cleanup
+  }, [loading]);
+
+  useEffect(() => {
+    if (activeConversation) {
+      axiosInstance.post(`messeges/markAsRead/${activeConversation}`);
+      axiosInstance.patch(`conversation/lastSeen/${activeConversation}`);
+    }
+  }, [getMessages]);
 
   // return;
   const handleSendMessage = async () => {
+    setLoading(true);
     await axiosInstance
       .post(`/messeges/create/${activeConversation}`, {
         text: newMessage,
       })
       .then((res) => {
-        // console.log(res.data, "res.datares.data");
-
-        setMessages([...messages, res.data.newMessage]);
+        console.log(res, "res.datares.data");
+        setLoading(false);
+        getMessages();
         setNewMessage("");
       })
       .catch((err) => {
+        setLoading(false);
         console.log(err);
       });
 
@@ -69,23 +92,38 @@ export default function ChatWindow() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-auto hide-scrollbar border-red-600">
+    <div className="flex flex-col h-[500px] overflow-auto hide-scrollbar border-red-600">
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={currentConversation?.otherMember.profileImg?.url || avatar} />
-            <AvatarFallback>{currentConversation?.otherMember.name}</AvatarFallback>
+            <AvatarImage
+              src={currentConversation?.otherMember.profileImg?.url || avatar}
+            />
+            <AvatarFallback>
+              {currentConversation?.otherMember.name}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">{currentConversation?.otherMember.name}</h3>
+            <h3 className="font-medium">
+              {currentConversation?.otherMember.name}
+            </h3>
           </div>
         </div>
       </div>
 
       <MessageList
         messages={messages}
-        contactName={"contactName"}
-        contactAvatar={"contact?.avatar"}
+        setMessages={setMessages}
+        activeConversation={activeConversation}
+        subscribeToMessages={subscribeToMessages}
+        page={page}
+        setPage={setPage}
+        hasMore={hasMore}
+        setHasMore={setHasMore}
+        loadingMessage={loadingMessage}
+        setLoadingMessage={setLoadingMessage}
+        loading={loading}
+        setLoading={setLoading}
       />
 
       <div className="p-4 border-t border-gray-200">
@@ -103,8 +141,13 @@ export default function ChatWindow() {
           <Button
             className="bg-green-600 hover:bg-green-700 rounded-full h-12 w-12 flex items-center justify-center"
             onClick={handleSendMessage}
+            disabled={loading || !newMessage.trim()}
           >
-            <Send className="h-5 w-5" />
+            {loading ? (
+              <Loader className="h-6 w-6 animate-spin text-white" />
+            ) : (
+              <Send className="h-6 w-6 text-white" />
+            )}
           </Button>
         </div>
       </div>

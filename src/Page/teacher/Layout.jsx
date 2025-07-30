@@ -12,6 +12,7 @@ import {
   Wallet,
   MessagesSquare,
   NotepadText,
+  Verified,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -112,7 +113,7 @@ export default function TeacherLayout() {
 
     try {
       const res = await axiosInstance.get("/course/getindividualcourse", {
-        params: { search: searchQuery },
+        params: { search: searchQuery, verified: true },
       });
 
       const courses = res.data.courses || [];

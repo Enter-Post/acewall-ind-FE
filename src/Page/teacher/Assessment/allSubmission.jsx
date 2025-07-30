@@ -11,6 +11,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import avatar from "@/assets/avatar.png";
+import BackButton from "@/CustomComponent/BackButton";
 
 const AllSubmission = () => {
   const [submission, setSubmission] = useState(null);
@@ -38,6 +39,7 @@ const AllSubmission = () => {
   if (!submission) {
     return (
       <div className="flex items-center justify-center w-full h-screen">
+
         <Loader className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
@@ -54,6 +56,8 @@ const AllSubmission = () => {
 
   if (filteredSubmissions.length === 0) {
     return (
+    <>
+    <BackButton/>
       <div className="flex flex-col items-center justify-center w-full h-screen space-y-4">
         <div className="flex gap-4">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -86,11 +90,14 @@ const AllSubmission = () => {
           No submissions found
         </h1>
       </div>
+    </>
     );
   }
 
   return (
     <div className="p-6 space-y-6">
+      <BackButton className="mb-10"/>
+
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -154,8 +161,8 @@ const AllSubmission = () => {
                   <span className="text-sm">Status:</span>
                   <p
                     className={`${item?.status === "before due date"
-                        ? "text-green-500"
-                        : "text-red-500"
+                      ? "text-green-500"
+                      : "text-red-500"
                       } text-sm font-medium`}
                   >
                     {item?.status}
