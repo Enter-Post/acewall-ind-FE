@@ -35,12 +35,12 @@ export default function ArchiveDialog({
       <DialogTrigger asChild>
         <Button
           className={
-            course.isPublished
-              ? "bg-red-400 text-black"
-              : "bg-green-400 text-black"
+            course.published
+              ? "bg-gray-200 text-black"
+              : "bg-green-500 text-black"
           }
         >
-          {course.isPublished ? "Archive Course" : "Unarchive Course"}
+          {course.published ? "Archive Course" : "Unarchive Course"}
         </Button>
       </DialogTrigger>
 
@@ -48,11 +48,11 @@ export default function ArchiveDialog({
         <DialogHeader>
           <DialogTitle
             className={`flex items-center gap-2 ${
-              course.isPublished ? "text-red-600" : "text-green-600"
+              course.published ? "text-red-600" : "text-green-600"
             }`}
           >
-            {course.isPublished && <AlertTriangle className="w-5 h-5" />}
-            Confirm {course.isPublished ? "Archive" : "Unarchive"}
+            {course.published && <AlertTriangle className="w-5 h-5" />}
+            Confirm {course.published ? "Archive" : "Unarchive"}
           </DialogTitle>
           <DialogDescription>
             Are you sure you want to archive this course? This action can be
@@ -66,13 +66,13 @@ export default function ArchiveDialog({
           </Button>
           <Button
             className={`${
-              course.isPublished
+              course.published
                 ? "bg-red-600 hover:bg-red-700"
                 : "bg-green-600 hover:bg-green-700"
             }`}
             onClick={handleArchive}
           >
-            Yes {course.isPublished ? "Archive" : "Unarchive"}
+            Yes {course.published ? "Archive" : "Unarchive"}
           </Button>
         </DialogFooter>
       </DialogContent>

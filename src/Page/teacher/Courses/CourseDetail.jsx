@@ -29,6 +29,8 @@ import { CourseContext } from "@/Context/CoursesProvider";
 import { SelectSemAndQuarDialog } from "@/CustomComponent/CreateCourse/SelectSemAndQuarDialog";
 import Pages from "@/CustomComponent/teacher/Pages";
 import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
+import { cn } from "@/lib/utils";
+import ArchiveDialog from "@/CustomComponent/teacher/ArchivedModal";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
@@ -37,10 +39,6 @@ export default function TeacherCourseDetails() {
   const [Prevthumbnail, setPrevThumbnail] = useState(null);
   const [newthumbnail, setNewThumbnail] = useState(null);
   const [loadingThumbnail, setLoadingThumbnail] = useState(false);
-
-
-
-
 
   const [course, setCourse] = useState(null);
 
@@ -149,7 +147,51 @@ export default function TeacherCourseDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-3xl font-semibold mb-8">My Courses</h1>
+      {course.published === false ? (
+        <div className="flex items-center justify-center rounded-md bg-red-200 p-4 mb-4">
+          <p className="text-sm ">
+            This course is Archived. It will not be visible to students which
+            are not enrolled in the course.
+          </p>
+        </div>
+      ) : null}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-semibold mb-3">My Courses</h1>
+
+        <div className="flex items-center space-x-4">
+          {course.isVerified && (
+            <span
+              className={cn(
+                "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-2",
+                {
+                  "bg-yellow-100 text-yellow-800":
+                    course.isVerified === "pending",
+                  "bg-green-100 text-green-800":
+                    course.isVerified === "approved",
+                  "bg-red-100 text-red-800": course.isVerified === "rejected",
+                }
+              )}
+            >
+              {course.isVerified}
+            </span>
+          )}
+          {course.isVerified === "pending" && (
+            <div className="text-yellow-700 text-xs mt-1">
+              Course verification is pending. admin will verify it
+            </div>
+          )}
+          {course.isVerified === "rejected" && (
+            <div className="text-red-700 text-xs mt-1">
+              Course verification was rejected.
+            </div>
+          )}
+          {course.isVerified === "approved" && (
+            <div className="text-green-700 text-xs mt-1">
+              Course is verified and approved.
+            </div>
+          )}
+        </div>
+      </div>
 
       <div className="space-y-8">
         {/* Course Info */}
@@ -160,7 +202,7 @@ export default function TeacherCourseDetails() {
                 Prevthumbnail
                   ? Prevthumbnail
                   : course.thumbnail.url ||
-                  "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
+                    "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
               }
               alt="Course thumbnail"
               className="w-full rounded-md object-cover aspect-video"
@@ -213,20 +255,20 @@ export default function TeacherCourseDetails() {
                   Uploaded:{" "}
                   {course.createdAt
                     ? new Date(course.createdAt).toLocaleDateString("en-US", {
-                      year: "2-digit",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                     : "N/A"}
                 </span>
                 <span>
                   Last Updated:{" "}
                   {course.updatedAt
                     ? new Date(course.updatedAt).toLocaleDateString("en-US", {
-                      year: "2-digit",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })
+                        year: "2-digit",
+                        month: "2-digit",
+                        day: "2-digit",
+                      })
                     : "N/A"}
                 </span>
               </div>
@@ -238,12 +280,16 @@ export default function TeacherCourseDetails() {
                 {course.courseDescription || "Course description goes here..."}
               </p>
             </div>
-{              course.price ?       <div>
-              <p className="text-muted-foreground"> Price :  
-                {` ${course.price} $`|| "Course price goes here..."} 
-              </p>
-            </div>: 
-            <></>}
+            {course.price ? (
+              <div>
+                <p className="text-muted-foreground">
+                  {" "}
+                  Price :{` ${course.price} $` || "Course price goes here..."}
+                </p>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
 
@@ -347,7 +393,9 @@ export default function TeacherCourseDetails() {
               </Link>
             ))
           ) : (
-            <p className="text-sm text-muted-foreground mt-5">No Semesters found</p>
+            <p className="text-sm text-muted-foreground mt-5">
+              No Semesters found
+            </p>
           )}
         </section>
 
@@ -375,6 +423,8 @@ export default function TeacherCourseDetails() {
       </div>
 
       <CommentSection id={id} />
+
+      <ArchiveDialog course={course} fetchCourseDetail={fetchCourseDetail} />
     </div>
   );
 }

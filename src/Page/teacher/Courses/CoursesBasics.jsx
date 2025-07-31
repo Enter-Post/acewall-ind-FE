@@ -81,9 +81,7 @@ const courseFormSchema = z.object({
       })
     )
     .min(1, { message: "Add at least one requirement" }),
-    price: z
-  .string()
-  .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
     message: "Price must be a valid non-negative number",
   }),
 });
@@ -188,7 +186,6 @@ export default function CoursesBasis() {
   };
 
   const onSubmit = async (data) => {
-    console.log(data, "data");
     const formData = new FormData();
     setLoading(true);
 
@@ -466,27 +463,27 @@ export default function CoursesBasis() {
               </div>
             </section>
           </section>
-<div>
-  <Label htmlFor="price" className="block mb-2">
-    Course Price (USD)
-  </Label>
-  <Input
-    id="price"
-    type="number"
-    step="0.01"
-    min="0"
-    placeholder="Enter course price"
-    className={`bg-gray-50 ${
-      errors.price ? "border border-red-500" : ""
-    }`}
-    {...register("price")}
-  />
-  {errors.price && (
-    <p className="text-xs text-red-500 mt-1">
-      {errors.price.message}
-    </p>
-  )}
-</div>
+          <div>
+            <Label htmlFor="price" className="block mb-2">
+              Course Price (USD)
+            </Label>
+            <Input
+              id="price"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="Enter course price"
+              className={`bg-gray-50 ${
+                errors.price ? "border border-red-500" : ""
+              }`}
+              {...register("price")}
+            />
+            {errors.price && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.price.message}
+              </p>
+            )}
+          </div>
           <div className="flex justify-end mt-25">
             <Button
               type="submit"
