@@ -30,6 +30,8 @@ export default function TeacherDashboard() {
   const [students, setStudents] = useState();
   const [recentComments, setRecentComments] = useState([]);
 
+  console.log(courses, "courses");
+
   console.log(recentComments, "recentComments");
 
   // console.log(courses);
@@ -185,11 +187,13 @@ export default function TeacherDashboard() {
           <div>
             <h2 className="text-lg font-semibold mb-4">Recent Courses</h2>
             <div className="space-y-4">
-              {courses?.slice(0, 3).map((course, i) => (
+              {courses?.published.slice(0, 3).map((course, i) => (
                 <Link
                   key={course._id}
                   to={`/teacher/courses/courseDetail/${course._id}`}
-                >                  <div className="flex items-start gap-4 bg-white p-4 rounded-lg border hover:cursor-pointer hover:shadow">
+                >
+                  {" "}
+                  <div className="flex items-start gap-4 bg-white p-4 rounded-lg border hover:cursor-pointer hover:shadow">
                     <img
                       src={course?.thumbnail.url || "/placeholder.svg"}
                       alt={course?.courseTitle}
@@ -210,7 +214,6 @@ export default function TeacherDashboard() {
               ))}
             </div>
           </div>
-
         </div>
       </div>
     </div>

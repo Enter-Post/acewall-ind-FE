@@ -25,7 +25,10 @@ const formatDate = (dateString) => {
     year: "numeric",
   });
 };
-const today = new Date().toISOString().slice(0, 10);
+const today = new Date()
+
+
+console.log(today, "today");
 
 const Semester = () => {
   const [semesterModalOpen, setSemesterModalOpen] = useState(false);
