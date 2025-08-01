@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { z } from "zod";
-import { Loader, Upload } from "lucide-react";
+import { FileIcon, Loader, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,61 +30,125 @@ import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
 
 // Define the form schema with Zod
 
-const courseFormSchema = z.object({
-  thumbnail: z.any().refine((file) => file instanceof File, {
-    message: "Thumbnail is required",
-  }),
-  courseTitle: z
-    .string()
-    .min(5, { message: "Course title must be at least 5 characters" })
-    .max(100, { message: "Course title must be less than 100 characters" }),
-  category: z
-    .string({
-      required_error: "Please select a category",
-    })
-    .refine((val) => val !== "", { message: "Please select a category" }),
-  subcategory: z
-    .string({
-      message: "Please select a subcategory",
-    })
-    .refine((val) => val !== "", { message: "Please select a subcategory" }),
-
-  language: z
-    .string()
-    .nonempty({ message: "Please select a language" })
-    .refine((val) => val !== "", { message: "Please select a language" }),
-  courseDescription: z
-    .string()
-    .min(5, { message: "Description must be at least 5 characters" })
-    .max(500, { message: "Description must be less than 500 characters" }),
-  teachingPoints: z
-    .array(
-      z.object({
-        value: z
-          .string()
-          .min(5, { message: "Teaching point must be at least 5 characters" })
-          .max(120, {
-            message: "Teaching point must be less than 120 characters",
-          }),
-      })
-    )
-    .min(1, { message: "Add at least one teaching point" }),
-  requirements: z
-    .array(
-      z.object({
-        value: z
-          .string()
-          .min(5, { message: "Requirement must be at least 5 characters" })
-          .max(120, {
-            message: "Requirement must be less than 120 characters",
-          }),
-      })
-    )
-    .min(1, { message: "Add at least one requirement" }),
-  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 0, {
-    message: "Price must be a valid non-negative number",
+const documentSchema = z.object({
+  file: z.any().refine((file) => file instanceof File, {
+    message: "Document file is required",
   }),
 });
+
+const courseFormSchema = z
+  .object({
+    thumbnail: z.any().refine((file) => file instanceof File, {
+      message: "Thumbnail is required",
+    }),
+    courseTitle: z
+      .string()
+      .min(5, { message: "Course title must be at least 5 characters" })
+      .max(100, { message: "Course title must be less than 100 characters" }),
+    category: z
+      .string()
+      .min(1, { message: "Please select a category" })
+      .refine((val) => val !== "", { message: "Please select a category" }),
+    subcategory: z
+      .string()
+      .min(1, { message: "Please select a subcategory" })
+      .refine((val) => val !== "", { message: "Please select a subcategory" }),
+    language: z
+      .string()
+      .min(1, { message: "Please select a language" })
+      .refine((val) => val !== "", { message: "Please select a language" }),
+    courseDescription: z
+      .string()
+      .min(5, { message: "Description must be at least 5 characters" })
+      .max(500, { message: "Description must be less than 500 characters" }),
+    teachingPoints: z
+      .array(
+        z.object({
+          value: z
+            .string()
+            .min(5, { message: "Teaching point must be at least 5 characters" })
+            .max(120, {
+              message: "Teaching point must be less than 120 characters",
+            }),
+        })
+      )
+      .min(1, { message: "Add at least one teaching point" }),
+    requirements: z
+      .array(
+        z.object({
+          value: z
+            .string()
+            .min(5, { message: "Requirement must be at least 5 characters" })
+            .max(120, {
+              message: "Requirement must be less than 120 characters",
+            }),
+        })
+      )
+      .min(1, { message: "Add at least one requirement" }),
+    price: z
+      .string()
+      .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
+        message: "Price must be a valid non-negative number",
+      }),
+    courseType: z
+      .string()
+      .refine((val) => val === "credit" || val === "non-credit", {
+        message: "Please select course type",
+      }),
+    documents: z.object({
+      governmentId: z.any(),
+      resume: z.any(),
+      certificate: z.any(),
+      transcript: z.any(),
+    }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.courseType === "credit") {
+      if (!(data.documents.governmentId instanceof File)) {
+        ctx.addIssue({
+          path: ["documents", "governmentId"],
+          code: z.ZodIssueCode.custom,
+          message: "Government ID is required",
+        });
+      }
+      if (!(data.documents.resume instanceof File)) {
+        ctx.addIssue({
+          path: ["documents", "resume"],
+          code: z.ZodIssueCode.custom,
+          message: "Resume is required",
+        });
+      }
+      if (!(data.documents.certificate instanceof File)) {
+        ctx.addIssue({
+          path: ["documents", "certificate"],
+          code: z.ZodIssueCode.custom,
+          message: "Certificate is required",
+        });
+      }
+      if (!(data.documents.transcript instanceof File)) {
+        ctx.addIssue({
+          path: ["documents", "transcript"],
+          code: z.ZodIssueCode.custom,
+          message: "Transcript is required",
+        });
+      }
+    } else if (data.courseType === "non-credit") {
+      if (!(data.documents.resume instanceof File)) {
+        ctx.addIssue({
+          path: ["documents", "resume"],
+          code: z.ZodIssueCode.custom,
+          message: "Resume is required",
+        });
+      }
+      if (!(data.documents.certificate instanceof File)) {
+        ctx.addIssue({
+          path: ["documents", "certificate"],
+          code: z.ZodIssueCode.custom,
+          message: "Certificate is required",
+        });
+      }
+    }
+  });
 
 export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -94,6 +158,17 @@ export default function CoursesBasis() {
   const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCourseType, setSelectedCourseType] = useState("");
+  const [courseDocument, setCourseDocument] = useState({
+    governmentId: null,
+    resume: null,
+    certificate: null,
+    transcript: null,
+  });
+
+  console.log(courseDocument, "courseDocument");
+
+  console.log(selectedCourseType, "selectedCourseType");
 
   useEffect(() => {
     axiosInstance
@@ -186,6 +261,7 @@ export default function CoursesBasis() {
   };
 
   const onSubmit = async (data) => {
+    console.log(data, "form data");
     const formData = new FormData();
     setLoading(true);
 
@@ -195,6 +271,11 @@ export default function CoursesBasis() {
       formData.append("category", data.category);
       formData.append("subcategory", data.subcategory);
       formData.append("language", data.language);
+      formData.append("courseType", data.courseType);
+      formData.append("governmentId", courseDocument.governmentId);
+      formData.append("resume", courseDocument.resume);
+      formData.append("certificate", courseDocument.certificate);
+      formData.append("transcript", courseDocument.transcript);
       formData.append("courseDescription", data.courseDescription);
       formData.append(
         "teachingPoints",
@@ -222,6 +303,77 @@ export default function CoursesBasis() {
       setLoading(false);
     }
   };
+
+  function DocumentUpload({ label, name, register, setValue, error }) {
+    const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const allowedTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only PDF, JPEG, JPG, and PNG files are allowed.");
+        return;
+      }
+
+      const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+      if (file.size > maxSizeInBytes) {
+        toast.error("File size must be less than 2MB.");
+        return;
+      }
+
+      console.log(name.replace(".file", ""), "name.replace");
+      setValue(name.replace(".file", ""), file, { shouldValidate: true });
+
+      setCourseDocument((prev) => ({
+        ...prev,
+        [name.split(".")[1]]: file,
+      }));
+    };
+
+    return (
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="flex-shrink-0">
+          <Label htmlFor={name}>{label}</Label>
+        </div>
+        <div className="w-full">
+          <input
+            type="file"
+            accept="application/pdf,image/jpeg,image/png,image/jpg"
+            className="mt-2 border border-gray-300 rounded-md px-3 py-2 w-full"
+            id={name}
+            onChange={handleFileChange}
+          />
+
+          {courseDocument && (
+            <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
+              <FileIcon size={16} />
+              {courseDocument[name.split(".")[1]]
+                ? courseDocument[name.split(".")[1]].name
+                : "No file selected"}
+              {courseDocument[name.split(".")[1]] && (
+                <X
+                  size={16}
+                  className="text-red-500"
+                  onClick={() => {
+                    setCourseDocument((prev) => ({
+                      ...prev,
+                      [name.split(".")[1]]: null,
+                    }));
+                    setValue(name, null);
+                  }}
+                />
+              )}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   const onError = (errors) => {
     toast.error("Please fill out all required fields correctly.");
@@ -325,6 +477,27 @@ export default function CoursesBasis() {
                   {errors.courseTitle && (
                     <p className="text-xs text-red-500 mt-1">
                       {errors.courseTitle.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="price" className="block mb-2">
+                    Course Price (USD)
+                  </Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Enter course price"
+                    className={`bg-gray-50 ${
+                      errors.price ? "border border-red-500" : ""
+                    }`}
+                    {...register("price")}
+                  />
+                  {errors.price && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.price.message}
                     </p>
                   )}
                 </div>
@@ -462,28 +635,114 @@ export default function CoursesBasis() {
                 </button>
               </div>
             </section>
+
+            <section>
+              <div>
+                <Label>Select Course Type *</Label>
+                <div className="flex gap-6 mt-2">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      value="credit"
+                      {...register("courseType")}
+                      className="accent-blue-500"
+                      onChange={(e) => {
+                        setSelectedCourseType(e.target.value);
+                        setCourseDocument({
+                          governmentId: null,
+                          resume: null,
+                          certificate: null,
+                          transcript: null,
+                        });
+                      }}
+                    />
+                    Credit
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      value="non-credit"
+                      {...register("courseType")}
+                      className="accent-blue-500"
+                      onChange={(e) => {
+                        setSelectedCourseType(e.target.value);
+                        setCourseDocument({
+                          governmentId: null,
+                          resume: null,
+                          certificate: null,
+                          transcript: null,
+                        });
+                      }}
+                    />
+                    Non-Credit
+                  </label>
+                </div>
+                {errors.courseType && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {errors.courseType.message && "Please select a course type"}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                {selectedCourseType === "credit" ? (
+                  <>
+                    <DocumentUpload
+                      label="Government ID *"
+                      name="documents.governmentId.file"
+                      register={register}
+                      setValue={setValue}
+                      error={errors?.documents?.governmentId?.file}
+                    />
+                    <DocumentUpload
+                      label="Resume *"
+                      name="documents.resume.file"
+                      register={register}
+                      setValue={setValue}
+                      error={errors?.documents?.resume?.file}
+                    />
+                    <DocumentUpload
+                      label="Certificate *"
+                      name="documents.certificate.file"
+                      register={register}
+                      setValue={setValue}
+                      error={errors?.documents?.certificate?.file}
+                    />
+                    <DocumentUpload
+                      label="Transcript *"
+                      name="documents.transcript.file"
+                      register={register}
+                      setValue={setValue}
+                      error={errors?.documents?.transcript?.file}
+                    />
+                  </>
+                ) : selectedCourseType === "non-credit" ? (
+                  <>
+                    <DocumentUpload
+                      label="Resume *"
+                      name="documents.resume.file"
+                      register={register}
+                      setValue={setValue}
+                      error={errors?.documents?.resume?.file}
+                    />
+                    <DocumentUpload
+                      label="Certificate *"
+                      name="documents.certificate.file"
+                      register={register}
+                      setValue={setValue}
+                      error={errors?.documents?.certificate?.file}
+                    />
+                  </>
+                ) : null}
+
+                {errors.documents && (
+                  <p className="text-xs text-red-500 mt-1">
+                    please upload all required documents
+                  </p>
+                )}
+              </div>
+            </section>
           </section>
-          <div>
-            <Label htmlFor="price" className="block mb-2">
-              Course Price (USD)
-            </Label>
-            <Input
-              id="price"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="Enter course price"
-              className={`bg-gray-50 ${
-                errors.price ? "border border-red-500" : ""
-              }`}
-              {...register("price")}
-            />
-            {errors.price && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.price.message}
-              </p>
-            )}
-          </div>
           <div className="flex justify-end mt-25">
             <Button
               type="submit"
