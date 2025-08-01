@@ -25,10 +25,19 @@ const formSchema = z
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
-      .regex(/^(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
-      .regex(/^(?=.*[a-z])/, "Password must contain at least one lowercase letter")
+      .regex(
+        /^(?=.*[A-Z])/,
+        "Password must contain at least one uppercase letter"
+      )
+      .regex(
+        /^(?=.*[a-z])/,
+        "Password must contain at least one lowercase letter"
+      )
       .regex(/^(?=.*\d)/, "Password must contain at least one number")
-      .regex(/^(?=.*[#?!@$%^&*-])/, "Password must contain at least one special character")
+      .regex(
+        /^(?=.*[#?!@$%^&*-])/,
+        "Password must contain at least one special character"
+      )
       .regex(/^(?!.*\s).*$/, "Password cannot contain spaces"),
     confirmPassword: z.string(),
   })
@@ -80,8 +89,8 @@ const SignupForm = () => {
 
   const handleNext = async () => {
     const fieldsToValidate = {
-      0: ["firstName", "lastName"],
-      1: ["phone", "homeAddress", "mailingAddress"],
+      0: ["firstName", "lastName", "phone"],
+      1: ["homeAddress", "mailingAddress"],
       2: ["password", "confirmPassword"],
     }[currentStep];
 
@@ -125,14 +134,18 @@ const SignupForm = () => {
                 {steps[currentStep]}
               </h2>
               <FormProvider {...methods}>
-                <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                <form
+                  className="space-y-4 md:space-y-6"
+                  onSubmit={handleSubmit(onSubmit)}
+                >
                   {renderStep()}
                   <div className="flex justify-between">
                     <button
                       onClick={handlePrevious}
-
                       type="button"
-                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${currentStep === 0 ? "invisible" : ""}`}
+                      className={`text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
+                        currentStep === 0 ? "invisible" : ""
+                      }`}
                     >
                       Previous
                     </button>
@@ -141,8 +154,11 @@ const SignupForm = () => {
                       <button
                         type="submit"
                         disabled={!watch("agreeToTerms")}
-                        className={`text-white font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${watch("agreeToTerms") ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
-                          }`}
+                        className={`text-white font-medium rounded-lg text-sm px-3 py-3 md:px-5 md:py-2.5 ${
+                          watch("agreeToTerms")
+                            ? "bg-green-600 hover:bg-green-700"
+                            : "bg-gray-400 cursor-not-allowed"
+                        }`}
                       >
                         Create Account
                       </button>
@@ -155,13 +171,15 @@ const SignupForm = () => {
                         Next
                       </button>
                     )}
-
                   </div>
                 </form>
               </FormProvider>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}
-                <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+                <Link
+                  to="/login"
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >
                   Login here
                 </Link>
               </p>
