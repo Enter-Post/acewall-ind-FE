@@ -71,7 +71,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
       setLoading(true);
       try {
         const response = await axiosInstance.get(
-          "/course/coursesforAnnouncement"
+          "/course/getVerifiedCourses"
         );
         console.log(response, "response");
         setAllCourses(response.data.courses || []);

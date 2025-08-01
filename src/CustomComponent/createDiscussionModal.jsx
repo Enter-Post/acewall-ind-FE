@@ -63,7 +63,7 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
     const getCourses = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get("/course/getindividualcourse");
+        const response = await axiosInstance.get("/course/getVerifiedCourses");
         setcourse(response.data.courses || []);
         setLoading(false);
       } catch (error) {

@@ -34,7 +34,7 @@ const Pages = ({ onCreated }) => {
     const fetchCourses = async () => {
       setLoadingCourses(true);
       try {
-        const res = await axiosInstance.get("/course/getindividualcourse");
+        const res = await axiosInstance.get("/course/getVerifiedCourses");
         setAllCourses(res.data.courses || []);
       } catch (err) {
         toast.error("Failed to fetch courses");
