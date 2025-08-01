@@ -35,10 +35,7 @@ const AnnouncementSchema = z.object({
     .min(1, "Title is required")
     .max(100, "Title cannot exceed 100 characters"),
 
-  courseId: z
-    .string()
-    .trim()
-    .min(1, "Course is required"),
+  courseId: z.string().trim().min(1, "Course is required"),
 
   message: z
     .string()
@@ -46,7 +43,6 @@ const AnnouncementSchema = z.object({
     .min(1, "Message is required")
     .max(500, "Message cannot exceed 500 characters"),
 });
-
 
 export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
   const { user } = useContext(GlobalContext);
@@ -74,7 +70,10 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
     const getCourses = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get("/course/getindividualcourse");
+        const response = await axiosInstance.get(
+          "/course/coursesforAnnouncement"
+        );
+        console.log(response, "response");
         setAllCourses(response.data.courses || []);
       } catch (error) {
         console.error("Error fetching courses:", error);
