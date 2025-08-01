@@ -36,7 +36,7 @@ const ViewCoursePostsPage = () => {
       const res = await axiosInstance.get(query);
       setPosts(res.data.pages || []);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to fetch pages");
+      console.log(err.response?.data?.message || "Failed to fetch pages");
       setPosts([]);
     }
   };
