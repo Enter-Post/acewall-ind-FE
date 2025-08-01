@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFormContext } from "react-hook-form";
+import PhoneInput from "react-phone-input-2";
 
 const PersonalInfo = () => {
   const {
@@ -11,6 +11,8 @@ const PersonalInfo = () => {
     formState: { errors },
   } = useFormContext();
   const formData = watch();
+
+  const { phone = "" } = watch();
 
   return (
     <>
@@ -62,7 +64,9 @@ const PersonalInfo = () => {
           />
           <div className="h-4 mt-1">
             {errors?.middleName && (
-              <p className="text-xs text-red-600">{errors.middleName.message}</p>
+              <p className="text-xs text-red-600">
+                {errors.middleName.message}
+              </p>
             )}
           </div>
         </div>
@@ -91,6 +95,20 @@ const PersonalInfo = () => {
               <p className="text-xs text-red-600">{errors.lastName.message}</p>
             )}
           </div>
+        </div>
+
+        <div className="mb-6">
+          <Label htmlFor="phone">
+            Phone Number <span className="text-red-600">*</span>
+          </Label>
+          <PhoneInput
+            country={"us"}
+            value={phone}
+            onChange={(value) => setValue("phone", value)}
+            inputClass="w-full rounded-lg pl-12 py-2 bg-gray-50"
+            disableDropdown={false}
+          />
+          <p className="text-xs text-red-600 mt-1">{errors?.phone?.message}</p>
         </div>
       </div>
 
