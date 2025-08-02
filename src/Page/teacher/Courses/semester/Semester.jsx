@@ -25,8 +25,7 @@ const formatDate = (dateString) => {
     year: "numeric",
   });
 };
-const today = new Date()
-
+const today = new Date();
 
 console.log(today, "today");
 
@@ -98,6 +97,8 @@ const Semester = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const normalizeDate = (date) => new Date(new Date(date).setHours(0, 0, 0, 0));
+
   const validateQuarter = () => {
     const errors = {};
     const currentSem = semesters.find((sem) => sem._id === activeSemId);
@@ -108,25 +109,35 @@ const Semester = () => {
     if (!endDate) errors.endDate = "End date is required";
 
     if (startDate && endDate) {
-      if (startDate >= endDate) {
+      const normStart = normalizeDate(startDate);
+      const normEnd = normalizeDate(endDate);
+
+      if (normStart >= normEnd) {
         errors.date = "Start date must be before end date";
       }
+
       if (currentSem) {
-        if (startDate < currentSem.startDate || endDate > currentSem.endDate) {
+        const semStart = normalizeDate(currentSem.startDate);
+        const semEnd = normalizeDate(currentSem.endDate);
+
+        if (normStart < semStart || normEnd > semEnd) {
           errors.range = `Quarter must be within semester (${formatDate(
-            currentSem.startDate
-          )} - ${formatDate(currentSem.endDate)})`;
+            semStart
+          )} - ${formatDate(semEnd)})`;
         }
 
         for (let q of currentSem.quarters) {
+          const qStart = normalizeDate(q.startDate);
+          const qEnd = normalizeDate(q.endDate);
+
           if (
-            (startDate >= q.startDate && startDate < q.endDate) ||
-            (endDate > q.startDate && endDate <= q.endDate) ||
-            (startDate <= q.startDate && endDate >= q.endDate)
+            (normStart >= qStart && normStart < qEnd) ||
+            (normEnd > qStart && normEnd <= qEnd) ||
+            (normStart <= qStart && normEnd >= qEnd)
           ) {
             errors.overlap = `Quarter overlaps with "${q.title}" (${formatDate(
-              q.startDate
-            )} - ${formatDate(q.endDate)})`;
+              qStart
+            )} - ${formatDate(qEnd)})`;
             break;
           }
         }

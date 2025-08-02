@@ -14,6 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
 const AssessmentResultCard = ({ submission }) => {
+
+console.log("Submission", submission);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -28,7 +31,7 @@ const AssessmentResultCard = ({ submission }) => {
                 <div className="flex items-center space-x-2">
                   <Badge
                     variant={
-                      submission?.status === "before due date"
+                      submission?.status == "before due date"
                         ? "success"
                         : "destructive"
                     }
