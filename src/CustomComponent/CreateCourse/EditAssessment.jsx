@@ -65,7 +65,7 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
   const [endDate, setEndDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log(assessment, "dueDate");
+  console.log(assessment, "assessment");
 
   useEffect(() => {
     const fetchQuarterDate = async () => {

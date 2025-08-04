@@ -38,6 +38,7 @@ const courseFormSchema = z.object({
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
     .max(100, { message: "Course title must be less than 100 characters" }),
+  price: z.number().min(0, { message: "Price must be a non-negative number" }),
   category: z
     .string({
       required_error: "Please select a category",
@@ -111,6 +112,7 @@ export default function EditCourse() {
     defaultValues: {
       thumbnail: "",
       courseTitle: "",
+      price: 0,
       category: "",
       subcategory: "",
       language: "",
@@ -138,6 +140,7 @@ export default function EditCourse() {
         reset({
           thumbnail: courseData.thumbnail,
           courseTitle: courseData.courseTitle,
+          price: courseData.price,
           category: courseData.category,
           subcategory: courseData.subcategory,
           language: courseData.language,
@@ -212,6 +215,7 @@ export default function EditCourse() {
     try {
       formData.append("courseTitle", data.courseTitle);
       formData.append("category", data.category);
+      formData.append("price", data.price);
       formData.append("subcategory", data.subcategory);
       formData.append("language", data.language);
       formData.append("courseDescription", data.courseDescription);
@@ -227,7 +231,7 @@ export default function EditCourse() {
 
       const res = await axiosInstance.put(
         `course/editCourseBasics/${courseId}`,
-        formData,
+        formData
       );
 
       // Dismiss loading toast and show success
@@ -267,68 +271,6 @@ export default function EditCourse() {
         <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
           <section>
             <div className="space-y-6">
-              {/* <div>
-                <Label htmlFor="thumbnail" className="block mb-2">
-                  Thumbnail
-                </Label>
-                <div
-                  className={` p-1 w-full max-w-md ${
-                    errors.thumbnail ? "border-red-500" : "border-gray-300"
-                  }`}
-                ></div>
-                {errors?.thumbnail && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.thumbnail.message}
-                  </p>
-                )}
-
-                <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
-                  {thumbnailPreview ? (
-                    <div className="relative">
-                      <img
-                        src={thumbnailPreview || "/placeholder.svg"}
-                        alt="Course thumbnail"
-                        className="w-full h-[300px] object-cover rounded"
-                      />
-                      <div className="absolute bottom-2 right-2 flex space-x-2">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          className="bg-white hover:bg-gray-100 text-red-500"
-                          onClick={() => {
-                            setThumbnailPreview(null);
-                            setValue("thumbnail", null); // Reset form value
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
-                  ) : loading ? (
-                    <section className="flex justify-center items-center h-[300px]">
-                      <Loader size={48} className="animate-spin" />
-                    </section>
-                  ) : (
-                    <div className="flex items-center justify-center h-[300px]">
-                      <input
-                        type="file"
-                        accept="image/jpeg, image/png"
-                        className="hidden"
-                        id="thumbnailInput"
-                        onChange={handleThumbnailChange}
-                      />
-                      <label htmlFor="thumbnailInput">
-                        <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
-                          <Upload size={16} />
-                          Upload Thumbnail
-                        </div>
-                      </label>
-                    </div>
-                  )}
-                </div>
-              </div> */}
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <Label htmlFor="courseTitle" className="block mb-2">
@@ -372,9 +314,28 @@ export default function EditCourse() {
                   selectedCategory={selectedCategory}
                 />
               </div>
-              {/* <div>
-                <DateRangePicker name="courseDate" />
-              </div> */}
+
+              <div>
+                <div>
+                  <Label htmlFor="price" className="block mb-2">
+                    Price
+                  </Label>
+                  <Input
+                    type="number"
+                    id="price"
+                    className={`bg-gray-50 ${
+                      errors.price ? "border border-red-500" : ""
+                    }`}
+                    {...register("price", { valueAsNumber: true })}
+                  />
+                  {errors.price && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.price.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="language" className="block mb-2">
                   Language

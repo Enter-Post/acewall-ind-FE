@@ -95,7 +95,8 @@ const sideBarTabs = [
 
 export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { checkAuth, user, Authloading, setAuthLoading } = useContext(GlobalContext);
+  const { checkAuth, user, Authloading, setAuthLoading } =
+    useContext(GlobalContext);
   const location = useLocation().pathname;
 
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -178,7 +179,11 @@ export default function TeacherLayout() {
           </Link>
 
           <div className="relative w-64 hidden md:flex flex-col">
-            <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown} modal={false}>
+            <DropdownMenu
+              open={openDropdown}
+              onOpenChange={setOpenDropdown}
+              modal={false}
+            >
               <DropdownMenuTrigger asChild>
                 <div className="relative flex gap-2 w-full">
                   <Input
@@ -221,13 +226,18 @@ export default function TeacherLayout() {
                         onClick={() => setOpenDropdown(false)}
                         className="w-full block text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 rounded"
                       >
-                        {highlightMatch(course.courseTitle || "Untitled Course", searchQuery)}
+                        {highlightMatch(
+                          course.courseTitle || "Untitled Course",
+                          searchQuery
+                        )}
                       </Link>
                     </DropdownMenuItem>
                   ))
                 ) : (
                   <DropdownMenuItem disabled>
-                    <span className="text-sm text-gray-500">No results found</span>
+                    <span className="text-sm text-gray-500">
+                      No results found
+                    </span>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -236,8 +246,30 @@ export default function TeacherLayout() {
         </div>
       </header>
 
+
+
+      <div className="text-center">
+        {user?.role === "teacher" && user?.isVarified === false && (
+          <div className="bg-yellow-200 text-black p-2 rounded text-center">
+            <p className="text-xs">
+              Your account is not Verified yet. Your course will not be visible for students, please upload your document from
+              the{" "}
+              <Link to="/teacher/account" className="text-blue-600 underline">
+                account page
+              </Link>{" "}
+              for verification and wait for the admin verification, thank You
+            </p>
+          </div>
+        )}
+      </div>
+
+
       <div className="flex flex-1 overflow-hidden">
-        <aside className={`relative bg-white ${isSidebarOpen ? "block" : "hidden"} w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}>
+        <aside
+          className={`relative bg-white ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+        >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
               <Link to="/teacher/account" className="w-10 h-10 block">
@@ -254,7 +286,6 @@ export default function TeacherLayout() {
                 <p
                   className="text-sm text-gray-600 w-full max-w-[150px] break-words"
                   title={user.email}
-
                 >
                   {user.email}
                 </p>
@@ -267,13 +298,15 @@ export default function TeacherLayout() {
                   key={tab.name}
                   to={tab.path ?? "#"}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
-                    }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                    location === tab.path ? "bg-green-500" : "text-black"
+                  }`}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${location === tab.path ? "text-white" : "text-green-600"
-                      }`}
+                    className={`${
+                      location === tab.path ? "text-white" : "text-green-600"
+                    }`}
                   >
                     {tab.name}
                   </span>

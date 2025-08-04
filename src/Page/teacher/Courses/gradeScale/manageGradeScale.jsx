@@ -11,6 +11,15 @@ import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/CustomComponent/BackButton";
 
+const isScaleComplete = (grades) => {
+  const sorted = [...grades].sort((a, b) => a.min - b.min);
+  return (
+    sorted.length > 0 &&
+    sorted[0].min === 0 &&
+    sorted[sorted.length - 1].max === 100
+  );
+};
+
 export default function ManageGradeScale() {
   const { courseId } = useParams();
   const [grades, setGrades] = useState([]);
@@ -29,17 +38,22 @@ export default function ManageGradeScale() {
   } = useForm({
     defaultValues: {
       grade: "",
-      min: 91,
+      min: 90,
       max: 100,
     },
   });
 
   const watchMin = watch("min");
+  const gradescale = grades.reduce((acc, g) => acc + (g.max - g.min), 0); // Don't use +1
+  const isComplete = isScaleComplete(grades);
 
   const handleCreateGradeScale = async () => {
     setIsLoading(true);
     try {
-      const res = await axiosInstance.post(`gradebook/gradingScale/${courseId}`, { scale: grades });
+      const res = await axiosInstance.post(
+        `gradebook/gradingScale/${courseId}`,
+        { scale: grades }
+      );
       toast.success(res.data.message);
       navigate(`/teacher/courses/gradescale/${courseId}`);
     } catch (err) {
@@ -49,10 +63,9 @@ export default function ManageGradeScale() {
     }
   };
 
-
   const onSubmit = (data) => {
-    const newMin = parseInt(data.min);
-    const newMax = parseInt(data.max);
+    const newMin = parseFloat(data.min);
+    const newMax = parseFloat(data.max);
 
     if (newMin >= newMax) {
       toast.error("Min must be less than Max.");
@@ -64,11 +77,10 @@ export default function ManageGradeScale() {
       return;
     }
 
-    // Check for overlapping ranges
     const hasOverlap = grades.some(
       (g) =>
-        (newMin >= g.min && newMin <= g.max) ||
-        (newMax >= g.min && newMax <= g.max) ||
+        (newMin >= g.min && newMin < g.max) ||
+        (newMax > g.min && newMax <= g.max) ||
         (newMin <= g.min && newMax >= g.max)
     );
 
@@ -83,10 +95,11 @@ export default function ManageGradeScale() {
       max: newMax,
     };
 
-    // Add new entry and sort descending by max
     const updatedGrades = [...grades, newEntry].sort((a, b) => b.max - a.max);
     setGrades(updatedGrades);
-    setSuccessMessage(`Grade ${newEntry.grade} added: ${newMax}% to ${newMin}%`);
+    setSuccessMessage(
+      `Grade ${newEntry.grade} added: ${newMax}% to ${newMin}%`
+    );
 
     setTimeout(() => {
       setSuccessMessage("");
@@ -94,8 +107,11 @@ export default function ManageGradeScale() {
 
     reset({
       grade: "",
-      min: newMin > 10 ? newMin - 10 : 0,
-      max: newMin - 1,
+      min:
+        parseFloat((newMin - 10).toFixed(2)) >= 0
+          ? parseFloat((newMin - 10).toFixed(2))
+          : 0,
+      max: parseFloat((newMin - 0.01).toFixed(2)),
     });
   };
 
@@ -103,7 +119,7 @@ export default function ManageGradeScale() {
     setGrades([]);
     reset({
       grade: "",
-      min: 91,
+      min: 90,
       max: 100,
     });
     setSuccessMessage("");
@@ -111,8 +127,10 @@ export default function ManageGradeScale() {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
-      <BackButton/>
-      <h1 className="text-2xl font-bold text-center mb-6">Create Grade Scale</h1>
+      <BackButton />
+      <h1 className="text-2xl font-bold text-center mb-6">
+        Create Grade Scale
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Form Section */}
@@ -123,7 +141,9 @@ export default function ManageGradeScale() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-1">
-                <label className="block text-sm font-medium">Letter Grade</label>
+                <label className="block text-sm font-medium">
+                  Letter Grade
+                </label>
                 <Input
                   {...register("grade", {
                     required: "Grade is required",
@@ -136,35 +156,41 @@ export default function ManageGradeScale() {
                   className={errors.grade ? "border-red-500" : ""}
                 />
                 {errors.grade && (
-                  <p className="text-red-500 text-xs mt-1">{errors.grade.message}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.grade.message}
+                  </p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">Min Percentage</label>
+                  <label className="block text-sm font-medium">Min %</label>
                   <Input
                     type="number"
+                    step="0.01"
                     {...register("min", {
                       required: "Min is required",
                       min: { value: 0, message: "Min must be at least 0" },
-                      max: { value: 99, message: "Min must be below 100" },
+                      max: { value: 99.99, message: "Min must be below 100" },
                     })}
                     className={errors.min ? "border-red-500" : ""}
                   />
                   {errors.min && (
-                    <p className="text-red-500 text-xs mt-1">{errors.min.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.min.message}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-sm font-medium">Max Percentage</label>
+                  <label className="block text-sm font-medium">Max %</label>
                   <Input
                     type="number"
+                    step="0.01"
                     {...register("max", {
                       required: "Max is required",
                       min: {
-                        value: watchMin ? Number(watchMin) + 1 : 1,
+                        value: watchMin ? Number(watchMin) + 0.01 : 0.01,
                         message: "Max must be greater than Min",
                       },
                       max: { value: 100, message: "Max cannot exceed 100" },
@@ -172,7 +198,9 @@ export default function ManageGradeScale() {
                     className={errors.max ? "border-red-500" : ""}
                   />
                   {errors.max && (
-                    <p className="text-red-500 text-xs mt-1">{errors.max.message}</p>
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.max.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -228,18 +256,18 @@ export default function ManageGradeScale() {
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                       <div
                         className="bg-green-500 h-2.5 rounded-full"
-                        style={{ width: `${grade.max - grade.min + 1}%` }}
+                        style={{ width: `${grade.max - grade.min}%` }}
                       ></div>
                     </div>
                   </div>
                 ))}
 
-                {grades.find((g) => g.min === 0) && (
-                  <div>
+                {isComplete ? (
+                  <>
                     <Alert className="mt-4 bg-green-50 border-green-200">
                       <Check className="h-4 w-4 text-green-600" />
                       <AlertDescription className="text-green-600">
-                        Grade scale completed to 0%!
+                        Grade scale completed (0% to 100%)!
                       </AlertDescription>
                     </Alert>
 
@@ -250,8 +278,15 @@ export default function ManageGradeScale() {
                     >
                       {isLoading ? "Creating..." : "Create"}
                     </Button>
-
-                  </div>
+                  </>
+                ) : (
+                  <Alert className="mt-4 bg-yellow-50 border-yellow-200">
+                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    <AlertDescription className="text-yellow-700">
+                      Grade scale is incomplete. Some % ranges (like 90.01%) may
+                      be missing.
+                    </AlertDescription>
+                  </Alert>
                 )}
               </div>
             ) : (

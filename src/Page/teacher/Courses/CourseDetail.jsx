@@ -13,11 +13,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { 
-  Loader, 
-  Pen, 
-  Play, 
-  Users, 
+import {
+  Loader,
+  Pen,
+  Play,
+  Users,
   Languages,
   ChartBarStacked,
   LibraryBig,
@@ -27,7 +27,7 @@ import {
   Eye,
   BookOpen,
   Settings,
-  Archive
+  Archive,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { CheckCircle } from "lucide-react";
@@ -46,6 +46,7 @@ import Pages from "@/CustomComponent/teacher/Pages";
 import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
 import { cn } from "@/lib/utils";
 import ArchiveDialog from "@/CustomComponent/teacher/ArchivedModal";
+import { ApplyReverificationDialog } from "@/CustomComponent/ApplyReverificationDialog";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
@@ -154,12 +155,12 @@ export default function TeacherCourseDetails() {
       </div>
     );
 
-  const hasDocuments = course.documents && (
-    course.documents.governmentId ||
-    course.documents.resume ||
-    course.documents.certificate ||
-    course.documents.transcript
-  );
+  const hasDocuments =
+    course.documents &&
+    (course.documents.governmentId ||
+      course.documents.resume ||
+      course.documents.certificate ||
+      course.documents.transcript);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -168,13 +169,36 @@ export default function TeacherCourseDetails() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Courses</h1>
           <div className="flex items-center gap-2">
-            <VerificationBadge status={course.isVerified} />
+            <VerificationBadge
+              status={course.isVerified}
+              course={course}
+              fetchCourseDetail={fetchCourseDetail}
+            />
+            {course.isAppliedReverified?.status && (
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200 text-xs font-semibold">
+                <CheckCircle className="w-4 h-4 text-blue-600" />
+                <span>
+                  You have applied for reverification. Please wait for the admin
+                  to verify.
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Archive Warning */}
       {!course.published && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-2">
+            <Archive className="w-5 h-5 text-red-600" />
+            <p className="text-red-800 font-medium">
+              This course is archived and not visible to new students.
+            </p>
+          </div>
+        </div>
+      )}
+      {!course.isVerified === "rejected" && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
           <div className="flex items-center gap-2">
             <Archive className="w-5 h-5 text-red-600" />
@@ -241,7 +265,9 @@ export default function TeacherCourseDetails() {
                         className="flex items-center justify-center gap-2 w-full px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
                       >
                         <Pen className="h-4 w-4" />
-                        <span className="text-sm font-medium">Edit Thumbnail</span>
+                        <span className="text-sm font-medium">
+                          Edit Thumbnail
+                        </span>
                       </label>
                     </div>
                   )}
@@ -280,7 +306,7 @@ export default function TeacherCourseDetails() {
                     <div className="flex items-center gap-2 mt-3">
                       <DollarSign className="w-4 h-4 text-green-600" />
                       <span className="text-lg font-semibold text-green-600">
-                        ${course.price}
+                        {course.price}
                       </span>
                     </div>
                   )}
@@ -294,9 +320,21 @@ export default function TeacherCourseDetails() {
             <div className="lg:col-span-3">
               <Card className="shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Course Documents
+                  <CardTitle className="text-lg flex items-center justify-between gap-2">
+                    <div>
+                      <FileText className="w-5 h-5" />
+                      Course Documents
+                    </div>
+                    {course.isVerified === "pending" ||
+                    course.isVerified === "rejected" ? (
+                      <Link
+                        to={`/teacher/courses/editCourseDocument/${course._id}`}
+                      >
+                        <Pen size={20} className="cursor-pointer" />
+                      </Link>
+                    ) : (
+                      ""
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -445,8 +483,11 @@ export default function TeacherCourseDetails() {
                       </h3>
                       <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
-                        {format(new Date(semester.endDate), "MMMM do, yyyy")}
+                        {format(
+                          new Date(semester.startDate),
+                          "MMMM do, yyyy"
+                        )}{" "}
+                        - {format(new Date(semester.endDate), "MMMM do, yyyy")}
                       </p>
                     </div>
                   </Link>
@@ -482,7 +523,10 @@ export default function TeacherCourseDetails() {
 
         {/* Archive Dialog */}
         <div className="flex justify-end pt-6 border-t border-gray-200">
-          <ArchiveDialog course={course} fetchCourseDetail={fetchCourseDetail} />
+          <ArchiveDialog
+            course={course}
+            fetchCourseDetail={fetchCourseDetail}
+          />
         </div>
       </div>
     </div>
@@ -492,7 +536,9 @@ export default function TeacherCourseDetails() {
 // Helper Components
 function StatCard({ icon, value, label, bgColor }) {
   return (
-    <Card className={`border-0 shadow-sm ${bgColor} hover:shadow-md transition-shadow`}>
+    <Card
+      className={`border-0 shadow-sm ${bgColor} hover:shadow-md transition-shadow`}
+    >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-white shadow-sm">{icon}</div>
@@ -527,42 +573,70 @@ function DocumentLink({ label, document }) {
   );
 }
 
-function VerificationBadge({ status }) {
+function VerificationBadge({ status, course, fetchCourseDetail }) {
   if (!status) return null;
-  
+
   const config = {
     pending: {
       color: "bg-yellow-100 text-yellow-800 border-yellow-200",
-      message: "Course verification is pending admin review"
+      message: "Course verification is pending admin review",
     },
     approved: {
-      color: "bg-green-100 text-green-800 border-green-200", 
-      message: "Course is verified and approved"
+      color: "bg-green-100 text-green-800 border-green-200",
+      message: "Course is verified and approved",
     },
     rejected: {
       color: "bg-red-100 text-red-800 border-red-200",
-      message: "Course verification was rejected"
-    }
+      message: "Course verification was rejected",
+    },
   };
 
   const { color, message } = config[status] || config.pending;
 
   return (
-    <div className="space-y-2">
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${color}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-      <p className="text-xs text-gray-600">{message}</p>
-    </div>
+    <section className="flex items-center justify-between gap-4">
+      <div className="flex items-center gap-4 p-3 rounded-lg border shadow-sm bg-white">
+        <div
+          className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${color} shadow`}
+        >
+          <CheckCircle
+            className={`w-4 h-4 ${
+              status === "approved"
+                ? "text-green-600"
+                : status === "pending"
+                ? "text-yellow-500"
+                : "text-red-600"
+            }`}
+          />
+          <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm font-medium text-gray-900">{message}</span>
+          {status === "rejected" && course.remarks && (
+            <span className="text-xs text-red-500 font-semibold mt-1">
+              Reason: {course.remarks}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {course.isVerified === "rejected" &&
+        !course.isAppliedReverified?.status && (
+          <ApplyReverificationDialog
+            courseID={course._id}
+            fetchCourseDetail={fetchCourseDetail}
+          />
+        )}
+    </section>
   );
 }
 
 // Helper Functions
 function formatDate(dateString) {
-  return dateString 
+  return dateString
     ? new Date(dateString).toLocaleDateString("en-US", {
         year: "2-digit",
-        month: "2-digit", 
+        month: "2-digit",
         day: "2-digit",
       })
     : "N/A";

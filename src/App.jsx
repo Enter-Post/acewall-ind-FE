@@ -81,6 +81,7 @@ import EditCourse from "./Page/teacher/Courses/EditCoursesBasics";
 import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail";
 import { AssessmentPage } from "./Page/teacher/Courses/quarter/assessment-dialog";
 import UnverifiedCourses from "./Page/teacher/Courses/unverifiedCourse";
+import CourseDocumentsEdit from "./Page/teacher/Courses/editCourseDocuments";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -296,6 +297,10 @@ function App() {
                 path="courseDetail/:id"
                 element={<TeacherCourseDetails />}
               />
+              <Route
+                path="editCourseDocument/:id"
+                element={<CourseDocumentsEdit />}
+              />
 
               <Route
                 path=":courseId/semester/:id"
@@ -324,7 +329,7 @@ function App() {
                 <Route path="managegradescale" element={<ManageGradeScale />} />
               </Route>
             </Route>
-             <Route path="wallet">
+            <Route path="wallet">
               <Route index element={<Earning />} />
               <Route path="detail" element={<EarningDetail />} />
             </Route>

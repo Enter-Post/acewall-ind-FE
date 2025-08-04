@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -50,11 +50,13 @@ const AssessmentSubmissionPage = () => {
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
+    console.log(selectedFiles, "selectedFiles");
+
     const allowedTypes = [
       "application/pdf",
-      ...["image/png", "image/jpeg", "image/jpg"].map(
-        (type) => `image/${type}`
-      ),
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
     ];
 
     const invalidFiles = selectedFiles.filter(
@@ -125,63 +127,62 @@ const AssessmentSubmissionPage = () => {
     defaultValues: { studentId: "" },
   });
 
-const onSubmit = async (data) => {
-  if (submitting) return;
-  setSubmitting(true);
+  const onSubmit = async (data) => {
+    if (submitting) return;
+    setSubmitting(true);
 
-  let answers;
-  const formData = new FormData();
+    let answers;
+    const formData = new FormData();
 
-  if (assessment.assessmentType === "file") {
-    if (!files || files.length === 0) {
-      toast.error("Please upload at least one file");
-      setSubmitting(false);
-      return;
-    }
-
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
-
-    const questionIds = assessment.questions.map((question) => question._id);
-    formData.append("questionId", questionIds);
-  } else {
-    answers = assessment.questions.map((question) => ({
-      questionId: question._id,
-      selectedAnswer: data[`question-${question._id}`],
-    }));
-  }
-
-  try {
-    const res = await axiosInstance.post(
-      `/assessmentSubmission/submission/${assessment._id}`,
-      assessment.assessmentType === "file" ? formData : { answers },
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    if (assessment.assessmentType === "file") {
+      if (!files || files.length === 0) {
+        toast.error("Please upload at least one file");
+        setSubmitting(false);
+        return;
       }
-    );
 
-    const submission = res.data.submission;
-    const isGraded = submission.graded;
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
 
-    setSubmitted(true);
-    setResult(submission);
-
-    if (isGraded) {
-      toast.success("Assessment graded and submitted successfully!");
+      const questionIds = assessment.questions.map((question) => question._id);
+      formData.append("questionId", questionIds);
     } else {
-      toast.success("Submission recorded. Awaiting manual review.");
+      answers = assessment.questions.map((question) => ({
+        questionId: question._id,
+        selectedAnswer: data[`question-${question._id}`],
+      }));
     }
 
-    navigate(`/student/assessment`);
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Submission failed");
-    setSubmitting(false);
-  }
-};
+    try {
+      const res = await axiosInstance.post(
+        `/assessmentSubmission/submission/${assessment._id}`,
+        assessment.assessmentType === "file" ? formData : { answers },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
+      const submission = res.data.submission;
+      const isGraded = submission.graded;
+
+      setSubmitted(true);
+      setResult(submission);
+
+      if (isGraded) {
+        toast.success("Assessment graded and submitted successfully!");
+      } else {
+        toast.success("Submission recorded. Awaiting manual review.");
+      }
+
+      navigate(`/student/assessment`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Submission failed");
+      setSubmitting(false);
+    }
+  };
 
   // Show loading state
   if (loading) {
@@ -426,7 +427,11 @@ const onSubmit = async (data) => {
               </Alert>
             )}
             <CardFooter className="flex justify-end">
-              <Button type="submit" disabled={submitting} className="bg-green-500 hover:bg-green-600">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="bg-green-500 hover:bg-green-600"
+              >
                 {submitting ? (
                   <>
                     <Loader className="mr-2 h-4 w-4 animate-spin" />
