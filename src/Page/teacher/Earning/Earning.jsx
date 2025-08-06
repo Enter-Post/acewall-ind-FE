@@ -21,12 +21,14 @@ import {
 export default function Earning() {
   const [paymentStats, setPaymentStats] = useState(null);
 const [chartData, setChartData] = useState([]); 
+const [recentWithdrawals, setRecentWithdrawals] = useState([]);
 
  const fetchPaymentStats = async () => {
   try {
     const res = await axiosInstance.get("teacher/teacher-payment-stats");
     setPaymentStats(res.data.stats); // the aggregate card data
     setChartData(res.data.revenueOverTime); // the chart data
+        setRecentWithdrawals(res.data.recentWithdrawals); // ✅ Set withdrawals
   } catch (error) {
     console.error("Failed to load payment stats", error);
   }
@@ -115,6 +117,47 @@ const [chartData, setChartData] = useState([]);
           </CardContent>
         </Card>
       )}
+      {recentWithdrawals.length > 0 && (
+  <Card className="mt-8">
+    <CardContent className="p-6">
+      <h3 className="text-lg font-medium mb-4">Recent Withdrawals</h3>
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-sm">
+          <thead>
+            <tr className="text-left border-b">
+              <th className="p-2">Amount</th>
+              <th className="p-2">Method</th>
+              <th className="p-2">Date</th>
+              <th className="p-2">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentWithdrawals.map((withdrawal, index) => (
+              <tr key={index} className="border-b">
+                <td className="p-2 text-green-600 font-semibold">${withdrawal.amount.toFixed(2)}</td>
+                <td className="p-2 capitalize">{withdrawal.method || 'N/A'}</td>
+                <td className="p-2">
+                  {new Date(withdrawal.processedAt || withdrawal.requestedAt).toLocaleDateString()}
+                </td>
+                <td className="p-2">
+                  <span className={`px-2 py-1 text-xs rounded-full ${
+                    withdrawal.status === 'approved'
+                      ? 'bg-green-100 text-green-700'
+                      : withdrawal.status === 'pending'
+                      ? 'bg-yellow-100 text-yellow-700'
+                      : 'bg-red-100 text-red-700'
+                  }`}>
+                    {withdrawal.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </CardContent>
+  </Card>
+)}
     </div>
   );
 }

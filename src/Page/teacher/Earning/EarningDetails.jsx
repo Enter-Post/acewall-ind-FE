@@ -103,7 +103,7 @@ export default function EarningDetail() {
       </div>
 
       {/* Transaction Table */}
-      <TransactionCard title="Earnings" data={transactions} />
+      <TransactionCard title="Earnings" data={transactions} />  
     </div>
   );
 }

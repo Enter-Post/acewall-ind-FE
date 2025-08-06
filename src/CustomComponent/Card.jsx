@@ -329,12 +329,6 @@ const TransactionCard = ({ title, data }) => (
             <TableHead className="text-xs font-medium text-gray-500 py-3 text-center">
               Earnings
             </TableHead>
-            <TableHead className="text-xs font-medium text-gray-500 py-3 text-center">
-              Withdrawals
-            </TableHead>
-            <TableHead className="text-xs font-medium text-gray-500 py-3 text-center">
-              Balance
-            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -350,14 +344,6 @@ const TransactionCard = ({ title, data }) => (
                 {transaction.type === "Earning"
                   ? `$${transaction.amount}`
                   : "-"}
-              </TableCell>
-              <TableCell className="text-sm text-red-600 py-4 text-center">
-                {transaction.type === "Withdrawal"
-                  ? `$${transaction.amount}`
-                  : "-"}
-              </TableCell>
-              <TableCell className="text-sm text-black py-4 text-center">
-                {transaction.balance}
               </TableCell>
             </TableRow>
           ))}

@@ -39,6 +39,7 @@ import About from "./Page/About";
 import ScrollToTop from "./lib/scrolltop";
 import ContactUs from "./Page/ContactUs";
 import { PrivateRoute, PublicRoute } from "./lib/PrivateRoutes";
+import WithdrawRequestForm from "./Page/teacher/Earning/WithdrawRequestForm";
 
 import CoursesBasis from "./Page/teacher/Courses/CoursesBasics";
 import { useEffect, useContext } from "react";
@@ -268,6 +269,7 @@ function App() {
             <Route path="wallet">
               <Route index element={<Earning />} />
               <Route path="detail" element={<EarningDetail />} />
+              <Route path="withdraw" element={<WithdrawRequestForm />} />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
