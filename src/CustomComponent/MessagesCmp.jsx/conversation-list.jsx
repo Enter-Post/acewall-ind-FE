@@ -52,7 +52,15 @@ export default function ConversationList({
 
   return (
     <div className="flex flex-col h-full hide-scrollbar p-4 gap-3">
-      <TeacherDropdown teachers={teacher} getConversations={getConversations} />
+
+      {
+        user.role === "student" && (
+          <TeacherList
+            teachers={teacher}
+            getConversations={getConversations}
+          />
+        )
+      }
 
       {conversations && conversations.length > 0 ? (
         <div className="overflow-y-auto gap-3 flex flex-wrap">
