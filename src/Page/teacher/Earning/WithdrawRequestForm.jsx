@@ -53,7 +53,7 @@ export default function WithdrawRequestForm() {
         />
       </div>
 
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label className="block text-sm mb-1">Method</label>
         <select
           value={method}
@@ -64,7 +64,7 @@ export default function WithdrawRequestForm() {
           <option value="paypal">PayPal</option>
           <option value="bank">Bank Transfer</option>
         </select>
-      </div>
+      </div> */}
 
       {/* Only show if Stripe is selected */}
       {method === "stripe" && (

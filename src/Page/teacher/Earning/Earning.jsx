@@ -120,7 +120,14 @@ const [recentWithdrawals, setRecentWithdrawals] = useState([]);
       {recentWithdrawals.length > 0 && (
   <Card className="mt-8">
     <CardContent className="p-6">
+      <div className="flex justify-between">
       <h3 className="text-lg font-medium mb-4">Recent Withdrawals</h3>
+          <Link to="/teacher/wallet/withdraw">
+      <button className="px-4 py-2 bg-blue-600 text-white rounded">
+        Withdraw Funds
+      </button>
+    </Link>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
