@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import avatar from "@/assets/avatar.png";
+import TeacherDocuments from "@/CustomComponent/teacher/TeacherDocuments";
 
 const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
 const maxSize = 5 * 1024 * 1024;
@@ -23,8 +24,6 @@ const Account = () => {
   const [profileImg, setProfileImg] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [deleteModal, setDeleteModal] = useState({ show: false, doc: null });
-  const [deletingId, setDeletingId] = useState(null);
 
   const fetchUser = () => {
     axiosInstance
@@ -62,23 +61,6 @@ const Account = () => {
     }
   };
 
-  const confirmDelete = async () => {
-    const doc = deleteModal.doc;
-    if (!doc) return;
-    setDeletingId(doc._id);
-
-    try {
-      const res = await axiosInstance.delete(`/auth/teacher/document/${doc._id}`);
-      toast.success(res.data.message);
-      setUser((prev) => ({ ...prev, documents: res.data.documents }));
-      setDeleteModal({ show: false, doc: null });
-      setLoading(true);
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Delete failed.");
-    } finally {
-      setDeletingId(null);
-    }
-  };
 
   const displayField = (label, value) => (
     <div className="space-y-1">
@@ -96,9 +78,8 @@ const Account = () => {
         <h2 className="text-2xl font-bold text-foreground">Account Information</h2>
         {user?.role === "teacher" && user?.isVarified !== undefined && (
           <span
-            className={`text-sm px-3 py-1 rounded-full ${
-              user.isVarified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
+            className={`text-sm px-3 py-1 rounded-full ${user.isVarified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+              }`}
           >
             {user.isVarified ? "Verified" : "Not Verified"}
           </span>
@@ -114,7 +95,7 @@ const Account = () => {
             alt="Profile"
             className="w-full h-full object-cover rounded-full shadow-sm"
           />
-          <label className="absolute bottom-2 right-2 bg-white border rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100">
+          <label className="absolute bottom-5 right-4  bg-white border rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100">
             <Pen className="w-4 h-4 text-gray-600" />
             <input
               type="file"
@@ -179,97 +160,9 @@ const Account = () => {
 
       {/* Teacher Documents */}
       {user?.role === "teacher" && (
-        <section className="space-y-6">
-          <h3 className="text-lg font-semibold">Uploaded Documents</h3>
-          <p className="text-sm text-gray-600">{docCount} of {MAX_DOCS} documents uploaded</p>
-
-          {/* Upload Form - only if not verified */}
-          {!user?.isVarified && (
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData();
-                const file = e.target.document.files[0];
-                const name = e.target.name.value;
-
-                if (!file || !name) return toast.error("Provide name and file");
-
-                formData.append("document", file);
-                formData.append("name", name);
-                setUploading(true);
-
-                try {
-                  const res = await axiosInstance.post("/auth/uploadDocument", formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                  });
-                  toast.success(res.data.message);
-                  setUser((prev) => ({ ...prev, documents: res.data.documents }));
-                  setLoading(true);
-                  e.target.reset();
-                } catch (err) {
-                  toast.error(err?.response?.data?.message || "Upload failed");
-                } finally {
-                  setUploading(false);
-                }
-              }}
-              className="space-y-4"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <input type="text" name="name" placeholder="Document Name" className="border p-2 rounded" required disabled={isUploadDisabled} />
-                <input type="file" name="document" accept=".pdf,.jpg,.jpeg,.png" className="border p-2 rounded" required disabled={isUploadDisabled} />
-              </div>
-              <Button
-                type="submit"
-                disabled={uploading || isUploadDisabled}
-                className={`text-white ${isUploadDisabled ? "bg-gray-400" : "bg-green-500 hover:bg-green-600"}`}
-              >
-                {uploading ? <Loader className="w-4 h-4 animate-spin mr-2" /> : "Upload Document"}
-              </Button>
-            </form>
-          )}
-
-          <div className="space-y-2">
-            {user?.documents?.length > 0 ? user.documents.map((doc, i) => (
-              <div key={i} className="flex items-center justify-between p-3 border rounded-md">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <span className="font-medium">{doc.name}</span>
-                  {doc.url ? (
-                    <a href={doc.url} target="_blank" rel="noreferrer" className="text-blue-600 underline">View</a>
-                  ) : <span className="text-gray-400">No URL</span>}
-                  {doc.verificationStatus && (
-                    <span className={`text-xs px-2 py-1 rounded-full ${badgeClass(doc.verificationStatus)}`}>
-                      {doc.verificationStatus.replace("_", " ")}
-                    </span>
-                  )}
-                </div>
-
-                {/* Delete button - only if not verified */}
-                {!user?.isVarified && (
-                  <Button size="sm" variant="destructive" onClick={() => setDeleteModal({ show: true, doc })}>
-                    {deletingId === doc._id ? <Loader className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                  </Button>
-                )}
-              </div>
-            )) : <p className="text-gray-500">No documents uploaded yet.</p>}
-          </div>
-        </section>
+        <TeacherDocuments user={user} setUser={setUser}  />
       )}
 
-      {/* Delete Confirmation Modal - only if not verified */}
-      {!user?.isVarified && deleteModal.show && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-xl max-w-md w-full space-y-4">
-            <h2 className="text-lg font-semibold">Delete Document</h2>
-            <p>Are you sure you want to delete <strong>{deleteModal.doc.name}</strong>?</p>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setDeleteModal({ show: false, doc: null })}>Cancel</Button>
-              <Button variant="destructive" onClick={confirmDelete} disabled={deletingId === deleteModal.doc._id}>
-                {deletingId === deleteModal.doc._id ? <Loader className="w-4 h-4 animate-spin" /> : "Delete"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

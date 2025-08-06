@@ -129,7 +129,7 @@ export default function Footer() {
 
                 {isTeacher && (
                   <li>
-                    <Link to="/teacher/dashboard" className="flex items-center hover:text-white">
+                    <Link to="/teacher" className="flex items-center hover:text-white">
                       <span className="text-green-500 mr-2">›</span> Teacher Dashboard
                     </Link>
                   </li>
@@ -137,7 +137,7 @@ export default function Footer() {
 
                 {isStudent && (
                   <li>
-                    <Link to="/student/dashboard" className="flex items-center hover:text-white">
+                    <Link to="/student" className="flex items-center hover:text-white">
                       <span className="text-green-500 mr-2">›</span> Student Dashboard
                     </Link>
                   </li>

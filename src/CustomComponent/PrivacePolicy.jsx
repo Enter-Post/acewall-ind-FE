@@ -8,9 +8,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DialogClose } from "@/components/ui/dialog"; // Make sure to import it
 
 export default function PrivacyPolicy({ style }) {
-  // const [open, setOpen] = useState(false)
 
   return (
     <Dialog>
@@ -19,7 +19,15 @@ export default function PrivacyPolicy({ style }) {
           Privacy Policy
         </p>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[700px]">
+      <DialogContent className="sm:max-w-[700px] ">
+        <DialogClose asChild>
+          <button
+            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+            aria-label="Close"
+          >
+            &times; 
+          </button>
+        </DialogClose>
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-center">
             Privacy Policy
@@ -240,17 +248,16 @@ export default function PrivacyPolicy({ style }) {
             <p>
               Acewall Scholars
               <br />
-              1072 Timber Trace Road, Powhatan, VA 23139, United States
+              PO Box 445  Powhatan, VA 23139, United States
               <br />
               Email:{" "}
               <a
                 href="mailto:contact@acewallscholars.org"
                 className="text-blue-500"
               >
-                contact@acewallscholars.org
-              </a>
+                contact@acewallscholars.org              </a>
               <br />
-              Phone: (+1) 804-615-1845
+              Phone: (+1) 855-522-3925
             </p>
           </div>
         </ScrollArea>

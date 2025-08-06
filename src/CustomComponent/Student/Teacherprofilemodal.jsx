@@ -61,9 +61,9 @@ const TeacherProfileModal = ({ isOpen, onClose, instructor, avatar }) => {
           </div>
         </div>
 
-        <div className="mt-4 text-gray-700 whitespace-pre-wrap text-sm">
+        {/* <div className="mt-4 text-gray-700 whitespace-pre-wrap text-sm">
           {instructor.Bio || "No bio provided."}
-        </div>
+        </div> */}
 
         <div className="mt-6">
           <h3 className="text-lg font-semibold mb-2">Courses by this Instructor</h3>

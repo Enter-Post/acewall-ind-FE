@@ -263,7 +263,7 @@ function App() {
               />
             </Route>
             <Route
-              path="/teacher/courses/posts"
+              path="/teacher/courses/:courseId/posts/:type/:typeId"
               element={<ViewCoursePostsPage />}
             />
             <Route path="wallet">

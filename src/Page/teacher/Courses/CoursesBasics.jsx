@@ -60,7 +60,7 @@ const courseFormSchema = z
     courseDescription: z
       .string()
       .min(5, { message: "Description must be at least 5 characters" })
-      .max(500, { message: "Description must be less than 500 characters" }),
+      .max(2500, { message: "Description must be less than 2500 characters" }),
     teachingPoints: z
       .array(
         z.object({
@@ -89,6 +89,9 @@ const courseFormSchema = z
       .string()
       .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
         message: "Price must be a valid non-negative number",
+      })
+      .refine((val) => Number(val) <= 9999, {
+        message: "Price must not exceed 4 digits",
       }),
     courseType: z
       .string()
@@ -404,9 +407,8 @@ export default function CoursesBasis() {
                   Thumbnail *
                 </Label>
                 <div
-                  className={` p-1 w-full max-w-md ${
-                    errors.thumbnail ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={` p-1 w-full max-w-md ${errors.thumbnail ? "border-red-500" : "border-gray-300"
+                    }`}
                 ></div>
                 {errors?.thumbnail && (
                   <p className="text-xs text-red-500 mt-1">
@@ -469,9 +471,8 @@ export default function CoursesBasis() {
                   <Input
                     id="courseTitle"
                     maxLength={50}
-                    className={`bg-gray-50 ${
-                      errors.courseTitle ? "border border-red-500" : ""
-                    }`}
+                    className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""
+                      }`}
                     {...register("courseTitle")}
                   />
                   {errors.courseTitle && (
@@ -489,12 +490,18 @@ export default function CoursesBasis() {
                     type="number"
                     step="0.01"
                     min="0"
+                    max="9999"
                     placeholder="Enter course price"
-                    className={`bg-gray-50 ${
-                      errors.price ? "border border-red-500" : ""
-                    }`}
+                    className={`bg-gray-50 ${errors.price ? "border border-red-500" : ""}`}
+                    onInput={(e) => {
+                      const value = parseFloat(e.currentTarget.value);
+                      if (value > 9999) {
+                        e.currentTarget.value = "9999";
+                      }
+                    }}
                     {...register("price")}
                   />
+
                   {errors.price && (
                     <p className="text-xs text-red-500 mt-1">
                       {errors.price.message}
@@ -556,7 +563,7 @@ export default function CoursesBasis() {
                   className={`min-h-[100px] bg-gray-50  ${
                     errors.courseDescription ? "border border-red-500" : ""
                   }`}
-                  maxLength={500}
+                  maxLength={2500}
                   {...register("courseDescription")}
                 />
                 {errors.courseDescription && (
@@ -592,11 +599,10 @@ export default function CoursesBasis() {
                   type="button"
                   disabled={teachingPointsFields.length >= 6}
                   onClick={() => appendTeachingPoint({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                    teachingPointsFields.length >= 6
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 6
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                    }`}
                 >
                   + Add Teaching Point
                 </button>
@@ -624,11 +630,10 @@ export default function CoursesBasis() {
                 <button
                   type="button"
                   onClick={() => appendRequirement({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                    requirementsFields.length >= 6
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 6
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                    }`}
                   disabled={requirementsFields.length >= 6}
                 >
                   + Add Requirement

@@ -26,14 +26,16 @@ import {
 import PurchaseConfirmationModal from "@/CustomComponent/Student/ConfirmationModal";
 import { toast } from "sonner";
 import avatar from "@/assets/avatar.png";
-import { useNavigate } from "react-router-dom"; 
-
+import RatingSection from "@/CustomComponent/teacher/RatingSection";
+import BackButton from "@/CustomComponent/BackButton";
+import TeacherProfileModal from "@/CustomComponent/Student/Teacherprofilemodal";
+// AllCoursesDetail Component
 const StdPreview = () => {
-  const { id } = useParams(); 
+  const { id } = useParams(); // Grab the actual course ID from the URL
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); 
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const instructor = courseDetails?.createdby || {};
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
@@ -66,20 +68,15 @@ const StdPreview = () => {
   if (!courseDetails)
     return <div className="p-6 text-red-500">Course not found.</div>;
 
-  return (
+  return (<>
+    <div className="mb-10">
+      <BackButton className="shadow-sm" />
+    </div>
     <div className="flex flex-col lg:flex-row min-h-screen">
+
       <div className="grid lg:grid-cols-3 w-full  gap-2 ">
         <div className="lg:col-span-2 w-full ">
           <div className="  px-2  overflow-hidden mb-6">
-             <div className="mb-4">
-              <Button
-                variant="outline"
-                className="bg-gray-100 text-black hover:bg-gray-200"
-                onClick={() => navigate(-1)}
-              >
-                ← Back
-              </Button>
-            </div>
             <div className="p-2">
               <h1 className="text-3xl font-bold mb-2">
                 {courseDetails.courseTitle}
@@ -228,7 +225,7 @@ const StdPreview = () => {
                                       {lesson.description && (
                                         <p className="text-sm text-gray-700 leading-relaxed">
                                           {" "}
-                                          {lesson.description}
+                                          <div dangerouslySetInnerHTML={{ __html: lesson.description }} />
                                         </p>
                                       )}
 
@@ -301,97 +298,45 @@ const StdPreview = () => {
                   <div className="flex flex-col sm:flex-row items-start gap-6">
                     <Avatar className="h-15 w-15 shadow-md ring-green-500 ring-3 rounded-full">
                       <AvatarImage
-                        src={courseDetails?.createdby?.profileImg?.url || avatar}
+                        src={instructor?.profileImg?.url || avatar}
                         alt="Instructor"
                         className="h-15 w-15 object-cover rounded-full"
                       />
                       <AvatarFallback className="h-20 w-20 flex items-center justify-center rounded-full bg-gray-200 text-lg font-semibold">
-                        {courseDetails.createdby.firstName?.charAt(0)}
-                        {courseDetails.createdby.lastName?.charAt(0)}
+                        {instructor.firstName?.charAt(0)}
+                        {instructor.lastName?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {courseDetails.createdby.firstName}{" "}
-                        {courseDetails.createdby.middleName}{" "}
-                        {courseDetails.createdby.lastName}
+                      <h3
+                        className="text-xl font-semibold text-gray-900 cursor-pointer hover:underline"
+                        onClick={() => setIsModalOpen(true)}
+                      >
+                        {instructor.firstName}{" "}
+                        {instructor.middleName}{" "}
+                        {instructor.lastName}
                       </h3>
-
-
-                      <p className="text-gray-700 text-sm mt-4 leading-relaxed">
-                        {courseDetails.createdby.Bio || "No bio provided."}
-                      </p>
+                      {/* <p className="text-gray-700 text-sm mt-4 leading-relaxed">
+                        {instructor.Bio || "No bio provided."}
+                      </p> */}
                     </div>
                   </div>
+
+                  <TeacherProfileModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    instructor={instructor}
+                    avatar={avatar}
+                  />
                 </TabsContent>
+
+
+
 
                 {/* reviews */}
                 <TabsContent value="reviews" className="p-6">
-                  <div className="flex flex-col gap-8">
-                    <div className="">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold">
-                          {courseDetails.rating}
-                        </div>
-                        <div className="flex justify-center my-2">
-                          {[...Array(4)].map((_, i) => (
-                            <Star
-                              key={i}
-                              size={16}
-                              className="text-yellow-400 fill-yellow-400"
-                            />
-                          ))}
-                          <StarHalf
-                            size={16}
-                            className="text-yellow-400 fill-yellow-400"
-                          />
-                        </div>
-
-                        <div className="text-sm text-gray-500">
-                          Course Rating
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="md:w-2/3">
-                      <h3 className="text-lg font-bold mb-4">
-                        Students Feedback
-                      </h3>
-                      <div className="space-y-6">
-                        {Array.isArray(courseDetails.reviews) &&
-                          courseDetails.reviews.length > 0 ? (
-                          courseDetails.reviews.map((review, index) => (
-                            <div
-                              key={index}
-                              className="border-b border-gray-200 pb-6"
-                            >
-                              <div className="flex items-start gap-4">
-                                <Avatar className="h-30 w-30">
-                                  <AvatarImage
-                                    src={`/placeholder.svg?height=40&width=40&text=S${index}`}
-                                    alt="Student"
-                                  />
-                                  <AvatarFallback>S{index}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <div className="font-medium">
-                                    {review.student}
-                                  </div>
-                                  <div className="flex items-center gap-2 mt-1"></div>
-                                  <p className="text-sm mt-2">
-                                    {review.comment}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p>No reviews available</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <RatingSection courseId={courseDetails._id} />
                 </TabsContent>
               </Tabs>
             </div>
@@ -401,10 +346,10 @@ const StdPreview = () => {
         {/* Right Sidebar */}
         <div className="md:col-span-1">
           <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
-            <div className="flex flex-col gap-6 mb-6">
-             <button className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md">
-              Enroll Now
-             </button>
+            <div className="flex flex-col gap-6 mb-6 opacity-50 pointer-events-none">
+              <PurchaseConfirmationModal
+                courseID={courseDetails._id}
+              />
             </div>
 
             <div className="space-y-4">
@@ -441,6 +386,7 @@ const StdPreview = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

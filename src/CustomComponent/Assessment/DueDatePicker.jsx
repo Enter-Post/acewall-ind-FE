@@ -18,7 +18,7 @@ export default function StrictDatePicker({ name, minDate, maxDate }) {
   const handleDateChange = (selectedDate) => {
     if (!selectedDate) return;
 
-    const formattedDate = format(selectedDate, "yyyy-MM-dd");
+    const formattedDate = format(selectedDate, "mm-dd-yyyy");
     const formattedTime = format(selectedDate, "HH:mm");
 
     // update nested keys

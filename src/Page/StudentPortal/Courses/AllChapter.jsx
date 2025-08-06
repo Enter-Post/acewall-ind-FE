@@ -9,18 +9,21 @@ const AllChapter = () => {
   const [quarterEndDate, setQuarterEndDate] = useState("");
 
   const fetchQuarterDetail = async () => {
-    await axiosInstance
-      .get(`chapter/${courseId}/${quarterId}`)
-      .then((res) => {
-        console.log(res);
-        setChapters(res.data.chapters);
-        setQuarterStartDate(res.data.quarterEndDate);
-        setQuarterEndDate(res.data.quarterStartDate);
-      })
-      .catch((err) => {
-        console.log(err);
+    try {
+      const res = await axiosInstance.get(`chapter/${courseId}/${quarterId}`);
+      const data = res.data;
+
+      if (Array.isArray(data.chapters)) {
+        setChapters(data.chapters);
+        setQuarterStartDate(data.quarterStartDate);
+        setQuarterEndDate(data.quarterEndDate);
+      } else {
         setChapters([]);
-      });
+      }
+    } catch (err) {
+      console.error("Error fetching chapters:", err);
+      setChapters([]);
+    }
   };
 
   useEffect(() => {
@@ -30,13 +33,16 @@ const AllChapter = () => {
   return (
     <div>
       <div className="text-lg font-semibold mb-4">Chapters:</div>
-      {chapters?.map((chapter) => (
-        <Link to={`/student/mycourses/${courseId}/quarter/${quarterId}/chapter/${chapter._id}`}>
-          <div
-            key={chapter._id}
-            className="mb-4 border border-gray-200 p-5 rounded-lg bg-blue-50 hover:bg-blue-100 cursor-pointer"
-          >
-            <h3 className="font-semibold text-md">{chapter.title}</h3>
+      {chapters.map((chapter, index) => (
+        <Link
+          key={chapter._id}
+          to={`/student/mycourses/${courseId}/quarter/${quarterId}/chapter/${chapter._id}`}
+        >
+          <span className="text-sm font-semibold text-gray-700">Chapter: {index + 1}</span>
+          <div className="mb-4 border border-gray-200 p-5 rounded-lg bg-blue-50 hover:bg-blue-100 cursor-pointer transition-all duration-200 shadow-sm">
+            <h3 className="font-semibold text-md text-blue-800">
+              {chapter.title}
+            </h3>
             <p className="font-light text-sm text-muted-foreground">
               {chapter.description}
             </p>

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +28,8 @@ import EditChapterDialog from "@/CustomComponent/CreateCourse/EditChapter";
 import AddMoreFile from "@/CustomComponent/CreateCourse/addMoreFile";
 import { ChapterCard } from "./chapter-card";
 import { AssessmentDialog } from "../Models/AssessmentFields";
+import BackButton from "@/CustomComponent/BackButton";
+import ChapterOptionDropdown from "@/CustomComponent/CreateCourse/ChapterOptionDropdown";
 
 const TeacherChapterDetail = () => {
   const { chapterId } = useParams();
@@ -44,8 +44,7 @@ const TeacherChapterDetail = () => {
   const [chapter, setChapter] = useState(null);
   const [lessons, setLessons] = useState([]);
 
-
-  console.log(lessons, "lessons");
+  console.log(courseId, "courseId");
 
   const fetchChapterDetail = async () => {
     try {
@@ -122,11 +121,7 @@ const TeacherChapterDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-6xl mx-auto space-y-1">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="p-2">
-          <ArrowLeft className="h-5 w-5" />
-          Back
-        </Button>
-        {/* Header */}
+        <BackButton />
         <div className="bg-white rounded-lg shadow-sm p-6">
           <section className="flex justify-between">
             <div className="flex items-center gap-4 mb-4">
@@ -141,31 +136,24 @@ const TeacherChapterDetail = () => {
               </div>
             </div>
 
-            <EditChapterDialog
-              chapterId={chapter._id}
-              title={chapter.title}
-              description={chapter.description}
-              fetchChapterDetail={fetchChapterDetail}
-            />
+            <div className="flex justify-end gap-4">
+              <EditChapterDialog
+                chapterId={chapter._id}
+                title={chapter.title}
+                description={chapter.description}
+                fetchChapterDetail={fetchChapterDetail}
+              />
+              <ChapterOptionDropdown
+                chapterId={chapterId}
+                fetchChapterDetail={fetchChapterDetail}
+                quarterId={chapter.quarter?._id}
+                semesterId={chapter.semester?._id}
+                quarterStart={quarterStart}
+                quarterEnd={quarterEnd}
+                courseId={courseId}
+              />
+            </div>
           </section>
-
-          <div className="flex items-center gap-4">
-            <LessonModal
-              chapterID={chapterId}
-              fetchQuarterDetail={fetchChapterDetail}
-            />
-            <Link
-              to={`/teacher/assessments/create/chapter/${chapterId}/${courseId}/${quarterStart}/${quarterEnd}?semester=${chapter.semester?._id}&quarter=${chapter.quarter?._id}`}
-            >
-              <Button
-                variant="outline"
-                className="text-green-600 bg-transparent"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Assessment
-              </Button>
-            </Link>
-          </div>
         </div>
 
         {/* Chapter Assessments */}
@@ -231,7 +219,7 @@ const TeacherChapterDetail = () => {
           </CardHeader>
           <CardContent>
             {lessons.length === 0 ? (
-              <div className="text-center py-8">
+              <div className="text-center py-8 flex flex-col justify-center item-center ">
                 <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   No lessons yet
@@ -240,10 +228,6 @@ const TeacherChapterDetail = () => {
                   Create your first lesson to start building your chapter
                   content.
                 </p>
-                <LessonModal
-                  chapterID={chapterId}
-                  fetchChapterDetail={fetchChapterDetail}
-                />
               </div>
             ) : (
               <div className="space-y-4">
@@ -285,12 +269,29 @@ const TeacherChapterDetail = () => {
                               Assessment
                             </Button>
                           </Link>
+                          <Link
+                            to={`/teacher/courses/${courseId}/posts/lesson/${lesson._id}`}
+                          >
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-green-600 bg-transparent"
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Pages
+                            </Button>
+                          </Link>
                         </section>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {lesson.description && (
-                        <p className="text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: lesson.description }} />
+                        <p
+                          className="text-sm text-gray-600"
+                          dangerouslySetInnerHTML={{
+                            __html: lesson.description,
+                          }}
+                        />
                       )}
 
                       <div>

@@ -13,6 +13,8 @@ import { z } from "zod";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import BackButton from "@/CustomComponent/BackButton";
+import PhoneInput from "react-phone-input-2";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -21,7 +23,10 @@ const formSchema = z.object({
   pronoun: z.string().optional(),
   gender: z.string().optional(),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  phone: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .regex(/^\d{10,15}$/, "Phone number is not valid"),
   homeAddress: z.string().min(1, "Home address is "),
   mailingAddress: z.string().optional(),
 });
@@ -45,45 +50,114 @@ const EditGeneralInfo = () => {
       firstName: "",
       middleName: "",
       lastName: "",
+      phone: "",
       pronoun: "",
       gender: "",
       email: "",
-      phone: "",
       homeAddress: "",
       mailingAddress: "",
     },
+
   });
+  const {
+    homeAddressLine1 = "",
+    homeAddressLine2 = "",
+    homeCity = "",
+    homeState = "",
+    homeZip = "",
+    mailingAddressLine1 = "",
+    mailingAddressLine2 = "",
+    mailingCity = "",
+    mailingState = "",
+    mailingZip = "",
+  } = watch();
 
   // Populate form with user data when available
   useEffect(() => {
-    setValue("firstName", user.firstName || "");
-    setValue("middleName", user.middleName || "");
-    setValue("lastName", user.lastName || "");
-    setValue("pronoun", user.pronoun || "");
-    setValue("gender", user.gender || "");
-    setValue("email", user.email || "");
-    setValue("phone", user.phone || "");
-    setValue("homeAddress", user.homeAddress || "");
-    setValue("mailingAddress", user.mailingAddress || "");
+    if (user) {
+      setValue("firstName", user.firstName || "");
+      setValue("middleName", user.middleName || "");
+      setValue("phone", user.phone || "");
+      setValue("lastName", user.lastName || "");
+      setValue("pronoun", user.pronoun || "");
+      setValue("gender", user.gender || "");
+      setValue("email", user.email || "");
+      setValue("homeAddress", user.homeAddress || "");
+      setValue("mailingAddress", user.mailingAddress || "");
+
+      // Split homeAddress into parts
+      if (user.homeAddress) {
+        const parts = user.homeAddress.split(",").map((p) => p.trim());
+        setValue("homeAddressLine1", parts[0] || "");
+        setValue("homeAddressLine2", parts[1] || "");
+        setValue("homeCity", parts[2] || "");
+        const stateZip = parts[3]?.split(" ");
+        setValue("homeState", stateZip?.[0] || "");
+        setValue("homeZip", stateZip?.[1] || "");
+      }
+
+      // Split mailingAddress into parts
+      if (user.mailingAddress) {
+        const parts = user.mailingAddress.split(",").map((p) => p.trim());
+        setValue("mailingAddressLine1", parts[0] || "");
+        setValue("mailingAddressLine2", parts[1] || "");
+        setValue("mailingCity", parts[2] || "");
+        const stateZip = parts[3]?.split(" ");
+        setValue("mailingState", stateZip?.[0] || "");
+        setValue("mailingZip", stateZip?.[1] || "");
+      }
+    }
   }, [user, setValue]);
 
+
+
+
+
+  useEffect(() => {
+    const fullHomeAddress = `${homeAddressLine1}, ${homeAddressLine2 ? homeAddressLine2 + ", " : ""
+      }${homeCity}, ${homeState} ${homeZip}`;
+    setValue("homeAddress", fullHomeAddress);
+  }, [homeAddressLine1, homeAddressLine2, homeCity, homeState, homeZip]);
+
+  // Concatenate Mailing Address
+  useEffect(() => {
+    const fullMailingAddress = `${mailingAddressLine1}, ${mailingAddressLine2 ? mailingAddressLine2 + " " : ""
+      }${mailingCity}, ${mailingState} ${mailingZip}`;
+    setValue("mailingAddress", fullMailingAddress);
+  },
+    [
+      mailingAddressLine1,
+      mailingAddressLine2,
+      mailingCity,
+      mailingState,
+      mailingZip,
+    ]
+  );
   // Form submission handler
   const onSubmit = async (data) => {
+
+    console.log(data, "data")
     const formData = new FormData();
     formData.append("firstName", data.firstName);
-    formData.append("middleName", data.middleName);
+    if (data.middleName.length > 0) {
+      formData.append("middleName", data.middleName);
+    }
     formData.append("lastName", data.lastName);
     formData.append("pronoun", data.pronoun);
     formData.append("gender", data.gender);
-    formData.append("email", data.email);
     formData.append("phone", data.phone);
+    formData.append("email", data.email);
     formData.append("homeAddress", data.homeAddress);
     formData.append("mailingAddress", data.mailingAddress);
 
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
+    
     try {
       const response = await axiosInstance.put(`/auth/updateuser`, formData);
       toast.success(response.data.message);
-      navigate(`/${user.role}/account`)
+      navigate(`/${user.role}/account`);
       window.location.reload();
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -91,8 +165,11 @@ const EditGeneralInfo = () => {
     }
   };
 
+
   return (
+
     <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
+      <BackButton className="mb-10" />
       {/* Page Title */}
       <div>
         <h2 className="text-2xl font-bold text-foreground">
@@ -118,7 +195,7 @@ const EditGeneralInfo = () => {
                   placeholder="John"
                   {...register("firstName")}
                   onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z]/g, "");
+                    e.target.value = e.target.value.replace(/[^A-Za-z]/g);
                   }}
                 />
                 {errors.firstName && (
@@ -140,7 +217,7 @@ const EditGeneralInfo = () => {
                   placeholder="M."
                   {...register("middleName")}
                   onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z]/g, "");
+                    e.target.value = e.target.value.replace(/[^A-Za-z]/g);
                   }}
                 />
               </div>
@@ -157,7 +234,7 @@ const EditGeneralInfo = () => {
                   placeholder="Doe"
                   {...register("lastName")}
                   onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z]/g, "");
+                    e.target.value = e.target.value.replace(/[^A-Za-z]/g);
                   }}
                 />
                 {errors.lastName && (
@@ -179,25 +256,29 @@ const EditGeneralInfo = () => {
                   Preferred Pronoun
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["He/Him", "She/Her", "They/Them", "Others", "prefer not to say"].map(
-                    (pronoun, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <input
-                          type="radio"
-                          id={`pronoun-${pronoun.toLowerCase()}`}
-                          value={pronoun.toLowerCase()}
-                          {...register("pronoun")}
-                          className="w-4 h-4 accent-blue-600"
-                        />
-                        <label
-                          htmlFor={`pronoun-${pronoun.toLowerCase()}`}
-                          className="text-sm text-gray-900 dark:text-white"
-                        >
-                          {pronoun}
-                        </label>
-                      </div>
-                    )
-                  )}
+                  {[
+                    "He/Him",
+                    "She/Her",
+                    "They/Them",
+                    "Others",
+                    "prefer not to say",
+                  ].map((pronoun, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        id={`pronoun-${pronoun.toLowerCase()}`}
+                        value={pronoun.toLowerCase()}
+                        {...register("pronoun")}
+                        className="w-4 h-4 accent-blue-600"
+                      />
+                      <label
+                        htmlFor={`pronoun-${pronoun.toLowerCase()}`}
+                        className="text-sm text-gray-900 dark:text-white"
+                      >
+                        {pronoun}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -207,7 +288,13 @@ const EditGeneralInfo = () => {
                   Gender Identity
                 </Label>
                 <div className="grid grid-cols-1 gap-2">
-                  {["Male", "Female", "Non-binary", "Other", "prefer not to say"].map((gender) => (
+                  {[
+                    "Male",
+                    "Female",
+                    "Non-binary",
+                    "Other",
+                    "prefer not to say",
+                  ].map((gender) => (
                     <div key={gender} className="flex items-center space-x-2">
                       <input
                         type="radio"
@@ -228,65 +315,140 @@ const EditGeneralInfo = () => {
               </div>
             </div>
           </section>
+          <section>
+            <div className="mb-6">
+              <Label htmlFor="phone">
+                Phone Number <span className="text-red-600">*</span>
+              </Label>
+              <PhoneInput
+                country={"us"}
+                value={watch("phone")}
+                onChange={(value) => setValue("phone", value)}
+                inputProps={{
+                  name: "phone",
+                  required: true,
+                }}
+                inputClass="!w-full !rounded-lg !pl-12 !py-2 !bg-gray-50"
+                containerClass="w-full"
+              />
+              <p className="text-xs text-red-600 mt-1">
+                {errors?.phone?.message}
+              </p>
+
+
+              <p className="text-xs text-red-600 mt-1">
+                {errors?.phone?.message}
+              </p>
+            </div>
+          </section>
 
           {/* Address Information */}
           <section className="space-y-6">
             <h3 className="text-lg font-semibold">Address Information</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="homeAddress" className="text-sm font-medium">
-                  Home Address
-                </Label>
-                <Textarea
-                  name="homeAddress"
-                  id="homeAddress"
-                  type="text"
-                  maxLength={MAX_ADDRESS_LENGTH}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Enter your home address"
-                  rows={3}
-                  {...register("homeAddress", {
-                  maxLength: {
-                      value: MAX_ADDRESS_LENGTH,
-                      message: "Home address must not exceed 300 characters",
-                    },
-                  })}
-                   onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z0-9#?!@$%^&*-]/g, "");
-                  }}
-                />
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  <span>{errors?.homeAddress?.message}</span>
+            {/* Home Address */}
+            <div className="mb-6">
+              <Label>Home Address</Label>
+
+              <Input
+                {...register("homeAddressLine1", {
+                  required: "Address Line 1 is required",
+                })}
+                placeholder="Address Line 1"
+                className="mt-2"
+              />
+              <p className="text-xs text-red-600">
+                {errors?.homeAddressLine1?.message}
+              </p>
+
+              <Input
+                {...register("homeAddressLine2")}
+                placeholder="Address Line 2 (Optional)"
+                className="mt-2"
+              />
+
+              <div className="flex gap-2 mt-2">
+                <div className="flex-1">
+                  <Input
+                    {...register("homeCity", { required: "City is required" })}
+                    placeholder="City / Town"
+                  />
+                  <p className="text-xs text-red-600">{errors?.homeCity?.message}</p>
+                </div>
+
+                <div className="flex-1">
+                  <Input
+                    {...register("homeState", { required: "State is required" })}
+                    placeholder="State / Province"
+                  />
+                  <p className="text-xs text-red-600">{errors?.homeState?.message}</p>
+                </div>
+
+                <div className="flex-1">
+                  <Input
+                    {...register("homeZip", { required: "ZIP Code is required" })}
+                    placeholder="ZIP / Postal"
+                  />
+                  <p className="text-xs text-red-600">{errors?.homeZip?.message}</p>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="mailingAddress" className="text-sm font-medium">
-                  Mailing Address (Optional)
-                </Label>
-                <Textarea
-                  name="mailingAddress"
-                  id="mailingAddress"
-                  type="text"
-                  maxLength={MAX_ADDRESS_LENGTH}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  placeholder="Enter your mailing address"
-                  rows={3}
-                  {...register("mailingAddress", {
-                    maxLength: {
-                      value: MAX_ADDRESS_LENGTH,
-                      message: "Mailing address must not exceed 300 characters",
-                    },
-                  })}
-                  onInput={(e) => {
-                    e.target.value = e.target.value.replace(/[^A-Za-z0-9#?!@$%^&*-]/g, "");
-                  }}
-                />
-                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  <span>{errors?.mailingAddress?.message}</span>
+            </div>
+
+            {/* Mailing Address */}
+            <div className="mb-6">
+              <Label>Mailing Address (if different)</Label>
+
+              <Input
+                {...register("mailingAddressLine1", {
+                  required: "Address Line 1 is required",
+                })}
+                placeholder="Address Line 1"
+                className="mt-2"
+              />
+              <p className="text-xs text-red-600">
+                {errors?.mailingAddressLine1?.message}
+              </p>
+
+              <Input
+                {...register("mailingAddressLine2")}
+                placeholder="Address Line 2 (Optional)"
+                className="mt-2"
+              />
+
+              <div className="flex gap-2 mt-2">
+                <div className="flex-1">
+                  <Input
+                    {...register("mailingCity", { required: "City is required" })}
+                    placeholder="City / Town"
+                  />
+                  <p className="text-xs text-red-600">
+                    {errors?.mailingCity?.message}
+                  </p>
+                </div>
+
+                <div className="flex-1">
+                  <Input
+                    {...register("mailingState", { required: "State is required" })}
+                    placeholder="State / Province"
+                  />
+                  <p className="text-xs text-red-600">
+                    {errors?.mailingState?.message}
+                  </p>
+                </div>
+
+                <div className="flex-1">
+                  <Input
+                    {...register("mailingZip", { required: "ZIP Code is required" })}
+                    placeholder="ZIP / Postal"
+                  />
+                  <p className="text-xs text-red-600">
+                    {errors?.mailingZip?.message}
+                  </p>
+
                 </div>
               </div>
             </div>
           </section>
+
           {/* Save Button */}
           <div className="flex justify-end">
             <Button

@@ -45,8 +45,6 @@ const AssessmentSubmissionPage = () => {
   const [totalFileSize, setTotalFileSize] = useState(0);
   const navigate = useNavigate();
 
-  // console.log(totalFileSize, "total file size");
-
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
 

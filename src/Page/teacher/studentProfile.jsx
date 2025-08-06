@@ -8,15 +8,29 @@ import { Mail, Calendar, School } from "lucide-react";
 import avatar from "@/assets/avatar.png";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import BackButton from "@/CustomComponent/BackButton";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export default function StudentProfile() {
   const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
+
   const student = state?.student;
 
+  // ✅ Fixed conversation logic
+  const handleConversation = async () => {
+    try {
+      await axiosInstance.post("conversation/create", {
+        memberId: student._id,
+      });
+      navigate("/teacher/messages"); // ✅ fixed typo
+    } catch (err) {
+      console.error("Failed to create conversation:", err);
+    }
+  };
+
   if (!student) {
-    // Fallback if user directly visits the URL without navigation state
     return (
       <div className="text-center mt-10">
         <p className="text-red-500">Student data not found.</p>
@@ -32,7 +46,8 @@ export default function StudentProfile() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-white rounded-xl shadow-md">
-      <BackButton className="mb-10"/>
+      <BackButton className="mb-10" />
+
       {/* Profile Section */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
         <Avatar className="w-24 h-24 rounded-full overflow-hidden ring-3 ring-gray-500 shadow-sm">
@@ -73,6 +88,13 @@ export default function StudentProfile() {
               </span>
             </div>
           </div>
+
+          {/* ✅ Message Student Button */}
+          <div className="flex items-center justify-center md:justify-start gap-2 mt-4">
+            <Button className="bg-green-500" onClick={handleConversation}>
+              Message
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -103,12 +125,13 @@ export default function StudentProfile() {
             </div>
 
             <div className="absolute inset-0 bg-green-600 bg-opacity-80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <span className="text-white text-lg font-semibold">View Grade Book</span>
+              <span className="text-white text-lg font-semibold">
+                View Grade Book
+              </span>
             </div>
           </Link>
         ))}
       </div>
-
     </div>
   );
 }

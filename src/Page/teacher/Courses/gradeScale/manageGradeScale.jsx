@@ -67,6 +67,9 @@ export default function ManageGradeScale() {
     const newMin = parseFloat(data.min);
     const newMax = parseFloat(data.max);
 
+    console.log(newMin, "newMin");
+    console.log(newMax, "newMax");
+
     if (newMin >= newMax) {
       toast.error("Min must be less than Max.");
       return;
@@ -79,8 +82,8 @@ export default function ManageGradeScale() {
 
     const hasOverlap = grades.some(
       (g) =>
-        (newMin >= g.min && newMin < g.max) ||
-        (newMax > g.min && newMax <= g.max) ||
+        (newMin >= g.min && newMin <= g.max) ||
+        (newMax >= g.min && newMax <= g.max) ||
         (newMin <= g.min && newMax >= g.max)
     );
 
@@ -262,7 +265,7 @@ export default function ManageGradeScale() {
                   </div>
                 ))}
 
-                {isComplete ? (
+                {isComplete && (
                   <>
                     <Alert className="mt-4 bg-green-50 border-green-200">
                       <Check className="h-4 w-4 text-green-600" />
@@ -279,14 +282,6 @@ export default function ManageGradeScale() {
                       {isLoading ? "Creating..." : "Create"}
                     </Button>
                   </>
-                ) : (
-                  <Alert className="mt-4 bg-yellow-50 border-yellow-200">
-                    <AlertCircle className="h-4 w-4 text-yellow-600" />
-                    <AlertDescription className="text-yellow-700">
-                      Grade scale is incomplete. Some % ranges (like 90.01%) may
-                      be missing.
-                    </AlertDescription>
-                  </Alert>
                 )}
               </div>
             ) : (

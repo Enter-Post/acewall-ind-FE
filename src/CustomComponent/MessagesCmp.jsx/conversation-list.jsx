@@ -6,6 +6,8 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import TeacherList from "../createConversationDropdown";
+import TeacherDropdown from "../createConversationDropdown";
 
 export default function ConversationList({
   activeConversation,
@@ -15,18 +17,18 @@ export default function ConversationList({
   const { user, currentConversation, setCurrentConversation } =
     useContext(GlobalContext);
 
-  console.log(conversations, "conversations");
+  const [teacher, setTeacher] = useState([]);
+
+  const getConversations = () => {
+    axiosInstance
+      .get("/conversation/get")
+      .then((res) => {
+        setConversations(res.data.conversations);
+      })
+      .catch((err) => console.log(err));
+  };
 
   useEffect(() => {
-    const getConversations = () => {
-      axiosInstance
-        .get("/conversation/get")
-        .then((res) => {
-          setConversations(res.data.conversations);
-          console.log(res, "res");
-        })
-        .catch((err) => console.log(err));
-    };
     getConversations();
   }, []);
 
@@ -34,8 +36,23 @@ export default function ConversationList({
     setActiveConversation(id);
   };
 
+  const fetchCoursesbystudent = async () => {
+    await axiosInstance
+      .get(`/conversation/getTeacherforStudent`)
+      .then((res) => {
+        console.log(res, "res");
+        setTeacher(res.data.teachers);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    fetchCoursesbystudent();
+  }, []);
+
   return (
-    <div className="flex flex-col h-full hide-scrollbar p-4">
+    <div className="flex flex-col h-full hide-scrollbar p-4 gap-3">
+      <TeacherDropdown teachers={teacher} getConversations={getConversations} />
 
       {conversations && conversations.length > 0 ? (
         <div className="overflow-y-auto gap-3 flex flex-wrap">
@@ -49,9 +66,7 @@ export default function ConversationList({
               }
               key={conversation._id}
             >
-              <ConversationItem
-                conversation={conversation}
-              />
+              <ConversationItem conversation={conversation} />
             </Link>
           ))}
         </div>
@@ -62,5 +77,4 @@ export default function ConversationList({
       )}
     </div>
   );
-  
 }

@@ -31,7 +31,7 @@ const pdfFileSchema = z
 
 const lessonSchema = z.object({
   title: z.string().min(5).max(100),
-  description: z.string().min(5).max(200),
+  description: z.string().min(5).max(2500),
   youtubeLinks: z
     .string()
     .trim()
@@ -40,7 +40,9 @@ const lessonSchema = z.object({
     .refine(
       (val) =>
         !val ||
-        /^https:\/\/(www\.|m\.)?(youtube\.com\/(watch\?v=|embed\/)[\w-]{11}(&[^ ]*)?|youtu\.be\/[\w-]{11}(\?[^ ]*)?)$/.test(val),
+        /^https:\/\/(www\.|m\.)?(youtube\.com\/(watch\?v=|embed\/)[\w-]{11}(&[^ ]*)?|youtu\.be\/[\w-]{11}(\?[^ ]*)?)$/.test(
+          val
+        ),
       {
         message: "Enter a valid YouTube video link",
       }
@@ -58,7 +60,8 @@ const lessonSchema = z.object({
     .min(1, { message: "At least one PDF is required" })
     .refine(
       (files) =>
-        files.reduce((acc, file) => acc + (file?.size || 0), 0) <= 5 * 1024 * 1024,
+        files.reduce((acc, file) => acc + (file?.size || 0), 0) <=
+        5 * 1024 * 1024,
       {
         message: "Total file size must not exceed 5MB",
       }
@@ -84,7 +87,6 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
       insertImageAsBase64URI: true,
     },
   });
-
 
   const {
     register,
@@ -191,16 +193,12 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50 ml-auto"
-        >
-          <Plus className="h-4 w-4" />
+        <div className="flex item-center gap-2 border-blue-200 text-sm text-blue-700 ml-auto w-full bg-white p-2 cursor-pointer">
+          <Plus className="h-4 w-4" size={16} />
           Add Lesson
-        </Button>
+        </div>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] h-[80dvh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[90%] h-[80dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Lesson</DialogTitle>
           <DialogDescription>
@@ -231,8 +229,7 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
             )}
           </div>
 
-
-          <div>
+          <div className="w-[80%] flex justify-center item-center gap-2 flex-col">
             <Label htmlFor="description">Lesson Description</Label>
             <JoditEditor
               config={editorConfig}
@@ -242,14 +239,18 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
                 setValue("description", newContent);
               }}
             />
-
+            {errors.description && (
+              <p className="text-red-500 text-sm">{errors.desciption}</p>
+            )}
           </div>
 
           <div>
             <Label htmlFor="youtubeLinks">YouTube Link</Label>
             <Input id="youtubeLinks" {...register("youtubeLinks")} />
             {errors.youtubeLinks && (
-              <p className="text-red-500 text-sm">{errors.youtubeLinks.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.youtubeLinks.message}
+              </p>
             )}
           </div>
 
@@ -268,7 +269,9 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
                 <Input
                   type="file"
                   accept="application/pdf"
-                  onChange={(e) => handleFileChange(input.id, e.target.files?.[0])}
+                  onChange={(e) =>
+                    handleFileChange(input.id, e.target.files?.[0])
+                  }
                 />
                 <Button
                   type="button"
@@ -299,7 +302,9 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
             </p>
 
             {errors.pdfFiles && (
-              <p className="text-red-500 text-sm mt-2">{errors.pdfFiles.message}</p>
+              <p className="text-red-500 text-sm mt-2">
+                {errors.pdfFiles.message}
+              </p>
             )}
           </div>
 

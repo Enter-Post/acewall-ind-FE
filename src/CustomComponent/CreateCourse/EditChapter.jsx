@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { CourseContext } from "@/Context/CoursesProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
-import { Loader, Pen } from "lucide-react";
+import { Loader, Pen, Pencil } from "lucide-react";
 
 // Zod Schema with length limits
 const chapterSchema = z.object({
@@ -86,10 +86,10 @@ export default function EditChapterDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-green-100 text-green-600 hover:bg-green-200">
-          <Pen />
-        </Button>
+      <DialogTrigger asChild className={"w-9 h-9"}> 
+        <div className="bg-green-200 hover:bg-green-300 cursor-pointer rounded-lg p-2 item-center">
+          <Pencil className="text-green-600" size={20} />
+        </div>
       </DialogTrigger>
 
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
@@ -133,7 +133,11 @@ export default function EditChapterDialog({
 
           {/* Footer */}
           <DialogFooter className="justify-between">
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+            >
               Cancel
             </Button>
             <Button
@@ -141,7 +145,11 @@ export default function EditChapterDialog({
               className="bg-green-500 text-white"
               disabled={isLoading}
             >
-              {isLoading ? <Loader className="animate-spin mr-2" /> : "Edit Chapter"}
+              {isLoading ? (
+                <Loader className="animate-spin mr-2" />
+              ) : (
+                "Edit Chapter"
+              )}
             </Button>
           </DialogFooter>
         </form>

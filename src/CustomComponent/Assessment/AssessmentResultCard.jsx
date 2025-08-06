@@ -12,11 +12,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, FileText, XCircle } from "lucide-react";
 const AssessmentResultCard = ({ submission }) => {
-
-console.log("Submission", submission);
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString();
@@ -31,7 +28,7 @@ console.log("Submission", submission);
                 <div className="flex items-center space-x-2">
                   <Badge
                     variant={
-                      submission?.status == "before due date"
+                      submission?.status === "before due date"
                         ? "success"
                         : "destructive"
                     }
@@ -147,6 +144,9 @@ const QuestionCard = ({
   const questionType = answer?.question?.type || "unknown";
   const maxPoints = answer?.question?.points || 0;
 
+  console.log(answer, "answer");
+  console.log(questionType, "questionType");
+
   const handleError = (questionId, message) => {
     setError((prevErrors) => {
       if (!message) {
@@ -173,7 +173,9 @@ const QuestionCard = ({
                 ? "True/False"
                 : questionType === "qa"
                 ? "Question & Answer"
-                : "Unknown Type"}
+                : questionType === "file"
+                ? "File"
+                : "Unknown"}
             </CardDescription>
           </div>
           <div className="flex items-center space-x-2">
@@ -232,6 +234,22 @@ const QuestionCard = ({
                 <span className="font-medium">
                   Option: {answer?.selectedAnswer}
                 </span>
+              ) : questionType === "file" ? (
+                <div className="space-y-2">
+                  {answer?.file?.map((file, i) => (
+                    <div key={i} className="flex items-center space-x-2">
+                      <FileText className="h-4 w-4 text-gray-500" />
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-700 hover:text-gray-900"
+                      >
+                        {file.filename}
+                      </a>
+                    </div>
+                  ))}
+                </div>
               ) : (
                 <div
                   dangerouslySetInnerHTML={{

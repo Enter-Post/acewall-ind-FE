@@ -18,7 +18,7 @@ export default function PurchaseConfirmationModal({
   courseID,
   coursePrice,
   studentID,
-    isEnrolled,
+  isEnrolled,
 }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
@@ -59,9 +59,9 @@ export default function PurchaseConfirmationModal({
       <DialogTrigger asChild>
         <Button
           className="w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300"
-          variant="default"   disabled={isEnrolled}
+          variant="default" disabled={isEnrolled}
         >
-    {isEnrolled ? "Enrolled" : "Enroll Now"}
+          {isEnrolled ? "Enrolled" : "buy now"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -81,11 +81,11 @@ export default function PurchaseConfirmationModal({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-  {!isEnrolled && (
-    <Button variant="default" onClick={handleConfirm}>
-      {coursePrice === 0 ? "Enroll Now" : `Pay $${coursePrice}`}
-    </Button>
-  )}
+          {!isEnrolled && (
+            <Button variant="default" onClick={handleConfirm}>
+              {coursePrice === 0 ? "buy now" : `Pay $${coursePrice}`}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

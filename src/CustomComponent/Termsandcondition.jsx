@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DialogClose } from "@/components/ui/dialog"; // Make sure to import it
 
 export default function TermsModal({ style }) {
   return (
@@ -18,7 +19,16 @@ export default function TermsModal({ style }) {
           Terms of Service
         </p>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[700px]">
+        <DialogClose asChild>
+          <button
+            className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </DialogClose>
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-center">
             Terms and Conditions
@@ -48,15 +58,14 @@ export default function TermsModal({ style }) {
             (collectively, the "Services").
             <br />
             <br />
-            You can contact us by phone at (804) 464-7926., email at{" "}
+            You can contact us by phone at (855) 522-3925., email at{" "}
             <a
               href="mailto:contact@acewallscholars.org"
               className="text-blue-600 underline"
             >
               contact@acewallscholars.org
             </a>
-            , or by mail to 1072 Timber Trace Road, Powhatan, VA 23139, United
-            States.
+            , or by mail to PO Box 445  Powhatan, VA 23139, United States.
             <br />
             <br />
             These Legal Terms constitute a legally binding agreement made

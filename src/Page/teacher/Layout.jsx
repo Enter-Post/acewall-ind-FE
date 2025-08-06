@@ -80,12 +80,6 @@ const sideBarTabs = [
     path: "/teacher/allStudent",
   },
   {
-    id: 14,
-    name: "Pages",
-    icon: <NotepadText />,
-    path: "/teacher/courses/posts",
-  },
-  {
     id: 15,
     name: "Wallet",
     icon: <Wallet />,

@@ -14,10 +14,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, XCircle, AlertCircle, Loader } from "lucide-react";
+import {
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Loader,
+  FileText,
+} from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useParams } from "react-router-dom";
 import avatar from "@/assets/avatar.png";
+import { toast } from "sonner";
 
 const AssessmentReview = () => {
   const { id } = useParams();
@@ -122,7 +129,9 @@ const AssessmentReview = () => {
                   <span>{submission?.studentId?.firstName}</span>
                   <span>{submission?.studentId?.lastName}</span>
                 </div>
-                <CardDescription>{submission?.studentId?.email}</CardDescription>
+                <CardDescription>
+                  {submission?.studentId?.email}
+                </CardDescription>
               </div>
             </div>
 
@@ -174,15 +183,17 @@ const AssessmentReview = () => {
               </TabsTrigger>
               <TabsTrigger value="manual">
                 Needs Grading (
-                { 
-                  submission?.answers?.filter((a) => a.requiresManualCheck).length
+                {
+                  submission?.answers?.filter((a) => a.requiresManualCheck)
+                    .length
                 }
                 )
               </TabsTrigger>
               <TabsTrigger value="auto">
                 Graded (
                 {
-                  submission?.answers?.filter((a) => !a.requiresManualCheck).length
+                  submission?.answers?.filter((a) => !a.requiresManualCheck)
+                    .length
                 }
                 )
               </TabsTrigger>
@@ -239,15 +250,13 @@ const AssessmentReview = () => {
         </CardContent>
 
         {/* Footer */}
-        <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t p-6">
-          <div className="text-lg font-semibold">
-            Total Score: {totalScore} points
-          </div>
+        <CardFooter className="flex flex-col sm:flex-row justify-end items-center gap-4 border-t p-6">
           <Button
             className="bg-green-500 hover:bg-green-600 text-white"
             onClick={handleSubmitGrades}
             disabled={
-              submission?.answers?.filter((a) => a.requiresManualCheck).length === 0
+              submission?.answers?.filter((a) => a.requiresManualCheck)
+                .length === 0
             }
           >
             {loading ? <Loader className="animate-spin" /> : "Submit Grades"}
@@ -255,7 +264,6 @@ const AssessmentReview = () => {
         </CardFooter>
       </Card>
     </div>
-
   );
 };
 
@@ -264,7 +272,7 @@ const QuestionCard = ({
   index,
   manualGrades,
   onGradeChange,
-  setError = () => { },
+  setError = () => {},
   error = {},
 }) => {
   const questionType = answer?.questionDetails?.type || "unknown";
@@ -295,16 +303,21 @@ const QuestionCard = ({
               {questionType === "mcq"
                 ? "Multiple Choice"
                 : questionType === "truefalse"
-                  ? "True/False"
-                  : questionType === "qa"
-                    ? "Question & Answer"
-                    : "Unknown Type"}
+                ? "True/False"
+                : questionType === "qa"
+                ? "Question & Answer"
+                : questionType === "file"
+                ? "File"
+                : "Unknown"}
             </CardDescription>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 justify-end">
             {answer?.requiresManualCheck ? (
-              <Badge variant="warning" className="bg-yellow-100 text-yellow-800">
+              <Badge
+                variant="warning"
+                className="bg-yellow-100 text-yellow-800"
+              >
                 <AlertCircle className="w-4 h-4 mr-1" />
                 Needs Manual Grading
               </Badge>
@@ -328,26 +341,83 @@ const QuestionCard = ({
 
       <CardContent className="space-y-6">
         {/* Question */}
-        <div>
-          <h4 className="font-medium text-sm text-gray-700 mb-1">Question:</h4>
-          <div
-            className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800"
-            dangerouslySetInnerHTML={{
-              __html: answer?.questionDetails?.question || "<i>No question</i>",
-            }}
-          />
-        </div>
+        {answer.questionDetails?.type !== "file" ? (
+          <div>
+            <h4 className="font-medium text-sm text-gray-700 mb-1">
+              Question:
+            </h4>
+            <div
+              className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800"
+              dangerouslySetInnerHTML={{
+                __html:
+                  answer?.questionDetails?.question || "<i>No question</i>",
+              }}
+            />
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <h4 className="font-medium text-sm text-gray-700 mb-1">
+              Instruction:
+            </h4>
+            <div
+              className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800"
+              dangerouslySetInnerHTML={{
+                __html:
+                  answer?.questionDetails?.question || "<i>No instruction</i>",
+              }}
+            />
+
+            <section>
+              <h4 className="font-medium text-sm text-gray-700 mb-1">Files:</h4>
+              <div className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800 flex items-center space-x-2">
+                {answer?.questionDetails?.file?.map((file, i) => (
+                  <div key={i} className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4 text-gray-500" />
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline"
+                    >
+                      {file.filename}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
 
         {/* Answer */}
         <div>
-          <h4 className="font-medium text-sm text-gray-700 mb-1">Student's Answer:</h4>
+          <h4 className="font-medium text-sm text-gray-700 mb-1">
+            Student's Answer:
+          </h4>
           <div className="p-3 rounded-md bg-gray-50 border text-sm text-gray-800">
             {questionType === "truefalse" ? (
               <span className="font-semibold">
                 {answer?.selectedAnswer === "true" ? "True" : "False"}
               </span>
             ) : questionType === "mcq" ? (
-              <span className="font-semibold">Option: {answer?.selectedAnswer}</span>
+              <span className="font-semibold">
+                Option: {answer?.selectedAnswer}
+              </span>
+            ) : questionType === "file" ? (
+              <div className="flex items-center space-x-2">
+                {answer?.questionDetails.file?.map((file, i) => (
+                  <div key={i} className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4 text-gray-500" />
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-700 hover:text-gray-900"
+                    >
+                      {file.filename}
+                    </a>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div
                 dangerouslySetInnerHTML={{
@@ -361,7 +431,9 @@ const QuestionCard = ({
         {/* Manual Grading */}
         {answer.requiresManualCheck && (
           <div>
-            <h4 className="font-medium text-sm text-gray-700 mb-1">Assign Points:</h4>
+            <h4 className="font-medium text-sm text-gray-700 mb-1">
+              Assign Points:
+            </h4>
             <div className="flex flex-wrap items-center gap-3">
               <Input
                 type="number"
@@ -372,10 +444,16 @@ const QuestionCard = ({
                   const value = Number(e.target.value);
 
                   if (value > maxPoints) {
-                    handleError(answer?.questionId, `Points cannot exceed ${maxPoints}`);
+                    handleError(
+                      answer?.questionId,
+                      `Points cannot exceed ${maxPoints}`
+                    );
                     return;
                   } else if (value < 0) {
-                    handleError(answer?.questionId, `Points cannot be negative`);
+                    handleError(
+                      answer?.questionId,
+                      `Points cannot be negative`
+                    );
                     return;
                   } else {
                     handleError(answer?.questionId, null); // Clear error
@@ -385,17 +463,20 @@ const QuestionCard = ({
                 }}
                 className="w-24"
               />
-              <span className="text-sm text-muted-foreground">/ {maxPoints} pts</span>
+              <span className="text-sm text-muted-foreground">
+                / {maxPoints} pts
+              </span>
 
               {error?.[answer?.questionId] && (
-                <p className="text-sm text-red-600">{error[answer?.questionId]}</p>
+                <p className="text-sm text-red-600">
+                  {error[answer?.questionId]}
+                </p>
               )}
             </div>
           </div>
         )}
       </CardContent>
     </Card>
-
   );
 };
 

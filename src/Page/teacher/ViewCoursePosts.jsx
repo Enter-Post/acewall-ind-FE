@@ -18,6 +18,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { Trash2, Users } from "lucide-react";
 import Pages from "@/CustomComponent/teacher/Pages";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { useParams, useSearchParams } from "react-router-dom";
 
 const ViewCoursePostsPage = () => {
   const { user } = useContext(GlobalContext);
@@ -27,13 +28,18 @@ const ViewCoursePostsPage = () => {
   const [allCourses, setAllCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState("all");
 
-  const fetchPages = async (courseId = "all") => {
+  const [searchParams] = useSearchParams();
+  const chapterId = searchParams.get("chapter");
+
+  const { courseId, type, typeId } = useParams();
+
+  const fetchPages = async () => {
     try {
-      const query =
-        courseId === "all"
-          ? `/pages/all?teacherId=${teacherId}`
-          : `/pages/all?teacherId=${teacherId}&courseId=${courseId}`;
-      const res = await axiosInstance.get(query);
+      const res = await axiosInstance.get(
+        `/pages/${courseId}/${type}/${typeId}`
+      );
+
+      console.log(res, "res");
       setPosts(res.data.pages || []);
     } catch (err) {
       console.log(err.response?.data?.message || "Failed to fetch pages");
@@ -41,18 +47,8 @@ const ViewCoursePostsPage = () => {
     }
   };
 
-  const fetchCourses = async () => {
-    try {
-      const res = await axiosInstance.get("/course/getVerifiedCourses");
-      setAllCourses(res.data.courses || []);
-    } catch (err) {
-      toast.error("Failed to fetch courses");
-    }
-  };
-
   useEffect(() => {
-    fetchCourses();
-    fetchPages(); // Uses teacherId automatically
+    fetchPages();
   }, []);
 
   const handleDeletePage = async (pageId) => {
@@ -78,25 +74,13 @@ const ViewCoursePostsPage = () => {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">All Your Pages</h1>
-        <Pages onCreated={() => fetchPages(selectedCourseId)} />
-      </div>
-
-      {/* Filter Dropdown */}
-      <div className="max-w-xs">
-        <Select value={selectedCourseId} onValueChange={handleCourseFilter}>
-          <SelectTrigger>
-            <SelectValue placeholder="Filter by course" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Courses</SelectItem>
-            {allCourses.map((course) => (
-              <SelectItem key={course._id} value={course._id}>
-                {course.courseTitle}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <h1 className="text-2xl font-semibold">Pages for {type}</h1>
+        <Pages
+          onCreated={() => fetchPages(selectedCourseId)}
+          courseId={courseId}
+          type={type}
+          typeId={typeId}
+        />
       </div>
 
       {/* Page Cards */}

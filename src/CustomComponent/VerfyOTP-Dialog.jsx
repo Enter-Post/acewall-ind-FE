@@ -29,6 +29,8 @@ const VerifyOTPDialog = ({
   const [resendLoading, setResendLoading] = useState(false);
   const { user } = useContext(GlobalContext);
   const navigate = useNavigate();
+  const [cooldown, setCooldown] = useState(0);
+
 
   console.log(sendingOTP, "sendingOTP");
 
@@ -37,6 +39,19 @@ const VerifyOTPDialog = ({
       setOtp(["", "", "", "", "", ""]);
     }
   }, [open]);
+
+
+
+
+  useEffect(() => {
+    let interval;
+    if (cooldown > 0) {
+      interval = setInterval(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [cooldown]);
 
   const handleChange = (index, value) => {
     if (/^\d?$/.test(value)) {
@@ -108,7 +123,11 @@ const VerifyOTPDialog = ({
   };
 
   const handleResend = async () => {
+    if (cooldown > 0) return; // Prevent resend if cooldown is active
+
     setResendLoading(true);
+    setCooldown(60); 
+
     try {
       const res = await axiosInstance.post("auth/resendOTP", {
         email: user.email,
@@ -120,6 +139,7 @@ const VerifyOTPDialog = ({
       setResendLoading(false);
     }
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -188,17 +208,20 @@ const VerifyOTPDialog = ({
             onClick={handleResend}
             variant={"link"}
             className="text-sm text-blue-600 self-center cursor-pointer"
-            disabled={resendLoading}
+            disabled={resendLoading || cooldown > 0}
           >
             {resendLoading ? (
               <span className="flex items-center justify-center">
                 <Loader className="animate-spin mr-2" />
                 Resending
               </span>
+            ) : cooldown > 0 ? (
+              `Resend OTP in ${cooldown}s`
             ) : (
               "Resend OTP"
             )}
           </Button>
+
         </DialogFooter>
       </DialogContent>
     </Dialog>

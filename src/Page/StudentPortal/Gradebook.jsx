@@ -48,10 +48,7 @@ const AssessmentTable = ({ assessments = [] }) => {
                 : "0.0";
 
             return (
-              <TableRow
-                key={index}
-                className={`text-xs`}
-              >
+              <TableRow key={index} className={`text-xs`}>
                 <TableCell className="font-medium">
                   {assessment.assessmentTitle}
                 </TableCell>
@@ -78,10 +75,13 @@ const AssessmentTable = ({ assessments = [] }) => {
                   >
                     {percentage}%
                   </span>
-                  {assessment.requireManualCheck === true && (
-                    <span className= {`text-xs text-gray-500 ml-2 ${
-                  assessment.requireManualCheck === true && "text-yellow-500"
-                } `}>
+                  {assessment.isGraded === false && (
+                    <span
+                      className={`text-xs text-gray-500 ml-2 ${
+                        assessment.isGraded === false &&
+                        "text-yellow-500"
+                      } `}
+                    >
                       (Manual check is required by teacher)
                     </span>
                   )}
@@ -394,6 +394,7 @@ export default function Gradebook() {
                                         <CardContent>
                                           <AssessmentTable
                                             assessments={quarter.assessments}
+                          
                                           />
                                         </CardContent>
                                       </Card>
