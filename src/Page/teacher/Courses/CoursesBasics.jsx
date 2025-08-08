@@ -597,9 +597,9 @@ export default function CoursesBasis() {
               <div className="flex justify-end">
                 <button
                   type="button"
-                  disabled={teachingPointsFields.length >= 6}
+                  disabled={teachingPointsFields.length >= 10}
                   onClick={() => appendTeachingPoint({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 6
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 10
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                     }`}
@@ -630,11 +630,11 @@ export default function CoursesBasis() {
                 <button
                   type="button"
                   onClick={() => appendRequirement({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 6
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 10
                     ? "opacity-50 cursor-not-allowed"
                     : ""
                     }`}
-                  disabled={requirementsFields.length >= 6}
+                  disabled={requirementsFields.length >= 10}
                 >
                   + Add Requirement
                 </button>

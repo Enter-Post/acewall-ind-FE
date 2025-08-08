@@ -41,6 +41,8 @@ export default function CategoryDropdown({
   const [isLoading, setIsLoading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
+  console.log("hello");
+
   const form = useForm({
     defaultValues: {
       name: "",

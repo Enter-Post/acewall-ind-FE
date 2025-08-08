@@ -78,8 +78,7 @@ const AssessmentTable = ({ assessments = [] }) => {
                   {assessment.isGraded === false && (
                     <span
                       className={`text-xs text-gray-500 ml-2 ${
-                        assessment.isGraded === false &&
-                        "text-yellow-500"
+                        assessment.isGraded === false && "text-yellow-500"
                       } `}
                     >
                       (Manual check is required by teacher)
@@ -124,9 +123,8 @@ export default function Gradebook() {
   const fetchGradeData = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(
-        `gradebook/getOverallGradeReport?page=${page}&limit=${coursesPerPage}`
-      );
+      const res = await axiosInstance.get(`gradebook/getOverallGradeReport`);
+      console.log(res, "res.data");
       setGradeData(res.data);
       setCurrentPage(res.data.currentPage);
       setTotalPages(res.data.totalPages);
@@ -259,12 +257,6 @@ export default function Gradebook() {
                 Total Course{totalCourses !== 1 ? "s" : ""}
               </div>
             </div>
-            {/* <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {gradeData.studentId}
-              </div>
-              <div className="text-sm text-muted-foreground">Student ID</div>
-            </div> */}
           </div>
         </CardContent>
       </Card>
@@ -286,10 +278,12 @@ export default function Gradebook() {
                 <TableRow>
                   <TableHead>Course</TableHead>
                   <TableHead>Semesters</TableHead>
+                  <TableHead>Total Percentage</TableHead>
+                  <TableHead>Grade</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody >
                 {gradeData.courses.map((course) => (
                   <>
                     <TableRow key={course.courseId}>
@@ -299,6 +293,16 @@ export default function Gradebook() {
                       <TableCell>
                         {course.semesters.length} semester
                         {course.semesters.length !== 1 ? "s" : ""}
+                      </TableCell>
+                      <TableCell>{course?.coursePercentage}%</TableCell>
+                      <TableCell>
+                        <Badge
+                          className={`${getLetterGradeColor(
+                            course?.letterGrade
+                          )}`}
+                        >
+                          {course?.letterGrade}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -321,13 +325,13 @@ export default function Gradebook() {
                     </TableRow>
 
                     {expandedCourseId === course.courseId && (
-                      <TableRow>
+                      <TableRow >
                         <TableCell colSpan={3} className="p-0">
-                          <div className="bg-muted/30 p-6 space-y-4">
+                          <div className="bg-muted/30 p-6 space-y-4 w-[140%]">
                             {course.semesters.map((semester) => (
                               <div
                                 key={semester.semesterId}
-                                className="space-y-3"
+                                className="space-y-3 w-[100%]"
                               >
                                 <div className="flex items-center justify-between">
                                   <h3 className="text-lg font-semibold text-gray-800">
@@ -394,7 +398,6 @@ export default function Gradebook() {
                                         <CardContent>
                                           <AssessmentTable
                                             assessments={quarter.assessments}
-                          
                                           />
                                         </CardContent>
                                       </Card>

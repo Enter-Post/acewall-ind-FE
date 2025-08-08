@@ -12,7 +12,7 @@ const TeacherProfileModal = ({ isOpen, onClose, instructor, avatar }) => {
     const fetchTeacherCourses = async () => {
       setLoading(true);
       try {
-        const res = await axiosInstance.get("/course/basicCoursesByTeacher", {
+        const res = await axiosInstance.get("/course/getTeacherCoursesForDesboard", {
           params: { teacherId: instructor._id },
         });
         setCourses(res.data.courses || []);

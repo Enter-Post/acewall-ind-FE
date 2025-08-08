@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, CheckCircle, FileText, XCircle } from "lucide-react";
+import BackButton from "../BackButton";
 const AssessmentResultCard = ({ submission }) => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -20,6 +21,8 @@ const AssessmentResultCard = ({ submission }) => {
   };
   return (
     <div>
+      <BackButton className="mb-10" />
+
       <div className="container mx-auto py-6">
         <Card className="w-full">
           <CardHeader className="">
@@ -138,7 +141,7 @@ const QuestionCard = ({
   index,
   manualGrades,
   onGradeChange,
-  setError = () => {},
+  setError = () => { },
   error = {},
 }) => {
   const questionType = answer?.question?.type || "unknown";
@@ -170,12 +173,12 @@ const QuestionCard = ({
               {questionType === "mcq"
                 ? "Multiple Choice"
                 : questionType === "truefalse"
-                ? "True/False"
-                : questionType === "qa"
-                ? "Question & Answer"
-                : questionType === "file"
-                ? "File"
-                : "Unknown"}
+                  ? "True/False"
+                  : questionType === "qa"
+                    ? "Question & Answer"
+                    : questionType === "file"
+                      ? "File"
+                      : "Unknown"}
             </CardDescription>
           </div>
           <div className="flex items-center space-x-2">

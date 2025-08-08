@@ -97,6 +97,7 @@ export default function TeacherLayout() {
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [openDropdown, setOpenDropdown] = React.useState(false);
+  const [ispublished, setIspublished] = useState(true); // <- Add this at the top
 
   const handleSearch = async () => {
     if (!searchQuery.trim() || loading) return;
@@ -105,8 +106,12 @@ export default function TeacherLayout() {
     setOpenDropdown(false);
 
     try {
-      const res = await axiosInstance.get("/course/getindividualcourse", {
-        params: { search: searchQuery, verified: true },
+      const res = await axiosInstance.get(`/course/getindividualcourse`, {
+        params: {
+          search: searchQuery,
+          isVerified: "approved",
+        }
+
       });
 
       const courses = res.data.courses || [];
@@ -260,9 +265,8 @@ export default function TeacherLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`relative bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`relative bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
@@ -292,15 +296,13 @@ export default function TeacherLayout() {
                   key={tab.name}
                   to={tab.path ?? "#"}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location === tab.path ? "bg-green-500" : "text-black"
-                  }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
+                    }`}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location === tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location === tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

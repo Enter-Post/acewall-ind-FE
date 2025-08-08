@@ -278,10 +278,6 @@ function App() {
               path="courseGrades/:studentId/:courseId"
               element={<StudentCourseGrades />}
             />
-            <Route path="discussions">
-              <Route index element={<TeacherDiscussion />} />
-              <Route path=":id" element={<TeacherDiscussionChat />} />
-            </Route>
 
             <Route path="messages">
               <Route index element={<Messages />} />
@@ -291,9 +287,17 @@ function App() {
               path="gradebook/:courseId"
               element={<CourseGradebookPage />}
             />
+
+            <Route path="discussions">
+              <Route index element={<TeacherDiscussion />} />
+              <Route path=":id" element={<TeacherDiscussionChat />} />
+            </Route>
+
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
               <Route path="unverifiedCourse" element={<UnverifiedCourses />} />
+
+              <Route index element={<TeacherDiscussion />} />
 
               <Route
                 path="courseDetail/:id"
@@ -322,8 +326,6 @@ function App() {
               <Route path="createCourses">
                 <Route index element={<CoursesBasis />} />
                 <Route path="addChapter/:id" element={<CoursesChapter />} />
-
-                {/* <Route path="gradebook" element={<TeacherGradebook />} /> */}
               </Route>
               <Route path="semester/:courseId" element={<Semester />} />
               <Route path="gradescale/:courseId">

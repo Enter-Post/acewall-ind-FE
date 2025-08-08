@@ -11,6 +11,7 @@ import { BadgePlus, Plus } from "lucide-react";
 import LessonModal from "./LessonModal";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { CreateDiscussionDialog } from "../createDiscussionModal";
 
 const ChapterOptionDropdown = ({
   chapterId,
@@ -21,7 +22,6 @@ const ChapterOptionDropdown = ({
   quarterEnd,
   courseId,
 }) => {
-
   return (
     <div>
       <DropdownMenu>
@@ -54,6 +54,15 @@ const ChapterOptionDropdown = ({
             >
               <Plus className="h-4 w-4 mr-2" />
               <p className="text-green-600">Add Page</p>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link
+              to={`/teacher/discussions?type=chapter&&typeId=${chapterId}&&course=${courseId}`}
+              className="text-green-600 bg-transparent flex"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Discussion
             </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>

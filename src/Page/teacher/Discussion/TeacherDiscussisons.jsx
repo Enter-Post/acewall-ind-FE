@@ -1,7 +1,7 @@
 import { CreateDiscussionDialog } from "@/CustomComponent/createDiscussionModal";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tabs } from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
@@ -160,7 +160,6 @@ const TeacherDiscussion = () => {
                     ) : null
                   )}
 
-
                   {/* Optional: Course Thumbnail if available */}
                   {item?.course?.thumbnail?.url && (
                     <div className="overflow-hidden rounded-md">
@@ -172,7 +171,9 @@ const TeacherDiscussion = () => {
                     </div>
                   )}
 
-                  <div className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 bg-green-600`}>
+                  <div
+                    className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 bg-green-600`}
+                  >
                     <p className={`text-xs text-white`}>{item?.type}</p>
                   </div>
 
@@ -195,7 +196,6 @@ const TeacherDiscussion = () => {
                 </Link>
               ))}
           </div>
-
         </TabsContent>
       </Tabs>
     </div>

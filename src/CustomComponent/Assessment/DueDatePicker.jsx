@@ -13,6 +13,16 @@ export default function StrictDatePicker({ name, minDate, maxDate }) {
   } = useController({
     name,
     control,
+    defaultValue: {
+      date: "",
+      time: "",
+      dateTime: null,
+    },
+    rules: {
+      required: "Due date is required",
+      validate: (val) =>
+        val?.dateTime ? true : "Due date and time must be selected",
+    },
   });
 
   const handleDateChange = (selectedDate) => {
@@ -47,9 +57,9 @@ export default function StrictDatePicker({ name, minDate, maxDate }) {
         showMonthDropdown
         showYearDropdown
         dropdownMode="select"
-        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
+        className="w-full border border-gray-200 rounded-lg px-2 py-1 focus:outline-none"
       />
-      {error && <p className="text-sm text-red-600">{error.message}</p>}
+      {error && <p className="text-xs text-red-600">{error.message}</p>}
     </div>
   );
 }

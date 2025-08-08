@@ -43,7 +43,7 @@ const StdPreview = () => {
         .get(`/course/get/${id}`)
         .then((res) => {
           setCourseDetails(res.data.course);
-          console.log("course details", res);
+          console.log("course details", res.data);
 
           setLoading(false);
         })
@@ -158,7 +158,6 @@ const StdPreview = () => {
                     {Array.isArray(courseDetails?.teachingPoints) &&
                       courseDetails.teachingPoints.map((item, index) => (
                         <div key={index} className="flex items-start gap-2">
-                          {console.log(item, "item")}
                           <CheckCircle2
                             size={20}
                             className="text-green-500 mt-0.5 "
@@ -346,6 +345,10 @@ const StdPreview = () => {
         {/* Right Sidebar */}
         <div className="md:col-span-1">
           <div className="border border-gray-200 rounded-xl p-6 sticky top-24 shadow-sm hover:shadow-lg transition-shadow duration-300 w-full">
+            <div className="text-2xl mb-4 font-semibold text-gray-800">
+              ${courseDetails.price}
+            </div>
+
             <div className="flex flex-col gap-6 mb-6 opacity-50 pointer-events-none">
               <PurchaseConfirmationModal
                 courseID={courseDetails._id}
@@ -380,7 +383,7 @@ const StdPreview = () => {
                   </span>
                 </div>
               )}
-             
+
             </div>
           </div>
         </div>

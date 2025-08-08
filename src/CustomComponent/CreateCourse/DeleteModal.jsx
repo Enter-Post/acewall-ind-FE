@@ -9,17 +9,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { axiosInstance } from "@/lib/AxiosInstance";
-import { toast } from "sonner";
-import LoadingLoader from "../LoadingLoader";
 import { Loader, Trash2 } from "lucide-react";
 
 export function DeleteModal({
   chapterID,
-  deleteFunc
+  deleteFunc, // Should be async
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await deleteFunc(); // Assumes this is an async function
+      toast.success("Deleted successfully.");
+      setOpen(false);
+    } catch (error) {
+      toast.error("Failed to delete.");
+      console.error("Delete error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -28,10 +39,7 @@ export function DeleteModal({
           variant="ghost"
           size="sm"
           className="h-8 text-gray-500 hover:text-red-600"
-          onClick={(e) => {
-            e.stopPropagation();
-            /* Open delete confirmation */
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
           <Trash2 className="h-3.5 w-3.5" />
           <span className="sr-only">Delete</span>
@@ -45,11 +53,11 @@ export function DeleteModal({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
             Cancel
           </Button>
-          <Button variant="destructive" onClick={deleteFunc}>
-            {loading ? <Loader className="animate-spin" /> : "Confirm Delete"}
+          <Button variant="destructive" onClick={handleDelete} disabled={loading}>
+            {loading ? <Loader className="animate-spin w-4 h-4" /> : "Confirm Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

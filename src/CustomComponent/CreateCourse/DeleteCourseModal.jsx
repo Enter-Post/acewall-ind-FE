@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogFooter,
@@ -8,7 +8,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 
@@ -19,8 +18,11 @@ const DeleteCourseModal = ({
   setSuccessOpen,
   fetchCourseDetail,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleDeleteCourse = async ({ fetchCourseDetail }) => {
     try {
+      setIsLoading(true);
       await axiosInstance.delete(`/course/delete/${id}`);
       setConfirmOpen(false);
       setSuccessOpen(true);
@@ -34,6 +36,7 @@ const DeleteCourseModal = ({
     } catch (error) {
       console.error("Error deleting course:", error);
       toast.error("Failed to delete course.");
+      setIsLoading(false);
     }
   };
 
@@ -60,8 +63,9 @@ const DeleteCourseModal = ({
           <Button
             className="bg-red-600 text-white hover:bg-red-700"
             onClick={handleDeleteCourse}
+            disabled={isLoading}
           >
-            Yes, Delete
+            {isLoading ? "Deleting..." : "Yes, Delete"}
           </Button>
           <Button variant="outline" onClick={() => setConfirmOpen(false)}>
             Cancel
@@ -73,3 +77,4 @@ const DeleteCourseModal = ({
 };
 
 export default DeleteCourseModal;
+
