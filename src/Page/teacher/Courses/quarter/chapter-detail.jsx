@@ -144,7 +144,8 @@ const TeacherChapterDetail = () => {
                 fetchChapterDetail={fetchChapterDetail}
               />
               <ChapterOptionDropdown
-                chapterId={chapterId}
+                type="chapter"
+                typeId={chapterId}
                 fetchChapterDetail={fetchChapterDetail}
                 quarterId={chapter.quarter?._id}
                 semesterId={chapter.semester?._id}
@@ -254,10 +255,21 @@ const TeacherChapterDetail = () => {
                             lesson={lesson}
                             fetchChapterDetail={fetchChapterDetail}
                           />
+                          <ChapterOptionDropdown
+                            type="lesson"
+                            typeId={lesson._id}
+                            fetchChapterDetail={fetchChapterDetail}
+                            quarterId={chapter.quarter?._id}
+                            semesterId={chapter.semester?._id}
+                            quarterStart={quarterStart}
+                            quarterEnd={quarterEnd}
+                            courseId={courseId}
+                          />
+
                           <DeleteModal
                             deleteFunc={() => handleDeleteLesson(lesson._id)}
                           />
-                          <Link
+                          {/* <Link
                             to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}/${quarterStart}/${quarterEnd}?semester=${chapter.semester?._id}&quarter=${chapter.quarter?._id}`}
                           >
                             <Button
@@ -280,7 +292,7 @@ const TeacherChapterDetail = () => {
                               <Plus className="h-4 w-4 mr-1" />
                               Pages
                             </Button>
-                          </Link>
+                          </Link> */}
                         </section>
                       </div>
                     </CardHeader>

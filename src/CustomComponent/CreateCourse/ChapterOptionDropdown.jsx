@@ -13,15 +13,18 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CreateDiscussionDialog } from "../createDiscussionModal";
 
+
 const ChapterOptionDropdown = ({
-  chapterId,
+  typeId,
   fetchChapterDetail,
   quarterId,
   semesterId,
   quarterStart,
   quarterEnd,
   courseId,
+  type,
 }) => {
+  console.log(typeId, "chapter id");
   return (
     <div>
       <DropdownMenu>
@@ -32,14 +35,17 @@ const ChapterOptionDropdown = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {/* <DropdownMenuItem> */}
-          <LessonModal
-            chapterID={chapterId}
-            fetchQuarterDetail={fetchChapterDetail}
-          />
+          {type === "chapter" && (
+            <LessonModal
+              chapterID={typeId}
+              fetchQuarterDetail={fetchChapterDetail}
+            />
+          )}
+
           {/* </DropdownMenuItem> */}
           <DropdownMenuItem>
             <Link
-              to={`/teacher/assessments/create/chapter/${chapterId}/${courseId}/${quarterStart}/${quarterEnd}?semester=${semesterId}&quarter=${quarterId}`}
+              to={`/teacher/assessments/create/${type}/${typeId}/${courseId}/${quarterStart}/${quarterEnd}?semester=${semesterId}&quarter=${quarterId}`}
             >
               <div className="text-green-600 bg-transparent flex ">
                 <Plus className="h-4 w-4 mr-2" />
@@ -49,22 +55,22 @@ const ChapterOptionDropdown = ({
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link
-              to={`/teacher/courses/${courseId}/posts/chapter/${chapterId}`}
+              to={`/teacher/courses/${courseId}/posts/${type}/${typeId}`}
               className="flex cursor-pointer"
             >
               <Plus className="h-4 w-4 mr-2" />
               <p className="text-green-600">Add Page</p>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          {/* <DropdownMenuItem>
             <Link
-              to={`/teacher/discussions?type=chapter&&typeId=${chapterId}&&course=${courseId}`}
+              to={`/teacher/discussions?type=${type}&&typeId=${typeId}&&course=${courseId}`}
               className="text-green-600 bg-transparent flex"
             >
               <Plus className="h-4 w-4 mr-2" />
               Discussion
             </Link>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

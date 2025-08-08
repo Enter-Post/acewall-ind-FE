@@ -38,7 +38,14 @@ const courseFormSchema = z.object({
     .string()
     .min(5, { message: "Course title must be at least 5 characters" })
     .max(100, { message: "Course title must be less than 100 characters" }),
-  price: z.number().min(0, { message: "Price must be a non-negative number" }),
+  price: z
+  .number({
+    required_error: "Price is required",
+    invalid_type_error: "Price must be a number",
+  })
+  .min(0, { message: "Price must be a non-negative number" })
+  .max(9999, { message: "Price must not exceed 9999" }),
+
   category: z
     .string({
       required_error: "Please select a category",
@@ -279,9 +286,8 @@ export default function EditCourse() {
                   <Input
                     id="courseTitle"
                     maxLength={50}
-                    className={`bg-gray-50 ${
-                      errors.courseTitle ? "border border-red-500" : ""
-                    }`}
+                    className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""
+                      }`}
                     {...register("courseTitle")}
                   />
                   {errors.courseTitle && (
@@ -316,25 +322,39 @@ export default function EditCourse() {
               </div>
 
               <div>
-                <div>
-                  <Label htmlFor="price" className="block mb-2">
-                    Price
-                  </Label>
-                  <Input
-                    type="number"
-                    id="price"
-                    className={`bg-gray-50 ${
-                      errors.price ? "border border-red-500" : ""
-                    }`}
-                    {...register("price", { valueAsNumber: true })}
-                  />
-                  {errors.price && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.price.message}
-                    </p>
-                  )}
-                </div>
+                <Label htmlFor="price" className="block mb-2">
+                  Course Price (USD)
+                </Label>
+                <Input
+                  id="price"
+                  type="number"
+                  min="0"
+                  max="9999"
+                  inputMode="decimal"
+                  placeholder="Enter course price"
+                  className={`bg-gray-50 ${errors.price ? "border border-red-500" : ""}`}
+                  {...register("price", {
+                    valueAsNumber: true,
+                    validate: (value) => {
+                      if (isNaN(value)) return "Price is required";
+                      if (value < 0) return "Price must be a non-negative number";
+                      if (value > 9999) return "Price must not exceed 9999";
+                      return true;
+                    },
+                  })}
+                  onInput={(e) => {
+                    const value = parseFloat(e.currentTarget.value);
+                    if (value > 9999) {
+                      e.currentTarget.value = "9999";
+                    }
+                  }}
+                />
+
+                {errors.price && (
+                  <p className="text-xs text-red-500 mt-1">{errors.price.message}</p>
+                )}
               </div>
+
 
               <div>
                 <Label htmlFor="language" className="block mb-2">
@@ -373,9 +393,8 @@ export default function EditCourse() {
                 </Label>
                 <Textarea
                   id="courseDescription"
-                  className={`min-h-[100px] bg-gray-50  ${
-                    errors.courseDescription ? "border border-red-500" : ""
-                  }`}
+                  className={`min-h-[100px] bg-gray-50  ${errors.courseDescription ? "border border-red-500" : ""
+                    }`}
                   maxLength={500}
                   {...register("courseDescription")}
                 />
@@ -412,11 +431,10 @@ export default function EditCourse() {
                   type="button"
                   disabled={teachingPointsFields.length >= 10}
                   onClick={() => appendTeachingPoint({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                    teachingPointsFields.length >= 10
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 10
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                    }`}
                 >
                   + Add Teaching Point
                 </button>
@@ -444,11 +462,10 @@ export default function EditCourse() {
                 <button
                   type="button"
                   onClick={() => appendRequirement({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                    requirementsFields.length >= 10
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 10
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                    }`}
                   disabled={requirementsFields.length >= 10}
                 >
                   + Add Requirement

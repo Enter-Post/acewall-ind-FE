@@ -11,13 +11,38 @@ import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/CustomComponent/BackButton";
 
-const isScaleComplete = (grades) => {
+// Detect issues in grading scale
+const detectScaleIssues = (grades) => {
   const sorted = [...grades].sort((a, b) => a.min - b.min);
-  return (
-    sorted.length > 0 &&
-    sorted[0].min === 0 &&
-    sorted[sorted.length - 1].max === 100
-  );
+  const EPSILON = 0.001;
+  const issues = [];
+  let expectedMin = 0;
+
+  for (let i = 0; i < sorted.length; i++) {
+    const { min, max } = sorted[i];
+
+    // Gap detection
+    if (min - expectedMin > EPSILON) {
+      issues.push({ type: "gap", from: expectedMin, to: min });
+    }
+
+    // Overlap detection
+    if (min < expectedMin - EPSILON) {
+      issues.push({ type: "overlap", from: min, to: expectedMin });
+    }
+
+    expectedMin = parseFloat((max + 0.01).toFixed(2));
+  }
+
+  // Final check: should end at 100%
+  if (expectedMin - 100 < -EPSILON) {
+    issues.push({ type: "gap", from: expectedMin, to: 100 });
+  }
+
+  return {
+    isComplete: issues.length === 0,
+    issues,
+  };
 };
 
 export default function ManageGradeScale() {
@@ -25,13 +50,11 @@ export default function ManageGradeScale() {
   const [grades, setGrades] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     reset,
     formState: { errors },
@@ -44,8 +67,7 @@ export default function ManageGradeScale() {
   });
 
   const watchMin = watch("min");
-  const gradescale = grades.reduce((acc, g) => acc + (g.max - g.min), 0); // Don't use +1
-  const isComplete = isScaleComplete(grades);
+  const { isComplete, issues } = detectScaleIssues(grades);
 
   const handleCreateGradeScale = async () => {
     setIsLoading(true);
@@ -66,9 +88,6 @@ export default function ManageGradeScale() {
   const onSubmit = (data) => {
     const newMin = parseFloat(data.min);
     const newMax = parseFloat(data.max);
-
-    console.log(newMin, "newMin");
-    console.log(newMax, "newMax");
 
     if (newMin >= newMax) {
       toast.error("Min must be less than Max.");
@@ -108,13 +127,15 @@ export default function ManageGradeScale() {
       setSuccessMessage("");
     }, 3000);
 
+    // ✅ FIX: Prevent max from going negative
+    const nextMin = newMin - 10 >= 0 ? parseFloat((newMin - 10).toFixed(2)) : 0;
+    const nextMax =
+      nextMin === 0 ? 0 : parseFloat((newMin - 0.01).toFixed(2));
+
     reset({
       grade: "",
-      min:
-        parseFloat((newMin - 10).toFixed(2)) >= 0
-          ? parseFloat((newMin - 10).toFixed(2))
-          : 0,
-      max: parseFloat((newMin - 0.01).toFixed(2)),
+      min: nextMin,
+      max: nextMax,
     });
   };
 
@@ -131,12 +152,10 @@ export default function ManageGradeScale() {
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
       <BackButton />
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Create Grade Scale
-      </h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Create Grade Scale</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Form Section */}
+        {/* Form */}
         <Card>
           <CardHeader>
             <CardTitle>Add New Grade</CardTitle>
@@ -144,9 +163,7 @@ export default function ManageGradeScale() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-1">
-                <label className="block text-sm font-medium">
-                  Letter Grade
-                </label>
+                <label className="block text-sm font-medium">Letter Grade</label>
                 <Input
                   {...register("grade", {
                     required: "Grade is required",
@@ -245,6 +262,7 @@ export default function ManageGradeScale() {
                   <div>Range</div>
                   <div>Percentage</div>
                 </div>
+
                 {grades.map((grade, index) => (
                   <div
                     key={index}
@@ -264,6 +282,22 @@ export default function ManageGradeScale() {
                     </div>
                   </div>
                 ))}
+
+                {issues.length > 0 && (
+                  <Alert className="mt-4 bg-yellow-50 border-yellow-200">
+                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    <AlertDescription className="text-yellow-600 space-y-1">
+                      <p>Grade scale has issues:</p>
+                      {issues.map((issue, i) => (
+                        <p key={i}>
+                          {issue.type === "gap"
+                            ? `🟡 Gap from ${issue.from}% to ${issue.to}%`
+                            : `🔴 Overlap from ${issue.from}% to ${issue.to}%`}
+                        </p>
+                      ))}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
                 {isComplete && (
                   <>

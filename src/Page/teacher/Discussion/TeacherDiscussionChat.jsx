@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";  // <-- import useNavigate
+import { useParams, useNavigate } from "react-router-dom"; // <-- import useNavigate
 import { GlobalContext } from "@/Context/GlobalProvider";
 import ChatBox from "@/CustomComponent/Discussion/ChatBox";
 import { axiosInstance } from "@/lib/AxiosInstance";
@@ -7,7 +7,7 @@ import { Files } from "lucide-react";
 
 const TeacherDiscussionChat = () => {
   const { id } = useParams();
-  const navigate = useNavigate();  // <-- initialize navigate
+  const navigate = useNavigate(); // <-- initialize navigate
   const [discussion, setDiscussion] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(GlobalContext);
@@ -15,6 +15,7 @@ const TeacherDiscussionChat = () => {
   // New state for modal
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
+
 
   useEffect(() => {
     const fetchdiscussion = async () => {
@@ -57,6 +58,23 @@ const TeacherDiscussionChat = () => {
         <div className="py-4 mb-6 pl-6 rounded-lg bg-green-600 text-white">
           <p className="text-2xl font-bold">Discussion</p>
         </div>
+        <section className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2 text-xs">
+            <p className="text-gray-600 font-bold">Due Date:</p>
+            <div className="flex items-center gap-2">
+              <p className="text-gray-500">
+                {new Date(discussion?.dueDate?.date).toLocaleDateString()}
+              </p>
+              <p className="text-gray-500">
+                {discussion?.dueDate?.time?.slice(0, 5)}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <p className="text-gray-600 font-bold">Total Marks:</p>
+            <p className="text-gray-500">{discussion.totalMarks}</p>
+          </div>
+        </section>
 
         <p className="text-2xl font-semibold mb-2">{discussion.topic}</p>
         <p className="text-lg text-gray-600 mb-6">{discussion.description}</p>
@@ -93,7 +111,7 @@ const TeacherDiscussionChat = () => {
         </section>
       </section>
 
-      <ChatBox discussionId={id} />
+      <ChatBox discussionId={id} discussion={discussion} />
 
       {/* Modal */}
       {modalOpen && (

@@ -63,11 +63,6 @@ const sideBarTabs = [
     path: "/teacher/announcements",
   },
   {
-    name: "Discussion Rooms",
-    icon: <MessagesSquare />,
-    path: "/teacher/discussions",
-  },
-  {
     id: 12,
     name: "Messages",
     icon: <MessageCircleDashed />,
@@ -251,13 +246,12 @@ export default function TeacherLayout() {
         {user?.role === "teacher" && user?.isVarified === false && (
           <div className="bg-yellow-200 text-black p-2 rounded text-center">
             <p className="text-xs">
-              Your account is not Verified yet. Your course will not be visible for students, please upload your document from
+              Your account is not verified yet. Your course will not be visible for students. Please upload your document from
               the{" "}
               <Link to="/teacher/account" className="text-blue-600 underline">
                 account page
               </Link>{" "}
-              for verification and wait for the admin verification, thank You
-            </p>
+              for admin verification.            </p>
           </div>
         )}
       </div>

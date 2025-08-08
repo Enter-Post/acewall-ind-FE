@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+
 import {
   Dialog,
   DialogContent,
@@ -15,22 +16,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Pen, Plus, Trash } from "lucide-react";
+import { Pen } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 
-// Zod schema
-const pdfFileSchema = z
-  .instanceof(File)
-  .refine((file) => file.type === "application/pdf", {
-    message: "Only PDF files are allowed",
-  });
+import JoditEditor from "jodit-react";
 
+// Zod schema
 const lessonSchema = z.object({
-  title: z.string().min(5).max(100),
-  description: z.string().min(5).max(200),
+  title: z.string().min(5, "Title must be at least 5 characters").max(100),
+  description: z.string().min(5, "Description is too short").max(5000),
   youtubeLinks: z
     .string()
     .trim()
@@ -59,32 +55,31 @@ const lessonSchema = z.object({
 const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [description, setDescription] = useState(lesson.description || "");
+
+  const editor = useRef(null);
 
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(lessonSchema),
     defaultValues: {
-      title: lesson.title,
-      description: lesson.description,
-      youtubeLinks: lesson.youtubeLinks,
-      otherLink: lesson.otherLink,
-      //   pdfFiles: lesson.pdfFiles,
+      title: lesson.title || "",
+      description: lesson.description || "",
+      youtubeLinks: lesson.youtubeLinks || "",
+      otherLink: lesson.otherLink || "",
     },
   });
-
-  console.log(errors, "errors");
 
   const onSubmit = async (data) => {
     setLoading(true);
 
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("description", data.description);
+    formData.append("description", description); // Use editor state
     formData.append("youtubeLinks", data.youtubeLinks || "");
     formData.append("otherLink", data.otherLink || "");
 
@@ -114,6 +109,7 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
           <Pen size={16} />
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[600px] h-[80dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Lesson</DialogTitle>
@@ -123,6 +119,7 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Title */}
           <div>
             <Label htmlFor="title">Lesson Title</Label>
             <Input id="title" {...register("title")} />
@@ -131,12 +128,13 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
             )}
           </div>
 
+          {/* Description (Jodit) */}
           <div>
             <Label htmlFor="description">Lesson Description</Label>
-            <div
-              id="description"
-              className="border rounded p-3 bg-gray-50"
-              dangerouslySetInnerHTML={{ __html: lesson.description }}
+            <JoditEditor
+              ref={editor}
+              value={description}
+              onBlur={(newContent) => setDescription(newContent)}
             />
             {errors.description && (
               <p className="text-red-500 text-sm">
@@ -145,7 +143,7 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
             )}
           </div>
 
-
+          {/* YouTube Link */}
           <div>
             <Label htmlFor="youtubeLinks">YouTube Link</Label>
             <Input id="youtubeLinks" {...register("youtubeLinks")} />
@@ -156,22 +154,25 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
             )}
           </div>
 
+          {/* Other Link */}
           <div>
             <Label htmlFor="otherLink">Other Link</Label>
             <Input id="otherLink" {...register("otherLink")} />
             {errors.otherLink && (
-              <p className="text-red-500 text-sm">{errors.otherLink.message}</p>
+              <p className="text-red-500 text-sm">
+                {errors.otherLink.message}
+              </p>
             )}
           </div>
 
+          {/* Buttons */}
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
               onClick={() => {
                 reset();
-                setPdfInputs([{ id: Date.now(), file: null }]);
-                setTotalSize(0);
+                setDescription(lesson.description || "");
                 setOpen(false);
               }}
             >

@@ -5,8 +5,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
+import { DiscussionGradeModel } from "./DiscussionGradeModel";
+import { toast } from "sonner";
 
-const ChatBox = ({ discussionId }) => {
+const ChatBox = ({ discussionId, discussion }) => {
   const [comments, setComments] = useState([]);
   const [replies, setReplies] = useState([]);
   const [replyCounts, setReplyCounts] = useState({});
@@ -20,6 +22,9 @@ const ChatBox = ({ discussionId }) => {
   const [hasMore, setHasMore] = useState(true);
   const [isRepleying, setIsReplying] = useState({ status: "false", id: null });
   const [hasMoreReplies, setHasMoreReplies] = useState({});
+  const [isCommented, setIsCommented] = useState(false);
+
+  console.log(isCommented, "isCommented");
 
   const formatDate = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
@@ -27,7 +32,9 @@ const ChatBox = ({ discussionId }) => {
 
   const fetchReplyCount = async (commentId) => {
     try {
-      const res = await axiosInstance.get(`/replyDiscussion/replycount/${commentId}`);
+      const res = await axiosInstance.get(
+        `/replyDiscussion/replycount/${commentId}`
+      );
       setReplyCounts((prev) => ({
         ...prev,
         [commentId]: res.data.replyCount,
@@ -35,6 +42,18 @@ const ChatBox = ({ discussionId }) => {
     } catch (error) {
       console.error("Error fetching reply count:", error);
     }
+  };
+
+  const checkIsCommented = async () => {
+    await axiosInstance
+      .get(`discussionComment/isCommentedInDiscussion/${discussionId}`)
+      .then((res) => {
+        console.log(res);
+        setIsCommented(res.data.commented);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const fetchComments = async (pageNum = 1, append = false) => {
@@ -51,6 +70,7 @@ const ChatBox = ({ discussionId }) => {
         : data.discussionComments;
 
       setComments(updatedComments);
+      checkIsCommented();
 
       data.discussionComments.forEach((comment) => {
         fetchReplyCount(comment._id);
@@ -65,6 +85,10 @@ const ChatBox = ({ discussionId }) => {
   useEffect(() => {
     fetchComments();
   }, [discussionId]);
+
+  useEffect(() => {
+    checkIsCommented();
+  }, []);
 
   const fetchReplies = async (pageNum = 1, append = false, commentId) => {
     try {
@@ -116,21 +140,22 @@ const ChatBox = ({ discussionId }) => {
 
   const sendComment = async () => {
     if (!sendingComment.trim()) return;
-    try {
-      setSendingLoading(true);
-      await axiosInstance.post(
-        `discussionComment/sendComment/${discussionId}`,
-        {
-          text: sendingComment,
-        }
-      );
-      setSendingComment("");
-      fetchComments();
-    } catch (err) {
-      console.error("Error sending comment:", err);
-    } finally {
-      setSendingLoading(false);
-    }
+    setSendingLoading(true);
+    await axiosInstance
+      .post(`discussionComment/sendComment/${discussionId}`, {
+        text: sendingComment,
+      })
+      .then((res) => {
+        setSendingComment("");
+        fetchComments();
+        checkIsCommented();
+        setSendingLoading(false);
+      })
+      .catch((err) => {
+        console.log("Error sending comment:", err);
+        toast.error(err.response.data.message);
+        setSendingLoading(false);
+      });
   };
 
   const sendReply = async (commentId) => {
@@ -152,7 +177,9 @@ const ChatBox = ({ discussionId }) => {
 
   return (
     <section className="w-full min-h-full p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-2xl font-semibold mb-4 border-b border-gray-200 pb-2">Comments</h2>
+      <h2 className="text-2xl font-semibold mb-4 border-b border-gray-200 pb-2">
+        Comments
+      </h2>
 
       <div className="h-[400px] overflow-y-auto space-y-6 pr-2">
         {comments?.length === 0 ? (
@@ -171,7 +198,8 @@ const ChatBox = ({ discussionId }) => {
                 <div className="bg-gray-50 px-4 py-3 rounded-lg shadow-sm text-sm">
                   <div className="flex justify-between items-center mb-1">
                     <p className="font-medium text-sm">
-                      {comment?.createdby?.firstName} {comment?.createdby?.lastName}
+                      {comment?.createdby?.firstName}{" "}
+                      {comment?.createdby?.lastName}
                     </p>
                     <span className="text-xs text-gray-500">
                       {formatDate(comment.createdAt)}
@@ -194,6 +222,36 @@ const ChatBox = ({ discussionId }) => {
                       ? `Show replies (${replyCounts[comment._id]})`
                       : "No replies"}
                   </span>
+                  {user?.role === "teacher" &&
+                    comment.createdby.role !== "teacher" &&
+                    !comment.isGraded && (
+                      <div className="flex items-center gap-2">
+                        <span>
+                          <DiscussionGradeModel
+                            checkIsCommented={checkIsCommented}
+                            fetchComments={fetchComments}
+                            commentId={comment?._id}
+                            discussionId={discussion?._id}
+                            discussionMarks={discussion?.totalMarks || 0}
+                          />
+                        </span>
+                      </div>
+                    )}
+
+                  {comment.createdby.role !== "teacher" && (
+                    <span className="text-xs flex gap-2">
+                      {comment.isGraded === false ? (
+                        <span className="text-gray-500">Not Graded</span>
+                      ) : (
+                        <>
+                          <p className="text-gray-500">Obtained Marks:</p>
+                          <p className="px-2 py-1 rounded-full bg-gray-100">
+                            {comment.marksObtained}
+                          </p>
+                        </>
+                      )}
+                    </span>
+                  )}
                 </div>
 
                 {isRepleying.status && isRepleying.id === comment._id && (
@@ -223,7 +281,9 @@ const ChatBox = ({ discussionId }) => {
                       <Button
                         variant="ghost"
                         className="text-red-500"
-                        onClick={() => setIsReplying({ status: false, id: null })}
+                        onClick={() =>
+                          setIsReplying({ status: false, id: null })
+                        }
                       >
                         <Trash2 size={16} />
                       </Button>
@@ -238,16 +298,21 @@ const ChatBox = ({ discussionId }) => {
                       className="flex items-start gap-3 bg-white px-4 py-2 rounded-lg shadow-sm max-w-[700px]"
                     >
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src={reply?.createdby?.profileImg?.url} alt="" />
+                        <AvatarImage
+                          src={reply?.createdby?.profileImg?.url}
+                          alt=""
+                        />
                         <AvatarFallback>
-                          {reply?.createdby?.firstName?.[0]?.toUpperCase() || "U"}
+                          {reply?.createdby?.firstName?.[0]?.toUpperCase() ||
+                            "U"}
                         </AvatarFallback>
                       </Avatar>
 
                       <div className="text-sm flex-1">
                         <div className="flex justify-between items-center mb-1">
                           <p className="font-medium text-xs">
-                            {reply?.createdby?.firstName} {reply?.createdby?.lastName}
+                            {reply?.createdby?.firstName}{" "}
+                            {reply?.createdby?.lastName}
                           </p>
                           <span className="text-xs text-gray-500">
                             {formatDate(reply.createdAt)}
@@ -307,21 +372,29 @@ const ChatBox = ({ discussionId }) => {
             {user?.name?.[0]?.toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
-        <input
-          type="text"
-          className="w-full p-2 border border-gray-300 rounded-lg"
-          value={sendingComment}
-          onChange={(e) => setSendingComment(e.target.value)}
-          placeholder="Write a comment..."
-          disabled={sendingLoading}
-        />
-        <button
-          onClick={sendComment}
-          className="flex items-center justify-center gap-2 rounded-full bg-green-600 text-white p-2"
-          disabled={sendingLoading}
-        >
-          {sendingLoading ? "..." : <Send size={16} />}
-        </button>
+        {isCommented ? (
+          <p className="text-xs text-gray-600">
+            You have already commented on this discussion
+          </p>
+        ) : (
+          <>
+            <input
+              type="text"
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              value={sendingComment}
+              onChange={(e) => setSendingComment(e.target.value)}
+              placeholder="Write a comment..."
+              disabled={sendingLoading}
+            />
+            <button
+              onClick={sendComment}
+              className="flex items-center justify-center gap-2 rounded-full bg-green-600 text-white p-2"
+              disabled={sendingLoading}
+            >
+              {sendingLoading ? "..." : <Send size={16} />}
+            </button>
+          </>
+        )}
       </div>
     </section>
   );

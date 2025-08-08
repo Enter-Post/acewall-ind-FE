@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom"; // <-- useNavigate he
 
 const StudentDiscussionChat = () => {
   const { id } = useParams();
-  const navigate = useNavigate();  // <-- initialize navigate
+  const navigate = useNavigate(); // <-- initialize navigate
   const [discussion, setDiscussion] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useContext(GlobalContext);
@@ -16,6 +16,8 @@ const StudentDiscussionChat = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
 
+  console.log(discussion, "discussion");
+
   useEffect(() => {
     const fetchdiscussion = async () => {
       setLoading(true);
@@ -23,7 +25,6 @@ const StudentDiscussionChat = () => {
         const res = await axiosInstance.get(`discussion/${id}`);
         setDiscussion(res.data.discussion);
         console.log("discussion", discussion);
-        
       } catch (err) {
         console.log(err);
       } finally {
@@ -48,7 +49,7 @@ const StudentDiscussionChat = () => {
       <section className="w-full p-6 bg-white rounded-xl shadow-md">
         {/* Correct back button */}
         <button
-          onClick={() => navigate(-1)}  // <-- use navigate here
+          onClick={() => navigate(-1)} // <-- use navigate here
           className="mb-4 px-4 py-1 rounded bg-gray-200 hover:bg-gray-300 transition w-fit"
         >
           ← Back
@@ -57,6 +58,42 @@ const StudentDiscussionChat = () => {
         <div className="py-4 mb-6 pl-6 rounded-lg bg-green-600 text-white">
           <p className="text-2xl font-bold">Discussion</p>
         </div>
+        <section className="p-4 border border-gray-200 rounded-lg shadow-sm bg-white mb-4">
+          {/* Top Row - Due Date */}
+          <div className="flex flex-wrap items-center gap-4 mb-3">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-gray-600 font-semibold">📅 Due Date:</span>
+              <span className="text-gray-500">
+                {discussion?.dueDate?.date
+                  ? new Date(discussion.dueDate.date).toLocaleDateString()
+                  : "N/A"}
+              </span>
+              <span className="text-gray-400">|</span>
+              <span className="text-gray-500">
+                {discussion?.dueDate?.time
+                  ? discussion.dueDate.time.slice(0, 5)
+                  : ""}
+              </span>
+            </div>
+          </div>
+
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-sm">
+            <div>
+              <p className="text-gray-600 font-semibold">📚 Course</p>
+              <p className="text-gray-500">
+                {discussion?.course?.courseTitle || "Not Assigned"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-600 font-semibold">📖 Chapter</p>
+              <p className="text-gray-500">
+                {discussion?.chapter?.title || "No Chapter"}
+              </p>
+            </div>
+          </div>
+        </section>
 
         <p className="text-2xl font-semibold mb-2">{discussion.topic}</p>
         <p className="text-lg text-gray-600 mb-6">{discussion.description}</p>

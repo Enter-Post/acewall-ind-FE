@@ -38,10 +38,29 @@ const DiscussionTabContent = ({ discussions, loading }) => {
                 </div>
               ) : null}
 
+              {item.dueDate && (
+                <div className="flex items-center gap-2 text-xs mt-1">
+                  <p className="text-gray-600 font-bold">Due Date:</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-gray-500">
+                      {item.dueDate.date
+                        ? new Date(item.dueDate.date).toLocaleDateString()
+                        : "N/A"}
+                    </p>
+                    <p className="text-gray-500">
+                      {item.dueDate.time
+                        ? item.dueDate.time.slice(0, 5)
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Type Badge */}
               <div
-                className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 ${item?.type === "public" ? "bg-green-600" : "bg-indigo-600"
-                  }`}
+                className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 ${
+                  item?.type === "public" ? "bg-green-600" : "bg-indigo-600"
+                }`}
               >
                 <p className="text-xs text-white">{item?.type}</p>
               </div>
@@ -66,7 +85,6 @@ const DiscussionTabContent = ({ discussions, loading }) => {
             </Link>
           ))}
       </div>
-
     </div>
   );
 };

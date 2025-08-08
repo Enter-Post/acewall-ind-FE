@@ -66,11 +66,11 @@ const sideBarTabs = [
     icon: <Megaphone02Icon />,
     path: "/student/announcements",
   },
-  {
-    name: "Discussion Rooms",
-    icon: <MessagesSquareIcon />,
-    path: "/student/discussions",
-  },
+  // {
+  //   name: "Discussion Rooms",
+  //   icon: <MessagesSquareIcon />,
+  //   path: "/student/discussions",
+  // },
   {
     id: 6,
     name: "Messages",

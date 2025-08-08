@@ -68,7 +68,7 @@ const lessonSchema = z.object({
     ),
 });
 
-const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
+const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
   const [open, setOpen] = useState(false);
   const [pdfInputs, setPdfInputs] = useState([{ id: Date.now(), file: null }]);
   const [totalSize, setTotalSize] = useState(0);
@@ -76,6 +76,8 @@ const LessonModal = ({ chapterID, fetchQuarterDetail }) => {
 
   const MAX_TITLE_LENGTH = 100;
   const MAX_DESCRIPTION_LENGTH = 200;
+
+  console.log(chapterID, "chapter Id")
 
   const [titleValue, setTitleValue] = useState("");
   const [descValue, setDescValue] = useState("");
