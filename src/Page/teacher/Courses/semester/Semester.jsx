@@ -17,6 +17,8 @@ import BackButton from "@/CustomComponent/BackButton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import EditQuarterDialog from "@/CustomComponent/SemesterCmp.jsx/editQuarter";
+import EditSemesterDialog from "@/CustomComponent/SemesterCmp.jsx/editSemester";
 
 // Helper function to format date consistently
 const formatDate = (dateString) => {
@@ -35,15 +37,15 @@ const toLocalDateString = (date) => {
   if (!date) return "";
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
 
 // Helper function to create date from local date string
 const fromLocalDateString = (dateString) => {
   if (!dateString) return null;
-  const [year, month, day] = dateString.split('-');
+  const [year, month, day] = dateString.split("-");
   return new Date(year, month - 1, day);
 };
 
@@ -62,91 +64,113 @@ const Semester = () => {
   // Create dynamic schemas based on existing data
   const createSemesterSchema = () => {
     const lastSemester = semesters[semesters.length - 1];
-    
-    return z.object({
-      title: z.string().min(1, "Title is required").trim(),
-      startDate: z.string()
-        .min(1, "Start date is required")
-        .refine((date) => {
-          if (lastSemester) {
-            const newStartDate = fromLocalDateString(date);
-            const lastEndDate = new Date(lastSemester.endDate);
-            return newStartDate > lastEndDate;
-          }
-          return true;
-        }, {
-          message: lastSemester 
-            ? `New semester must start after ${formatDate(lastSemester.endDate)}`
-            : "Invalid start date"
-        }),
-      endDate: z.string().min(1, "End date is required"),
-    }).refine((data) => {
-      const startDate = fromLocalDateString(data.startDate);
-      const endDate = fromLocalDateString(data.endDate);
-      return startDate < endDate;
-    }, {
-      message: "Start date must be before end date",
-      path: ["endDate"],
-    });
+
+    return z
+      .object({
+        title: z.string().min(1, "Title is required").trim(),
+        startDate: z
+          .string()
+          .min(1, "Start date is required")
+          .refine(
+            (date) => {
+              if (lastSemester) {
+                const newStartDate = fromLocalDateString(date);
+                const lastEndDate = new Date(lastSemester.endDate);
+                return newStartDate > lastEndDate;
+              }
+              return true;
+            },
+            {
+              message: lastSemester
+                ? `New semester must start after ${formatDate(
+                    lastSemester.endDate
+                  )}`
+                : "Invalid start date",
+            }
+          ),
+        endDate: z.string().min(1, "End date is required"),
+      })
+      .refine(
+        (data) => {
+          const startDate = fromLocalDateString(data.startDate);
+          const endDate = fromLocalDateString(data.endDate);
+          return startDate < endDate;
+        },
+        {
+          message: "Start date must be before end date",
+          path: ["endDate"],
+        }
+      );
   };
 
   const createQuarterSchema = () => {
     const currentSem = semesters.find((sem) => sem._id === activeSemId);
-    
-    return z.object({
-      title: z.string().min(1, "Title is required").trim(),
-      startDate: z.string()
-        .min(1, "Start date is required")
-        .refine((date) => {
-          if (currentSem) {
-            const quarterStart = fromLocalDateString(date);
-            const semesterStart = new Date(currentSem.startDate);
-            return quarterStart >= semesterStart;
-          }
-          return true;
-        }, "Quarter must start within semester period"),
-      endDate: z.string()
-        .min(1, "End date is required")
-        .refine((date) => {
-          if (currentSem) {
-            const quarterEnd = fromLocalDateString(date);
-            const semesterEnd = new Date(currentSem.endDate);
-            return quarterEnd <= semesterEnd;
-          }
-          return true;
-        }, "Quarter must end within semester period"),
-    }).refine((data) => {
-      const startDate = fromLocalDateString(data.startDate);
-      const endDate = fromLocalDateString(data.endDate);
-      return startDate < endDate;
-    }, {
-      message: "Start date must be before end date",
-      path: ["endDate"],
-    }).refine((data) => {
-      // Check for quarter overlaps
-      const currentSem = semesters.find((sem) => sem._id === activeSemId);
-      if (!currentSem) return true;
 
-      const newStart = fromLocalDateString(data.startDate);
-      const newEnd = fromLocalDateString(data.endDate);
-
-      for (let quarter of currentSem.quarters) {
-        const existingStart = new Date(quarter.startDate);
-        const existingEnd = new Date(quarter.endDate);
-
-        if (
-          (newStart >= existingStart && newStart < existingEnd) ||
-          (newEnd > existingStart && newEnd <= existingEnd) ||
-          (newStart <= existingStart && newEnd >= existingEnd)
-        ) {
-          return false;
+    return z
+      .object({
+        title: z.string().min(1, "Title is required").trim(),
+        startDate: z
+          .string()
+          .min(1, "Start date is required")
+          .refine((date) => {
+            if (currentSem) {
+              const quarterStart = fromLocalDateString(date);
+              const semesterStart = new Date(currentSem.startDate);
+              return quarterStart >= semesterStart;
+            }
+            return true;
+          }, "Quarter must start within semester period"),
+        endDate: z
+          .string()
+          .min(1, "End date is required")
+          .refine((date) => {
+            if (currentSem) {
+              const quarterEnd = fromLocalDateString(date);
+              const semesterEnd = new Date(currentSem.endDate);
+              return quarterEnd <= semesterEnd;
+            }
+            return true;
+          }, "Quarter must end within semester period"),
+      })
+      .refine(
+        (data) => {
+          const startDate = fromLocalDateString(data.startDate);
+          const endDate = fromLocalDateString(data.endDate);
+          return startDate < endDate;
+        },
+        {
+          message: "Start date must be before end date",
+          path: ["endDate"],
         }
-      }
-      return true;
-    }, {
-      message: "Quarter dates overlap with existing quarter",
-      path: ["startDate"],
-    });
+      )
+      .refine(
+        (data) => {
+          // Check for quarter overlaps
+          const currentSem = semesters.find((sem) => sem._id === activeSemId);
+          if (!currentSem) return true;
+
+          const newStart = fromLocalDateString(data.startDate);
+          const newEnd = fromLocalDateString(data.endDate);
+
+          for (let quarter of currentSem.quarters) {
+            const existingStart = new Date(quarter.startDate);
+            const existingEnd = new Date(quarter.endDate);
+
+            if (
+              (newStart >= existingStart && newStart < existingEnd) ||
+              (newEnd > existingStart && newEnd <= existingEnd) ||
+              (newStart <= existingStart && newEnd >= existingEnd)
+            ) {
+              return false;
+            }
+          }
+          return true;
+        },
+        {
+          message: "Quarter dates overlap with existing quarter",
+          path: ["startDate"],
+        }
+      );
   };
 
   // React Hook Form setup for semester
@@ -172,7 +196,9 @@ const Semester = () => {
   const fetchSemestersAndQuarters = async () => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`semester/getSemesterOfCourse/${courseId}`);
+      const res = await axiosInstance.get(
+        `semester/getSemesterOfCourse/${courseId}`
+      );
       setSemesters(res.data.semesters);
     } catch (err) {
       console.error(err);
@@ -242,11 +268,11 @@ const Semester = () => {
         (a, b) => new Date(a.startDate) - new Date(b.startDate)
       );
       const lastQtr = sortedQuarters[sortedQuarters.length - 1];
-      
+
       // Set start date to day after last quarter ends
       const nextStart = new Date(lastQtr.endDate);
       nextStart.setDate(nextStart.getDate() + 1);
-      
+
       quarterForm.reset({
         title: "",
         startDate: toLocalDateString(nextStart),
@@ -255,11 +281,13 @@ const Semester = () => {
     } else {
       quarterForm.reset({
         title: "",
-        startDate: selectedSem ? toLocalDateString(new Date(selectedSem.startDate)) : "",
+        startDate: selectedSem
+          ? toLocalDateString(new Date(selectedSem.startDate))
+          : "",
         endDate: "",
       });
     }
-    
+
     setQuarterModalOpen(true);
   };
 
@@ -359,6 +387,7 @@ const Semester = () => {
                       {sem.isArchived ? "Archived" : "Unarchived"}
                     </Label>
                   </div>
+
                   <Button
                     disabled={sem.isArchived}
                     variant="outline"
@@ -367,8 +396,16 @@ const Semester = () => {
                   >
                     <PlusCircle className="w-4 h-4" /> Quarter
                   </Button>
+
+                  <EditSemesterDialog
+                    semester={sem}
+                    fetchSemestersAndQuarters={fetchSemestersAndQuarters}
+                    courseId={courseId}
+                    formatDate={formatDate}
+                  />
                 </div>
               </div>
+
               <div className="grid gap-2">
                 {sem.quarters.map((qtr) => (
                   <div
@@ -395,6 +432,13 @@ const Semester = () => {
                       <Label htmlFor={`qtr-archive-switch-${qtr._id}`}>
                         {qtr.isArchived ? "Archived" : "Unarchived"}
                       </Label>
+                      <EditQuarterDialog
+                        quarter={qtr}
+                        fetchSemestersAndQuarters={fetchSemestersAndQuarters}
+                        semester={sem}
+                        courseId={courseId}
+                        formatDate={formatDate}
+                      />
                     </div>
                   </div>
                 ))}
@@ -418,7 +462,10 @@ const Semester = () => {
               <strong>{formatDate(lastSemester.endDate)}</strong>
             </p>
           )}
-          <form onSubmit={semesterForm.handleSubmit(handleCreateSemester)} className="space-y-3">
+          <form
+            onSubmit={semesterForm.handleSubmit(handleCreateSemester)}
+            className="space-y-3"
+          >
             <div>
               <Input
                 placeholder="Semester Title"
@@ -462,7 +509,9 @@ const Semester = () => {
               className="w-full"
               disabled={semesterForm.formState.isSubmitting}
             >
-              {semesterForm.formState.isSubmitting ? "Creating..." : "Create Semester"}
+              {semesterForm.formState.isSubmitting
+                ? "Creating..."
+                : "Create Semester"}
             </Button>
           </form>
         </DialogContent>
@@ -485,7 +534,10 @@ const Semester = () => {
             </p>
           )}
 
-          <form onSubmit={quarterForm.handleSubmit(handleCreateQuarter)} className="space-y-3">
+          <form
+            onSubmit={quarterForm.handleSubmit(handleCreateQuarter)}
+            className="space-y-3"
+          >
             <div>
               <Input
                 placeholder="Quarter Title"
@@ -529,7 +581,9 @@ const Semester = () => {
               className="w-full"
               disabled={quarterForm.formState.isSubmitting}
             >
-              {quarterForm.formState.isSubmitting ? "Creating..." : "Create Quarter"}
+              {quarterForm.formState.isSubmitting
+                ? "Creating..."
+                : "Create Quarter"}
             </Button>
           </form>
         </DialogContent>

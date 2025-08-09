@@ -13,7 +13,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CreateDiscussionDialog } from "../createDiscussionModal";
 
-
 const ChapterOptionDropdown = ({
   typeId,
   fetchChapterDetail,
@@ -24,6 +23,7 @@ const ChapterOptionDropdown = ({
   courseId,
   type,
 }) => {
+  console.log(type, "type");
   console.log(typeId, "chapter id");
   return (
     <div>
@@ -62,15 +62,15 @@ const ChapterOptionDropdown = ({
               <p className="text-green-600">Add Page</p>
             </Link>
           </DropdownMenuItem>
-          {/* <DropdownMenuItem>
+          <DropdownMenuItem>
             <Link
-              to={`/teacher/discussions?type=${type}&&typeId=${typeId}&&course=${courseId}`}
+              to={`/teacher/discussions/${semesterId}/${quarterId}?type=${type}&&typeId=${typeId}&&course=${courseId}`}
               className="text-green-600 bg-transparent flex"
             >
               <Plus className="h-4 w-4 mr-2" />
               Discussion
             </Link>
-          </DropdownMenuItem> */}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

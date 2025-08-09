@@ -86,12 +86,22 @@ const StudentDiscussionChat = () => {
               </p>
             </div>
 
-            <div>
-              <p className="text-gray-600 font-semibold">📖 Chapter</p>
-              <p className="text-gray-500">
-                {discussion?.chapter?.title || "No Chapter"}
-              </p>
-            </div>
+            {discussion?.chapter && (
+              <div>
+                <p className="text-gray-600 font-semibold">📖 Chapter</p>
+                <p className="text-gray-500">
+                  {discussion?.chapter?.title || "No Chapter"}
+                </p>
+              </div>
+            )}
+            {discussion?.lesson && (
+              <div>
+                <p className="text-gray-600 font-semibold">📖 Lesson</p>
+                <p className="text-gray-500">
+                  {discussion?.lesson?.title || "No Lesson"}
+                </p>
+              </div>
+            )}
           </div>
         </section>
 

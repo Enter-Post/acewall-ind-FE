@@ -29,6 +29,7 @@ import CreateAssessmentDialog from "@/CustomComponent/CreateCourse/EditAssessmen
 import EditAssessmentDialog from "@/CustomComponent/CreateCourse/EditAssessment";
 
 function QuestionDisplay({ question, index }) {
+  console.log(question, "question");
   return (
     <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
       {question.type === "file" ? (
@@ -64,13 +65,13 @@ function QuestionDisplay({ question, index }) {
             <li
               key={i}
               className={
-                question.correctAnswer === (i + 1).toString()
+                question.correctAnswer === opt.toString()
                   ? "font-semibold text-green-600 bg-green-50 p-1 rounded"
                   : ""
               }
             >
               {opt}
-              {question.correctAnswer === (i + 1).toString() && (
+              {question.correctAnswer === opt.toString() && (
                 <Badge variant="secondary" className="ml-2 text-xs">
                   Correct
                 </Badge>

@@ -18,7 +18,12 @@ import StrictDatePicker from "./Assessment/DueDatePicker";
 import { useSearchParams } from "react-router-dom";
 import CategoryDropdown from "./Assessment/Assessment-category-dropdown";
 
-export function CreateDiscussionDialog({ refresh, setRefresh }) {
+export function CreateDiscussionDialog({
+  refresh,
+  setRefresh,
+  semester,
+  quarter,
+}) {
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState([]);
   const [files, setFiles] = useState([]);
@@ -100,6 +105,8 @@ export function CreateDiscussionDialog({ refresh, setRefresh }) {
     formData.append("type", type);
     formData.append("dueDate", JSON.stringify(data.dueDate));
     formData.append("totalMarks", data.totalPoints);
+    formData.append("semester", semester);
+    formData.append("quarter", quarter);
     if (type === "chapter") {
       formData.append("chapter", typeId);
     }
