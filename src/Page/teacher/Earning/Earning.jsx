@@ -28,6 +28,7 @@ const [recentWithdrawals, setRecentWithdrawals] = useState([]);
     const res = await axiosInstance.get("teacher/teacher-payment-stats");
     setPaymentStats(res.data.stats); // the aggregate card data
     setChartData(res.data.revenueOverTime); // the chart data
+    console.log(res.data.recentWithdrawals)
         setRecentWithdrawals(res.data.recentWithdrawals); // ✅ Set withdrawals
   } catch (error) {
     console.error("Failed to load payment stats", error);

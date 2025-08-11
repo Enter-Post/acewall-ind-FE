@@ -333,10 +333,6 @@ function App() {
                 <Route path="managegradescale" element={<ManageGradeScale />} />
               </Route>
             </Route>
-            <Route path="wallet">
-              <Route index element={<Earning />} />
-              <Route path="detail" element={<EarningDetail />} />
-            </Route>
           </Route>
         </Route>
       </Routes>

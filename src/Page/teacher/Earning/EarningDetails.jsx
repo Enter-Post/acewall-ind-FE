@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button";
 import { TransactionCard, EarningStateCard } from "@/CustomComponent/Card";
 import { CustomDatePicker } from "@/CustomComponent/teacher/wallet/datepicker";
@@ -11,7 +12,7 @@ export default function EarningDetail() {
   const [fromDate, setFromDate] = React.useState(null);
   const [toDate, setToDate] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
-
+  const navigate = useNavigate();
   const [summary, setSummary] = React.useState({
     totalEarnings: 0,
     totalRevenue: 0,
@@ -104,6 +105,12 @@ export default function EarningDetail() {
 
       {/* Transaction Table */}
       <TransactionCard title="Earnings" data={transactions} />  
+            <Button
+          className="m-8 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+          onClick={() => navigate("/teacher/wallet/withdraw")}
+        >
+          Request Withdrawal
+        </Button>
     </div>
   );
 }
