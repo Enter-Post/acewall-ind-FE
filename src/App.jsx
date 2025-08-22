@@ -83,6 +83,7 @@ import TeacherChapterDetail from "./Page/teacher/Courses/quarter/chapter-detail"
 import { AssessmentPage } from "./Page/teacher/Courses/quarter/assessment-dialog";
 import UnverifiedCourses from "./Page/teacher/Courses/unverifiedCourse";
 import CourseDocumentsEdit from "./Page/teacher/Courses/editCourseDocuments";
+import AllWithdrawals from "./Page/teacher/Earning/AllWithdrawals";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -270,6 +271,7 @@ function App() {
               <Route index element={<Earning />} />
               <Route path="detail" element={<EarningDetail />} />
               <Route path="withdraw" element={<WithdrawRequestForm />} />
+              <Route path="allwithdrawals" element={<AllWithdrawals />} />
             </Route>
             <Route path="Announcements" element={<TeacherAnnoucement />} />
             <Route path="allStudent" element={<AllStudent />} />
