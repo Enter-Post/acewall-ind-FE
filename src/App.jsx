@@ -89,6 +89,7 @@ import StdPreview2 from "./Page/teacher/Courses/StdPreview2";
 import StudentSemesterDetailStdPre from "./Page/teacher/Courses/StudentSemesterDetailStdPre";
 import AllChapterStdPre from "./Page/teacher/Courses/AllChapterStdPre";
 import ChapterDetailStdPre from "./Page/teacher/Courses/ChapterDetailStdPre";
+import AllWithdrawals from "./Page/teacher/Earning/AllWithdrawals";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -311,7 +312,10 @@ function App() {
               />
               <Route path=":courseId/quarterStdPre/:quarterId">
                 <Route index element={<AllChapterStdPre />} />
-                <Route path="chapterStdPre/:chapterId" element={<ChapterDetailStdPre />} />
+                <Route
+                  path="chapterStdPre/:chapterId"
+                  element={<ChapterDetailStdPre />}
+                />
               </Route>
               <Route
                 path="courseDetail/:id"
@@ -348,7 +352,7 @@ function App() {
                 <Route path="managegradescale" element={<ManageGradeScale />} />
               </Route>
 
-               <Route path="gpa/:courseId">
+              <Route path="gpa/:courseId">
                 <Route index element={<GpaScaleForm />} />
                 <Route path="managegradescale" element={<ManageGpaScale />} />
               </Route>
@@ -356,6 +360,8 @@ function App() {
             <Route path="wallet">
               <Route index element={<Earning />} />
               <Route path="detail" element={<EarningDetail />} />
+              <Route path="withdraw" element={<WithdrawRequestForm />} />
+              <Route path="allwithdrawals" element={<AllWithdrawals />} />
             </Route>
           </Route>
         </Route>
