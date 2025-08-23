@@ -425,7 +425,9 @@ function StudentProfileCourseCard({ course }) {
 
       {/* Course Info */}
       <div className="flex-1 w-full text-center sm:text-left">
-        <h3 className="text-lg font-semibold text-gray-900">{course?.courseTitle}</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          {course?.courseTitle}
+        </h3>
         {/* <p className="text-sm text-gray-500 mt-1 line-clamp-2">{course?.description}</p> */}
       </div>
     </Card>
@@ -481,6 +483,68 @@ const MyCoursesCard = ({ course }) => {
   );
 };
 
+const DiscussionCard = ({ discussion, link }) => {
+  return (
+    <Link
+      key={discussion._id}
+      to={link}
+      // to={`/student/discussions/${discussion._id}`}
+      className="border border-gray-300 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition duration-300 p-4 bg-white group"
+    >
+      <div className="overflow-hidden rounded-md mb-2">
+        <img
+          src={discussion.course.thumbnail.url}
+          alt={discussion.topic || "Course Thumbnail"}
+          className="w-full h-40 object-cover transform group-hover:scale-105 transition duration-300 ease-in-out"
+        />
+      </div>
+
+      {discussion.dueDate && (
+        <div className="flex discussions-center gap-2 text-xs mt-1">
+          <p className="text-gray-600 font-bold">Due Date:</p>
+          <div className="flex discussions-center gap-2">
+            <p className="text-gray-500">
+              {discussion.dueDate.date
+                ? new Date(discussion.dueDate.date).toLocaleDateString()
+                : "N/A"}
+            </p>
+            <p className="text-gray-500">
+              {discussion.dueDate.time
+                ? discussion.dueDate.time.slice(0, 5)
+                : ""}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Type Badge */}
+      <div
+        className={`border w-fit px-2 py-1 rounded-full border-gray-200 m-2 bg-indigo-600`}
+      >
+        <p className="text-xs text-white">{discussion?.type}</p>
+      </div>
+
+      {/* Metadata */}
+      <div className="flex justify-between discussions-center mt-3">
+        <h2 className="font-semibold text-lg text-gray-800 truncate">
+          {discussion?.topic}
+        </h2>
+        <span className="text-xs text-gray-500">
+          {new Date(discussion?.createdAt).toLocaleDateString()}
+        </span>
+      </div>
+
+      <p className="text-sm text-indigo-700 font-medium">
+        {discussion?.course?.courseTitle}
+      </p>
+
+      <p className="text-sm text-gray-700 line-clamp-2">
+        {discussion?.description}
+      </p>
+    </Link>
+  );
+};
+
 export default Card;
 
 export {
@@ -496,4 +560,5 @@ export {
   StudentProfileCourseCard,
   StudentProfileStatCard,
   MyCoursesCard,
+  DiscussionCard, 
 };

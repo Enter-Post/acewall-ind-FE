@@ -219,8 +219,14 @@ const Assessment = () => {
                                 </div>
                               </div>
                             </div>
-                            <Link
-                              to={`/student/assessment/submission/${assessment._id}`}
+                             <Link
+                              to={
+                                assessment.source === "assessment"
+                                  ? `/student/assessment/submission/${assessment._id}`
+                                  : assessment.source === "discussion"
+                                  ? `/student/discussions/${assessment._id}`
+                                  : "#"
+                              }
                               className="pt-2"
                             >
                               <Button
