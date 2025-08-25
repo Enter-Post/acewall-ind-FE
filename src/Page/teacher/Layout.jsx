@@ -13,6 +13,7 @@ import {
   MessagesSquare,
   NotepadText,
   Verified,
+  MessagesSquareIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -69,6 +70,11 @@ const sideBarTabs = [
     path: "/teacher/messages",
   },
   {
+    name: "Discussion Rooms",
+    icon: <MessagesSquareIcon />,
+    path: "/teacher/discussions?type=all",
+  },
+  {
     id: 13,
     name: "Students",
     icon: <GraduationCap />,
@@ -88,7 +94,7 @@ export default function TeacherLayout() {
     useContext(GlobalContext);
   const location = useLocation().pathname;
 
-  console.log(user?.isVarified, "user")
+  console.log(user?.isVarified, "user");
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
@@ -107,8 +113,7 @@ export default function TeacherLayout() {
         params: {
           search: searchQuery,
           isVerified: "approved",
-        }
-
+        },
       });
 
       const courses = res.data.courses || [];
@@ -242,27 +247,26 @@ export default function TeacherLayout() {
         </div>
       </header>
 
-
-
       <div className="text-center">
         {user?.role === "teacher" && user?.isVarified === false && (
           <div className="bg-yellow-200 text-black p-2 rounded text-center">
             <p className="text-xs">
-              Your account is not verified yet. Your course will not be visible for students. Please upload your document from
-              the{" "}
+              Your account is not verified yet. Your course will not be visible
+              for students. Please upload your document from the{" "}
               <Link to="/teacher/account" className="text-blue-600 underline">
                 account page
               </Link>{" "}
-              for admin verification.            </p>
+              for admin verification.{" "}
+            </p>
           </div>
         )}
       </div>
 
-
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`relative bg-white ${isSidebarOpen ? "block" : "hidden"
-            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`relative bg-white ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
@@ -292,13 +296,15 @@ export default function TeacherLayout() {
                   key={tab.name}
                   to={tab.path ?? "#"}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
-                    }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                    location === tab.path ? "bg-green-500" : "text-black"
+                  }`}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${location === tab.path ? "text-white" : "text-green-600"
-                      }`}
+                    className={`${
+                      location === tab.path ? "text-white" : "text-green-600"
+                    }`}
                   >
                     {tab.name}
                   </span>
