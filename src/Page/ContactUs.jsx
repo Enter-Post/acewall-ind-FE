@@ -23,6 +23,26 @@ export default function ContactUs() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const socialLinks = [
+    { name: "Email", icon: <Mail />, url: "contact@acewallscholars.org" },
+    {
+      name: "Facebook",
+      icon: <Facebook />,
+      url: "https://www.facebook.com/acewallscholars",
+    },
+    // { name: "Twitter",icon: <Twitter/>, url: "#" },
+    {
+      name: "Instagram",
+      icon: <Instagram />,
+      url: "https://www.instagram.com/acewallscholarsonline/",
+    },
+    {
+      name: "Youtube",
+      icon: <Youtube />,
+      url: "https://www.youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ",
+    },
+  ];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -48,7 +68,8 @@ export default function ContactUs() {
 
       setCaptchaValue(null);
     } catch (error) {
-      const errMsg = error.response?.data?.error || "Something went wrong. Try again later.";
+      const errMsg =
+        error.response?.data?.error || "Something went wrong. Try again later.";
       toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
@@ -78,14 +99,15 @@ export default function ContactUs() {
         <div>
           <p className="font-semibold mb-3">Follow Us</p>
           <div className="flex space-x-2">
-            {[Mail, Facebook, Twitter, Instagram, Youtube].map((Icon, index) => (
+            {socialLinks.map((social, index) => (
               <a
                 key={index}
-                href="#"
+                target="#"
+                href={social.url}
                 className="bg-green-600 p-2 rounded-full hover:bg-green-500 transition-colors"
               >
-                <Icon size={20} />
-                <span className="sr-only">{Icon.name}</span>
+                {social.icon}
+                <span className="sr-only">{social.name}</span>
               </a>
             ))}
           </div>

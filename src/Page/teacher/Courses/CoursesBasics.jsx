@@ -386,7 +386,7 @@ export default function CoursesBasis() {
   return (
     <div>
       <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-        Course Course
+        Create Course
       </p>
       <FormProvider
         {...{
