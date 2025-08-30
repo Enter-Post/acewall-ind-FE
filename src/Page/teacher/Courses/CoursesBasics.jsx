@@ -574,7 +574,6 @@ export default function CoursesBasis() {
                   {`Characters left: ${4000 - (watch("courseDescription")?.length || 0)}`}
                 </p>
               </div>
-
             </div>
 
             <div className="mt-10 mb-6">

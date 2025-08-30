@@ -90,6 +90,7 @@ import StudentSemesterDetailStdPre from "./Page/teacher/Courses/StudentSemesterD
 import AllChapterStdPre from "./Page/teacher/Courses/AllChapterStdPre";
 import ChapterDetailStdPre from "./Page/teacher/Courses/ChapterDetailStdPre";
 import AllWithdrawals from "./Page/teacher/Earning/AllWithdrawals";
+import VerifyPhoneOTP from "./Page/VerifyPhoneOTP";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -155,6 +156,7 @@ function App() {
           <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
           <Route path="/signup" element={<SignupPage />}></Route>
           <Route path="/verifyOTP/:email" element={<VerifyOTP />} />
+          <Route path="/verifyPhoneOTP/:email" element={<VerifyPhoneOTP />} />
 
           <Route path="/" element={<MainLayout />}>
             <Route index element={<LandingPage />} />
