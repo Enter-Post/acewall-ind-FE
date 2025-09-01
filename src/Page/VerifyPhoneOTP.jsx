@@ -62,7 +62,7 @@ const VerifyPhoneOTP = () => {
   const handleResend = async () => {
     setResendLoading(true);
     await axiosInstance
-      .post("auth/resendOTP", { email })
+      .post("auth/resendPhoneOTP", { email })
       .then((res) => {
         setResendLoading(false);
         toast.success(res.data.message);
