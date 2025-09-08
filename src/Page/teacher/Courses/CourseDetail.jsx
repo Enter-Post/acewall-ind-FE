@@ -155,12 +155,12 @@ export default function TeacherCourseDetails() {
       </div>
     );
 
-  const hasDocuments =
-    course.documents &&
-    (course.documents.governmentId ||
-      course.documents.resume ||
-      course.documents.certificate ||
-      course.documents.transcript);
+  // const hasDocuments =
+  //   course.documents &&
+  //   (course.documents.governmentId ||
+  //     course.documents.resume ||
+  //     course.documents.certificate ||
+  //     course.documents.transcript);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -316,7 +316,7 @@ export default function TeacherCourseDetails() {
           </div>
 
           {/* Right Column - Documents (Only show if documents exist) */}
-          {hasDocuments && (
+          {/* {hasDocuments && (
             <div className="lg:col-span-3">
               <Card className="shadow-sm">
                 <CardHeader>
@@ -365,7 +365,7 @@ export default function TeacherCourseDetails() {
                 </CardContent>
               </Card>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Management Actions */}
@@ -553,26 +553,26 @@ function StatCard({ icon, value, label, bgColor }) {
   );
 }
 
-function DocumentLink({ label, document }) {
-  return (
-    <a
-      href={document.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group"
-    >
-      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
-      <div className="flex-1 min-w-0">
-        <div className="font-medium text-gray-900 group-hover:text-blue-600 text-sm">
-          {label}
-        </div>
-        <div className="text-xs text-gray-600 truncate">
-          {document.filename}
-        </div>
-      </div>
-    </a>
-  );
-}
+// function DocumentLink({ label, document }) {
+//   return (
+//     <a
+//       href={document.url}
+//       target="_blank"
+//       rel="noopener noreferrer"
+//       className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors group"
+//     >
+//       <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+//       <div className="flex-1 min-w-0">
+//         <div className="font-medium text-gray-900 group-hover:text-blue-600 text-sm">
+//           {label}
+//         </div>
+//         <div className="text-xs text-gray-600 truncate">
+//           {document.filename}
+//         </div>
+//       </div>
+//     </a>
+//   );
+// }
 
 function VerificationBadge({ status, course, fetchCourseDetail }) {
   if (!status) return null;
