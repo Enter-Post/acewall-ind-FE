@@ -39,12 +39,11 @@ const TeacherChapterDetail = () => {
   const courseId = searchParams.get("courseId");
   const quarterStart = searchParams.get("quarterStart");
   const quarterEnd = searchParams.get("quarterEnd");
+  const semesterbased = searchParams.get("semesterbased");
 
   const [loading, setLoading] = useState(false);
   const [chapter, setChapter] = useState(null);
   const [lessons, setLessons] = useState([]);
-
-  console.log(courseId, "courseId");
 
   const fetchChapterDetail = async () => {
     try {
@@ -146,6 +145,7 @@ const TeacherChapterDetail = () => {
               <ChapterOptionDropdown
                 type="chapter"
                 typeId={chapterId}
+                semesterbased={semesterbased}
                 fetchChapterDetail={fetchChapterDetail}
                 quarterId={chapter.quarter?._id}
                 semesterId={chapter.semester?._id}
@@ -343,7 +343,9 @@ const TeacherChapterDetail = () => {
                                       {/* Date formatted in MM/DD/YYYY hh:mm AM/PM */}
                                       {pdf.uploadedAt && (
                                         <span className="text-xs text-gray-500">
-                                          {new Date(pdf.uploadedAt).toLocaleString("en-US", {
+                                          {new Date(
+                                            pdf.uploadedAt
+                                          ).toLocaleString("en-US", {
                                             month: "2-digit",
                                             day: "2-digit",
                                             year: "numeric",
@@ -357,14 +359,15 @@ const TeacherChapterDetail = () => {
 
                                     <DeleteModal
                                       what="File"
-                                      deleteFunc={() => handleDeleteFile(pdf._id, lesson._id)}
+                                      deleteFunc={() =>
+                                        handleDeleteFile(pdf._id, lesson._id)
+                                      }
                                     />
                                   </section>
                                 )
                             )
                           )}
                         </div>
-
                       </div>
 
                       {/* Resources */}

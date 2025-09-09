@@ -1,12 +1,17 @@
 import { axiosInstance } from "@/lib/AxiosInstance";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 
 const AllChapter = () => {
-  const { courseId, quarterId } = useParams();
+  const { courseId } = useParams();
   const [chapters, setChapters] = useState([]);
   const [quarterStartDate, setQuarterStartDate] = useState("");
   const [quarterEndDate, setQuarterEndDate] = useState("");
+  const [searchParams] = useSearchParams();
+
+  const semesterbased = searchParams.get("semesterbased");
+  const quarterId = searchParams.get("quarterID");
+  const actualcourseID = searchParams.get("courseId")
 
   const fetchQuarterDetail = async () => {
     try {
@@ -26,9 +31,26 @@ const AllChapter = () => {
     }
   };
 
+  const fetchChapterOfCourse = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `chapter/chapterofCourse/${actualcourseID}`
+      );
+
+      setChapters(response.data.chapters);
+    } catch (error) {
+      console.error("fetchChapterOfCourse API Error:", error);
+      setChapters([]);
+    }
+  };
+
   useEffect(() => {
-    fetchQuarterDetail();
-  }, []);
+    if (semesterbased === "true") {
+      fetchQuarterDetail();
+    } else if (semesterbased === "false") {
+      fetchChapterOfCourse();
+    }
+  }, [semesterbased, quarterId, courseId]);
 
   return (
     <div>
@@ -36,9 +58,11 @@ const AllChapter = () => {
       {chapters.map((chapter, index) => (
         <Link
           key={chapter._id}
-          to={`/student/mycourses/${courseId}/quarter/${quarterId}/chapter/${chapter._id}`}
+          to={`/student/mycourses/${courseId}/chapters/chapter/${chapter._id}?quarterID=${quarterId}`}
         >
-          <span className="text-sm font-semibold text-gray-700">Chapter: {index + 1}</span>
+          <span className="text-sm font-semibold text-gray-700">
+            Chapter: {index + 1}
+          </span>
           <div className="mb-4 border border-gray-200 p-5 rounded-lg bg-blue-50 hover:bg-blue-100 cursor-pointer transition-all duration-200 shadow-sm">
             <h3 className="font-semibold text-md text-blue-800">
               {chapter.title}

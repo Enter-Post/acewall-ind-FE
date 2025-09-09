@@ -193,6 +193,11 @@ export default function CreateAssessmentPage() {
 
   const semester = searchParams.get("semester");
   const quarter = searchParams.get("quarter");
+  const semesterbased = searchParams.get("semesterbased");
+
+  console.log(semester, "semester")
+  console.log(quarter, "quarter")
+  console.log(semesterbased, "semesterbased")
 
   const fetchQuarterDate = async () => {
     await axiosInstance
@@ -607,11 +612,15 @@ export default function CreateAssessmentPage() {
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Due Date</h3>
-            <StrictDatePicker
-              name="dueDate"
-              minDate={minDate}
-              maxDate={maxDate}
-            />
+            {semesterbased === "true" ? (
+              <StrictDatePicker
+                name="dueDate"
+                minDate={minDate}
+                maxDate={maxDate}
+              />
+            ) : (
+              <StrictDatePicker name="dueDate" />
+            )}
           </div>
 
           {/* Questions Section */}
