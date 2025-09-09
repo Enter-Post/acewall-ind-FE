@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
@@ -57,10 +56,10 @@ const lessonSchema = z.object({
     }),
   pdfFiles: z
     .array(pdfFileSchema)
-    .min(1, { message: "At least one PDF is required" })
+    .optional()  // Make pdfFiles optional
     .refine(
       (files) =>
-        files.reduce((acc, file) => acc + (file?.size || 0), 0) <=
+        !files || files.reduce((acc, file) => acc + (file?.size || 0), 0) <=
         5 * 1024 * 1024,
       {
         message: "Total file size must not exceed 5MB",
@@ -77,7 +76,7 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
   const MAX_TITLE_LENGTH = 100;
   const MAX_DESCRIPTION_LENGTH = 200;
 
-  console.log(chapterID, "chapter Id")
+  console.log(chapterID, "chapter Id");
 
   const [titleValue, setTitleValue] = useState("");
   const [descValue, setDescValue] = useState("");
@@ -265,7 +264,7 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
           </div>
 
           <div>
-            <Label>Lesson PDF Files</Label>
+            <Label>Lesson PDF Files <span className="text-xs text-muted-foreground">(optional)</span></Label>
             {pdfInputs.map((input) => (
               <div key={input.id} className="flex items-center gap-2 mt-2">
                 <Input
