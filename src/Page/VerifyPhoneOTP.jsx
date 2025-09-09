@@ -7,7 +7,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import { GlobalContext } from "@/Context/GlobalProvider";
 
-const VerifyOTP = () => {
+const VerifyPhoneOTP = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputsRef = useRef([]);
   const { email } = useParams();
@@ -44,12 +44,12 @@ const VerifyOTP = () => {
     } else {
       setLoading(true);
       await axiosInstance
-        .post("auth/verifyOTP", { email, otp: enteredOtp })
+        .post("auth/verifyPhoneOTP", { email, otp: enteredOtp })
         .then((res) => {
           setUser(res.data.user);
           setLoading(false);
           toast.success(res.data.message);
-          navigate(`/verifyPhoneOTP/${email}`);
+          checkAuth();
         })
         .catch((err) => {
           console.log(err);
@@ -62,7 +62,7 @@ const VerifyOTP = () => {
   const handleResend = async () => {
     setResendLoading(true);
     await axiosInstance
-      .post("auth/resendOTP", { email })
+      .post("auth/resendPhoneOTP", { email })
       .then((res) => {
         setResendLoading(false);
         toast.success(res.data.message);
@@ -83,7 +83,7 @@ const VerifyOTP = () => {
             </h1>
           </div>
           <p className="text-gray-600">
-            We have sent a 6-digit OTP to your email.
+            We have sent a 6-digit OTP to your phone number.
           </p>
         </div>
 
@@ -139,4 +139,4 @@ const VerifyOTP = () => {
   );
 };
 
-export default VerifyOTP;
+export default VerifyPhoneOTP;

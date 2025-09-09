@@ -18,6 +18,8 @@ const StudentCourseGrades = () => {
   const [expandedSubjectId, setExpandedSubjectId] = useState(null);
   const [expandedSemesters, setExpandedSemesters] = useState(new Set());
   const [expandedQuarters, setExpandedQuarters] = useState(new Set());
+  const [expandedDirectAssessments, setExpandedDirectAssessments] =
+    useState(false);
 
   const toggleSubjectExpand = (courseId) => {
     if (expandedSubjectId === courseId) {
@@ -47,10 +49,14 @@ const StudentCourseGrades = () => {
     setExpandedQuarters(newExpanded);
   };
 
+  const toggleDirectAssessments = () => {
+    setExpandedDirectAssessments(!expandedDirectAssessments);
+  };
+
   const groupAssessmentsByCategory = (assessments) => {
     const grouped = {};
     assessments.forEach((assessment) => {
-      const category = assessment.category || "Other";
+      const category = assessment.categoryName || "Other";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -79,6 +85,12 @@ const StudentCourseGrades = () => {
   if (!gradeData) {
     return <div className="p-4">Loading...</div>;
   }
+
+  // Check if we have any assessments at all
+  const hasAssessments =
+    (gradeData?.semesters && gradeData.semesters.length > 0) ||
+    (gradeData?.directAssessments &&
+      gradeData.directAssessments.assessments.length > 0);
 
   return (
     <div>
@@ -128,9 +140,7 @@ const StudentCourseGrades = () => {
                 <span>{gradeData?.courseName}</span>
               </TableCell>
               <TableCell>
-                {gradeData.semesters.length > 0
-                  ? `${gradeData?.grade?.toFixed(2)}%`
-                  : "--"}
+                {hasAssessments ? `${gradeData?.grade?.toFixed(2)}%` : "--"}
               </TableCell>
               <TableCell>
                 <span
@@ -154,9 +164,7 @@ const StudentCourseGrades = () => {
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {gradeData.semesters.length > 0
-                    ? gradeData?.letterGrade
-                    : "--"}
+                  {hasAssessments ? gradeData?.letterGrade : "--"}
                 </span>
               </TableCell>
             </TableRow>
@@ -164,74 +172,127 @@ const StudentCourseGrades = () => {
               <TableRow className="bg-muted/50">
                 <TableCell colSpan={3} className="p-0">
                   <div className="p-4 space-y-6">
-                    {gradeData?.semesters?.map((semester) => (
-                      <div key={semester.semesterId} className="space-y-4">
-                        <div
-                          className="flex items-center gap-2 cursor-pointer hover:text-blue-600 font-medium text-lg"
-                          onClick={() =>
-                            toggleSemesterExpand(semester.semesterId)
-                          }
-                        >
-                          {expandedSemesters.has(semester.semesterId) ? (
-                            <ChevronDown className="h-4 w-4 text-gray-500" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4 text-gray-500" />
-                          )}
-                          <span>{semester.semesterTitle}</span>
-                        </div>
-
-                        {expandedSemesters.has(semester.semesterId) && (
-                          <div className="ml-6 space-y-4">
-                            {semester.quarters?.map((quarter) => (
-                              <div
-                                key={quarter.quarterId}
-                                className="space-y-2"
-                              >
-                                <div
-                                  className="flex items-center gap-2 cursor-pointer hover:text-green-600 font-medium"
-                                  onClick={() =>
-                                    toggleQuarterExpand(quarter.quarterId)
-                                  }
-                                >
-                                  {expandedQuarters.has(quarter.quarterId) ? (
-                                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                                  ) : (
-                                    <ChevronRight className="h-4 w-4 text-gray-500" />
-                                  )}
-                                  <span>{quarter.quarterTitle}</span>
-                                </div>
-
-                                {expandedQuarters.has(quarter.quarterId) && (
-                                  <div className="ml-6">
-                                    {(() => {
-                                      const groupedAssessments =
-                                        groupAssessmentsByCategory(
-                                          quarter.assessments || []
-                                        );
-                                      return Object.entries(
-                                        groupedAssessments
-                                      ).map(([category, assessments]) => (
-                                        <AssessmentTable
-                                          key={`${quarter.quarterId}-${category}`}
-                                          title={category}
-                                          items={assessments}
-                                          isFinal={category
-                                            .toLowerCase()
-                                            .includes("final")}
-                                        />
-                                      ));
-                                    })()}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
+                    {/* Direct Assessments Section (No Semester/Quarter) */}
+                    {gradeData?.directAssessments &&
+                      gradeData.directAssessments.assessments.length > 0 && (
+                        <div className="space-y-4">
+                          <div
+                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 font-medium text-lg"
+                            onClick={toggleDirectAssessments}
+                          >
+                            {expandedDirectAssessments ? (
+                              <ChevronDown className="h-4 w-4 text-gray-500" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span>Course Assessments</span>
+                            <span className="text-sm text-gray-500 ml-2">
+                              ({gradeData.directAssessments.grade?.toFixed(2)}%
+                              - {gradeData.directAssessments.letterGrade})
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    ))}
 
-                    {(!gradeData?.semesters ||
-                      gradeData.semesters.length === 0) && (
+                          {expandedDirectAssessments && (
+                            <div className="ml-6">
+                              {(() => {
+                                const groupedAssessments =
+                                  groupAssessmentsByCategory(
+                                    gradeData.directAssessments.assessments ||
+                                      []
+                                  );
+                                return Object.entries(groupedAssessments).map(
+                                  ([category, assessments]) => (
+                                    <AssessmentTable
+                                      key={`direct-${category}`}
+                                      title={category}
+                                      items={assessments}
+                                      isFinal={category
+                                        .toLowerCase()
+                                        .includes("final")}
+                                    />
+                                  )
+                                );
+                              })()}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                    {/* Semester/Quarter Section */}
+                    {gradeData?.semesters &&
+                      gradeData.semesters.length > 0 &&
+                      gradeData.semesters.map((semester) => (
+                        <div key={semester.semesterId} className="space-y-4">
+                          <div
+                            className="flex items-center gap-2 cursor-pointer hover:text-blue-600 font-medium text-lg"
+                            onClick={() =>
+                              toggleSemesterExpand(semester.semesterId)
+                            }
+                          >
+                            {expandedSemesters.has(semester.semesterId) ? (
+                              <ChevronDown className="h-4 w-4 text-gray-500" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span>{semester.semesterTitle}</span>
+                          </div>
+
+                          {expandedSemesters.has(semester.semesterId) && (
+                            <div className="ml-6 space-y-4">
+                              {semester.quarters?.map((quarter) => (
+                                <div
+                                  key={quarter.quarterId}
+                                  className="space-y-2"
+                                >
+                                  <div
+                                    className="flex items-center gap-2 cursor-pointer hover:text-green-600 font-medium"
+                                    onClick={() =>
+                                      toggleQuarterExpand(quarter.quarterId)
+                                    }
+                                  >
+                                    {expandedQuarters.has(quarter.quarterId) ? (
+                                      <ChevronDown className="h-4 w-4 text-gray-500" />
+                                    ) : (
+                                      <ChevronRight className="h-4 w-4 text-gray-500" />
+                                    )}
+                                    <span>{quarter.quarterTitle}</span>
+                                    <span className="text-sm text-gray-500 ml-2">
+                                      ({quarter.grade?.toFixed(2)}% -{" "}
+                                      {quarter.letterGrade})
+                                    </span>
+                                  </div>
+
+                                  {expandedQuarters.has(quarter.quarterId) && (
+                                    <div className="ml-6">
+                                      {(() => {
+                                        const groupedAssessments =
+                                          groupAssessmentsByCategory(
+                                            quarter.assessments || []
+                                          );
+                                        return Object.entries(
+                                          groupedAssessments
+                                        ).map(([category, assessments]) => (
+                                          <AssessmentTable
+                                            key={`${quarter.quarterId}-${category}`}
+                                            title={category}
+                                            items={assessments}
+                                            isFinal={category
+                                              .toLowerCase()
+                                              .includes("final")}
+                                          />
+                                        ));
+                                      })()}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                    {/* No assessments message */}
+                    {!hasAssessments && (
                       <div className="text-center py-6 text-gray-500">
                         No assessments found for this course.
                       </div>
@@ -283,8 +344,13 @@ const AssessmentTable = ({ title, items = [], isFinal = false }) => {
                 >
                   <TableCell className="font-medium">
                     {item.assessmentTitle}
+                    {item.isDiscussion && (
+                      <span className="ml-2 text-xs text-gray-500">
+                        (Discussion)
+                      </span>
+                    )}
                   </TableCell>
-                  <TableCell>{item.category}</TableCell>
+                  <TableCell>{item.categoryName}</TableCell>
                   <TableCell>{item.studentPoints}</TableCell>
                   <TableCell>{item.maxPoints}</TableCell>
                   <TableCell>

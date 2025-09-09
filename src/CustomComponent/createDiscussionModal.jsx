@@ -37,6 +37,8 @@ export function CreateDiscussionDialog({
   const typeId = searchParams.get("typeId");
   const courseId = searchParams.get("course");
 
+  console.log(quarter, "quarter");
+
   const parsedStartDate = new Date(startDate);
   const parsedEndDate = new Date(endDate);
   const minDate =
@@ -130,8 +132,10 @@ export function CreateDiscussionDialog({
     formData.append("type", type);
     formData.append("dueDate", JSON.stringify(data.dueDate));
     formData.append("totalMarks", data.totalPoints);
-    formData.append("semester", semester);
-    formData.append("quarter", quarter);
+    if (semester !== "undefined" && quarter !== "undefined") {
+      formData.append("semester", semester);
+      formData.append("quarter", quarter);
+    }
     if (type === "chapter") {
       formData.append("chapter", typeId);
     }
@@ -257,11 +261,15 @@ export function CreateDiscussionDialog({
 
               <div className="flex-1">
                 <Label className="font-semibold mb-2">Due Date</Label>
-                <StrictDatePicker
-                  name="dueDate"
-                  minDate={minDate}
-                  maxDate={maxDate}
-                />
+                {quarter !== "undefined" ? (
+                  <StrictDatePicker
+                    name="dueDate"
+                    minDate={minDate}
+                    maxDate={maxDate}
+                  />
+                ) : (
+                  <StrictDatePicker name="dueDate" />
+                )}
               </div>
             </section>
 

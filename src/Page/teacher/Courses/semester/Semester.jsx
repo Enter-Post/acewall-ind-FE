@@ -83,8 +83,8 @@ const Semester = () => {
             {
               message: lastSemester
                 ? `New semester must start after ${formatDate(
-                    lastSemester.endDate
-                  )}`
+                  lastSemester.endDate
+                )}`
                 : "Invalid start date",
             }
           ),
@@ -336,8 +336,7 @@ const Semester = () => {
       <header className="flex items-center justify-between border-b pb-4">
         <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
           <Calendar className="w-6 h-6 text-green-600" />
-          Semester Management
-        </h1>
+          Grading Periods        </h1>
         <Button
           onClick={() => {
             semesterForm.reset();
@@ -359,9 +358,8 @@ const Semester = () => {
           semesters.map((sem) => (
             <div
               key={sem._id}
-              className={`bg-white rounded-xl shadow-sm p-6 border space-y-4 ${
-                sem.isArchived ? "opacity-50" : ""
-              }`}
+              className={`bg-white rounded-xl shadow-sm p-6 border space-y-4 ${sem.isArchived ? "opacity-50" : ""
+                }`}
             >
               <div className="flex justify-between items-center">
                 <div>
@@ -410,9 +408,8 @@ const Semester = () => {
                 {sem.quarters.map((qtr) => (
                   <div
                     key={qtr._id}
-                    className={`flex justify-between items-center bg-gray-50 rounded-md px-4 py-3 border ${
-                      qtr.isArchived ? "opacity-50" : ""
-                    }`}
+                    className={`flex justify-between items-center bg-gray-50 rounded-md px-4 py-3 border ${qtr.isArchived ? "opacity-50" : ""
+                      }`}
                   >
                     <div>
                       <p className="font-medium text-gray-800">{qtr.title}</p>

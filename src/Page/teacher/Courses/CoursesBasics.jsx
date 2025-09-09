@@ -36,122 +36,122 @@ const documentSchema = z.object({
   }),
 });
 
-const courseFormSchema = z
-  .object({
-    thumbnail: z.any().refine((file) => file instanceof File, {
-      message: "Thumbnail is required",
-    }),
-    courseTitle: z
-      .string()
-      .min(5, { message: "Course title must be at least 5 characters" })
-      .max(100, { message: "Course title must be less than 100 characters" }),
-    category: z
-      .string()
-      .min(1, { message: "Please select a category" })
-      .refine((val) => val !== "", { message: "Please select a category" }),
-    subcategory: z
-      .string()
-      .min(1, { message: "Please select a subcategory" })
-      .refine((val) => val !== "", { message: "Please select a subcategory" }),
-    language: z
-      .string()
-      .min(1, { message: "Please select a language" })
-      .refine((val) => val !== "", { message: "Please select a language" }),
-    courseDescription: z
-      .string()
-      .min(5, { message: "Description must be at least 5 characters" })
-      .max(4000, { message: "Description must be less than 2500 characters" }),
-    teachingPoints: z
-      .array(
-        z.object({
-          value: z
-            .string()
-            .min(5, { message: "Teaching point must be at least 5 characters" })
-            .max(120, {
-              message: "Teaching point must be less than 120 characters",
-            }),
-        })
-      )
-      .min(1, { message: "Add at least one teaching point" }),
-    requirements: z
-      .array(
-        z.object({
-          value: z
-            .string()
-            .min(5, { message: "Requirement must be at least 5 characters" })
-            .max(120, {
-              message: "Requirement must be less than 120 characters",
-            }),
-        })
-      )
-      .min(1, { message: "Add at least one requirement" }),
-    price: z
-      .string()
-      .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
-        message: "Price must be a valid non-negative number",
+const courseFormSchema = z.object({
+  thumbnail: z.any().refine((file) => file instanceof File, {
+    message: "Thumbnail is required",
+  }),
+  courseTitle: z
+    .string()
+    .min(5, { message: "Course title must be at least 5 characters" })
+    .max(100, { message: "Course title must be less than 100 characters" }),
+  category: z
+    .string()
+    .min(1, { message: "Please select a category" })
+    .refine((val) => val !== "", { message: "Please select a category" }),
+  subcategory: z
+    .string()
+    .min(1, { message: "Please select a subcategory" })
+    .refine((val) => val !== "", { message: "Please select a subcategory" }),
+  semesterbased: z.boolean(),
+  language: z
+    .string()
+    .min(1, { message: "Please select a language" })
+    .refine((val) => val !== "", { message: "Please select a language" }),
+  courseDescription: z
+    .string()
+    .min(5, { message: "Description must be at least 5 characters" })
+    .max(4000, { message: "Description must be less than 2500 characters" }),
+  teachingPoints: z
+    .array(
+      z.object({
+        value: z
+          .string()
+          .min(5, { message: "Teaching point must be at least 5 characters" })
+          .max(120, {
+            message: "Teaching point must be less than 120 characters",
+          }),
       })
-      .refine((val) => Number(val) <= 9999, {
-        message: "Price must not exceed 4 digits",
-      }),
-    courseType: z
-      .string()
-      .refine((val) => val === "credit" || val === "non-credit", {
-        message: "Please select course type",
-      }),
-    documents: z.object({
-      governmentId: z.any(),
-      resume: z.any(),
-      certificate: z.any(),
-      transcript: z.any(),
+    )
+    .min(1, { message: "Add at least one teaching point" }),
+  requirements: z
+    .array(
+      z.object({
+        value: z
+          .string()
+          .min(5, { message: "Requirement must be at least 5 characters" })
+          .max(120, {
+            message: "Requirement must be less than 120 characters",
+          }),
+      })
+    )
+    .min(1, { message: "Add at least one requirement" }),
+  price: z
+    .string()
+    .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "Price must be a valid non-negative number",
+    })
+    .refine((val) => Number(val) <= 9999, {
+      message: "Price must not exceed 4 digits",
     }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.courseType === "credit") {
-      if (!(data.documents.governmentId instanceof File)) {
-        ctx.addIssue({
-          path: ["documents", "governmentId"],
-          code: z.ZodIssueCode.custom,
-          message: "Government ID is required",
-        });
-      }
-      if (!(data.documents.resume instanceof File)) {
-        ctx.addIssue({
-          path: ["documents", "resume"],
-          code: z.ZodIssueCode.custom,
-          message: "Resume is required",
-        });
-      }
-      if (!(data.documents.certificate instanceof File)) {
-        ctx.addIssue({
-          path: ["documents", "certificate"],
-          code: z.ZodIssueCode.custom,
-          message: "Certificate is required",
-        });
-      }
-      if (!(data.documents.transcript instanceof File)) {
-        ctx.addIssue({
-          path: ["documents", "transcript"],
-          code: z.ZodIssueCode.custom,
-          message: "Transcript is required",
-        });
-      }
-    } else if (data.courseType === "non-credit") {
-      if (!(data.documents.resume instanceof File)) {
-        ctx.addIssue({
-          path: ["documents", "resume"],
-          code: z.ZodIssueCode.custom,
-          message: "Resume is required",
-        });
-      }
-      if (!(data.documents.certificate instanceof File)) {
-        ctx.addIssue({
-          path: ["documents", "certificate"],
-          code: z.ZodIssueCode.custom,
-          message: "Certificate is required",
-        });
-      }
-    }
-  });
+  // courseType: z
+  //   .string()
+  //   .refine((val) => val === "credit" || val === "non-credit", {
+  //     message: "Please select course type",
+  //   }),
+  // documents: z.object({
+  //   governmentId: z.any(),
+  //   resume: z.any(),
+  //   certificate: z.any(),
+  //   transcript: z.any(),
+  // }),
+});
+// .superRefine((data, ctx) => {
+//   if (data.courseType === "credit") {
+//     if (!(data.documents.governmentId instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "governmentId"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Government ID is required",
+//       });
+//     }
+//     if (!(data.documents.resume instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "resume"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Resume is required",
+//       });
+//     }
+//     if (!(data.documents.certificate instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "certificate"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Certificate is required",
+//       });
+//     }
+//     if (!(data.documents.transcript instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "transcript"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Transcript is required",
+//       });
+//     }
+//   } else if (data.courseType === "non-credit") {
+//     if (!(data.documents.resume instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "resume"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Resume is required",
+//       });
+//     }
+//     if (!(data.documents.certificate instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "certificate"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Certificate is required",
+//       });
+//     }
+//   }
+// });
 
 export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -161,17 +161,13 @@ export default function CoursesBasis() {
   const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedCourseType, setSelectedCourseType] = useState("");
-  const [courseDocument, setCourseDocument] = useState({
-    governmentId: null,
-    resume: null,
-    certificate: null,
-    transcript: null,
-  });
-
-  console.log(courseDocument, "courseDocument");
-
-  console.log(selectedCourseType, "selectedCourseType");
+  // const [selectedCourseType, setSelectedCourseType] = useState("");
+  // const [courseDocument, setCourseDocument] = useState({
+  //   governmentId: null,
+  //   resume: null,
+  //   certificate: null,
+  //   transcript: null,
+  // });
 
   useEffect(() => {
     axiosInstance
@@ -216,6 +212,7 @@ export default function CoursesBasis() {
     },
   });
   const watchedLanguage = watch("language");
+  const watchedSemesterbased = watch("semesterbased");
 
   console.log(errors, "errors");
 
@@ -264,21 +261,14 @@ export default function CoursesBasis() {
   };
 
   const onSubmit = async (data) => {
-    console.log(data, "form data");
     const formData = new FormData();
     setLoading(true);
-
     try {
       formData.append("thumbnail", data.thumbnail);
       formData.append("courseTitle", data.courseTitle);
       formData.append("category", data.category);
       formData.append("subcategory", data.subcategory);
-      formData.append("language", data.language);
-      formData.append("courseType", data.courseType);
-      formData.append("governmentId", courseDocument.governmentId);
-      formData.append("resume", courseDocument.resume);
-      formData.append("certificate", courseDocument.certificate);
-      formData.append("transcript", courseDocument.transcript);
+      formData.append("semesterbased", data.semesterbased);
       formData.append("courseDescription", data.courseDescription);
       formData.append(
         "teachingPoints",
@@ -289,18 +279,17 @@ export default function CoursesBasis() {
         JSON.stringify(data.requirements.map((req) => req.value))
       );
       formData.append("price", data.price);
-      // formData.append("courseDate", JSON.stringify(data.courseDate));
 
-      const res = await axiosInstance.post("/course/create", formData, {
+      const res = await axiosInstance.post("course/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // Dismiss loading toast and show success
       toast.success(res.data.message || "Course created successfully!");
 
       reset();
       navigate("/teacher/courses");
     } catch (err) {
+      console.log(err, "error");
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -407,8 +396,9 @@ export default function CoursesBasis() {
                   Thumbnail *
                 </Label>
                 <div
-                  className={` p-1 w-full max-w-md ${errors.thumbnail ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={` p-1 w-full max-w-md ${
+                    errors.thumbnail ? "border-red-500" : "border-gray-300"
+                  }`}
                 ></div>
                 {errors?.thumbnail && (
                   <p className="text-xs text-red-500 mt-1">
@@ -471,8 +461,9 @@ export default function CoursesBasis() {
                   <Input
                     id="courseTitle"
                     maxLength={50}
-                    className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""
-                      }`}
+                    className={`bg-gray-50 ${
+                      errors.courseTitle ? "border border-red-500" : ""
+                    }`}
                     {...register("courseTitle")}
                   />
                   {errors.courseTitle && (
@@ -492,7 +483,9 @@ export default function CoursesBasis() {
                     min="0"
                     max="9999"
                     placeholder="Enter course price"
-                    className={`bg-gray-50 ${errors.price ? "border border-red-500" : ""}`}
+                    className={`bg-gray-50 ${
+                      errors.price ? "border border-red-500" : ""
+                    }`}
                     onInput={(e) => {
                       const value = parseFloat(e.currentTarget.value);
                       if (value > 9999) {
@@ -522,37 +515,72 @@ export default function CoursesBasis() {
                   selectedCategory={selectedCategory}
                 />
               </div>
-              <div>
-                <Label htmlFor="language" className="block mb-2">
-                  Language *
-                </Label>
-                <Select
-                  onValueChange={(value) => {
-                    console.log(value, "language");
-                    setValue("language", value, { shouldValidate: true });
-                  }}
-                  value={watchedLanguage}
-                  className="max-w-xs"
-                >
-                  <SelectTrigger className="bg-gray-50">
-                    <SelectValue
-                      placeholder="Select language"
-                      defaultValues={"english"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="spanish">Spanish</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
-                    <SelectItem value="german">German</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.language && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.language.message}
-                  </p>
-                )}
-              </div>
+              <section className="flex gap-6 justify-between">
+                <div>
+                  <Label htmlFor="language" className="block mb-2">
+                    Is this a semester-based course *
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      setValue("semesterbased", value === "true", {
+                        shouldValidate: true,
+                      });
+                    }}
+                    value={
+                      watchedSemesterbased !== undefined
+                        ? watchedSemesterbased
+                          ? "true"
+                          : "false"
+                        : undefined
+                    }
+                    className="max-w-xs"
+                  >
+                    <SelectTrigger className="bg-gray-50">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.semesterbased && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.semesterbased.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-[50%]">
+                  <Label htmlFor="language" className="block mb-2">
+                    Language *
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      setValue("language", value, { shouldValidate: true });
+                    }}
+                    value={watchedLanguage}
+                    className="max-w-xs"
+                  >
+                    <SelectTrigger className="bg-gray-50">
+                      <SelectValue
+                        placeholder="Select language"
+                        defaultValues={"english"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="english">English</SelectItem>
+                      <SelectItem value="spanish">Spanish</SelectItem>
+                      <SelectItem value="french">French</SelectItem>
+                      <SelectItem value="german">German</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.language && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.language.message}
+                    </p>
+                  )}
+                </div>
+              </section>
 
               <div className="">
                 <Label htmlFor="courseDescription" className="block mb-2">
@@ -560,8 +588,9 @@ export default function CoursesBasis() {
                 </Label>
                 <Textarea
                   id="courseDescription"
-                  className={`min-h-[100px] bg-gray-50  ${errors.courseDescription ? "border border-red-500" : ""
-                    }`}
+                  className={`min-h-[100px] bg-gray-50  ${
+                    errors.courseDescription ? "border border-red-500" : ""
+                  }`}
                   maxLength={4000}
                   {...register("courseDescription")}
                 />
@@ -571,10 +600,11 @@ export default function CoursesBasis() {
                   </p>
                 )}
                 <p className="text-xs text-gray-500 mt-1">
-                  {`Characters left: ${4000 - (watch("courseDescription")?.length || 0)}`}
+                  {`Characters left: ${
+                    4000 - (watch("courseDescription")?.length || 0)
+                  }`}
                 </p>
               </div>
-
             </div>
 
             <div className="mt-10 mb-6">
@@ -602,10 +632,11 @@ export default function CoursesBasis() {
                   type="button"
                   disabled={teachingPointsFields.length >= 10}
                   onClick={() => appendTeachingPoint({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 10
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                    }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
+                    teachingPointsFields.length >= 10
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                 >
                   + Add Teaching Point
                 </button>
@@ -633,17 +664,18 @@ export default function CoursesBasis() {
                 <button
                   type="button"
                   onClick={() => appendRequirement({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 10
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                    }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
+                    requirementsFields.length >= 10
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                   disabled={requirementsFields.length >= 10}
                 >
                   + Add Requirement
                 </button>
               </div>
             </section>
-
+            {/* 
             <section>
               <div>
                 <Label>Select Course Type *</Label>
@@ -749,7 +781,7 @@ export default function CoursesBasis() {
                   </p>
                 )}
               </div>
-            </section>
+            </section> */}
           </section>
           <div className="flex justify-end mt-25">
             <Button

@@ -7,24 +7,31 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { BookOpen, GraduationCap, Eye } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
 import EditChapterDialog from "@/CustomComponent/CreateCourse/EditChapter";
 import { DeleteModal } from "../../../CustomComponent/CreateCourse/DeleteModal";
 import BackButton from "@/CustomComponent/BackButton";
 
 const QuarterDetail = () => {
-  const { id, courseId } = useParams();
+  const { courseId } = useParams();
   const [loading, setLoading] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [quarterStartDate, setQuarterStartDate] = useState("");
   const [quarterEndDate, setQuarterEndDate] = useState("");
+  const [searchParams] = useSearchParams();
 
-  console.log(chapters, "setChapters");
+  const semesterbased = searchParams.get("semesterbased");
+  const quarterId = searchParams.get("quarterID");
+
+  console.log(semesterbased, "semesterbased");
 
   const fetchQuarterDetail = async () => {
     try {
-      const response = await axiosInstance.get(`chapter/${courseId}/${id}`);
+      console.log("its working here");
+      const response = await axiosInstance.get(
+        `chapter/${courseId}/${quarterId}`
+      );
 
       // Validate the structure of response
       if (response?.data?.chapters) {
@@ -37,23 +44,49 @@ const QuarterDetail = () => {
         toast.error("Invalid response format from server.");
       }
     } catch (err) {
-      console.error("API Error:", err);
+      console.error("fetchQuarterDetail API Error:", err);
       setChapters([]);
-      response.data.chapters.length == 0 ? (toast.error("Error fetching chapters.")) : (toast.error("failed to load quarter "));
     }
   };
 
+  const fetchChapterOfCourse = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `chapter/chapterofCourse/${courseId}`
+      );
+
+      console.log(response, "response");
+      setChapters(response.data.chapters);
+    } catch (error) {
+      console.error("fetchChapterOfCourse API Error:", error);
+      setChapters([]);
+    }
+  };
+
+  console.log(semesterbased, "semesterbased");
 
   useEffect(() => {
-    fetchQuarterDetail();
-  }, []);
+    if (semesterbased === "true") {
+      fetchQuarterDetail();
+    } else if (semesterbased === "false") {
+      fetchChapterOfCourse();
+    }
+  }, [semesterbased, quarterId, courseId]);
+
+  const refreshChapters = () => {
+    if (semesterbased === "true") {
+      fetchQuarterDetail();
+    } else {
+      fetchChapterOfCourse();
+    }
+  };
 
   const handleDeleteChapter = async (chapterID) => {
     setLoading(true);
     try {
       const response = await axiosInstance.delete(`chapter/${chapterID}`);
       toast.success(response.data.message);
-      fetchQuarterDetail();
+      refreshChapters();
     } catch (err) {
       toast.error(err.response?.data?.message || "Error deleting chapter");
     } finally {
@@ -63,18 +96,15 @@ const QuarterDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <BackButton className="mb-10"/>
+      <BackButton className="mb-10" />
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <BackButton className="mb-10"/>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <GraduationCap className="h-8 w-8 text-blue-600" />
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Chapters
-                </h1>
+                <h1 className="text-2xl font-bold text-gray-900">Chapters</h1>
                 <p className="text-gray-600">
                   Manage your chapters and course content
                 </p>
@@ -82,8 +112,9 @@ const QuarterDetail = () => {
             </div>
             <ChapterCreationModal
               courseId={courseId}
-              quarterId={id}
+              quarterId={semesterbased ? quarterId : null}
               fetchQuarterDetail={fetchQuarterDetail}
+              refreshChapters={refreshChapters}
             />
           </div>
         </div>
@@ -101,8 +132,9 @@ const QuarterDetail = () => {
             </p>
             <ChapterCreationModal
               courseId={courseId}
-              quarterId={id}
+              quarterId={semesterbased ? quarterId : null}
               fetchQuarterDetail={fetchQuarterDetail}
+              refreshChapters={refreshChapters}
             />
           </div>
         ) : (
@@ -155,10 +187,13 @@ const QuarterDetail = () => {
                   {/* Actions */}
                   <div className="flex items-center gap-2 pt-2">
                     <Link
-                      to={`/teacher/courses/quarter/${id}/chapter/${chapter._id}?courseId=${courseId}&quarterStart=${quarterStartDate}&quarterEnd=${quarterEndDate}`}
+                      to={`/teacher/courses/chapter/${chapter._id}?courseId=${courseId}&quarterId=${quarterId}&semesterbased=${semesterbased}`}
                       className="flex-1"
                     >
-                      <Button className="w-full bg-green-500 bg-green-600" size="sm">
+                      <Button
+                        className="w-full bg-green-500 bg-green-600"
+                        size="sm"
+                      >
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
                       </Button>
