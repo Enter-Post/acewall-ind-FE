@@ -53,6 +53,7 @@ const courseFormSchema = z
       .string()
       .min(1, { message: "Please select a subcategory" })
       .refine((val) => val !== "", { message: "Please select a subcategory" }),
+    semesterbased: z.boolean(),
     language: z
       .string()
       .min(1, { message: "Please select a language" })
@@ -169,10 +170,6 @@ export default function CoursesBasis() {
   //   transcript: null,
   // });
 
-  // console.log(courseDocument, "courseDocument");
-
-  // console.log(selectedCourseType, "selectedCourseType");
-
   useEffect(() => {
     axiosInstance
       .get("subcategory/get")
@@ -216,6 +213,7 @@ export default function CoursesBasis() {
     },
   });
   const watchedLanguage = watch("language");
+  const watchedSemesterbased = watch("semesterbased");
 
   console.log(errors, "errors");
 
@@ -264,7 +262,6 @@ export default function CoursesBasis() {
   };
 
   const onSubmit = async (data) => {
-    console.log(data, "form data");
     const formData = new FormData();
     setLoading(true);
 
@@ -289,18 +286,17 @@ export default function CoursesBasis() {
         JSON.stringify(data.requirements.map((req) => req.value))
       );
       formData.append("price", data.price);
-      // formData.append("courseDate", JSON.stringify(data.courseDate));
 
-      const res = await axiosInstance.post("/course/create", formData, {
+      const res = await axiosInstance.post("course/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // Dismiss loading toast and show success
       toast.success(res.data.message || "Course created successfully!");
 
       reset();
       navigate("/teacher/courses");
     } catch (err) {
+      console.log(err, "error");
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -407,8 +403,9 @@ export default function CoursesBasis() {
                   Thumbnail *
                 </Label>
                 <div
-                  className={` p-1 w-full max-w-md ${errors.thumbnail ? "border-red-500" : "border-gray-300"
-                    }`}
+                  className={` p-1 w-full max-w-md ${
+                    errors.thumbnail ? "border-red-500" : "border-gray-300"
+                  }`}
                 ></div>
                 {errors?.thumbnail && (
                   <p className="text-xs text-red-500 mt-1">
@@ -471,8 +468,9 @@ export default function CoursesBasis() {
                   <Input
                     id="courseTitle"
                     maxLength={50}
-                    className={`bg-gray-50 ${errors.courseTitle ? "border border-red-500" : ""
-                      }`}
+                    className={`bg-gray-50 ${
+                      errors.courseTitle ? "border border-red-500" : ""
+                    }`}
                     {...register("courseTitle")}
                   />
                   {errors.courseTitle && (
@@ -492,7 +490,9 @@ export default function CoursesBasis() {
                     min="0"
                     max="9999"
                     placeholder="Enter course price"
-                    className={`bg-gray-50 ${errors.price ? "border border-red-500" : ""}`}
+                    className={`bg-gray-50 ${
+                      errors.price ? "border border-red-500" : ""
+                    }`}
                     onInput={(e) => {
                       const value = parseFloat(e.currentTarget.value);
                       if (value > 9999) {
@@ -522,37 +522,72 @@ export default function CoursesBasis() {
                   selectedCategory={selectedCategory}
                 />
               </div>
-              <div>
-                <Label htmlFor="language" className="block mb-2">
-                  Language *
-                </Label>
-                <Select
-                  onValueChange={(value) => {
-                    console.log(value, "language");
-                    setValue("language", value, { shouldValidate: true });
-                  }}
-                  value={watchedLanguage}
-                  className="max-w-xs"
-                >
-                  <SelectTrigger className="bg-gray-50">
-                    <SelectValue
-                      placeholder="Select language"
-                      defaultValues={"english"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="spanish">Spanish</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
-                    <SelectItem value="german">German</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.language && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.language.message}
-                  </p>
-                )}
-              </div>
+              <section className="flex gap-6 justify-between">
+                <div>
+                  <Label htmlFor="language" className="block mb-2">
+                    Is this a semester-based course *
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      setValue("semesterbased", value === "true", {
+                        shouldValidate: true,
+                      });
+                    }}
+                    value={
+                      watchedSemesterbased !== undefined
+                        ? watchedSemesterbased
+                          ? "true"
+                          : "false"
+                        : undefined
+                    }
+                    className="max-w-xs"
+                  >
+                    <SelectTrigger className="bg-gray-50">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.semesterbased && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.semesterbased.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-[50%]">
+                  <Label htmlFor="language" className="block mb-2">
+                    Language *
+                  </Label>
+                  <Select
+                    onValueChange={(value) => {
+                      setValue("language", value, { shouldValidate: true });
+                    }}
+                    value={watchedLanguage}
+                    className="max-w-xs"
+                  >
+                    <SelectTrigger className="bg-gray-50">
+                      <SelectValue
+                        placeholder="Select language"
+                        defaultValues={"english"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="english">English</SelectItem>
+                      <SelectItem value="spanish">Spanish</SelectItem>
+                      <SelectItem value="french">French</SelectItem>
+                      <SelectItem value="german">German</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.language && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.language.message}
+                    </p>
+                  )}
+                </div>
+              </section>
 
               <div className="">
                 <Label htmlFor="courseDescription" className="block mb-2">
@@ -560,8 +595,9 @@ export default function CoursesBasis() {
                 </Label>
                 <Textarea
                   id="courseDescription"
-                  className={`min-h-[100px] bg-gray-50  ${errors.courseDescription ? "border border-red-500" : ""
-                    }`}
+                  className={`min-h-[100px] bg-gray-50  ${
+                    errors.courseDescription ? "border border-red-500" : ""
+                  }`}
                   maxLength={4000}
                   {...register("courseDescription")}
                 />
@@ -571,10 +607,11 @@ export default function CoursesBasis() {
                   </p>
                 )}
                 <p className="text-xs text-gray-500 mt-1">
-                  {`Characters left: ${4000 - (watch("courseDescription")?.length || 0)}`}
+                  {`Characters left: ${
+                    4000 - (watch("courseDescription")?.length || 0)
+                  }`}
                 </p>
               </div>
-
             </div>
 
             <div className="mt-10 mb-6">
@@ -602,10 +639,11 @@ export default function CoursesBasis() {
                   type="button"
                   disabled={teachingPointsFields.length >= 10}
                   onClick={() => appendTeachingPoint({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${teachingPointsFields.length >= 10
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                    }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
+                    teachingPointsFields.length >= 10
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                 >
                   + Add Teaching Point
                 </button>
@@ -633,10 +671,11 @@ export default function CoursesBasis() {
                 <button
                   type="button"
                   onClick={() => appendRequirement({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${requirementsFields.length >= 10
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
-                    }`}
+                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
+                    requirementsFields.length >= 10
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                   disabled={requirementsFields.length >= 10}
                 >
                   + Add Requirement

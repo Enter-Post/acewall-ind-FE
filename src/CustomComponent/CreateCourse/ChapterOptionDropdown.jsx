@@ -18,13 +18,14 @@ const ChapterOptionDropdown = ({
   fetchChapterDetail,
   quarterId,
   semesterId,
-  quarterStart,
-  quarterEnd,
   courseId,
   type,
+  semesterbased,
 }) => {
-  console.log(type, "type");
-  console.log(typeId, "chapter id");
+  const assessmentLink = semesterbased
+    ? `/teacher/assessments/create/${type}/${typeId}/${courseId}?semester=${semesterId}&quarter=${quarterId}&semesterbased=${semesterbased}`
+    : `/teacher/assessments/create/${type}/${typeId}/${courseId}&semesterbased=${semesterbased}`;
+
   return (
     <div>
       <DropdownMenu>
@@ -44,9 +45,7 @@ const ChapterOptionDropdown = ({
 
           {/* </DropdownMenuItem> */}
           <DropdownMenuItem>
-            <Link
-              to={`/teacher/assessments/create/${type}/${typeId}/${courseId}/${quarterStart}/${quarterEnd}?semester=${semesterId}&quarter=${quarterId}`}
-            >
+            <Link to={assessmentLink}>
               <div className="text-green-600 bg-transparent flex ">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Assessment

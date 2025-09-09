@@ -90,6 +90,7 @@ import StudentSemesterDetailStdPre from "./Page/teacher/Courses/StudentSemesterD
 import AllChapterStdPre from "./Page/teacher/Courses/AllChapterStdPre";
 import ChapterDetailStdPre from "./Page/teacher/Courses/ChapterDetailStdPre";
 import AllWithdrawals from "./Page/teacher/Earning/AllWithdrawals";
+import VerifyPhoneOTP from "./Page/VerifyPhoneOTP";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -155,6 +156,7 @@ function App() {
           <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
           <Route path="/signup" element={<SignupPage />}></Route>
           <Route path="/verifyOTP/:email" element={<VerifyOTP />} />
+          <Route path="/verifyPhoneOTP/:email" element={<VerifyPhoneOTP />} />
 
           <Route path="/" element={<MainLayout />}>
             <Route index element={<LandingPage />} />
@@ -205,12 +207,11 @@ function App() {
                 path=":courseId/semester/:semesterId"
                 element={<StudentSemesterDetail />}
               />
-
-              <Route path=":courseId/quarter/:quarterId">
+              <Route path=":id" element={<MainDetailPage />} />
+              <Route path=":courseId/chapters">
                 <Route index element={<AllChapter />} />
                 <Route path="chapter/:chapterId" element={<ChapterDetail />} />
               </Route>
-              <Route path=":id" element={<MainDetailPage />} />
             </Route>
 
             <Route path="assessment">
@@ -265,7 +266,7 @@ function App() {
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
               <Route
-                path="create/:type/:id/:courseId/:startDate/:endDate"
+                path="create/:type/:id/:courseId"
                 element={<CreateAssessmentPage />}
               />
             </Route>
@@ -330,9 +331,9 @@ function App() {
                 path=":courseId/semester/:id"
                 element={<SemesterDetail />}
               />
-              <Route path=":courseId/quarter/:id" element={<QuarterDetail />} />
+              <Route path=":courseId/chapters" element={<QuarterDetail />} />
               <Route
-                path="quarter/:quarterId/chapter/:chapterId"
+                path="chapter/:chapterId"
                 element={<TeacherChapterDetail />}
               />
               <Route path="edit/:courseId" element={<EditCourse />} />
@@ -351,7 +352,6 @@ function App() {
                 <Route index element={<GradeScaleForm />} />
                 <Route path="managegradescale" element={<ManageGradeScale />} />
               </Route>
-
               <Route path="gpa/:courseId">
                 <Route index element={<GpaScaleForm />} />
                 <Route path="managegradescale" element={<ManageGpaScale />} />
