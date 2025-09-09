@@ -42,9 +42,9 @@ const AssessmentTable = ({ assessments = [] }) => {
             const percentage =
               assessment.maxPoints > 0
                 ? (
-                  (assessment.studentPoints / assessment.maxPoints) *
-                  100
-                ).toFixed(1)
+                    (assessment.studentPoints / assessment.maxPoints) *
+                    100
+                  ).toFixed(1)
                 : "0.0";
 
             return (
@@ -61,23 +61,25 @@ const AssessmentTable = ({ assessments = [] }) => {
                 <TableCell>{assessment.maxPoints}</TableCell>
                 <TableCell>
                   <span
-                    className={`font-medium ${Number.parseFloat(percentage) >= 90
+                    className={`font-medium ${
+                      Number.parseFloat(percentage) >= 90
                         ? "text-green-600"
                         : Number.parseFloat(percentage) >= 80
-                          ? "text-blue-600"
-                          : Number.parseFloat(percentage) >= 70
-                            ? "text-yellow-600"
-                            : Number.parseFloat(percentage) >= 60
-                              ? "text-orange-600"
-                              : "text-red-600"
-                      }`}
+                        ? "text-blue-600"
+                        : Number.parseFloat(percentage) >= 70
+                        ? "text-yellow-600"
+                        : Number.parseFloat(percentage) >= 60
+                        ? "text-orange-600"
+                        : "text-red-600"
+                    }`}
                   >
                     {percentage}%
                   </span>
                   {assessment.isGraded === false && (
                     <span
-                      className={`text-xs text-gray-500 ml-2 ${assessment.isGraded === false && "text-yellow-500"
-                        } `}
+                      className={`text-xs text-gray-500 ml-2 ${
+                        assessment.isGraded === false && "text-yellow-500"
+                      } `}
                     >
                       (Manual check is required by teacher)
                     </span>
@@ -244,13 +246,13 @@ export default function Gradebook() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Course</TableHead>
-                  <TableHead>Semesters</TableHead>
+                  <TableHead>Structure</TableHead>
                   <TableHead>Total Percentage</TableHead>
                   <TableHead>Grade</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody >
+              <TableBody>
                 {gradeData.courses.map((course) => (
                   <>
                     <TableRow key={course.courseId}>
@@ -258,8 +260,20 @@ export default function Gradebook() {
                         {course.courseName}
                       </TableCell>
                       <TableCell>
-                        {course.semesters.length} semester
-                        {course.semesters.length !== 1 ? "s" : ""}
+                        {course.semesters && course.semesters.length > 0 ? (
+                          <>
+                            {course.semesters.length} semester
+                            {course.semesters.length !== 1 ? "s" : ""}
+                          </>
+                        ) : course.assessments &&
+                          course.assessments.length > 0 ? (
+                          <>
+                            {course.assessments.length} assessment
+                            {course.assessments.length !== 1 ? "s" : ""}
+                          </>
+                        ) : (
+                          "No data"
+                        )}
                       </TableCell>
                       <TableCell>{course?.coursePercentage}%</TableCell>
                       <TableCell>
@@ -292,87 +306,138 @@ export default function Gradebook() {
                     </TableRow>
 
                     {expandedCourseId === course.courseId && (
-                      <TableRow >
-                        <TableCell colSpan={3} className="p-0">
+                      <TableRow>
+                        <TableCell colSpan={5} className="p-0">
                           <div className="bg-muted/30 p-6 space-y-4 w-[140%]">
-                            {course.semesters.map((semester) => (
-                              <div
-                                key={semester.semesterId}
-                                className="space-y-3 w-[100%]"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <h3 className="text-lg font-semibold text-gray-800">
-                                    {semester.semesterTitle}
-                                  </h3>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                      toggleSemesterExpand(semester.semesterId)
-                                    }
-                                    className="flex items-center gap-2"
-                                  >
-                                    {expandedSemester ===
-                                      semester.semesterId ? (
-                                      <ChevronDown className="h-4 w-4" />
-                                    ) : (
-                                      <ChevronRight className="h-4 w-4" />
-                                    )}
-                                    {semester.quarters.length} Quarter
-                                    {semester.quarters.length !== 1 ? "s" : ""}
-                                  </Button>
-                                </div>
+                            {/* Case 1: Course has semester/quarter structure */}
+                            {course.semesters &&
+                              course.semesters.length > 0 && (
+                                <>
+                                  {course.semesters.map((semester) => (
+                                    <div
+                                      key={semester.semesterId}
+                                      className="space-y-3 w-[100%]"
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <h3 className="text-lg font-semibold text-gray-800">
+                                          {semester.semesterTitle}
+                                        </h3>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() =>
+                                            toggleSemesterExpand(
+                                              semester.semesterId
+                                            )
+                                          }
+                                          className="flex items-center gap-2"
+                                        >
+                                          {expandedSemester ===
+                                          semester.semesterId ? (
+                                            <ChevronDown className="h-4 w-4" />
+                                          ) : (
+                                            <ChevronRight className="h-4 w-4" />
+                                          )}
+                                          {semester.quarters.length} Quarter
+                                          {semester.quarters.length !== 1
+                                            ? "s"
+                                            : ""}
+                                        </Button>
+                                      </div>
 
-                                {expandedSemester === semester.semesterId && (
-                                  <div className="space-y-4">
-                                    {semester.quarters.map((quarter) => (
-                                      <Card
-                                        key={quarter.quarterId}
-                                        className="bg-white"
-                                      >
-                                        <CardHeader className="pb-3">
-                                          <div className="flex items-center justify-between">
-                                            <CardTitle className="text-base">
-                                              {quarter.quarterTitle}
-                                            </CardTitle>
-                                            <div className="flex items-center gap-4">
-                                              <div className="text-sm">
-                                                <span className="font-medium">
-                                                  Grade:{" "}
-                                                </span>
-                                                <span className="text-green-600 font-bold">
-                                                  {quarter.grade}%
-                                                </span>
-                                              </div>
-                                              <div className="text-sm">
-                                                <span className="font-medium">
-                                                  GPA:{" "}
-                                                </span>
-                                                <span className="text-blue-600 font-bold">
-                                                  {quarter.gpa}
-                                                </span>
-                                              </div>
-                                              <Badge
-                                                className={`${getLetterGradeColor(
-                                                  quarter.letterGrade
-                                                )}`}
-                                              >
-                                                {quarter.letterGrade}
-                                              </Badge>
-                                            </div>
-                                          </div>
-                                        </CardHeader>
-                                        <CardContent>
-                                          <AssessmentTable
-                                            assessments={quarter.assessments}
-                                          />
-                                        </CardContent>
-                                      </Card>
-                                    ))}
+                                      {expandedSemester ===
+                                        semester.semesterId && (
+                                        <div className="space-y-4">
+                                          {semester.quarters.map((quarter) => (
+                                            <Card
+                                              key={quarter.quarterId}
+                                              className="bg-white"
+                                            >
+                                              <CardHeader className="pb-3">
+                                                <div className="flex items-center justify-between">
+                                                  <CardTitle className="text-base">
+                                                    {quarter.quarterTitle}
+                                                  </CardTitle>
+                                                  <div className="flex items-center gap-4">
+                                                    <div className="text-sm">
+                                                      <span className="font-medium">
+                                                        Grade:{" "}
+                                                      </span>
+                                                      <span className="text-green-600 font-bold">
+                                                        {quarter.grade}%
+                                                      </span>
+                                                    </div>
+                                                    <div className="text-sm">
+                                                      <span className="font-medium">
+                                                        GPA:{" "}
+                                                      </span>
+                                                      <span className="text-blue-600 font-bold">
+                                                        {quarter.gpa}
+                                                      </span>
+                                                    </div>
+                                                    <Badge
+                                                      className={`${getLetterGradeColor(
+                                                        quarter.letterGrade
+                                                      )}`}
+                                                    >
+                                                      {quarter.letterGrade}
+                                                    </Badge>
+                                                  </div>
+                                                </div>
+                                              </CardHeader>
+                                              <CardContent>
+                                                <AssessmentTable
+                                                  assessments={
+                                                    quarter.assessments
+                                                  }
+                                                />
+                                              </CardContent>
+                                            </Card>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+
+                            {/* Case 2: Course has direct assessments (no semester/quarter) */}
+                            {course.assessments &&
+                              course.assessments.length > 0 && (
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                      {course.gpa && (
+                                        <div className="text-sm">
+                                          <span className="font-medium">
+                                            GPA:{" "}
+                                          </span>
+                                          <span className="text-blue-600 font-bold">
+                                            {course.gpa}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                )}
-                              </div>
-                            ))}
+                                  <Card className="bg-white">
+                                    <CardContent className="pt-6">
+                                      <AssessmentTable
+                                        assessments={course.assessments}
+                                      />
+                                    </CardContent>
+                                  </Card>
+                                </div>
+                              )}
+
+                            {/* Case 3: No assessments available */}
+                            {(!course.semesters ||
+                              course.semesters.length === 0) &&
+                              (!course.assessments ||
+                                course.assessments.length === 0) && (
+                                <div className="text-center py-8 text-gray-500">
+                                  No assessments available for this course
+                                </div>
+                              )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -382,8 +447,8 @@ export default function Gradebook() {
 
                 {gradeData.courses.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8">
-                      you haven't perform any assessment
+                    <TableCell colSpan={5} className="text-center py-8">
+                      You haven't performed any assessment
                     </TableCell>
                   </TableRow>
                 )}
@@ -392,6 +457,7 @@ export default function Gradebook() {
           </div>
         </CardContent>
       </Card>
+
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <Card>

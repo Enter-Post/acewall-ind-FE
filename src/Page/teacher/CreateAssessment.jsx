@@ -195,9 +195,9 @@ export default function CreateAssessmentPage() {
   const quarter = searchParams.get("quarter");
   const semesterbased = searchParams.get("semesterbased");
 
-  console.log(semester, "semester")
-  console.log(quarter, "quarter")
-  console.log(semesterbased, "semesterbased")
+  console.log(typeof semester, "semester");
+  console.log(typeof quarter, "quarter");
+  console.log(semesterbased, "semesterbased");
 
   const fetchQuarterDate = async () => {
     await axiosInstance
@@ -400,17 +400,22 @@ export default function CreateAssessmentPage() {
       formData.append(type, id);
 
       const dueDate = new Date(data.dueDate.dateTime);
-      if (dueDate >= minDate && dueDate <= maxDate) {
-        formData.append("dueDate", dueDate.toISOString());
+
+      if (semesterbased === "true") {
+        if (dueDate >= minDate && dueDate <= maxDate) {
+          formData.append("dueDate", dueDate.toISOString());
+        } else {
+          toast.error(
+            "Due date must be within the Semester/Quarter start and end date.",
+            {
+              id: toastId,
+            }
+          );
+          setIsSubmitting(false);
+          return;
+        }
       } else {
-        toast.error(
-          "Due date must be within the Semester/Quarter start and end date.",
-          {
-            id: toastId,
-          }
-        );
-        setIsSubmitting(false);
-        return;
+        formData.append("dueDate", dueDate.toISOString());
       }
 
       // Process questions - handle both regular questions and file questions
@@ -440,10 +445,10 @@ export default function CreateAssessmentPage() {
         }
       });
 
-      if (semester) {
+      if (semester !== "undefined") {
         formData.append("semester", semester);
       }
-      if (quarter) {
+      if (quarter !== "undefined") {
         formData.append("quarter", quarter);
       }
 
