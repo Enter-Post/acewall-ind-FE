@@ -35,10 +35,13 @@ export default function ChapterCreationModal({
   quarterId,
   setChapters,
   fetchQuarterDetail,
+  refreshChapters,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { course, setCourse } = useContext(CourseContext);
   const [isLoading, setIsLoading] = useState(false); // Add this state
+
+  console.log(refreshChapters, "refreshChapters");
 
   const {
     register,
@@ -65,14 +68,15 @@ export default function ChapterCreationModal({
     const formdata = new FormData();
     formdata.append("title", data.title);
     formdata.append("description", data.description);
+    formdata.append("quarter", quarterId);
 
     try {
       const res = await axiosInstance.post(
-        `/chapter/create/${courseId}/${quarterId}`,
+        `/chapter/create/${courseId}`,
         formdata
       );
       toast.success(res.data.message);
-      fetchQuarterDetail();
+      refreshChapters();
       setIsOpen(false);
       reset();
     } catch (err) {
@@ -129,7 +133,11 @@ export default function ChapterCreationModal({
 
           {/* Footer */}
           <DialogFooter className="justify-between">
-            <Button variant="outline" type="button" onClick={() => setIsOpen(false)}>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setIsOpen(false)}
+            >
               Cancel
             </Button>
             <Button

@@ -57,13 +57,11 @@ export default function TeacherCourseDetails() {
   const [loadingThumbnail, setLoadingThumbnail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [course, setCourse] = useState(null);
+  const [semesterbased, setSemesterBased] = useState();
 
-  const toggleLesson = (lessonId) => {
-    setOpenLessons((prev) => ({
-      ...prev,
-      [lessonId]: !prev[lessonId],
-    }));
-  };
+  console.log(course, "course");
+
+  console.log(semesterbased, "semesterbased");
 
   const handleDeleteAssessment = (assessmentID) => {
     setLoading(true);
@@ -86,6 +84,7 @@ export default function TeacherCourseDetails() {
       .then((res) => {
         setCourse(res.data.course);
         setQuarters(res.data.course.quarter);
+        setSemesterBased(res.data.course.semesterbased === "true");
       })
       .catch((err) => {
         console.log(err);
@@ -385,13 +384,17 @@ export default function TeacherCourseDetails() {
               >
                 Manage GradeScale
               </Button>
+
+              {semesterbased === true && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/teacher/courses/semester/${id}`)}
+                >
+                  Manage Semesters & Quarters
+                </Button>
+              )}
+
               <Button
-                variant="outline"
-                onClick={() => navigate(`/teacher/courses/semester/${id}`)}
-              >
-                Manage Semesters & Quarters
-              </Button>
-               <Button
                 variant="outline"
                 onClick={() => navigate(`/teacher/courses/gpa/${id}`)}
               >
@@ -440,7 +443,6 @@ export default function TeacherCourseDetails() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-         
           <StatCard
             icon={<ChartBarStacked className="h-5 w-5 text-purple-500" />}
             value={course.category?.title?.toUpperCase() || "N/A"}
@@ -462,49 +464,76 @@ export default function TeacherCourseDetails() {
         </div>
 
         {/* Semesters Section */}
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <LibraryBig className="w-6 h-6" />
-              Course Semesters
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {course?.semester?.length > 0 ? (
+
+        {semesterbased === true ? (
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <LibraryBig className="w-6 h-6" />
+                Course Semesters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {course?.semester?.length > 0 ? (
+                <div className="grid gap-4">
+                  {course.semester.map((semester, index) => (
+                    <Link
+                      key={semester._id}
+                      to={`/teacher/courses/${id}/semester/${semester._id}`}
+                      className="block"
+                    >
+                      <div className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+                        <h3 className="font-semibold text-lg text-gray-900">
+                          Semester {index + 1}: {semester.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {format(
+                            new Date(semester.startDate),
+                            "MMMM do, yyyy"
+                          )}{" "}
+                          -{" "}
+                          {format(new Date(semester.endDate), "MMMM do, yyyy")}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <LibraryBig className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-500">No semesters found</p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Create your first semester to get started
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <LibraryBig className="w-6 h-6" />
+                Course Chapters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="grid gap-4">
-                {course.semester.map((semester, index) => (
-                  <Link
-                    key={semester._id}
-                    to={`/teacher/courses/${id}/semester/${semester._id}`}
-                    className="block"
-                  >
-                    <div className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        Semester {index + 1}: {semester.title}
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {format(
-                          new Date(semester.startDate),
-                          "MMMM do, yyyy"
-                        )}{" "}
-                        - {format(new Date(semester.endDate), "MMMM do, yyyy")}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                <Link
+                  to={`/teacher/courses/${id}/chapters?semesterbased=false`}
+                  className="block"
+                >
+                  <div className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      Chapter
+                    </h3>
+                  </div>
+                </Link>
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <LibraryBig className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-500">No semesters found</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Create your first semester to get started
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Final Assessment Cards */}
         {Array.isArray(course.Assessments) &&

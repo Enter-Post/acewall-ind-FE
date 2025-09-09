@@ -23,6 +23,7 @@ import {
   Send,
   Loader,
   BookOpenCheck,
+  LibraryBig,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import RatingStars from "@/CustomComponent/RatingStars";
@@ -53,7 +54,7 @@ export default function CourseOverview() {
   const Navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
 
-
+  console.log(course, "course");
 
   useEffect(() => {
     const getCourseDetails = async () => {
@@ -61,7 +62,7 @@ export default function CourseOverview() {
       await axiosInstance
         .get(`/enrollment/studentCourseDetails/${id}`)
         .then((res) => {
-          console.log(res)
+          console.log(res);
           setCourse(res.data.enrolledCourse.courseDetails);
           setQuarters(res.data.enrolledCourse.courseDetails.quarter);
           setLoading(false);
@@ -151,8 +152,6 @@ export default function CourseOverview() {
                 {course?.subcategory?.title}
               </Badge>
             </div>
-
-            
           </div>
         </div>
       </div>
@@ -187,27 +186,44 @@ export default function CourseOverview() {
       </section>
 
       {/* Course Semester */}
-      <section className="mt-8">
-        {course?.semester?.map((semester, index) => (
-          <Link
-            key={semester._id}
-            to={`/student/mycourses/${course._id}/semester/${semester._id}`}
-          >
-            <div
+
+      {course.semesterbased ? (
+        <section className="mt-8">
+          {course?.semester?.map((semester, index) => (
+            <Link
               key={semester._id}
-              className="mb-4 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
+              to={`/student/mycourses/${course._id}/semester/${semester._id}`}
             >
-              <h3 className="font-semibold text-md">
-                Semester: {semester.title}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
-                {format(new Date(semester.endDate), "MMMM do, yyyy")}
-              </p>
-            </div>
-          </Link>
-        ))}
-      </section>
+              <div
+                key={semester._id}
+                className="mb-4 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
+              >
+                <h3 className="font-semibold text-md">
+                  Semester: {semester.title}
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
+                  {format(new Date(semester.endDate), "MMMM do, yyyy")}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </section>
+      ) : (
+        <Link
+          to={`/student/mycourses/${id}/chapters?semesterbased=false&courseId=${course._id}`}
+          className="block"
+        >
+          <Card className="shadow-sm mt-10">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <LibraryBig className="w-6 h-6" />
+                Course Chapters
+              </CardTitle>
+            </CardHeader>
+          </Card>
+        </Link>
+      )}
 
       {/* Tabs */}
       <Tabs

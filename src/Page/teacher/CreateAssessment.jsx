@@ -193,6 +193,11 @@ export default function CreateAssessmentPage() {
 
   const semester = searchParams.get("semester");
   const quarter = searchParams.get("quarter");
+  const semesterbased = searchParams.get("semesterbased");
+
+  console.log(typeof semester, "semester");
+  console.log(typeof quarter, "quarter");
+  console.log(semesterbased, "semesterbased");
 
   const fetchQuarterDate = async () => {
     await axiosInstance
@@ -395,17 +400,22 @@ export default function CreateAssessmentPage() {
       formData.append(type, id);
 
       const dueDate = new Date(data.dueDate.dateTime);
-      if (dueDate >= minDate && dueDate <= maxDate) {
-        formData.append("dueDate", dueDate.toISOString());
+
+      if (semesterbased === "true") {
+        if (dueDate >= minDate && dueDate <= maxDate) {
+          formData.append("dueDate", dueDate.toISOString());
+        } else {
+          toast.error(
+            "Due date must be within the Semester/Quarter start and end date.",
+            {
+              id: toastId,
+            }
+          );
+          setIsSubmitting(false);
+          return;
+        }
       } else {
-        toast.error(
-          "Due date must be within the Semester/Quarter start and end date.",
-          {
-            id: toastId,
-          }
-        );
-        setIsSubmitting(false);
-        return;
+        formData.append("dueDate", dueDate.toISOString());
       }
 
       // Process questions - handle both regular questions and file questions
@@ -435,10 +445,10 @@ export default function CreateAssessmentPage() {
         }
       });
 
-      if (semester) {
+      if (semester !== "undefined") {
         formData.append("semester", semester);
       }
-      if (quarter) {
+      if (quarter !== "undefined") {
         formData.append("quarter", quarter);
       }
 
@@ -607,11 +617,15 @@ export default function CreateAssessmentPage() {
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Due Date</h3>
-            <StrictDatePicker
-              name="dueDate"
-              minDate={minDate}
-              maxDate={maxDate}
-            />
+            {semesterbased === "true" ? (
+              <StrictDatePicker
+                name="dueDate"
+                minDate={minDate}
+                maxDate={maxDate}
+              />
+            ) : (
+              <StrictDatePicker name="dueDate" />
+            )}
           </div>
 
           {/* Questions Section */}

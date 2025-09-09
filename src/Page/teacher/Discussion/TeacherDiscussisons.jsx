@@ -21,9 +21,7 @@ const TeacherDiscussion = () => {
   const courseId = searchParams.get("course");
   const semesterId = searchParams.get("semester");
   const quarterId = searchParams.get("quarter");
-
-  console.log(discussion, "discussion");
-
+  
   useEffect(() => {
     const fetchDiscussions = async () => {
       setloading(true);
