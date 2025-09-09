@@ -389,7 +389,7 @@ export default function TeacherCourseDetails() {
                 variant="outline"
                 onClick={() => navigate(`/teacher/courses/semester/${id}`)}
               >
-                Manage Semesters & Quarters
+                Manage Grading Periods
               </Button>
                <Button
                 variant="outline"
@@ -444,7 +444,7 @@ export default function TeacherCourseDetails() {
           <StatCard
             icon={<ChartBarStacked className="h-5 w-5 text-purple-500" />}
             value={course.category?.title?.toUpperCase() || "N/A"}
-            label="Category"
+            label="Topic"
             bgColor="bg-purple-50"
           />
           <StatCard
