@@ -36,123 +36,122 @@ const documentSchema = z.object({
   }),
 });
 
-const courseFormSchema = z
-  .object({
-    thumbnail: z.any().refine((file) => file instanceof File, {
-      message: "Thumbnail is required",
-    }),
-    courseTitle: z
-      .string()
-      .min(5, { message: "Course title must be at least 5 characters" })
-      .max(100, { message: "Course title must be less than 100 characters" }),
-    category: z
-      .string()
-      .min(1, { message: "Please select a category" })
-      .refine((val) => val !== "", { message: "Please select a category" }),
-    subcategory: z
-      .string()
-      .min(1, { message: "Please select a subcategory" })
-      .refine((val) => val !== "", { message: "Please select a subcategory" }),
-    semesterbased: z.boolean(),
-    language: z
-      .string()
-      .min(1, { message: "Please select a language" })
-      .refine((val) => val !== "", { message: "Please select a language" }),
-    courseDescription: z
-      .string()
-      .min(5, { message: "Description must be at least 5 characters" })
-      .max(4000, { message: "Description must be less than 2500 characters" }),
-    teachingPoints: z
-      .array(
-        z.object({
-          value: z
-            .string()
-            .min(5, { message: "Teaching point must be at least 5 characters" })
-            .max(120, {
-              message: "Teaching point must be less than 120 characters",
-            }),
-        })
-      )
-      .min(1, { message: "Add at least one teaching point" }),
-    requirements: z
-      .array(
-        z.object({
-          value: z
-            .string()
-            .min(5, { message: "Requirement must be at least 5 characters" })
-            .max(120, {
-              message: "Requirement must be less than 120 characters",
-            }),
-        })
-      )
-      .min(1, { message: "Add at least one requirement" }),
-    price: z
-      .string()
-      .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
-        message: "Price must be a valid non-negative number",
+const courseFormSchema = z.object({
+  thumbnail: z.any().refine((file) => file instanceof File, {
+    message: "Thumbnail is required",
+  }),
+  courseTitle: z
+    .string()
+    .min(5, { message: "Course title must be at least 5 characters" })
+    .max(100, { message: "Course title must be less than 100 characters" }),
+  category: z
+    .string()
+    .min(1, { message: "Please select a category" })
+    .refine((val) => val !== "", { message: "Please select a category" }),
+  subcategory: z
+    .string()
+    .min(1, { message: "Please select a subcategory" })
+    .refine((val) => val !== "", { message: "Please select a subcategory" }),
+  semesterbased: z.boolean(),
+  language: z
+    .string()
+    .min(1, { message: "Please select a language" })
+    .refine((val) => val !== "", { message: "Please select a language" }),
+  courseDescription: z
+    .string()
+    .min(5, { message: "Description must be at least 5 characters" })
+    .max(4000, { message: "Description must be less than 2500 characters" }),
+  teachingPoints: z
+    .array(
+      z.object({
+        value: z
+          .string()
+          .min(5, { message: "Teaching point must be at least 5 characters" })
+          .max(120, {
+            message: "Teaching point must be less than 120 characters",
+          }),
       })
-      .refine((val) => Number(val) <= 9999, {
-        message: "Price must not exceed 4 digits",
-      }),
-    // courseType: z
-    //   .string()
-    //   .refine((val) => val === "credit" || val === "non-credit", {
-    //     message: "Please select course type",
-    //   }),
-    // documents: z.object({
-    //   governmentId: z.any(),
-    //   resume: z.any(),
-    //   certificate: z.any(),
-    //   transcript: z.any(),
-    // }),
-  })
-  // .superRefine((data, ctx) => {
-  //   if (data.courseType === "credit") {
-  //     if (!(data.documents.governmentId instanceof File)) {
-  //       ctx.addIssue({
-  //         path: ["documents", "governmentId"],
-  //         code: z.ZodIssueCode.custom,
-  //         message: "Government ID is required",
-  //       });
-  //     }
-  //     if (!(data.documents.resume instanceof File)) {
-  //       ctx.addIssue({
-  //         path: ["documents", "resume"],
-  //         code: z.ZodIssueCode.custom,
-  //         message: "Resume is required",
-  //       });
-  //     }
-  //     if (!(data.documents.certificate instanceof File)) {
-  //       ctx.addIssue({
-  //         path: ["documents", "certificate"],
-  //         code: z.ZodIssueCode.custom,
-  //         message: "Certificate is required",
-  //       });
-  //     }
-  //     if (!(data.documents.transcript instanceof File)) {
-  //       ctx.addIssue({
-  //         path: ["documents", "transcript"],
-  //         code: z.ZodIssueCode.custom,
-  //         message: "Transcript is required",
-  //       });
-  //     }
-  //   } else if (data.courseType === "non-credit") {
-  //     if (!(data.documents.resume instanceof File)) {
-  //       ctx.addIssue({
-  //         path: ["documents", "resume"],
-  //         code: z.ZodIssueCode.custom,
-  //         message: "Resume is required",
-  //       });
-  //     }
-  //     if (!(data.documents.certificate instanceof File)) {
-  //       ctx.addIssue({
-  //         path: ["documents", "certificate"],
-  //         code: z.ZodIssueCode.custom,
-  //         message: "Certificate is required",
-  //       });
-  //     }
-  //   }
-  // });
+    )
+    .min(1, { message: "Add at least one teaching point" }),
+  requirements: z
+    .array(
+      z.object({
+        value: z
+          .string()
+          .min(5, { message: "Requirement must be at least 5 characters" })
+          .max(120, {
+            message: "Requirement must be less than 120 characters",
+          }),
+      })
+    )
+    .min(1, { message: "Add at least one requirement" }),
+  price: z
+    .string()
+    .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
+      message: "Price must be a valid non-negative number",
+    })
+    .refine((val) => Number(val) <= 9999, {
+      message: "Price must not exceed 4 digits",
+    }),
+  // courseType: z
+  //   .string()
+  //   .refine((val) => val === "credit" || val === "non-credit", {
+  //     message: "Please select course type",
+  //   }),
+  // documents: z.object({
+  //   governmentId: z.any(),
+  //   resume: z.any(),
+  //   certificate: z.any(),
+  //   transcript: z.any(),
+  // }),
+});
+// .superRefine((data, ctx) => {
+//   if (data.courseType === "credit") {
+//     if (!(data.documents.governmentId instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "governmentId"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Government ID is required",
+//       });
+//     }
+//     if (!(data.documents.resume instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "resume"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Resume is required",
+//       });
+//     }
+//     if (!(data.documents.certificate instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "certificate"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Certificate is required",
+//       });
+//     }
+//     if (!(data.documents.transcript instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "transcript"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Transcript is required",
+//       });
+//     }
+//   } else if (data.courseType === "non-credit") {
+//     if (!(data.documents.resume instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "resume"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Resume is required",
+//       });
+//     }
+//     if (!(data.documents.certificate instanceof File)) {
+//       ctx.addIssue({
+//         path: ["documents", "certificate"],
+//         code: z.ZodIssueCode.custom,
+//         message: "Certificate is required",
+//       });
+//     }
+//   }
+// });
 
 export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -264,18 +263,12 @@ export default function CoursesBasis() {
   const onSubmit = async (data) => {
     const formData = new FormData();
     setLoading(true);
-
     try {
       formData.append("thumbnail", data.thumbnail);
       formData.append("courseTitle", data.courseTitle);
       formData.append("category", data.category);
       formData.append("subcategory", data.subcategory);
-      formData.append("language", data.language);
-      // formData.append("courseType", data.courseType);
-      // formData.append("governmentId", courseDocument.governmentId);
-      // formData.append("resume", courseDocument.resume);
-      // formData.append("certificate", courseDocument.certificate);
-      // formData.append("transcript", courseDocument.transcript);
+      formData.append("semesterbased", data.semesterbased);
       formData.append("courseDescription", data.courseDescription);
       formData.append(
         "teachingPoints",
@@ -682,7 +675,7 @@ export default function CoursesBasis() {
                 </button>
               </div>
             </section>
-{/* 
+            {/* 
             <section>
               <div>
                 <Label>Select Course Type *</Label>
