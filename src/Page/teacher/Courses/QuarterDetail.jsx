@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { BookOpen, GraduationCap, Eye } from "lucide-react";
+import { BookOpen, GraduationCap, Eye, Loader } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import ChapterCreationModal from "@/CustomComponent/CreateCourse/CreatChapterModal";
@@ -15,6 +15,7 @@ import BackButton from "@/CustomComponent/BackButton";
 
 const QuarterDetail = () => {
   const { courseId } = useParams();
+  const [firstLoading, setFirstLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [quarterStartDate, setQuarterStartDate] = useState("");
@@ -24,11 +25,8 @@ const QuarterDetail = () => {
   const semesterbased = searchParams.get("semesterbased");
   const quarterId = searchParams.get("quarterID");
 
-  console.log(semesterbased, "semesterbased");
-
   const fetchQuarterDetail = async () => {
     try {
-      console.log("its working here");
       const response = await axiosInstance.get(
         `chapter/${courseId}/${quarterId}`
       );
@@ -38,14 +36,16 @@ const QuarterDetail = () => {
         setChapters(response.data.chapters);
         setQuarterStartDate(response.data.quarterStartDate);
         setQuarterEndDate(response.data.quarterEndDate);
+        setFirstLoading(false);
       } else {
-        // Fallback if response is malformed
         setChapters([]);
         toast.error("Invalid response format from server.");
+        setFirstLoading(false);
       }
     } catch (err) {
       console.error("fetchQuarterDetail API Error:", err);
       setChapters([]);
+      setFirstLoading(false);
     }
   };
 
@@ -57,13 +57,13 @@ const QuarterDetail = () => {
 
       console.log(response, "response");
       setChapters(response.data.chapters);
+      setFirstLoading(false);
     } catch (error) {
       console.error("fetchChapterOfCourse API Error:", error);
       setChapters([]);
+      setFirstLoading(false);
     }
   };
-
-  console.log(semesterbased, "semesterbased");
 
   useEffect(() => {
     if (semesterbased === "true") {
@@ -120,7 +120,9 @@ const QuarterDetail = () => {
         </div>
 
         {/* Chapters Grid */}
-        {chapters.length === 0 ? (
+        {firstLoading ? (
+          <Loader className="animate-spin mx-auto mt-10"/>
+        ) : chapters.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
