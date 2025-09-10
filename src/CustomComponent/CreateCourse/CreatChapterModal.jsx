@@ -41,14 +41,13 @@ export default function ChapterCreationModal({
   const { course, setCourse } = useContext(CourseContext);
   const [isLoading, setIsLoading] = useState(false); // Add this state
 
-  console.log(refreshChapters, "refreshChapters");
-
   const {
     register,
     handleSubmit,
     watch,
     reset,
     formState: { errors },
+
   } = useForm({
     resolver: zodResolver(chapterSchema),
     defaultValues: {

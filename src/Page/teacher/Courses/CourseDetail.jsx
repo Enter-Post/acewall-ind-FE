@@ -59,8 +59,6 @@ export default function TeacherCourseDetails() {
   const [course, setCourse] = useState(null);
   const [semesterbased, setSemesterBased] = useState();
 
-  console.log(course, "course");
-
   console.log(semesterbased, "semesterbased");
 
   const handleDeleteAssessment = (assessmentID) => {
@@ -84,7 +82,7 @@ export default function TeacherCourseDetails() {
       .then((res) => {
         setCourse(res.data.course);
         setQuarters(res.data.course.quarter);
-        setSemesterBased(res.data.course.semesterbased === "true");
+        setSemesterBased(res.data.course.semesterbased === true);
       })
       .catch((err) => {
         console.log(err);
