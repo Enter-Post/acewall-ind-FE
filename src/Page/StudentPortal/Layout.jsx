@@ -166,14 +166,6 @@ export default function Layout() {
           </div>
 
 
-
-
-
-
-
-
-
-
           {/* Search bar (desktop only) */}
           <div className="relative w-64 hidden md:flex flex-col">
             <DropdownMenu
