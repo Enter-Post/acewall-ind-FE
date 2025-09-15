@@ -124,7 +124,7 @@ export default function Earning() {
             </Card>
           )}
 
-          {recentWithdrawals.length > 0 && (
+          {recentWithdrawals.length >= 0 && (
             <Card className="mt-8">
               <CardContent className="p-6">
                 <div className="flex justify-between mb-6">
