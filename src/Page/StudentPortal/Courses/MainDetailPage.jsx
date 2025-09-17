@@ -137,21 +137,14 @@ export default function CourseOverview() {
           <div className="flex items-center gap-10 mt-4">
             <div className="flex items-center gap-2">
               <h3 className="text-gray-900 text-sm font-semibold mb-1">
-                Category
+                Topic
               </h3>
               <Badge className="bg-green-100 text-green-800 text-sm border-none">
                 {course?.category?.title}
               </Badge>
             </div>
 
-            <div className="flex items-center gap-2">
-              <h3 className="text-gray-900 text-sm font-semibold mb-1">
-                Subcategory
-              </h3>
-              <Badge className="bg-green-100 text-green-800 text-sm border-none">
-                {course?.subcategory?.title}
-              </Badge>
-            </div>
+           
           </div>
         </div>
       </div>

@@ -37,8 +37,6 @@ export function CreateDiscussionDialog({
   const typeId = searchParams.get("typeId");
   const courseId = searchParams.get("course");
 
-  console.log(quarter, "quarter");
-
   const parsedStartDate = new Date(startDate);
   const parsedEndDate = new Date(endDate);
   const minDate =
@@ -51,12 +49,10 @@ export function CreateDiscussionDialog({
       topic: "",
       description: "",
       totalPoints: "",
-      category: "", // 🔹 Added
+      category: "",
       dueDate: null,
     },
   });
-
-  console.log(form.formState.errors, "errors");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -84,6 +80,10 @@ export function CreateDiscussionDialog({
     }
 
     setFiles((prev) => [...prev, file]);
+  };
+
+  const removeFile = (fileToRemove) => {
+    setFiles((prevFiles) => prevFiles.filter((file) => file !== fileToRemove));
   };
 
   const fetchQuarterDate = async () => {
@@ -182,6 +182,7 @@ export function CreateDiscussionDialog({
             onSubmit={form.handleSubmit(handleFormSubmit)}
             className="space-y-4"
           >
+            {/* Topic Field */}
             <div>
               <Label htmlFor="topic">Topic</Label>
               <Input
@@ -196,6 +197,7 @@ export function CreateDiscussionDialog({
               )}
             </div>
 
+            {/* Description Field */}
             <div>
               <Label htmlFor="description">Description</Label>
               <Textarea
@@ -212,8 +214,6 @@ export function CreateDiscussionDialog({
                   {form.formState.errors.description.message}
                 </p>
               )}
-
-              {/* Character count helper */}
               <p className="text-xs text-gray-500 mt-1">
                 {`Characters left: ${
                   2000 - (form.watch("description")?.length || 0)
@@ -221,6 +221,7 @@ export function CreateDiscussionDialog({
               </p>
             </div>
 
+            {/* Points, Category, and Due Date */}
             <section className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <Label htmlFor="totalPoints">Total Points</Label>
@@ -273,6 +274,7 @@ export function CreateDiscussionDialog({
               </div>
             </section>
 
+            {/* File Upload */}
             <div>
               <Label htmlFor="file">
                 Attach File (Only PNG, JPEG, JPG, and PDF files are allowed.)
@@ -295,11 +297,19 @@ export function CreateDiscussionDialog({
                       <Image className="text-green-500" />
                     )}
                     <p className="text-sm">{file.name}</p>
+                    <Button
+                      type="button"
+                      onClick={() => removeFile(file)}
+                      className="text-xs text-red-500"
+                    >
+                      Remove
+                    </Button>
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* Submit Button */}
             <div className="pt-4">
               <Button
                 type="submit"

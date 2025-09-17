@@ -14,7 +14,7 @@ import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import BackButton from "@/CustomComponent/BackButton";
-import PhoneInput from "react-phone-input-2";
+// import PhoneInput from "react-phone-input-2";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -23,10 +23,10 @@ const formSchema = z.object({
   pronoun: z.string().optional(),
   gender: z.string().optional(),
   email: z.string().email("Invalid email address"),
-  phone: z
-    .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .regex(/^\d{10,15}$/, "Phone number is not valid"),
+  // phone: z
+  //   .string()
+  //   .min(10, "Phone number must be at least 10 digits")
+  //   .regex(/^\d{10,15}$/, "Phone number is not valid"),
   homeAddress: z.string().min(1, "Home address is "),
   mailingAddress: z.string().optional(),
 });
@@ -50,7 +50,7 @@ const EditGeneralInfo = () => {
       firstName: "",
       middleName: "",
       lastName: "",
-      phone: "",
+      // phone: "",
       pronoun: "",
       gender: "",
       email: "",
@@ -77,7 +77,7 @@ const EditGeneralInfo = () => {
     if (user) {
       setValue("firstName", user.firstName || "");
       setValue("middleName", user.middleName || "");
-      setValue("phone", user.phone || "");
+      // setValue("phone", user.phone || "");
       setValue("lastName", user.lastName || "");
       setValue("pronoun", user.pronoun || "");
       setValue("gender", user.gender || "");
@@ -145,7 +145,7 @@ const EditGeneralInfo = () => {
     formData.append("lastName", data.lastName);
     formData.append("pronoun", data.pronoun);
     formData.append("gender", data.gender);
-    formData.append("phone", data.phone);
+    // formData.append("phone", data.phone);
     formData.append("email", data.email);
     formData.append("homeAddress", data.homeAddress);
     formData.append("mailingAddress", data.mailingAddress);
@@ -315,7 +315,7 @@ const EditGeneralInfo = () => {
               </div>
             </div>
           </section>
-          <section>
+          {/* <section>
             <div className="mb-6">
               <Label htmlFor="phone">
                 Phone Number <span className="text-red-600">*</span>
@@ -340,7 +340,7 @@ const EditGeneralInfo = () => {
                 {errors?.phone?.message}
               </p>
             </div>
-          </section>
+          </section> */}
 
           {/* Address Information */}
           <section className="space-y-6">
