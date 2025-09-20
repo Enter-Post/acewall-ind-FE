@@ -91,6 +91,7 @@ import AllChapterStdPre from "./Page/teacher/Courses/AllChapterStdPre";
 import ChapterDetailStdPre from "./Page/teacher/Courses/ChapterDetailStdPre";
 import AllWithdrawals from "./Page/teacher/Earning/AllWithdrawals";
 import VerifyPhoneOTP from "./Page/VerifyPhoneOTP";
+import FeaturedPage from "./Page/FeaturedPage";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -135,7 +136,8 @@ function App() {
       <Routes>
         {/* Public-only accessible pages */}
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} /> {/* This makes / public */}
+          <Route index element={<FeaturedPage />} /> {/* This makes / public */}
+          <Route path="home" element={<LandingPage />} /> {/* This makes / public */}
           <Route path="about" element={<About />} />
           <Route path="AdditionalServices" element={<AdditionalServices />} />
           <Route path="*" element={<NotFoundPage />} />
