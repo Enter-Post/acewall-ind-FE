@@ -92,6 +92,8 @@ import ChapterDetailStdPre from "./Page/teacher/Courses/ChapterDetailStdPre";
 import AllWithdrawals from "./Page/teacher/Earning/AllWithdrawals";
 import VerifyPhoneOTP from "./Page/VerifyPhoneOTP";
 import FeaturedPage from "./Page/FeaturedPage";
+import TermsPage from "./CustomComponent/TermsPage";
+import PrivacyPolicyPage from "./CustomComponent/PrivacyPolicyPage";
 
 function App() {
   const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
@@ -139,6 +141,8 @@ function App() {
           <Route index element={<FeaturedPage />} /> {/* This makes / public */}
           <Route path="home" element={<LandingPage />} /> {/* This makes / public */}
           <Route path="about" element={<About />} />
+          <Route path="terms" element={<TermsPage />} />
+          <Route path="privacyPolicy" element={<PrivacyPolicyPage />} />
           <Route path="AdditionalServices" element={<AdditionalServices />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
