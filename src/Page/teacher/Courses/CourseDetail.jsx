@@ -83,6 +83,8 @@ export default function TeacherCourseDetails() {
         setCourse(res.data.course);
         setQuarters(res.data.course.quarter);
         setSemesterBased(res.data.course.semesterbased === true);
+        console.log(res.data , "teacher course");
+        
       })
       .catch((err) => {
         console.log(err);

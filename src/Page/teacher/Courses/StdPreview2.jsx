@@ -23,6 +23,8 @@ import {
     Send,
     Loader,
     BookOpenCheck,
+    LibraryBig,
+    Calendar,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import RatingStars from "@/CustomComponent/RatingStars";
@@ -47,6 +49,7 @@ export default function stdPreview2() {
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
+    const [semesterbased, setSemesterBased] = useState();
 
     const [showModal, setShowModal] = useState(false);
     const [confirmationText, setConfirmationText] = useState("");
@@ -58,15 +61,16 @@ export default function stdPreview2() {
         setLoading(true);
         try {
             const res = await axiosInstance.get(`/course/getstdprew/${id}`);
-            console.log(res.data); // ✅ Log response
+            console.log(res.data, "res of stdpre"); // ✅ Log response
             setCourse(res.data.course);
-
+            setSemesterBased(res.data.course.semesterbased); // ✅ IMPORTANT
         } catch (err) {
             console.error("Error fetching course:", err);
         } finally {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         if (id) fetchCourse();
@@ -85,8 +89,6 @@ export default function stdPreview2() {
                 console.log(err);
             });
     };
-
-
 
     if (loading) {
         return (
@@ -129,8 +131,6 @@ export default function stdPreview2() {
                                 {course?.category?.title}
                             </Badge>
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -163,30 +163,78 @@ export default function stdPreview2() {
                     </Button>
                 </div>
             </section>
-
-            {/* Course Semester */}
-            <section className="mt-8">
-                {course?.semester?.map((semester, index) => (
-                    <Link
-                        key={semester._id}
-                        to={`/teacher/courses/${course._id}/semesterStdPre/${semester._id}`}
-                    >
-                        <div
-                            key={semester._id}
-                            className="mb-4 border border-gray-200 p-5 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
-                        >
-                            <h3 className="font-semibold text-md">
-                                Semester: {semester.title}
-                            </h3>
-                            <p className="text-xs text-muted-foreground">
-                                {format(new Date(semester.startDate), "MMMM do, yyyy")} -{" "}
-                                {format(new Date(semester.endDate), "MMMM do, yyyy")}
-                            </p>
-                        </div>
-                    </Link>
-                ))}
+            <section className="mt-10">
+                {/* Conditional Semester/Chapter Rendering */}
+                {semesterbased === true ? (
+                    <Card className="shadow-sm">
+                        <CardHeader>
+                            <CardTitle className="text-xl flex items-center gap-2">
+                                <LibraryBig className="w-6 h-6" />
+                                Course Semesters
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {course?.semester?.length > 0 ? (
+                                <div className="grid gap-4">
+                                    {course.semester.map((semester, index) => (
+                                        <Link
+                                            key={semester._id}
+                                            to={`/teacher/courses/${id}/semesterStdPre/${semester._id}?semesterbased=true`}
+                                            className="block"
+                                        >
+                                            <div className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+                                                <h3 className="font-semibold text-lg text-gray-900">
+                                                    Semester {index + 1}: {semester.title}
+                                                </h3>
+                                                <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {format(
+                                                        new Date(semester.startDate),
+                                                        "MMMM do, yyyy"
+                                                    )}{" "}
+                                                    -{" "}
+                                                    {format(new Date(semester.endDate), "MMMM do, yyyy")}
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8">
+                                    <LibraryBig className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                                    <p className="text-gray-500">No semesters found</p>
+                                    <p className="text-sm text-gray-400 mt-1">
+                                        Create your first semester to get started
+                                    </p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Card className="shadow-sm">
+                        <CardHeader>
+                            <CardTitle className="text-xl flex items-center gap-2">
+                                <LibraryBig className="w-6 h-6" />
+                                Course Chapters
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-4">
+                                <Link
+                                    to={`/teacher/courses/${id}/quarterStdPre?semesterbased=false`}
+                                    className="block"
+                                >
+                                    <div className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+                                        <h3 className="font-semibold text-lg text-gray-900">
+                                            Chapters
+                                        </h3>
+                                    </div>
+                                </Link>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
             </section>
-
             {/* Tabs */}
             <Tabs
                 value={activeTab}
@@ -207,7 +255,6 @@ export default function stdPreview2() {
                         </TabsTrigger>
                     ))}
                 </TabsList>
-
 
                 {/* Overview */}
                 <TabsContent value="overview" className="py-8 space-y-10">
@@ -240,8 +287,6 @@ export default function stdPreview2() {
                             Unenroll
                         </Button>
                     </section>
-
-
                 </TabsContent>
 
                 {/* Reviews */}
@@ -249,10 +294,7 @@ export default function stdPreview2() {
                     <RatingSection id={id} course={course} disabled />
                     <CommentSection id={course._id} disabled />
                 </TabsContent>
-               
-
             </Tabs>
-
         </div>
     );
 }

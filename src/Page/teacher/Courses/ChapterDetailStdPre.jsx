@@ -20,6 +20,7 @@ import DescriptionTablist from "@/CustomComponent/Student/Course/DescriptionTabl
 import FileTablist from "@/CustomComponent/Student/Course/FileTablist";
 import PagesTablist from "@/CustomComponent/Student/Course/PagesTablist";
 import AssessmentTablistStdPre from "@/CustomComponent/teacher/AssessmentTablistStdPre";
+import DiscussionTablist from "@/Page/StudentPortal/Courses/DiscussionTablist";
 
 export default function ChapterDetailStdPre() {
   const [isLessonVisible, setIsLessonVisible] = useState(false);
@@ -136,7 +137,7 @@ export default function ChapterDetailStdPre() {
         {/* Tabs */}
         <Tabs defaultValue="description" className="w-full p-5">
           <TabsList className="flex flex-wrap justify-center gap-4 w-full  sm:gap-10  bg-white p-1 shadow-inner">
-            {["description", "files", "Assessments", "Pages"].map((tab) => (
+            {["description", "files", "Assessments","Pages", "Discussions"].map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
@@ -165,8 +166,10 @@ export default function ChapterDetailStdPre() {
             chapter={chapter}
             lessonAssessments={activeLesson?.lessonAssessments}
           />
-          
+
           <PagesTablist chapter={chapter} lesson={activeLesson} />
+
+          <DiscussionTablist chapter={chapter} lesson={activeLesson} />
 
         </Tabs>
       </div>
@@ -176,7 +179,7 @@ export default function ChapterDetailStdPre() {
         {/* Header */}
         <div className="p-4 border-b bg-white ">
           <h2 className="text-sm font-semibold text-gray-700">
-            Chapter Content
+            Chapter Content 
           </h2>
         </div>
 
@@ -212,16 +215,14 @@ export default function ChapterDetailStdPre() {
                       key={lessonIndex}
                       onClick={() => setActiveLesson(lesson)}
                       className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-sm transition 
-                  ${
-                    isActive
-                      ? "bg-green-100 text-green-700 font-medium"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
+                  ${isActive
+                          ? "bg-green-100 text-green-700 font-medium"
+                          : "hover:bg-gray-100 text-gray-700"
+                        }`}
                     >
                       <PlayCircle
-                        className={`h-4 w-4 ${
-                          isActive ? "text-green-500" : "text-gray-400"
-                        }`}
+                        className={`h-4 w-4 ${isActive ? "text-green-500" : "text-gray-400"
+                          }`}
                       />
                       <span>
                         Lesson {lessonIndex + 1}: {lesson.title}
