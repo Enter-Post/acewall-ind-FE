@@ -34,7 +34,7 @@ const StudentSemesterDetailStdPre = () => {
       </div>
       {allQuarter?.length > 0 ? (
         allQuarter?.map((quarter, index) => (
-          <Link to={`/teacher/courses/${courseId}/quarterStdPre/${quarter._id}`}>
+          <Link to={`/teacher/courses/${courseId}/quarterStdPre?quarterId=${quarter._id}&semesterbased=true`}>
             <div
               key={quarter._id}
               className="mb-4 border border-gray-200 p-5 rounded-lg bg-blue-50 hover:bg-blue-100 cursor-pointer"

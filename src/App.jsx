@@ -317,7 +317,7 @@ function App() {
                 path=":courseId/semesterStdPre/:semesterId"
                 element={<StudentSemesterDetailStdPre />}
               />
-              <Route path=":courseId/quarterStdPre/:quarterId">
+              <Route path=":courseId/quarterStdPre">
                 <Route index element={<AllChapterStdPre />} />
                 <Route
                   path="chapterStdPre/:chapterId"
