@@ -86,11 +86,18 @@ const FeaturedPage = () => {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link to="/home">
-                  <button className="bg-green-600 text-white font-semibold py-3 px-6 sm:px-8 rounded-md shadow-md hover:bg-green-700 transition text-sm sm:text-base">
-                    Get Started Today
-                  </button>
-                </Link>
+                <button
+                  onClick={() => {
+                    const contactSection = document.getElementById("contact");
+                    if (contactSection) {
+                      contactSection.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                  className="bg-green-600 text-white font-semibold py-3 px-6 sm:px-8 rounded-md shadow-md hover:bg-green-700 transition text-sm sm:text-base"
+                >
+                  Get Started Today
+                </button>
+
                 <Link to="/login">
                   <button className="border border-green-600 text-green-600 bg-white font-semibold py-3 px-6 sm:px-8 rounded-md shadow-md hover:bg-green-50 transition text-sm sm:text-base">
                     Login
@@ -196,9 +203,10 @@ const FeaturedPage = () => {
 
         <StackedCard cardsData={cardsData} />
       </section>
-      <section>
+      <section id="contact">
         <FeaturedContantCard />
       </section>
+
     </div>
   );
 };
