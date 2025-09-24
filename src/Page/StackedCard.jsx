@@ -11,7 +11,7 @@ export const StackedCard = ({ cardsData }) => {
           <li
             key={id}
             id={id} // 👈 ID for smooth scroll target
-            className={`sticky top-10 pt-[calc(${index + 1}*var(--cardTopPadding))] 
+            className={`sticky top-0 pt-[calc(${index + 1}*var(--cardTopPadding))] 
               w-full max-w-7xl transition-transform duration-300 ease-in-out`}
             style={{ "--cards": cardsData.length, "--cardTopPadding": "2rem" }}
           >
@@ -34,8 +34,8 @@ export const StackedCard = ({ cardsData }) => {
               </div>
 
               {/* Bullet Points */}
-              <div className="w-full">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-6">
+              <div className="w-full ">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-3">
                   {bulletPoints.map((point, idx) => (
                     <div key={idx} className="flex items-start gap-3">
                       <div className="w-2 h-2 mt-2 bg-green-600 rounded-full flex-shrink-0"></div>
