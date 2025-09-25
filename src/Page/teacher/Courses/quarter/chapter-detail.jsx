@@ -264,6 +264,7 @@ const TeacherChapterDetail = () => {
                             quarterStart={quarterStart}
                             quarterEnd={quarterEnd}
                             courseId={courseId}
+                            semesterbased={semesterbased}
                           />
 
                           <DeleteModal
