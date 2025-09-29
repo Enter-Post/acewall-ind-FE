@@ -37,7 +37,6 @@ const Deshboard = ({ user }) => {
     await axiosInstance
       .get(`/announcements/getbystudent/${user?._id}`)
       .then((res) => {
-        console.log(res.data.announcements);
         setAnnouncements(res.data.announcements || []);
       })
       .catch((err) => {

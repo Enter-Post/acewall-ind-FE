@@ -43,17 +43,20 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const checkAuth = async () => {
-    setAuthLoading(true);
     try {
+      console.log("Checking auth...");
+      setAuthLoading(true); // Set loading at the start
       const res = await axiosInstance.get("auth/checkAuth", {
         withCredentials: true,
       });
       setUser(res.data.user);
-      setAuthLoading(false);
+      return res.data.user; // Return user for chaining
     } catch (error) {
-      setAuthLoading(false);
-      console.log(error);
+      console.log("Auth check error:", error);
+      setUser(null); // Important: Clear user on error
       // toast.error(error.response?.data?.message);
+    } finally {
+      setAuthLoading(false); // Always set loading to false
     }
   };
 
