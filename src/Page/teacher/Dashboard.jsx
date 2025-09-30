@@ -30,10 +30,6 @@ export default function TeacherDashboard() {
   const [students, setStudents] = useState();
   const [recentComments, setRecentComments] = useState([]);
 
-  console.log(courses, "courses");
-
-  console.log(recentComments, "recentComments");
-
   // console.log(courses);
   const { user } = useContext(GlobalContext);
   const teacherId = user._id;
@@ -72,7 +68,6 @@ export default function TeacherDashboard() {
     const getRecentComments = async () => {
       await axiosInstance("comment/teacher/allComment")
         .then((res) => {
-          console.log(res, "commments");
           setRecentComments(res.data.recentComments);
         })
         .catch((err) => {

@@ -19,7 +19,7 @@ const MainLayout = () => {
       return navigate("/login");
     }
 
-    if (user.role === "student") {
+    if (user.role === "student" || user.role === "teacherAsStudent") {
       navigate("/student/mycourses");
     } else if (user.role === "teacher") {
       navigate("/teacher/");
@@ -33,7 +33,7 @@ const MainLayout = () => {
     <>
       <ScrollToTop />
       <div className="flex h-screen flex-col w-screen">
-       
+
         <header className="sticky top-0 z-10 bg-white w-full">
           <div className="h-10 bg-green-600 flex justify-end items-end px-5 cursor-pointer" />
           <div className="flex h-16 items-center justify-between px-4">

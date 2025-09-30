@@ -137,239 +137,239 @@ function App() {
       <ScrollToTop />
       <Routes>
         {/* Public-only accessible pages */}
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<LandingPage />} />
+          <Route path="about" element={<About />} />
+          <Route path="terms" element={<TermsPage />} />
+          <Route path="privacyPolicy" element={<PrivacyPolicyPage />} />
+          <Route path="AdditionalServices" element={<AdditionalServices />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+
+        {/* Unauthenticated-only (login/signup) */}
+        <Route
+          element={
+            <PublicRoute
+              user={user}
+              redirectTo={
+                user?.role === "teacher" ? "/teacher" : "/student/mycourses"
+              }
+            />
+          }
+        >
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
+          <Route path="/signup" element={<SignupPage />}></Route>
+          <Route path="/verifyOTP/:email" element={<VerifyOTP />} />
+          <Route path="/verifyPhoneOTP/:email" element={<VerifyPhoneOTP />} />
+
           <Route path="/" element={<MainLayout />}>
             <Route index element={<LandingPage />} />
-            <Route path="about" element={<About />} />
-            <Route path="terms" element={<TermsPage />} />
-            <Route path="privacyPolicy" element={<PrivacyPolicyPage />} />
-            <Route path="AdditionalServices" element={<AdditionalServices />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-
-          {/* Unauthenticated-only (login/signup) */}
-          <Route
-            element={
-              <PublicRoute
-                user={user}
-                redirectTo={
-                  user?.role === "teacher" ? "/teacher" : "/student/mycourses"
-                }
-              />
-            }
-          >
-            <Route path="/login" element={<Login />}></Route>
-            <Route path="/TeacherLogin" element={<TeacherLogin />}></Route>
-            <Route path="/signup" element={<SignupPage />}></Route>
-            <Route path="/verifyOTP/:email" element={<VerifyOTP />} />
-            <Route path="/verifyPhoneOTP/:email" element={<VerifyPhoneOTP />} />
-
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<LandingPage />} />
-              <Route path="/Courses">
-                <Route index element={<GeneralCourses />}></Route>
-                <Route
-                  path="detail/:id"
-                  element={<GeneralCoursesDetail />}
-                ></Route>
-                <Route path="culinaryArts" element={<AllCoursesDetail />} />
-              </Route>
-              <Route path="/forgetPassword">
-                <Route index element={<ForgetPassword />} />
-                <Route
-                  path="verifyOTP/:email"
-                  element={<VerifyForgetPasswordOTP />}
-                />
-                <Route path="resetPassword/:email" element={<NewPassword />} />
-              </Route>
-              <Route path="/about" element={<About />}></Route>
-              <Route path="/Support" element={<GeneralSupport />}></Route>
-              <Route path="/contactUs" element={<ContactUs />}></Route>
-              <Route path="/*" element={<NotFoundPage />} />
+            <Route path="/Courses">
+              <Route index element={<GeneralCourses />}></Route>
               <Route
-                path="/AdditionalServices"
-                element={<AdditionalServices />}
+                path="detail/:id"
+                element={<GeneralCoursesDetail />}
               ></Route>
+              <Route path="culinaryArts" element={<AllCoursesDetail />} />
             </Route>
-          </Route>
-
-          {/* Student Routes */}
-          <Route
-            element={
-              <PrivateRoute
-                user={user}
-                allowedRole="student"
-                loading={Authloading}
+            <Route path="/forgetPassword">
+              <Route index element={<ForgetPassword />} />
+              <Route
+                path="verifyOTP/:email"
+                element={<VerifyForgetPasswordOTP />}
               />
-            }
-          >
-            <Route path="/student" element={<Layout />}>
-              <Route path="payment-success" element={<PaymentSuccess />} />
-              <Route path="payment-cancelled" element={<PaymentCancelled />} />
-              <Route index element={<Deshboard />} />
-              <Route path="mycourses">
-                <Route index element={<Mycourses />} />
-                <Route
-                  path=":courseId/semester/:semesterId"
-                  element={<StudentSemesterDetail />}
-                />
-                <Route path=":id" element={<MainDetailPage />} />
-                <Route path=":courseId/chapters">
-                  <Route index element={<AllChapter />} />
-                  <Route path="chapter/:chapterId" element={<ChapterDetail />} />
-                </Route>
-              </Route>
+              <Route path="resetPassword/:email" element={<NewPassword />} />
+            </Route>
+            <Route path="/about" element={<About />}></Route>
+            <Route path="/Support" element={<GeneralSupport />}></Route>
+            <Route path="/contactUs" element={<ContactUs />}></Route>
+            <Route path="/*" element={<NotFoundPage />} />
+            <Route
+              path="/AdditionalServices"
+              element={<AdditionalServices />}
+            ></Route>
+          </Route>
+        </Route>
 
-              <Route path="assessment">
-                <Route index element={<Assignment />} />
-                <Route
-                  path="submission/:id"
-                  element={<AssessmentSubmissionPage />}
-                />
-              </Route>
-              <Route path="gradebook" element={<Gradebook />} />
-              <Route path="stdPages" element={<StdPagesView />} />
-              <Route path="announcements" element={<Announcement />} />
-              <Route path="account">
-                <Route index element={<Account />} />
-                <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
-                <Route path="editCredentials" element={<EditCredentials />} />
-              </Route>
-              <Route path="support" element={<Support />} />
-              <Route path="ContactUs" element={<ContactUs />} />
-              <Route path="courses/:subcategoryId" element={<AllCourses />} />
-              <Route path="course/detail/:id" element={<AllCoursesDetail />} />
-              <Route path="messages">
-                <Route index element={<Messages />} />
-                <Route path=":id" element={<ChatWindow />} />
-              </Route>
-              <Route path="discussions">
-                <Route index element={<StudentDiscussion />} />
-                <Route path=":id" element={<StudentDiscussionChat />} />
+        {/* Student Routes */}
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              allowedRole={["student", "teacherAsStudent"]}
+              loading={Authloading}
+            />
+          }
+        >
+          <Route path="/student" element={<Layout />}>
+            <Route path="payment-success" element={<PaymentSuccess />} />
+            <Route path="payment-cancelled" element={<PaymentCancelled />} />
+            <Route index element={<Deshboard />} />
+            <Route path="mycourses">
+              <Route index element={<Mycourses />} />
+              <Route
+                path=":courseId/semester/:semesterId"
+                element={<StudentSemesterDetail />}
+              />
+              <Route path=":id" element={<MainDetailPage />} />
+              <Route path=":courseId/chapters">
+                <Route index element={<AllChapter />} />
+                <Route path="chapter/:chapterId" element={<ChapterDetail />} />
               </Route>
             </Route>
-          </Route>
 
-          {/* Teacher Routes */}
-          <Route
-            element={
-              <PrivateRoute
-                user={user}
-                allowedRole="teacher"
-                loading={Authloading}
+            <Route path="assessment">
+              <Route index element={<Assignment />} />
+              <Route
+                path="submission/:id"
+                element={<AssessmentSubmissionPage />}
               />
-            }
-          >
-            <Route path="/teacher" element={<TeacherLayout />}>
-              <Route index element={<TeacherDashboard />} />
-              <Route path="account">
-                <Route index element={<Account />} />
-                <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
-                <Route path="editCredentials" element={<EditCredentials />} />
-              </Route>
-              <Route path="assessments">
-                <Route index element={<TeacherrAssessment />} />
-                <Route path="allsubmissions/:id" element={<AllSubmission />} />
-                <Route path=":id" element={<AssessmentReview />} />
+            </Route>
+            <Route path="gradebook" element={<Gradebook />} />
+            <Route path="stdPages" element={<StdPagesView />} />
+            <Route path="announcements" element={<Announcement />} />
+            <Route path="account">
+              <Route index element={<Account />} />
+              <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
+              <Route path="editCredentials" element={<EditCredentials />} />
+            </Route>
+            <Route path="support" element={<Support />} />
+            <Route path="ContactUs" element={<ContactUs />} />
+            <Route path="courses/:subcategoryId" element={<AllCourses />} />
+            <Route path="course/detail/:id" element={<AllCoursesDetail />} />
+            <Route path="messages">
+              <Route index element={<Messages />} />
+              <Route path=":id" element={<ChatWindow />} />
+            </Route>
+            <Route path="discussions">
+              <Route index element={<StudentDiscussion />} />
+              <Route path=":id" element={<StudentDiscussionChat />} />
+            </Route>
+          </Route>
+        </Route>
+
+        {/* Teacher Routes */}
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              allowedRole="teacher"
+              loading={Authloading}
+            />
+          }
+        >
+          <Route path="/teacher" element={<TeacherLayout />}>
+            <Route index element={<TeacherDashboard />} />
+            <Route path="account">
+              <Route index element={<Account />} />
+              <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
+              <Route path="editCredentials" element={<EditCredentials />} />
+            </Route>
+            <Route path="assessments">
+              <Route index element={<TeacherrAssessment />} />
+              <Route path="allsubmissions/:id" element={<AllSubmission />} />
+              <Route path=":id" element={<AssessmentReview />} />
+              <Route
+                path="create/:type/:id/:courseId"
+                element={<CreateAssessmentPage />}
+              />
+            </Route>
+            <Route
+              path="/teacher/courses/:courseId/posts/:type/:typeId"
+              element={<ViewCoursePostsPage />}
+            />
+            <Route path="wallet">
+              <Route index element={<Earning />} />
+              <Route path="detail" element={<EarningDetail />} />
+              <Route path="withdraw" element={<WithdrawRequestForm />} />
+            </Route>
+            <Route path="Announcements" element={<TeacherAnnoucement />} />
+            <Route path="allStudent" element={<AllStudent />} />
+            <Route path="studentProfile/:id" element={<StudentProfile />} />
+            <Route
+              path="courseGrades/:studentId/:courseId"
+              element={<StudentCourseGrades />}
+            />
+
+            <Route path="messages">
+              <Route index element={<Messages />} />
+              <Route path=":id" element={<ChatWindow />} />
+            </Route>
+            <Route
+              path="gradebook/:courseId"
+              element={<CourseGradebookPage />}
+            />
+
+            <Route path="discussions">
+              <Route index element={<TeacherDiscussion />} />
+              <Route path=":id" element={<TeacherDiscussionChat />} />
+            </Route>
+
+            <Route path="courses">
+              <Route index element={<TeacherCourses />} />
+              <Route path="unverifiedCourse" element={<UnverifiedCourses />} />
+
+              <Route index element={<TeacherDiscussion />} />
+
+              <Route
+                path=":courseId/semesterStdPre/:semesterId"
+                element={<StudentSemesterDetailStdPre />}
+              />
+              <Route path=":courseId/quarterStdPre">
+                <Route index element={<AllChapterStdPre />} />
                 <Route
-                  path="create/:type/:id/:courseId"
-                  element={<CreateAssessmentPage />}
+                  path="chapterStdPre/:chapterId"
+                  element={<ChapterDetailStdPre />}
                 />
               </Route>
               <Route
-                path="/teacher/courses/:courseId/posts/:type/:typeId"
-                element={<ViewCoursePostsPage />}
+                path="courseDetail/:id"
+                element={<TeacherCourseDetails />}
               />
-              <Route path="wallet">
-                <Route index element={<Earning />} />
-                <Route path="detail" element={<EarningDetail />} />
-                <Route path="withdraw" element={<WithdrawRequestForm />} />
-              </Route>
-              <Route path="Announcements" element={<TeacherAnnoucement />} />
-              <Route path="allStudent" element={<AllStudent />} />
-              <Route path="studentProfile/:id" element={<StudentProfile />} />
               <Route
-                path="courseGrades/:studentId/:courseId"
-                element={<StudentCourseGrades />}
+                path="editCourseDocument/:id"
+                element={<CourseDocumentsEdit />}
               />
 
-              <Route path="messages">
-                <Route index element={<Messages />} />
-                <Route path=":id" element={<ChatWindow />} />
-              </Route>
               <Route
-                path="gradebook/:courseId"
-                element={<CourseGradebookPage />}
+                path=":courseId/semester/:id"
+                element={<SemesterDetail />}
               />
-
-              <Route path="discussions">
-                <Route index element={<TeacherDiscussion />} />
-                <Route path=":id" element={<TeacherDiscussionChat />} />
+              <Route path=":courseId/chapters" element={<QuarterDetail />} />
+              <Route
+                path="chapter/:chapterId"
+                element={<TeacherChapterDetail />}
+              />
+              <Route path="edit/:courseId" element={<EditCourse />} />
+              <Route
+                path="assessment/:assessmentid"
+                element={<AssessmentPage />}
+              />
+              {/* <Route path="stdPreview/:id" element={<StdPreview />} /> */}
+              <Route path="stdPreview2/:id" element={<StdPreview2 />} />
+              <Route path="createCourses">
+                <Route index element={<CoursesBasis />} />
+                <Route path="addChapter/:id" element={<CoursesChapter />} />
               </Route>
-
-              <Route path="courses">
-                <Route index element={<TeacherCourses />} />
-                <Route path="unverifiedCourse" element={<UnverifiedCourses />} />
-
-                <Route index element={<TeacherDiscussion />} />
-
-                <Route
-                  path=":courseId/semesterStdPre/:semesterId"
-                  element={<StudentSemesterDetailStdPre />}
-                />
-                <Route path=":courseId/quarterStdPre">
-                  <Route index element={<AllChapterStdPre />} />
-                  <Route
-                    path="chapterStdPre/:chapterId"
-                    element={<ChapterDetailStdPre />}
-                  />
-                </Route>
-                <Route
-                  path="courseDetail/:id"
-                  element={<TeacherCourseDetails />}
-                />
-                <Route
-                  path="editCourseDocument/:id"
-                  element={<CourseDocumentsEdit />}
-                />
-
-                <Route
-                  path=":courseId/semester/:id"
-                  element={<SemesterDetail />}
-                />
-                <Route path=":courseId/chapters" element={<QuarterDetail />} />
-                <Route
-                  path="chapter/:chapterId"
-                  element={<TeacherChapterDetail />}
-                />
-                <Route path="edit/:courseId" element={<EditCourse />} />
-                <Route
-                  path="assessment/:assessmentid"
-                  element={<AssessmentPage />}
-                />
-                {/* <Route path="stdPreview/:id" element={<StdPreview />} /> */}
-                <Route path="stdPreview2/:id" element={<StdPreview2 />} />
-                <Route path="createCourses">
-                  <Route index element={<CoursesBasis />} />
-                  <Route path="addChapter/:id" element={<CoursesChapter />} />
-                </Route>
-                <Route path="semester/:courseId" element={<Semester />} />
-                <Route path="gradescale/:courseId">
-                  <Route index element={<GradeScaleForm />} />
-                  <Route path="managegradescale" element={<ManageGradeScale />} />
-                </Route>
-                <Route path="gpa/:courseId">
-                  <Route index element={<GpaScaleForm />} />
-                  <Route path="managegradescale" element={<ManageGpaScale />} />
-                </Route>
+              <Route path="semester/:courseId" element={<Semester />} />
+              <Route path="gradescale/:courseId">
+                <Route index element={<GradeScaleForm />} />
+                <Route path="managegradescale" element={<ManageGradeScale />} />
               </Route>
-              <Route path="wallet">
-                <Route index element={<Earning />} />
-                <Route path="detail" element={<EarningDetail />} />
-                <Route path="withdraw" element={<WithdrawRequestForm />} />
-                <Route path="allwithdrawals" element={<AllWithdrawals />} />
+              <Route path="gpa/:courseId">
+                <Route index element={<GpaScaleForm />} />
+                <Route path="managegradescale" element={<ManageGpaScale />} />
               </Route>
             </Route>
+            <Route path="wallet">
+              <Route index element={<Earning />} />
+              <Route path="detail" element={<EarningDetail />} />
+              <Route path="withdraw" element={<WithdrawRequestForm />} />
+              <Route path="allwithdrawals" element={<AllWithdrawals />} />
+            </Route>
           </Route>
+        </Route>
       </Routes>
     </>
   );
