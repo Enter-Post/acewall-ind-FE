@@ -41,6 +41,7 @@ import { Input } from "@/components/ui/input";
 import avatar from "@/assets/avatar.png";
 import { format } from "date-fns";
 import { CourseContext } from "@/Context/CoursesProvider";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 export default function CourseOverview() {
   const { id } = useParams(); // Default ID or from URL
@@ -50,8 +51,9 @@ export default function CourseOverview() {
 
   const [showModal, setShowModal] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
+  const { user, checkAuth } = useContext(GlobalContext);
 
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
 
   console.log(course, "course");
@@ -103,6 +105,16 @@ export default function CourseOverview() {
       setLoading(false);
     }
   };
+  const handlePreviewSignOut = async () => {
+    try {
+      await axiosInstance.post("auth/previewSignOut").then(() => {
+        checkAuth();
+        navigate(`/teacher/courses/courseDetail/${course._id}`);
+      });
+    } catch (error) {
+      console.error("Preview signin failed:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -119,6 +131,16 @@ export default function CourseOverview() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Course Header */}
+      {user?.role === "teacherAsStudent" && (
+        <Button
+          className={
+            "mb-4 bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+          }
+          onClick={handlePreviewSignOut}
+        >
+          View As Teacher
+        </Button>
+      )}
       <div
         className="space-y-6 bg-cover bg-center bg-no-repeat px-6 py-10 rounded-lg"
         style={{
@@ -284,11 +306,16 @@ export default function CourseOverview() {
             </div>
           </section>
           {/* unenroll section start  */}
-          <section>
-            <Button className="bg-green-500" onClick={() => setShowModal(true)}>
-              Unenroll
-            </Button>
-          </section>
+          {user?.role !== "teacherAsStudent" && (
+            <section>
+              <Button
+                className="bg-green-500"
+                onClick={() => setShowModal(true)}
+              >
+                Unenroll
+              </Button>
+            </section>
+          )}
 
           <section>
             <Dialog open={showModal} onOpenChange={setShowModal}>

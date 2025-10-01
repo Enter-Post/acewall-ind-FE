@@ -51,7 +51,7 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
-  const {  checkAuth, } = useContext(GlobalContext);
+  const { checkAuth, } = useContext(GlobalContext);
 
   const navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
@@ -61,20 +61,39 @@ export default function TeacherCourseDetails() {
   const [loading, setLoading] = useState(false);
   const [course, setCourse] = useState(null);
   const [semesterbased, setSemesterBased] = useState();
+  const [enrollmentsId, setEnrollmentsId] = useState(null);
 
   console.log(semesterbased, "semesterbased");
+
+  const findEnrollment = async () => {
+    await axiosInstance
+      .post(`enrollment/enrollmentforTeacher`, {
+        teacherId: course.createdby,
+        courseId: course._id,
+      })
+      .then((res) => {
+        console.log(res.data.enrollment, "enrollment data");
+        setEnrollmentsId(res.data.enrollment._id);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (course && course.createdby) {
+      findEnrollment();
+    }
+  }, [course]);
 
   const handlePreview = async () => {
     try {
       await axiosInstance.post("auth/previewSignIn").then(async () => {
         await checkAuth();
-        navigate("/student/mycourses");
+        navigate(`/student/mycourses/${enrollmentsId}`);
       });
-      console.log("Preview signin successful");
     } catch (error) {
       console.error("Preview signin failed:", error);
-      toast.error(error.response?.data?.message);
-
     }
   };
 
