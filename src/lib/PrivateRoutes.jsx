@@ -13,8 +13,13 @@ const PrivateRoute = ({
   const roles = (Array.isArray(allowedRole) ? allowedRole : [allowedRole]).map(
     (r) => r.toLowerCase()
   );
+  
+  if (!roles.includes(userRole)) {
+    return null; // render nothing while auth is refreshing
+  }
 
   return roles.includes(userRole) ? <Outlet /> : <Navigate to="/" />;
+
 };
 
 const PublicRoute = ({ user, redirectTo }) => {

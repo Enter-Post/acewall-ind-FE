@@ -37,6 +37,7 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
     try {
       await axiosInstance.post("auth/previewSignIn").then(async () => {
         await checkAuth();
+        navigate("/student/mycourses");
       });
       console.log("Preview signin successful");
     } catch (error) {

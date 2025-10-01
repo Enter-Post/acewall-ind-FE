@@ -47,9 +47,12 @@ import ViewCoursePosts from "@/Page/teacher/ViewCoursePosts";
 import { cn } from "@/lib/utils";
 import ArchiveDialog from "@/CustomComponent/teacher/ArchivedModal";
 import { ApplyReverificationDialog } from "@/CustomComponent/ApplyReverificationDialog";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
+  const {  checkAuth, } = useContext(GlobalContext);
+
   const navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
   const [Prevthumbnail, setPrevThumbnail] = useState(null);
@@ -60,6 +63,21 @@ export default function TeacherCourseDetails() {
   const [semesterbased, setSemesterBased] = useState();
 
   console.log(semesterbased, "semesterbased");
+
+  const handlePreview = async () => {
+    try {
+      await axiosInstance.post("auth/previewSignIn").then(async () => {
+        await checkAuth();
+        navigate("/student/mycourses");
+      });
+      console.log("Preview signin successful");
+    } catch (error) {
+      console.error("Preview signin failed:", error);
+      toast.error(error.response?.data?.message);
+
+    }
+  };
+
 
   const handleDeleteAssessment = (assessmentID) => {
     setLoading(true);
@@ -83,8 +101,8 @@ export default function TeacherCourseDetails() {
         setCourse(res.data.course);
         setQuarters(res.data.course.quarter);
         setSemesterBased(res.data.course.semesterbased === true);
-        console.log(res.data , "teacher course");
-        
+        console.log(res.data, "teacher course");
+
       })
       .catch((err) => {
         console.log(err);
@@ -417,8 +435,7 @@ export default function TeacherCourseDetails() {
               <Button
                 variant="outline"
                 className="flex items-center gap-2"
-                onClick={() => navigate(`/teacher/courses/stdPreview2/${id}`)}
-              >
+                onClick={() => handlePreview()}              >
                 <Eye className="w-4 h-4" />
                 Preview as Student
               </Button>
@@ -630,13 +647,12 @@ function VerificationBadge({ status, course, fetchCourseDetail }) {
           className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${color} shadow`}
         >
           <CheckCircle
-            className={`w-4 h-4 ${
-              status === "approved"
-                ? "text-green-600"
-                : status === "pending"
+            className={`w-4 h-4 ${status === "approved"
+              ? "text-green-600"
+              : status === "pending"
                 ? "text-yellow-500"
                 : "text-red-600"
-            }`}
+              }`}
           />
           <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
         </div>
@@ -665,9 +681,9 @@ function VerificationBadge({ status, course, fetchCourseDetail }) {
 function formatDate(dateString) {
   return dateString
     ? new Date(dateString).toLocaleDateString("en-US", {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-      })
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    })
     : "N/A";
 }
