@@ -313,7 +313,7 @@ export default function TeacherCourseDetails() {
           </div>
 
           {/* Middle Column - Course Details */}
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-8">
             <Card className="shadow-sm h-full">
               <CardContent className="p-6">
                 {/* Course Metadata */}

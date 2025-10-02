@@ -208,7 +208,7 @@ const GeneralCourseDetail = () => {
                                         <CollapsibleContent className="mt-3 rounded-lg bg-gray-50 border border-gray-200 p-4 shadow-inner space-y-3">
                                           <span className="font-bold  ">Description</span>
                                           {lesson.description && (
-                                            <p className="text-sm text-gray-700 leading-relaxed"> {lesson.description}</p>
+                                            <p className="text-sm text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: lesson.description }} />
                                           )}
 
                                           {lesson.youtubeLinks && (

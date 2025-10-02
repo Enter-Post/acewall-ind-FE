@@ -44,7 +44,18 @@ const TeacherChapterDetail = () => {
   const [loading, setLoading] = useState(false);
   const [chapter, setChapter] = useState(null);
   const [lessons, setLessons] = useState([]);
+  const [expandedDescIds, setExpandedDescIds] = useState([]);
 
+  const toggleDescription = (id) => {
+    setExpandedDescIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
+  const truncateText = (text, limit = 100) => {
+    if (text.length <= limit) return text;
+    return text.slice(0, limit) + "...";
+  };
   const fetchChapterDetail = async () => {
     try {
       const response = await axiosInstance.get(
@@ -123,17 +134,19 @@ const TeacherChapterDetail = () => {
         <BackButton />
         <div className="bg-white rounded-lg shadow-sm p-6">
           <section className="flex justify-between">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+              {/* Icon */}
+              <div className="shrink-0">
                 <BookOpen className="h-8 w-8 text-blue-600" />
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {chapter.title}
-                  </h1>
-                  <p className="text-gray-600">{chapter.description}</p>
-                </div>
+              </div>
+
+              {/* Text */}
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-gray-900">{chapter.title}</h1>
+                <p className="text-gray-600">{chapter.description}</p>
               </div>
             </div>
+
 
             <div className="flex justify-end gap-4">
               <EditChapterDialog
@@ -408,43 +421,64 @@ const TeacherChapterDetail = () => {
                         lesson.lesson_assessments.length > 0 && (
                           <div>
                             <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                              Lesson Assessments (
-                              {lesson.lesson_assessments.length})
+                              Lesson Assessments ({lesson.lesson_assessments.length})
                             </h5>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {lesson.lesson_assessments.map((assessment) => (
-                                <div
-                                  key={assessment._id}
-                                  className="border rounded-lg hover:shadow-sm transition-shadow"
-                                >
-                                  <div className="flex flex-col items-start justify-between mb-2 gap-5 p-4">
-                                    <section className="flex justify-between w-full">
-                                      <Badge variant="outline" className="mb-2">
-                                        {assessment.category.name}
-                                      </Badge>
-                                      <DeleteModal
-                                        what="Assessment"
-                                        deleteFunc={() =>
-                                          handleDeleteAssessment(assessment._id)
-                                        }
-                                      />
-                                    </section>
-                                    <Link
-                                      to={`/teacher/courses/assessment/${assessment._id}`}
-                                      className="w-full hover:bg-gray-200 p-4 rounded-lg transform transition-transform duration-300"
-                                    >
-                                      <h4 className="font-semibold text-gray-900">
-                                        {assessment.title}
-                                      </h4>
-                                      {assessment.description && (
-                                        <p className="text-sm text-gray-600 mt-1">
-                                          {assessment.description}
-                                        </p>
-                                      )}
-                                    </Link>
+                              {lesson.lesson_assessments.map((assessment) => {
+                                const isExpanded = expandedDescIds.includes(assessment._id);
+                                const description = assessment.description || "";
+
+                                return (
+                                  <div
+                                    key={assessment._id}
+                                    className="border rounded-lg hover:shadow-sm transition-shadow"
+                                  >
+                                    <div className="flex flex-col items-start justify-between mb-2 gap-5 p-4">
+                                      <section className="flex justify-between w-full">
+                                        <Badge variant="outline" className="mb-2">
+                                          {assessment.category.name}
+                                        </Badge>
+                                        <DeleteModal
+                                          what="Assessment"
+                                          deleteFunc={() =>
+                                            handleDeleteAssessment(assessment._id)
+                                          }
+                                        />
+                                      </section>
+
+                                      <Link
+                                        to={`/teacher/courses/assessment/${assessment._id}`}
+                                        className="w-full hover:bg-gray-200 p-4 rounded-lg transform transition-transform duration-300"
+                                      >
+                                        <h4 className="font-semibold text-gray-900">
+                                          {assessment.title}
+                                        </h4>
+
+                                        {description && (
+                                          <p className="text-sm text-gray-600 mt-1">
+                                            {isExpanded
+                                              ? description
+                                              : truncateText(description, 120)}
+
+                                            {description.length > 120 && (
+                                              <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                  e.preventDefault(); // prevent Link navigation
+                                                  toggleDescription(assessment._id);
+                                                }}
+                                                className="ml-2 text-blue-600 hover:underline"
+                                              >
+                                                {isExpanded ? "Read less" : "Read more"}
+                                              </button>
+                                            )}
+                                          </p>
+                                        )}
+                                      </Link>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         )}

@@ -173,10 +173,10 @@ const QuarterDetail = () => {
                   </p>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  {/* <div className="flex items-center gap-4 text-sm text-gray-500">
                     <div className="flex flex-wrap items-center gap-1">
                       <BookOpen className="h-4 w-4" />
-                      <p>{chapter.lessons?.length || 0} Lessons</p>
+                      <p>{chapter?.lessons?.length || 0} Lessons</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-1">
                       <GraduationCap className="h-4 w-4" />
@@ -184,7 +184,7 @@ const QuarterDetail = () => {
                         {chapter.chapter_assessments?.length || 0} Assessments
                       </p>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 pt-2">

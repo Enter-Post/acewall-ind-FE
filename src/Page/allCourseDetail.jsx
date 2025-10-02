@@ -216,9 +216,11 @@ const AllCoursesDetail = () => {
                           <AccordionContent>
                             <div className="my-2 flex flex-col gap-2">
                               <span className="font-bold">Description</span>
-                              <span className="text-sm text-gray-700">
-                                {chapter.description}
-                              </span>
+                              <span
+                                className="text-sm text-gray-700"
+                                dangerouslySetInnerHTML={{ __html: chapter.description }}
+                              ></span>
+
                             </div>
                             <div className="space-y-4 pl-6">
                               {Array.isArray(chapter.lessons) &&
@@ -238,12 +240,13 @@ const AllCoursesDetail = () => {
                                       <span className="font-bold">
                                         Description
                                       </span>
-                                      {lesson.description && (
-                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                          {" "}
-                                          {lesson.description}
-                                        </p>
-                                      )}
+                                     {lesson.description && (
+  <p
+    className="text-sm text-gray-700 leading-relaxed"
+    dangerouslySetInnerHTML={{ __html: lesson.description }}
+  />
+)}
+
 
                                       {lesson.youtubeLinks && (
                                         <span
