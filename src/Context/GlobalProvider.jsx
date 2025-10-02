@@ -16,7 +16,7 @@ export const GlobalProvider = ({ children }) => {
   const [onlineUser, setOnlineUser] = useState([]);
   const [currentConversation, setCurrentConversation] = useState(null);
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState(null);
-
+  const [UpdatedUser, setUpdatedUser] = useState(null);
   const disconnectsocket = () => {
     if (socket && socket.connected) {
       socket.disconnect();
@@ -97,6 +97,8 @@ export const GlobalProvider = ({ children }) => {
         selectedSubcategoryId,
         setSelectedSubcategoryId,
         setUser,
+        UpdatedUser,
+        setUpdatedUser
       }}
     >
       {children}

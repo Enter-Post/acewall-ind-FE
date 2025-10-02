@@ -90,7 +90,8 @@ const sideBarTabs = [
 
 export default function TeacherLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { checkAuth, user, Authloading, setAuthLoading } =
+
+  const { checkAuth, user, Authloading, setAuthLoading, UpdatedUser } =
     useContext(GlobalContext);
   const location = useLocation().pathname;
 
@@ -264,28 +265,27 @@ export default function TeacherLayout() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside
-          className={`relative bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`relative bg-white ${isSidebarOpen ? "block" : "hidden"
+            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             <div className="flex items-center space-x-3 pb-4">
               <Link to="/teacher/account" className="w-10 h-10 block">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   <img
-                    src={user?.profileImg?.url || avatar}
-                    alt={user?.firstName || "User Avatar"}
+                    src={UpdatedUser?.profileImg?.url || avatar}
+                    alt={UpdatedUser?.firstName || "User Avatar"}
                     className="w-full h-full object-cover rounded-full"
                   />
                 </div>
               </Link>
               <div>
-                <p className="font-medium">{user.firstName}</p>
+                <p className="font-medium">{UpdatedUser?.firstName ||"username "}</p>
                 <p
                   className="text-sm text-gray-600 w-full max-w-[150px] break-words"
-                  title={user.email}
+                  title={UpdatedUser?.email}
                 >
-                  {user.email}
+                  {UpdatedUser?.email}
                 </p>
               </div>
             </div>
@@ -296,15 +296,13 @@ export default function TeacherLayout() {
                   key={tab.name}
                   to={tab.path ?? "#"}
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                    location === tab.path ? "bg-green-500" : "text-black"
-                  }`}
+                  className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
+                    }`}
                 >
                   <p>{tab.icon}</p>
                   <span
-                    className={`${
-                      location === tab.path ? "text-white" : "text-green-600"
-                    }`}
+                    className={`${location === tab.path ? "text-white" : "text-green-600"
+                      }`}
                   >
                     {tab.name}
                   </span>

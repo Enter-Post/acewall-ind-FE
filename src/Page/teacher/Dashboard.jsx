@@ -150,8 +150,7 @@ export default function TeacherDashboard() {
                         <div className="">
                           <p className="text-sm">
                             <span className="font-sm text-gray-700">
-                              {`${comment.createdby.firstName} ${comment.createdby.middleName} ${comment.createdby.lastName}`}
-                            </span>{" "}
+                              {`${comment?.createdby?.firstName} ${comment?.createdby?.middleName} ${comment?.createdby?.lastName}`}                            </span>{" "}
                             {comment.action}
                           </p>
 

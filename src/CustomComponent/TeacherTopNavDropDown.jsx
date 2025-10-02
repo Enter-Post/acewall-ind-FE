@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import avatar from "../assets/avatar.png";
 
 export function TeacherTopNavbarDropDown({ selected, setselected }) {
-  const { user, checkAuth, logout, setAuthLoading } = useContext(GlobalContext);
+const { user, checkAuth, logout, setAuthLoading, UpdatedUser } = useContext(GlobalContext);
 
   const tabs = [
     {
@@ -53,7 +53,7 @@ export function TeacherTopNavbarDropDown({ selected, setselected }) {
         <div className="flex items-center space-x-2 cursor-pointer">
           <Avatar className="w-5 h-5">
             <AvatarImage
-              src={user?.profileImg?.url || avatar}
+              src={UpdatedUser?.profileImg?.url || avatar}
               alt="User Avatar"
             />
             <AvatarFallback>

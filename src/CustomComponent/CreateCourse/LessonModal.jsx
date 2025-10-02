@@ -30,7 +30,7 @@ const pdfFileSchema = z
 
 const lessonSchema = z.object({
   title: z.string().min(5).max(100),
-  description: z.string().min(5).max(2500),
+  description: z.string().min(5).max(250000),
   youtubeLinks: z
     .string()
     .trim()
@@ -74,7 +74,7 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
   const [loading, setLoading] = useState(false);
 
   const MAX_TITLE_LENGTH = 100;
-  const MAX_DESCRIPTION_LENGTH = 200;
+  const MAX_DESCRIPTION_LENGTH = 250000;
 
   console.log(chapterID, "chapter Id");
 

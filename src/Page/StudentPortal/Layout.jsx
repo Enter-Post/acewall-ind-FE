@@ -87,7 +87,8 @@ const sideBarTabs = [
 ];
 
 export default function Layout() {
-  const { user, checkAuth } = React.useContext(GlobalContext);
+  const { user, checkAuth, UpdatedUser, setUpdatedUser } =
+    React.useContext(GlobalContext);
   const location = useLocation().pathname;
 
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -255,17 +256,6 @@ export default function Layout() {
             </DropdownMenu>
           </div>
 
-
-
-
-
-
-
-
-
-
-
-
         </div>
       </header>
 
@@ -282,19 +272,19 @@ export default function Layout() {
               <Link to="/student/account" className="block">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
                   <img
-                    src={user?.profileImg?.url || avatar}
-                    alt={user.firstName}
+                    src={UpdatedUser?.profileImg?.url || avatar}
+                    alt={UpdatedUser?.firstName || "username "}
                     className="h-full w-full object-cover rounded-full"
                   />
                 </div>
               </Link>
               <div>
-                <p className="font-medium">{user.firstName}</p>
+                <p className="font-medium">{UpdatedUser?.firstName || "username "}</p>
                 <p
                   className="text-sm text-gray-600 w-full max-w-[150px]  break-words"
-                  title={user.email}
+                  title={UpdatedUser?.email || "email"}
                 >
-                  {user.email}
+                  {UpdatedUser?.email || "email"}
                 </p>{" "}
               </div>
             </div>

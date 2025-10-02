@@ -96,7 +96,7 @@ import TermsPage from "./CustomComponent/TermsPage";
 import PrivacyPolicyPage from "./CustomComponent/PrivacyPolicyPage";
 
 function App() {
-  const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser } =
+  const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser, setUpdatedUser } =
     useContext(GlobalContext);
 
   useEffect(() => {
@@ -127,6 +127,18 @@ function App() {
       console.error("Socket connection error:", error);
     });
   };
+
+  useEffect(() => {
+    const fetchUser = () => {
+      axiosInstance
+        .get("auth/getUserInfo")
+        .then((res) => {
+          setUpdatedUser(res.data.user);
+        })
+        .catch(console.log);
+    };
+    fetchUser();
+  }, [user]);
 
   if (Authloading) {
     return <LoadingLoader />;
