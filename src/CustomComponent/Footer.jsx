@@ -77,7 +77,7 @@ export default function Footer() {
   };
 
   const usefulLinks = [
-    { name: "Home", url: "/home" },
+    { name: "Home", url: "/" },
     { name: "About Us", url: "/about" },
     { name: "Additional Services", url: "/AdditionalServices" },
     { name: "Terms", url: "/terms" },

@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import RatingStars from "../RatingStars";
 import { Loader, Star } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 const RatingSection = ({ course, id }) => {
+  const { user } = useContext(GlobalContext);
   const [userRating, setUserRating] = useState(0);
   const [hasRated, setHasRated] = useState(false);
   const [courseRating, setCourseRating] = useState();
@@ -66,9 +68,21 @@ const RatingSection = ({ course, id }) => {
   };
 
   return (
-    <div className="bg-gray-50 p-6 rounded-lg">
-      <h3 className="text-xl font-bold mb-4">Rate this course</h3>
+    <div
+      className={`bg-gray-50 p-6 rounded-lg position-relative ${user?.role === "teacherAsStudent"
+        ? "opacity-50 pointer-events-none"
+        : ""
+        }`}
+    >
 
+      <h3 className="text-xl font-bold mb-4 ">Rate this course</h3>
+      {user?.role === "teacherAsStudent" && (
+        <div className="position-absolute opacity-200 z-10">
+          <p className="text-sm text-red-500 mb-2">
+            You are not allowed to rate your own course.
+          </p>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center ">
         {loading ? (
           <Loader className="animate-spin" />
@@ -105,11 +119,10 @@ const RatingSection = ({ course, id }) => {
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
-                className={`h-5 w-5 ${
-                  star <= Math.round(courseRating?.averageStar)
-                    ? "fill-yellow-500 text-yellow-500"
-                    : "text-gray-300"
-                }`}
+                className={`h-5 w-5 ${star <= Math.round(courseRating?.averageStar)
+                  ? "fill-yellow-500 text-yellow-500"
+                  : "text-gray-300"
+                  }`}
               />
             ))}
           </div>
