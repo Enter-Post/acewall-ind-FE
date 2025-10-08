@@ -6,6 +6,7 @@ import acewallshort from "../../assets/acewallshort.png";
 import avatar from "../../assets/avatar.png";
 
 import {
+  Coffee,
   Menu,
   MessageCircleDashed,
   MessagesSquare,
@@ -66,6 +67,12 @@ const sideBarTabs = [
   },
   {
     id: 5,
+    name: "Spill the Tea",
+    icon: <Coffee />,
+    path: "/student/social",
+  },
+  {
+    id: 6,
     name: "Announcements",
     icon: <Megaphone02Icon />,
     path: "/student/announcements",
