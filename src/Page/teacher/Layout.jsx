@@ -14,6 +14,7 @@ import {
   NotepadText,
   Verified,
   MessagesSquareIcon,
+  Coffee,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../../components/ui/button";
@@ -79,6 +80,12 @@ const sideBarTabs = [
     name: "Students",
     icon: <GraduationCap />,
     path: "/teacher/allStudent",
+  },
+  {
+    id: 14,
+    name: "Spill the Tea",
+    icon: <Coffee />,
+    path: "/teacher/social",
   },
   {
     id: 15,

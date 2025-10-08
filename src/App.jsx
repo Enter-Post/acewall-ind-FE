@@ -94,10 +94,20 @@ import VerifyPhoneOTP from "./Page/VerifyPhoneOTP";
 import FeaturedPage from "./Page/FeaturedPage";
 import TermsPage from "./CustomComponent/TermsPage";
 import PrivacyPolicyPage from "./CustomComponent/PrivacyPolicyPage";
+import { axiosInstance } from "./lib/AxiosInstance";
+import SocialMain from "./Page/StudentPortal/SocialMain";
+import SocialProfilePage from "./Page/StudentPortal/SocialProfilePage";
 
 function App() {
-  const { checkAuth, user, Authloading, socket, setSocket, setOnlineUser, setUpdatedUser } =
-    useContext(GlobalContext);
+  const {
+    checkAuth,
+    user,
+    Authloading,
+    socket,
+    setSocket,
+    setOnlineUser,
+    setUpdatedUser,
+  } = useContext(GlobalContext);
 
   useEffect(() => {
     checkAuth();
@@ -258,6 +268,11 @@ function App() {
               <Route index element={<StudentDiscussion />} />
               <Route path=":id" element={<StudentDiscussionChat />} />
             </Route>
+            <Route path="social" element={<SocialMain />} />
+            <Route
+              path="social/socialprofile/:userId"
+              element={<SocialProfilePage />}
+            />
           </Route>
         </Route>
 
@@ -380,6 +395,11 @@ function App() {
               <Route path="withdraw" element={<WithdrawRequestForm />} />
               <Route path="allwithdrawals" element={<AllWithdrawals />} />
             </Route>
+            <Route path="social" element={<SocialMain />} />
+            <Route
+              path="social/socialprofile/:userId"
+              element={<SocialProfilePage />}
+            />
           </Route>
         </Route>
       </Routes>
