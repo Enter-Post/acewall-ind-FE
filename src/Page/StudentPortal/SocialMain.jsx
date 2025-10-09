@@ -62,7 +62,7 @@ const SocialMain = ({ posts: externalPosts, setPosts: setExternalPosts }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-blue-200 ">
       {/* 🔝 Navbar */}
       <div className="bg-green-600 text-white rounded-lg shadow-sm sticky top-0 flex items-center justify-between px-6 py-3 border-b ">
         <div className="flex items-center gap-3">
@@ -91,7 +91,7 @@ const SocialMain = ({ posts: externalPosts, setPosts: setExternalPosts }) => {
       </div>
 
       {/* 🧾 Posts */}
-      <div className="max-w-3xl mx-auto mt-6 space-y-4 px-2 sm:px-4 pb-10">
+      <div className="max-w-3xl mx-auto pt-8 space-y-4 px-2 sm:px-4 pb-10 bg-white">
         {loading ? (
           <div className="text-center text-gray-500 py-6">Loading posts...</div>
         ) : posts.length > 0 ? (

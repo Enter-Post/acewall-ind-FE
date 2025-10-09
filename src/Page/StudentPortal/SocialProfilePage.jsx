@@ -13,7 +13,6 @@ const SocialProfilePage = () => {
   const { checkAuth, user, Authloading, setAuthLoading, UpdatedUser } =
     useContext(GlobalContext);
 
-
   const [userInfo, setUserInfo] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,7 +20,9 @@ const SocialProfilePage = () => {
   const fetchUserPosts = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`posts/specificUserPosts/${userId}`);
+      const response = await axiosInstance.get(
+        `posts/specificUserPosts/${userId}`
+      );
       const { posts } = response.data;
       setPosts(posts);
       if (posts.length > 0 && posts[0].author) {
@@ -75,23 +76,25 @@ const SocialProfilePage = () => {
         </p>
       </div>
 
-
-
-      {/* Posts */}
-      {loading ? (
-        <p className="text-center text-gray-500 mt-10">Loading posts...</p>
-      ) : posts.length > 0 ? (
-        <div className="max-w-3xl mx-auto space-y-4 px-2 sm:px-4 pb-10">
-          {posts.map((post) => (
-            <PostCard key={post._id} post={post} setPosts={setPosts} />
-          ))}
+      <section className="bg-blue-200 ">
+        <div className="max-w-3xl mx-auto pt-8 space-y-4 px-2 sm:px-4 pb-10 bg-white">
+          {/* Posts */}
+          {loading ? (
+            <p className="text-center text-gray-500 mt-10">Loading posts...</p>
+          ) : posts.length > 0 ? (
+            <div className="max-w-3xl mx-auto space-y-4 px-2 sm:px-4 pb-10">
+              {posts.map((post) => (
+                <PostCard key={post._id} post={post} setPosts={setPosts} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center mt-16 text-gray-500">
+              <Grid className="w-10 h-10 mb-2" />
+              <p>No posts yet.</p>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center mt-16 text-gray-500">
-          <Grid className="w-10 h-10 mb-2" />
-          <p>No posts yet.</p>
-        </div>
-      )}
+      </section>
     </div>
   );
 };
