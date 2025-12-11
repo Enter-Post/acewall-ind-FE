@@ -51,7 +51,7 @@ import { GlobalContext } from "@/Context/GlobalProvider";
 
 export default function TeacherCourseDetails() {
   const { id } = useParams();
-  const { checkAuth, } = useContext(GlobalContext);
+  const { checkAuth } = useContext(GlobalContext);
 
   const navigate = useNavigate();
   const { quarters, setQuarters } = useContext(CourseContext);
@@ -86,6 +86,22 @@ export default function TeacherCourseDetails() {
     }
   }, [course]);
 
+  const handleToggleGrading = async () => {
+    try {
+      const res = await axiosInstance.put(`course/course/${id}/toggle-grading`);
+      toast.success(res.data.message);
+
+      setCourse((prev) => ({
+        ...prev,
+        gradingSystem: res.data.gradingSystem,
+      }));
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to toggle grading system"
+      );
+    }
+  };
+
   const handlePreview = async () => {
     try {
       await axiosInstance.post("auth/previewSignIn").then(async () => {
@@ -96,7 +112,6 @@ export default function TeacherCourseDetails() {
       console.error("Preview signin failed:", error);
     }
   };
-
 
   const handleDeleteAssessment = (assessmentID) => {
     setLoading(true);
@@ -121,7 +136,6 @@ export default function TeacherCourseDetails() {
         setQuarters(res.data.course.quarter);
         setSemesterBased(res.data.course.semesterbased === true);
         console.log(res.data, "teacher course");
-
       })
       .catch((err) => {
         console.log(err);
@@ -191,12 +205,6 @@ export default function TeacherCourseDetails() {
       </div>
     );
 
-  // const hasDocuments =
-  //   course.documents &&
-  //   (course.documents.governmentId ||
-  //     course.documents.resume ||
-  //     course.documents.certificate ||
-  //     course.documents.transcript);
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -437,6 +445,13 @@ export default function TeacherCourseDetails() {
               >
                 Manage GPA
               </Button>
+
+              <Button
+                variant="outline"
+                onClick={() => navigate(`/teacher/courses/Sbl/${id}`)}
+              >
+                Manage Standard GradeScale
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -454,7 +469,8 @@ export default function TeacherCourseDetails() {
               <Button
                 variant="outline"
                 className="flex items-center gap-2"
-                onClick={() => handlePreview()}              >
+                onClick={() => handlePreview()}
+              >
                 <Eye className="w-4 h-4" />
                 Preview as Student
               </Button>
@@ -473,6 +489,21 @@ export default function TeacherCourseDetails() {
                 <Pen className="w-4 h-4" />
                 Edit Course Info
               </Button>
+
+              <button
+                className="flex gap-2 items-center bg-purple-600 text-white py-2 px-4 rounded-lg shadow-md transition-all duration-150 text-sm cursor-pointer hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2"
+                onClick={handleToggleGrading}
+                aria-label={`Switch to ${
+                  course.gradingSystem === "normalGrading"
+                    ? "standard"
+                    : "normal"
+                } grading system`}
+              >
+                <ChartBarStacked size={16} aria-hidden="true" />
+                {course.gradingSystem === "normalGrading"
+                  ? "Switch to Standard Grading"
+                  : "Switch to Normal Grading"}
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -666,12 +697,13 @@ function VerificationBadge({ status, course, fetchCourseDetail }) {
           className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${color} shadow`}
         >
           <CheckCircle
-            className={`w-4 h-4 ${status === "approved"
-              ? "text-green-600"
-              : status === "pending"
+            className={`w-4 h-4 ${
+              status === "approved"
+                ? "text-green-600"
+                : status === "pending"
                 ? "text-yellow-500"
                 : "text-red-600"
-              }`}
+            }`}
           />
           <span>{status.charAt(0).toUpperCase() + status.slice(1)}</span>
         </div>
@@ -700,9 +732,9 @@ function VerificationBadge({ status, course, fetchCourseDetail }) {
 function formatDate(dateString) {
   return dateString
     ? new Date(dateString).toLocaleDateString("en-US", {
-      year: "2-digit",
-      month: "2-digit",
-      day: "2-digit",
-    })
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+      })
     : "N/A";
 }

@@ -97,6 +97,8 @@ import PrivacyPolicyPage from "./CustomComponent/PrivacyPolicyPage";
 import { axiosInstance } from "./lib/AxiosInstance";
 import SocialMain from "./Page/StudentPortal/SocialMain";
 import SocialProfilePage from "./Page/StudentPortal/SocialProfilePage";
+import ManageSBLScale from "./Page/teacher/Courses/Sbl/CreateNewSBLScale";
+import SBLScaleForm from "./Page/teacher/Courses/Sbl/ManageSbl";
 
 function App() {
   const {
@@ -387,6 +389,13 @@ function App() {
               <Route path="gpa/:courseId">
                 <Route index element={<GpaScaleForm />} />
                 <Route path="managegradescale" element={<ManageGpaScale />} />
+              </Route>
+              <Route path="Sbl/:courseId">
+                <Route index element={<SBLScaleForm />} />
+                <Route
+                  path="managesblscale"
+                  element={<ManageSBLScale />}
+                />
               </Route>
             </Route>
             <Route path="wallet">
