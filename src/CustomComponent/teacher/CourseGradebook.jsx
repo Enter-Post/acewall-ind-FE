@@ -19,22 +19,25 @@ import BackButton from "../BackButton";
 const CourseGradebook = () => {
   const { courseId } = useParams();
   const [gradebook, setGradebook] = useState([]);
-  const [hasSemesterStructure, setHasSemesterStructure] = useState(true);
+  const [courseType, setCourseType] = useState("semester-based");
+  const [gradingSystem, setGradingSystem] = useState("normalGrading");
   const [expanded, setExpanded] = useState({});
   const [semesterExpanded, setSemesterExpanded] = useState({});
   const [quarterExpanded, setQuarterExpanded] = useState({});
 
   console.log(gradebook, "gradebook");
-  console.log(hasSemesterStructure, "hasSemesterStructure");
+  console.log(courseType, "courseType");
+  console.log(gradingSystem, "gradingSystem");
 
   useEffect(() => {
     const fetchGradebook = async () => {
       try {
         const { data } = await axiosInstance.get(
-          `gradebook/course/${courseId}`
+          `gradebook/getGradebooksOfCourseFormatted/${courseId}`
         );
         setGradebook(data.gradebook);
-        setHasSemesterStructure(data.hasSemesterStructure);
+        setCourseType(data.courseType);
+        setGradingSystem(data.gradingSystem);
       } catch (error) {
         console.error("Failed to fetch gradebook", error);
       }
@@ -56,10 +59,10 @@ const CourseGradebook = () => {
   };
 
   const hasGradeData = (student) => {
-    if (hasSemesterStructure) {
+    if (courseType === "semester-based") {
       return student.semesters && student.semesters.length > 0;
     } else {
-      return student.assessments && student.assessments.length > 0;
+      return student.chapters && student.chapters.length > 0;
     }
   };
 
@@ -90,16 +93,21 @@ const CourseGradebook = () => {
             </TableCell>
             <TableCell className="text-center text-sm">
               {assessment.maxPoints > 0
-                ? `${((assessment.studentPoints / assessment.maxPoints) * 100).toFixed(1)}%`
+                ? `${(
+                    (assessment.studentPoints / assessment.maxPoints) *
+                    100
+                  ).toFixed(1)}%`
                 : "N/A"}
             </TableCell>
             <TableCell className="text-center text-sm">
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                assessment.isDiscussion 
-                  ? 'bg-purple-100 text-purple-800' 
-                  : 'bg-blue-100 text-blue-800'
-              }`}>
-                {assessment.isDiscussion ? 'Discussion' : 'Assessment'}
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  assessment.isDiscussion
+                    ? "bg-purple-100 text-purple-800"
+                    : "bg-blue-100 text-blue-800"
+                }`}
+              >
+                {assessment.isDiscussion ? "Discussion" : "Assessment"}
               </span>
             </TableCell>
           </TableRow>
@@ -129,20 +137,46 @@ const CourseGradebook = () => {
                 }
                 className="p-1 h-6 w-6"
               >
-                {semesterExpanded[`${student.studentId}-${semester.semesterId}`] ? (
+                {semesterExpanded[
+                  `${student.studentId}-${semester.semesterId}`
+                ] ? (
                   <ChevronDown className="h-3 w-3" />
                 ) : (
                   <ChevronRight className="h-3 w-3" />
                 )}
               </Button>
-              <h4 className="font-semibold text-lg">{semester.semesterTitle}</h4>
+              <h4 className="font-semibold text-lg">
+                {semester.semesterTitle}
+              </h4>
+              {gradingSystem === "normalGrading" ? (
+                <div className="flex items-center gap-2 ml-auto">
+                  <span className="text-sm font-medium">{semester.grade}%</span>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {semester.letterGrade}
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 ml-auto">
+                  <span className="text-sm font-medium">
+                    {semester.standardGrade?.grade}%
+                  </span>
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    Points: {semester.standardGrade?.points}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    {semester.standardGrade?.remarks}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {semesterExpanded[`${student.studentId}-${semester.semesterId}`] && (
+            {semesterExpanded[
+              `${student.studentId}-${semester.semesterId}`
+            ] && (
               <div className="ml-6 space-y-3">
                 {semester.quarters.map((quarter) => (
                   <div
-                    key={quarter.quarterId || 'no-quarter'}
+                    key={quarter.quarterId || "no-quarter"}
                     className="border-l-2 border-gray-200 pl-4"
                   >
                     <div className="flex items-center gap-2 mb-2">
@@ -153,13 +187,15 @@ const CourseGradebook = () => {
                           toggleQuarterExpand(
                             student.studentId,
                             semester.semesterId,
-                            quarter.quarterId || 'no-quarter'
+                            quarter.quarterId || "no-quarter"
                           )
                         }
                         className="p-1 h-5 w-5"
                       >
                         {quarterExpanded[
-                          `${student.studentId}-${semester.semesterId}-${quarter.quarterId || 'no-quarter'}`
+                          `${student.studentId}-${semester.semesterId}-${
+                            quarter.quarterId || "no-quarter"
+                          }`
                         ] ? (
                           <ChevronDown className="h-3 w-3" />
                         ) : (
@@ -168,20 +204,38 @@ const CourseGradebook = () => {
                       </Button>
                       <h5 className="font-medium">{quarter.quarterTitle}</h5>
                       <div className="flex items-center gap-2 ml-auto">
-                        <span className="text-sm font-medium">
-                          {quarter.grade}%
-                        </span>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {quarter.letterGrade}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          GPA: {quarter.gpa}
-                        </span>
+                        {gradingSystem === "normalGrading" ? (
+                          <>
+                            <span className="text-sm font-medium">
+                              {quarter.grade}%
+                            </span>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              {quarter.letterGrade}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              GPA: {quarter.gpa}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-sm font-medium">
+                              {quarter.standardGrade?.grade}%
+                            </span>
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Points: {quarter.standardGrade?.points}
+                            </span>
+                            <span className="text-sm text-muted-foreground">
+                              {quarter.standardGrade?.remarks}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
 
                     {quarterExpanded[
-                      `${student.studentId}-${semester.semesterId}-${quarter.quarterId || 'no-quarter'}`
+                      `${student.studentId}-${semester.semesterId}-${
+                        quarter.quarterId || "no-quarter"
+                      }`
                     ] && (
                       <div className="mt-3">
                         {renderAssessmentTable(quarter.assessments)}
@@ -197,27 +251,63 @@ const CourseGradebook = () => {
     </>
   );
 
-  const renderCourseStructure = (student) => (
+  const renderChapterStructure = (student) => (
     <>
-      {!student.assessments || student.assessments.length === 0 ? (
+      {!student.chapters || student.chapters.length === 0 ? (
         <p className="text-xs text-gray-400 mt-4">
-          No assessment data available
+          No chapter assessment data available
         </p>
       ) : (
         <div className="border rounded-lg p-4 bg-white">
           <div className="mb-4">
-            <h4 className="font-semibold text-lg mb-2">Course Assessments</h4>
+            <h4 className="font-semibold text-lg mb-2">Chapter Assessments</h4>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>Overall Grade: <span className="font-medium text-foreground">{student.finalGrade}%</span></span>
-              <span>Letter Grade: 
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-1">
-                  {student.letterGrade}
-                </span>
-              </span>
-              <span>GPA: <span className="font-medium text-foreground">{student.gpa}</span></span>
+              {gradingSystem === "normalGrading" ? (
+                <>
+                  <span>
+                    Overall Grade:{" "}
+                    <span className="font-medium text-foreground">
+                      {student.finalGrade}%
+                    </span>
+                  </span>
+                  <span>
+                    Letter Grade:
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-1">
+                      {student.letterGrade}
+                    </span>
+                  </span>
+                  <span>
+                    GPA:{" "}
+                    <span className="font-medium text-foreground">
+                      {student.gpa}
+                    </span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>
+                    Overall Grade:{" "}
+                    <span className="font-medium text-foreground">
+                      {student.standardGrade?.finalGrade}%
+                    </span>
+                  </span>
+                  <span>
+                    Points:
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 ml-1">
+                      {student.standardGrade?.points}
+                    </span>
+                  </span>
+                  <span>
+                    Remarks:{" "}
+                    <span className="font-medium text-foreground">
+                      {student.standardGrade?.remarks}
+                    </span>
+                  </span>
+                </>
+              )}
             </div>
           </div>
-          {renderAssessmentTable(student.assessments)}
+          {renderAssessmentTable(student.chapters)}
         </div>
       )}
     </>
@@ -230,11 +320,17 @@ const CourseGradebook = () => {
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">
             Gradebook
-            {!hasSemesterStructure && (
-              <span className="text-sm font-normal text-muted-foreground ml-2">
-                (Course-level grading)
-              </span>
-            )}
+            <span className="text-sm font-normal text-muted-foreground ml-2">
+              (
+              {courseType === "semester-based"
+                ? "Semester-based"
+                : "Chapter-based"}{" "}
+              •{" "}
+              {gradingSystem === "normalGrading"
+                ? "Normal Grading"
+                : "Standard Grading"}
+              )
+            </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -244,8 +340,17 @@ const CourseGradebook = () => {
                 <TableHead className="w-4" />
                 <TableHead>Student</TableHead>
                 <TableHead className="text-center">Final Grade</TableHead>
-                <TableHead className="text-center">Letter Grade</TableHead>
-                <TableHead className="text-center">GPA</TableHead>
+                {gradingSystem === "normalGrading" ? (
+                  <>
+                    <TableHead className="text-center">Letter Grade</TableHead>
+                    <TableHead className="text-center">GPA</TableHead>
+                  </>
+                ) : (
+                  <>
+                    <TableHead className="text-center">Points</TableHead>
+                    <TableHead className="text-center">Remarks</TableHead>
+                  </>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -269,16 +374,41 @@ const CourseGradebook = () => {
                       {student.studentName}
                     </TableCell>
                     <TableCell className="text-center font-medium">
-                      {!hasGradeData(student) ? "--" : `${student.finalGrade}%`}
+                      {!hasGradeData(student)
+                        ? "--"
+                        : gradingSystem === "normalGrading"
+                        ? `${student.finalGrade}%`
+                        : `${student.standardGrade?.finalGrade}%`}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {!hasGradeData(student) ? "--" : student.letterGrade}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-center font-medium">
-                      {!hasGradeData(student) ? "--" : student.gpa}
-                    </TableCell>
+                    {gradingSystem === "normalGrading" ? (
+                      <>
+                        <TableCell className="text-center">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {!hasGradeData(student)
+                              ? "--"
+                              : student.letterGrade}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center font-medium">
+                          {!hasGradeData(student) ? "--" : student.gpa}
+                        </TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <TableCell className="text-center">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {!hasGradeData(student)
+                              ? "--"
+                              : student.standardGrade?.points}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center font-medium">
+                          {!hasGradeData(student)
+                            ? "--"
+                            : student.standardGrade?.remarks}
+                        </TableCell>
+                      </>
+                    )}
                   </TableRow>
 
                   {expanded[student.studentId] && (
@@ -286,15 +416,14 @@ const CourseGradebook = () => {
                       <TableCell colSpan={5} className="bg-muted/20 px-6 py-4">
                         <div className="space-y-4">
                           <p className="text-sm font-medium text-muted-foreground mb-3">
-                            {hasSemesterStructure 
-                              ? "Academic Performance Breakdown" 
-                              : "Assessment Performance"}
+                            {courseType === "semester-based"
+                              ? "Academic Performance Breakdown"
+                              : "Chapter Assessment Performance"}
                           </p>
 
-                          {hasSemesterStructure 
+                          {courseType === "semester-based"
                             ? renderSemesterStructure(student)
-                            : renderCourseStructure(student)
-                          }
+                            : renderChapterStructure(student)}
                         </div>
                       </TableCell>
                     </TableRow>
