@@ -6,6 +6,7 @@ import acewallshort from "../../assets/acewallshort.png";
 import avatar from "../../assets/avatar.png";
 
 import {
+  Bot,
   Coffee,
   Menu,
   MessageCircleDashed,
@@ -79,16 +80,24 @@ const sideBarTabs = [
     allowedAsPreview: true,
   },
   {
+    id: 7,
     name: "Discussion Rooms",
     icon: <MessagesSquareIcon />,
     path: "/student/discussions",
     allowedAsPreview: true,
   },
   {
-    id: 6,
+    id: 8,
     name: "Messages",
     icon: <MessageCircleDashed />,
     path: "/student/messages",
+    allowedAsPreview: false,
+  },
+  {
+    id: 9,
+    name: "AI Assistant",
+    icon: <Bot />,
+    path: "/student/ai",
     allowedAsPreview: false,
   },
 ];
@@ -202,7 +211,6 @@ export default function Layout() {
             </Link>
           </div>
 
-
           {/* Search bar (desktop only) */}
           <div className="relative w-64 hidden md:flex flex-col">
             <DropdownMenu
@@ -262,7 +270,6 @@ export default function Layout() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-
         </div>
       </header>
 
@@ -270,8 +277,9 @@ export default function Layout() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside
-          className={`bg-white ${isSidebarOpen ? "block" : "hidden"
-            } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+          className={`bg-white ${
+            isSidebarOpen ? "block" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
         >
           <div className="p-4">
             {/* User Info */}
@@ -286,7 +294,9 @@ export default function Layout() {
                 </div>
               </Link>
               <div>
-                <p className="font-medium">{UpdatedUser?.firstName || "username "}</p>
+                <p className="font-medium">
+                  {UpdatedUser?.firstName || "username "}
+                </p>
                 <p
                   className="text-sm text-gray-600 w-full max-w-[150px]  break-words"
                   title={UpdatedUser?.email || "email"}
@@ -310,23 +320,26 @@ export default function Layout() {
                 return user.role === "teacherAsStudent" ? (
                   <div
                     key={tab.id}
-                    className={`${tab.allowedAsPreview === false
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                      }`}
+                    className={`${
+                      tab.allowedAsPreview === false
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }`}
                   >
                     <Link
                       to={tab.path}
                       onClick={() => setIsSidebarOpen(false)}
-                      className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
-                        }`}
+                      className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                        location === tab.path ? "bg-green-500" : "text-black"
+                      }`}
                     >
                       <p>{tab.icon}</p>
                       <span
-                        className={`${location === tab.path
-                          ? "text-white"
-                          : "text-green-600"
-                          }`}
+                        className={`${
+                          location === tab.path
+                            ? "text-white"
+                            : "text-green-600"
+                        }`}
                       >
                         {tab.name}
                       </span>
@@ -337,15 +350,17 @@ export default function Layout() {
                     <Link
                       to={tab.path}
                       onClick={() => setIsSidebarOpen(false)}
-                      className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${location === tab.path ? "bg-green-500" : "text-black"
-                        }`}
+                      className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
+                        location === tab.path ? "bg-green-500" : "text-black"
+                      }`}
                     >
                       <p>{tab.icon}</p>
                       <span
-                        className={`${location === tab.path
-                          ? "text-white"
-                          : "text-green-600"
-                          }`}
+                        className={`${
+                          location === tab.path
+                            ? "text-white"
+                            : "text-green-600"
+                        }`}
                       >
                         {tab.name}
                       </span>

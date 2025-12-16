@@ -99,6 +99,7 @@ import SocialMain from "./Page/StudentPortal/SocialMain";
 import SocialProfilePage from "./Page/StudentPortal/SocialProfilePage";
 import ManageSBLScale from "./Page/teacher/Courses/Sbl/CreateNewSBLScale";
 import SBLScaleForm from "./Page/teacher/Courses/Sbl/ManageSbl";
+import AiChatbot from "./Page/StudentPortal/AiChatbot";
 
 function App() {
   const {
@@ -253,6 +254,8 @@ function App() {
             <Route path="gradebook" element={<Gradebook />} />
             <Route path="stdPages" element={<StdPagesView />} />
             <Route path="announcements" element={<Announcement />} />
+            <Route path="ai" element={<AiChatbot />} />
+
             <Route path="account">
               <Route index element={<Account />} />
               <Route path="editGeneralInfo" element={<EditGeneralInfo />} />
@@ -392,10 +395,7 @@ function App() {
               </Route>
               <Route path="Sbl/:courseId">
                 <Route index element={<SBLScaleForm />} />
-                <Route
-                  path="managesblscale"
-                  element={<ManageSBLScale />}
-                />
+                <Route path="managesblscale" element={<ManageSBLScale />} />
               </Route>
             </Route>
             <Route path="wallet">
