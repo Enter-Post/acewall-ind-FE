@@ -30,11 +30,21 @@ const AssessmentTable = ({ assessments = [] }) => {
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-50">
-            <TableHead className="text-xs">Assessment</TableHead>
-            <TableHead className="text-xs">Category</TableHead>
-            <TableHead className="text-xs">Score</TableHead>
-            <TableHead className="text-xs">Max Points</TableHead>
-            <TableHead className="text-xs">Percentage</TableHead>
+            <TableHead scope="col" className="text-xs">
+              Assessment
+            </TableHead>
+            <TableHead scope="col" className="text-xs">
+              Category
+            </TableHead>
+            <TableHead scope="col" className="text-xs">
+              Score
+            </TableHead>
+            <TableHead scope="col" className="text-xs">
+              Max Points
+            </TableHead>
+            <TableHead scope="col" className="text-xs">
+              Percentage
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -123,7 +133,9 @@ export default function Gradebook() {
   const fetchGradeData = async (page = 1) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`gradebook/getOverallGradeReport`);
+      const res = await axiosInstance.get(
+        `gradebook/getStudentGradebooksFormatted`
+      );
       console.log(res, "res.data");
       setGradeData(res.data);
       setCurrentPage(res.data.currentPage);
@@ -248,7 +260,7 @@ export default function Gradebook() {
                   <TableHead>Course</TableHead>
                   <TableHead>Structure</TableHead>
                   <TableHead>Total Percentage</TableHead>
-                  <TableHead>Grade</TableHead>
+                  {/* <TableHead>Grade</TableHead> */}
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -265,18 +277,18 @@ export default function Gradebook() {
                             {course.semesters.length} semester
                             {course.semesters.length !== 1 ? "s" : ""}
                           </>
-                        ) : course.assessments &&
-                          course.assessments.length > 0 ? (
+                        ) : course.courseItems &&
+                          course.courseItems.length > 0 ? (
                           <>
-                            {course.assessments.length} assessment
-                            {course.assessments.length !== 1 ? "s" : ""}
+                            {course.courseItems.length} item
+                            {course.courseItems.length !== 1 ? "s" : ""}
                           </>
                         ) : (
                           "No data"
                         )}
                       </TableCell>
                       <TableCell>{course?.coursePercentage}%</TableCell>
-                      <TableCell>
+                      {/* <TableCell>
                         <Badge
                           className={`${getLetterGradeColor(
                             course?.letterGrade
@@ -284,7 +296,7 @@ export default function Gradebook() {
                         >
                           {course?.letterGrade}
                         </Badge>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell>
                         <Button
                           variant="ghost"
@@ -308,7 +320,7 @@ export default function Gradebook() {
                     {expandedCourseId === course.courseId && (
                       <TableRow>
                         <TableCell colSpan={5} className="p-0">
-                          <div className="bg-muted/30 p-6 space-y-4 w-[140%]">
+                          <div className="bg-muted/30 p-4 space-y-4">
                             {/* Case 1: Course has semester/quarter structure */}
                             {course.semesters &&
                               course.semesters.length > 0 && (
@@ -367,21 +379,59 @@ export default function Gradebook() {
                                                         {quarter.grade}%
                                                       </span>
                                                     </div>
-                                                    <div className="text-sm">
-                                                      <span className="font-medium">
-                                                        GPA:{" "}
-                                                      </span>
-                                                      <span className="text-blue-600 font-bold">
-                                                        {quarter.gpa}
-                                                      </span>
-                                                    </div>
-                                                    <Badge
-                                                      className={`${getLetterGradeColor(
-                                                        quarter.letterGrade
-                                                      )}`}
-                                                    >
-                                                      {quarter.letterGrade}
-                                                    </Badge>
+
+                                                    {course.gradingSystem ===
+                                                    "normalGrading" ? (
+                                                      <section>
+                                                        <div className="text-sm">
+                                                          <span className="font-medium">
+                                                            GPA:{" "}
+                                                          </span>
+                                                          <span className="text-blue-600 font-bold">
+                                                            {quarter.gpa}
+                                                          </span>
+                                                        </div>
+                                                        <Badge
+                                                          className={`${getLetterGradeColor(
+                                                            quarter.letterGrade
+                                                          )}`}
+                                                        >
+                                                          {quarter.letterGrade}
+                                                        </Badge>
+                                                      </section>
+                                                    ) : (
+                                                      <section>
+                                                        <section className="flex items-center gap-4">
+                                                          <div className="flex items-center gap-2">
+                                                            <div className="text-sm">
+                                                              <span className="font-medium">
+                                                                Points:{" "}
+                                                              </span>
+                                                              <span className="text-blue-600 font-bold">
+                                                                {quarter
+                                                                  .standardGrade
+                                                                  ?.points ||
+                                                                  "Pending"}
+                                                              </span>
+                                                            </div>
+                                                          </div>
+
+                                                          <div className="flex items-center gap-2">
+                                                            <div className="text-sm">
+                                                              <span className="font-medium">
+                                                                remark:{" "}
+                                                              </span>
+                                                              <span className="text-blue-600 font-bold">
+                                                                {quarter
+                                                                  .standardGrade
+                                                                  ?.remarks ||
+                                                                  "Pending"}
+                                                              </span>
+                                                            </div>
+                                                          </div>
+                                                        </section>
+                                                      </section>
+                                                    )}
                                                   </div>
                                                 </div>
                                               </CardHeader>
@@ -402,27 +452,52 @@ export default function Gradebook() {
                               )}
 
                             {/* Case 2: Course has direct assessments (no semester/quarter) */}
-                            {course.assessments &&
-                              course.assessments.length > 0 && (
-                                <div className="space-y-3">
+                            {course.courseItems &&
+                              course.courseItems.length > 0 && (
+                                <div className="space-y-3 w-[100%]">
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                      {course.gpa && (
+                                      {course.gradingSystem ===
+                                      "normalGrading" ? (
+                                        // NORMAL GRADING
                                         <div className="text-sm">
                                           <span className="font-medium">
-                                            GPA:{" "}
+                                            Letter Grade:{" "}
                                           </span>
                                           <span className="text-blue-600 font-bold">
-                                            {course.gpa}
+                                            {course.letterGrade}
                                           </span>
                                         </div>
+                                      ) : (
+                                        // STANDARD-BASED GRADING (SBG)
+                                        <>
+                                          <div className="text-sm">
+                                            <span className="font-medium">
+                                              Remarks:{" "}
+                                            </span>
+                                            <span className="text-blue-600 font-bold">
+                                              {course.standardGrade?.remarks ||
+                                                "N/A"}
+                                            </span>
+                                          </div>
+
+                                          <div className="text-sm">
+                                            <span className="font-medium">
+                                              Points:{" "}
+                                            </span>
+                                            <span className="text-blue-600 font-bold">
+                                              {course.standardGrade?.points ??
+                                                "—"}
+                                            </span>
+                                          </div>
+                                        </>
                                       )}
                                     </div>
                                   </div>
                                   <Card className="bg-white">
                                     <CardContent className="pt-6">
                                       <AssessmentTable
-                                        assessments={course.assessments}
+                                        assessments={course.courseItems}
                                       />
                                     </CardContent>
                                   </Card>
@@ -432,8 +507,8 @@ export default function Gradebook() {
                             {/* Case 3: No assessments available */}
                             {(!course.semesters ||
                               course.semesters.length === 0) &&
-                              (!course.assessments ||
-                                course.assessments.length === 0) && (
+                              (!course.courseItems ||
+                                course.courseItems.length === 0) && (
                                 <div className="text-center py-8 text-gray-500">
                                   No assessments available for this course
                                 </div>
