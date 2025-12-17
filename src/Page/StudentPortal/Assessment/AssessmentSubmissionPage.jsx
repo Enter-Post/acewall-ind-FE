@@ -185,8 +185,9 @@ const AssessmentSubmissionPage = () => {
   // Show loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Loader className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex justify-center items-center min-h-screen" role="status" aria-live="polite">
+        <Loader className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
+        <span className="sr-only">Loading assessment...</span>
       </div>
     );
   }
@@ -194,7 +195,7 @@ const AssessmentSubmissionPage = () => {
   // Show error if assessment couldn't be loaded
   if (error && !assessment) {
     return (
-      <Alert variant="destructive" className="max-w-md mx-auto mt-8">
+      <Alert variant="destructive" className="max-w-md mx-auto mt-8" role="alert" aria-live="assertive">
         <AlertDescription>{error}</AlertDescription>
       </Alert>
     );
@@ -203,7 +204,7 @@ const AssessmentSubmissionPage = () => {
   // Show error if assessment not found
   if (!assessment && !result) {
     return (
-      <Alert variant="destructive" className="max-w-md mx-auto mt-8">
+      <Alert variant="destructive" className="max-w-md mx-auto mt-8" role="alert" aria-live="assertive">
         <AlertDescription>Assessment not found</AlertDescription>
       </Alert>
     );
@@ -214,20 +215,23 @@ const AssessmentSubmissionPage = () => {
     return <AssessmentResultCard submission={result} />;
   }
 
+  // Main Form Rendering
   return (
     <div className="container mx-auto py-8 px-4 max-w-4xl">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {/* Added aria-label for clear form context */}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" aria-label={`Submit Assessment: ${assessment?.title || ''}`}>
           <Card>
             <CardHeader>
               <CardTitle>{assessment.title}</CardTitle>
               <CardDescription>{assessment.description}</CardDescription>
             </CardHeader>
-            <section>
+            {/* Assessment Files Section (Accompanying materials) */}
+            <section aria-labelledby="assessment-files-heading">
               {assessment.files && assessment.files.length > 0 && (
                 <div className="flex items-center gap-2 mb-4 border rounded-lg w-40 p-4 ml-5">
-                  <FileText className="text-green-500" />
-                  <span className="text-sm font-medium text-gray-800">
+                  <FileText className="text-green-500" aria-hidden="true" />
+                  <span className="text-sm font-medium text-gray-800" id="assessment-files-heading">
                     {assessment.files.map((file, index) => (
                       <a
                         key={index}
@@ -235,6 +239,8 @@ const AssessmentSubmissionPage = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:underline"
+                        // Added aria-label for clear link purpose
+                        aria-label={`Download accompanying file: ${file.filename}`}
                       >
                         {file.filename}
                       </a>
@@ -249,7 +255,8 @@ const AssessmentSubmissionPage = () => {
                   <Card key={question._id} className="border shadow-sm">
                     <CardHeader className="">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-base">
+                        {/* Title acts as the primary label for the section */}
+                        <CardTitle className="text-base" id={`question-title-${question._id}`}>
                           Question {index + 1}
                         </CardTitle>
                         <span className="text-sm text-muted-foreground">
@@ -261,18 +268,22 @@ const AssessmentSubmissionPage = () => {
                         dangerouslySetInnerHTML={{
                           __html: ` ${question.question}`,
                         }}
+                        // Links the main question text to the title
+                        aria-describedby={`question-title-${question._id}`}
                       />
                       <CardDescription className="text-base font-medium text-foreground mt-2">
                         {question.text}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
+                      {/* MCQ Question Type */}
                       {question.type === "mcq" && (
                         <FormField
                           control={form.control}
                           name={`question-${question._id}`}
                           render={({ field }) => (
-                            <FormItem>
+                            // Added role=radiogroup and aria-labelledby for screen readers
+                            <FormItem role="radiogroup" aria-labelledby={`question-title-${question._id}`}>
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
@@ -288,6 +299,7 @@ const AssessmentSubmissionPage = () => {
                                         value={option}
                                         id={`q${question._id}-opt${optIndex}`}
                                       />
+                                      {/* Proper Label association with htmlFor */}
                                       <Label
                                         htmlFor={`q${question._id}-opt${optIndex}`}
                                       >
@@ -303,12 +315,14 @@ const AssessmentSubmissionPage = () => {
                         />
                       )}
 
+                      {/* True/False Question Type */}
                       {question.type === "truefalse" && (
                         <FormField
                           control={form.control}
                           name={`question-${question._id}`}
                           render={({ field }) => (
-                            <FormItem>
+                            // Added role=radiogroup and aria-labelledby for screen readers
+                            <FormItem role="radiogroup" aria-labelledby={`question-title-${question._id}`}>
                               <FormControl>
                                 <RadioGroup
                                   onValueChange={field.onChange}
@@ -341,6 +355,7 @@ const AssessmentSubmissionPage = () => {
                         />
                       )}
 
+                      {/* QA (Textarea) Question Type */}
                       {question.type === "qa" && (
                         <FormField
                           control={form.control}
@@ -348,10 +363,13 @@ const AssessmentSubmissionPage = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
+                                {/* Added explicit ID and aria-labelledby linking to the question title */}
                                 <Textarea
                                   placeholder="Type your answer here..."
                                   className="min-h-[120px]"
                                   {...field}
+                                  id={`q${question._id}-qa-input`}
+                                  aria-labelledby={`question-title-${question._id}`}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -359,50 +377,74 @@ const AssessmentSubmissionPage = () => {
                           )}
                         />
                       )}
+                      
+                      {/* File Upload Question Type */}
                       {question.type === "file" && (
                         <FormField
                           control={form.control}
                           name={`question-${question._id}`}
                           render={({ field }) => (
                             <FormItem>
+                              {/* Attached Files for the Question */}
                               {question.files.map((file, index) => (
                                 <div
                                   key={index}
                                   className="flex items-center gap-2 mb-1 border p-2 w-fit rounded-lg bg-blue-50"
                                 >
-                                  <FileText className="text-blue-500" />
+                                  <FileText className="text-blue-500" aria-hidden="true" />
                                   <a
                                     href={file.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    // Descriptive aria-label for the link
+                                    aria-label={`Download attached file: ${file.filename} for question ${index + 1}`}
                                   >
                                     {file.filename}
                                   </a>
                                 </div>
                               ))}
+                              
                               <FormControl>
-                                <section>
+                                <section aria-labelledby={`question-title-${question._id}`}>
+                                  {/* Hidden Label for the file input to meet accessibility requirements */}
+                                  <Label
+                                    htmlFor={`q${question._id}-file-input`}
+                                    className="sr-only" // Visually hidden but available to screen readers
+                                  >
+                                    File Upload for Question {index + 1}
+                                  </Label>
                                   <Input
                                     type={"file"}
                                     onChange={(e) => {
                                       handleFileChange(e);
                                     }}
                                     multiple
+                                    id={`q${question._id}-file-input`} // Linked to the hidden Label
                                   />
+                                  <p className="text-xs text-muted-foreground mt-1" aria-live="polite">
+                                    Total file size: {(totalFileSize / (1024 * 1024)).toFixed(2)} MB (Max 5 MB).
+                                  </p>
 
+                                  {/* List of files pending upload */}
                                   {files.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mt-4">
+                                    // aria-live="polite" announces changes to the list of uploaded files
+                                    <div className="flex flex-wrap gap-2 mt-4" aria-live="polite" aria-atomic="true">
                                       {files.map((file, index) => (
                                         <div
                                           key={index}
                                           className="flex items-center gap-2 mb-1 border p-2 w-fit rounded-lg bg-blue-50"
                                         >
-                                          <FileText className="text-red-500" />
+                                          <FileText className="text-red-500" aria-hidden="true" />
                                           <span>{file.name}</span>
-                                          <X
-                                            size={16}
+                                          {/* Replaced X icon with an accessible button/interactable element */}
+                                          <button
+                                            type="button"
                                             onClick={() => handleRemove(index)}
-                                          />
+                                            className="text-red-500 hover:text-red-700 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                                            aria-label={`Remove file ${file.name}`}
+                                          >
+                                            <X size={16} aria-hidden="true" />
+                                          </button>
                                         </div>
                                       ))}
                                     </div>
@@ -419,20 +461,26 @@ const AssessmentSubmissionPage = () => {
                 ))}
               </div>
             </CardContent>
+
+            {/* General Error Display */}
             {error && (
-              <Alert variant="destructive" className="mx-6 mb-4">
+              // role="alert" and aria-live="assertive" ensures immediate announcement
+              <Alert variant="destructive" className="mx-6 mb-4" role="alert" aria-live="assertive">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
+
             <CardFooter className="flex justify-end">
               <Button
                 type="submit"
                 disabled={submitting}
                 className="bg-green-500 hover:bg-green-600"
+                // aria-live="polite" helps announce the change in status/label
+                aria-live="polite"
               >
                 {submitting ? (
                   <>
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                     Submitting...
                   </>
                 ) : (

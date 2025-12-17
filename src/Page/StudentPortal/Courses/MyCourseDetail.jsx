@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,13 +9,10 @@ import {
   ChevronDown,
   ChevronRight,
   PlayCircle,
-  Star,
-  FileText,
   ArrowLeft,
   Loader,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import LoadingLoader from "@/CustomComponent/LoadingLoader";
 import DescriptionTablist from "@/CustomComponent/Student/Course/DescriptionTablist";
 import FileTablist from "@/CustomComponent/Student/Course/FileTablist";
 import AssessmentTablist from "@/CustomComponent/Student/Course/AssessmentTablist";
@@ -26,29 +23,26 @@ export default function ChapterDetail() {
   const [isLessonVisible, setIsLessonVisible] = useState(false);
   const { chapterId } = useParams();
   const [courseTitle, setCourseTitle] = useState("");
-  const [instructor, setInstructor] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
   const [activeLesson, setActiveLesson] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [chapter, setChapter] = useState(null);
 
-  // Toggle the visibility of the lesson content
-  const toggleLessonVisibility = () => {
-    setIsLessonVisible((prevState) => !prevState);
-  };
+  // Toggle lesson content visibility
+  const toggleLessonVisibility = () => setIsLessonVisible((prev) => !prev);
+
+  // Fetch chapter data
   useEffect(() => {
     const getCourseDetails = async () => {
       setLoading(true);
-      await axiosInstance
-        .get(`/enrollment/getChapter/${chapterId}`)
-        .then((res) => {
-          setChapter(res.data.chapterDetails);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      try {
+        const res = await axiosInstance.get(`/enrollment/getChapter/${chapterId}`);
+        setChapter(res.data.chapterDetails);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
     getCourseDetails();
   }, [chapterId]);
@@ -67,10 +61,18 @@ export default function ChapterDetail() {
     }));
   };
 
+  const handleLessonKeyDown = (e, lesson) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setActiveLesson(lesson);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen" role="status" aria-live="polite">
         <Loader className="animate-spin" />
+        <span className="sr-only">Loading chapter content...</span>
       </div>
     );
   }
@@ -81,119 +83,95 @@ export default function ChapterDetail() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
-      {/* Left side - Video and Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-5 border-b bg-white shadow-sm flex items-center gap-3 ">
+      {/* Left side - Video and Tabs */}
+      <main className="flex-1 overflow-auto">
+        {/* Header */}
+        <div className="p-5 border-b bg-white shadow-sm flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
-            className="text-gray-600 hover:text-black"
+            className="text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-green-500"
             onClick={() => window.history.back()}
+            aria-label="Go back"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              {courseTitle}
-            </h1>
+            <h1 className="text-lg font-semibold text-gray-900">{courseTitle}</h1>
             <p className="text-sm text-gray-500">Chapter: {chapter.title}</p>
           </div>
         </div>
 
+        {/* Active Lesson Video */}
         {activeLesson && (
-          <div className="mb-8">
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold p-4">
-                Lesson: {activeLesson.title}
-              </h3>
+          <section className="mb-8">
+            <h3 className="text-lg font-semibold p-4">
+              Lesson: {activeLesson.title}
+            </h3>
 
-              {/* Video Player */}
-              {activeLesson?.youtubeLinks ? (
-                <div className="mt-6 flex  justify-center">
-                  <div className="w-full max-w-screen-md rounded-lg overflow-hidden shadow-md">
-                    <div className="aspect-video">
-                      <iframe
-                        className="w-full h-full"
-                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(
-                          activeLesson.youtubeLinks
-                        )}`}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title="Lesson Video"
-                      ></iframe>
-                    </div>
+            {activeLesson?.youtubeLinks ? (
+              <div className="mt-6 flex justify-center">
+                <div className="w-full max-w-screen-md rounded-lg overflow-hidden shadow-md">
+                  <div className="aspect-video">
+                    <iframe
+                      className="w-full h-full"
+                      src={`https://www.youtube.com/embed/${getYouTubeVideoId(activeLesson.youtubeLinks)}`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={`Lesson Video: ${activeLesson.title}`}
+                    ></iframe>
                   </div>
                 </div>
-              ) : (
-                <div className="mt-6 p-6 bg-gray-100 text-center text-sm text-gray-500 rounded-md">
-                  No YouTube link available
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            ) : (
+              <div className="mt-6 p-6 bg-gray-100 text-center text-sm text-gray-500 rounded-md" role="status">
+                No YouTube link available
+              </div>
+            )}
+          </section>
         )}
 
         {/* Tabs */}
         <Tabs defaultValue="description" className="w-full p-5">
-          <TabsList className="flex flex-wrap justify-center gap-4 w-full  sm:gap-10  bg-white p-1 shadow-inner">
-            {[
-              "description",
-              "files",
-              "Assessments",
-              "Discussions",
-              "Pages",
-            ].map((tab) => (
+          <TabsList className="flex flex-wrap justify-center gap-4 w-full sm:gap-10 bg-white p-1 shadow-inner">
+            {["description", "files", "assessments", "discussions", "pages"].map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
-                className="px-3 py-2 text-base font-medium  capitalize transition-all duration-300 
-              text-gray-700 hover:text-green-600 hover:bg-gray-50 
-              data-[state=active]:bg-gray-100 data-[state=active]:text-green-600 data-[state=active]:shadow-sm"
+                className="px-3 py-2 text-base font-medium capitalize transition-all duration-300 text-gray-700 hover:text-green-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500
+                  data-[state=active]:bg-gray-100 data-[state=active]:text-green-600 data-[state=active]:shadow-sm"
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </TabsTrigger>
             ))}
           </TabsList>
 
-          {/* Description */}
           <DescriptionTablist
             chapter={chapter}
             activeLesson={activeLesson}
             isLessonVisible={isLessonVisible}
             toggleLessonVisibility={toggleLessonVisibility}
           />
-
-          {/* Files */}
           <FileTablist activeLesson={activeLesson} chapter={chapter} />
-
-          {/* Assessment */}
-          <AssessmentTablist
-            chapter={chapter}
-            lessonAssessments={activeLesson?.lessonAssessments}
-          />
-
+          <AssessmentTablist chapter={chapter} lessonAssessments={activeLesson?.lessonAssessments} />
           <DiscussionTablist chapter={chapter} lesson={activeLesson} />
-
           <PagesTablist chapter={chapter} lesson={activeLesson} />
         </Tabs>
-      </div>
+      </main>
 
-      {/* Right side - Course Contents */}
-      <div className="w-full lg:w-80 border-l bg-gray-50 overflow-auto max-h-screen">
-        {/* Header */}
-        <div className="p-4 border-b bg-white ">
-          <h2 className="text-sm font-semibold text-gray-700">
-            Chapter Content
-          </h2>
+      {/* Right side - Chapter Contents */}
+      <aside className="w-full lg:w-80 border-l bg-gray-50 overflow-auto max-h-screen">
+        <div className="p-4 border-b bg-white">
+          <h2 className="text-sm font-semibold text-gray-700">Chapter Content</h2>
         </div>
 
-        {/* Chapter Toggle Section */}
         <div className="max-h-[calc(100vh-64px)] overflow-y-auto">
           <div className="border-b">
             <button
-              className="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 transition"
+              className="flex items-center justify-between w-full px-4 py-3 hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-green-500"
               onClick={() => toggleSection(chapter.title)}
+              aria-expanded={expandedSections[chapter.title] || true}
             >
               <div className="flex items-center gap-2">
                 {expandedSections[chapter.title] ? (
@@ -201,45 +179,37 @@ export default function ChapterDetail() {
                 ) : (
                   <ChevronRight className="w-4 h-4 text-gray-500" />
                 )}
-                <span className="text-sm font-medium text-gray-800">
-                  {chapter.title}
-                </span>
+                <span className="text-sm font-medium text-gray-800">{chapter.title}</span>
               </div>
-              <span className="text-xs text-gray-500">
-                {chapter.lessons.length} lessons
-              </span>
+              <span className="text-xs text-gray-500">{chapter.lessons.length} lessons</span>
             </button>
 
             {(expandedSections[chapter.title] || true) && (
-              <div className="pl-6 pr-4 pb-2">
-                {chapter.lessons.map((lesson, lessonIndex) => {
-                  const isActive =
-                    activeLesson && activeLesson._id === lesson._id;
+              <ul className="pl-6 pr-4 pb-2 space-y-1">
+                {chapter.lessons.map((lesson) => {
+                  const isActive = activeLesson?._id === lesson._id;
                   return (
-                    <button
-                      key={lessonIndex}
-                      onClick={() => setActiveLesson(lesson)}
-                      className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-sm transition 
-                  ${
-                    isActive
-                      ? "bg-green-100 text-green-700 font-medium"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
-                    >
-                      <PlayCircle
-                        className={`h-4 w-4 ${
-                          isActive ? "text-green-500" : "text-gray-400"
-                        }`}
-                      />
-                      <span>{lesson.title}</span>
-                    </button>
+                    <li key={lesson._id}>
+                      <button
+                        onClick={() => setActiveLesson(lesson)}
+                        onKeyDown={(e) => handleLessonKeyDown(e, lesson)}
+                        className={`w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-sm transition
+                        ${isActive ? "bg-green-100 text-green-700 font-medium" : "hover:bg-gray-100 text-gray-700"}
+                        focus:outline-none focus:ring-2 focus:ring-green-500`}
+                        aria-current={isActive ? "true" : "false"}
+                        tabIndex={0}
+                      >
+                        <PlayCircle className={`h-4 w-4 ${isActive ? "text-green-500" : "text-gray-400"}`} />
+                        <span>{lesson.title}</span>
+                      </button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             )}
           </div>
         </div>
-      </div>
+      </aside>
     </div>
   );
 }

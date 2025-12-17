@@ -41,8 +41,6 @@ const Assessment = () => {
         .get("assessment/getAllassessmentforStudent")
         .then((res) => {
           setAssessments(res.data);
-          console.log("data assess",res);
-          
           setLoading(false);
         })
         .catch(() => {
@@ -59,7 +57,7 @@ const Assessment = () => {
       const dateObj = new Date(date);
       if (isNaN(dateObj.getTime())) throw new Error("Invalid date");
       return `${format(dateObj, "MMM dd, yyyy")} at ${time || "N/A"}`;
-    } catch (error) {
+    } catch {
       return "Invalid date";
     }
   };
@@ -76,6 +74,13 @@ const Assessment = () => {
     );
   };
 
+  const handleKeyToggle = (e, id) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleAssessmentExpand(id);
+    }
+  };
+
   const getStatusLabel = (isSubmitted) =>
     isSubmitted ? "Submitted" : "Pending";
 
@@ -86,24 +91,42 @@ const Assessment = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <Loader className="animate-spin" />
+      <div
+        className="flex items-center justify-center w-full h-screen"
+        role="status"
+        aria-live="polite"
+      >
+        <Loader className="animate-spin" aria-hidden="true" />
+        <span className="sr-only">Loading assessments</span>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-500 p-8">{error}</div>;
+    return (
+      <div
+        className="text-red-500 p-8"
+        role="alert"
+        aria-live="assertive"
+      >
+        {error}
+      </div>
+    );
   }
 
   return (
-    <div>
-      <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+    <div aria-labelledby="assessment-heading">
+      <p
+        id="assessment-heading"
+        className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg"
+      >
         Assessment
       </p>
 
+      {/* Search */}
       <div className="flex items-center py-4">
         <Input
+          aria-label="Search assessments by title"
           placeholder="Search by title"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -111,95 +134,131 @@ const Assessment = () => {
         />
       </div>
 
-      <div className="rounded-md border">
+      {/* Table */}
+      <div
+        className="rounded-md border"
+        role="region"
+        aria-label="Student assessments list"
+      >
         <ScrollArea className="h-[calc(100vh-250px)]">
-          <Table>
+          <Table role="table">
             <TableHeader>
-              <TableRow>
+              <TableRow role="row">
                 {tableHead.map((item, idx) => (
-                  <TableHead key={idx}>{item}</TableHead>
+                  <TableHead key={idx} role="columnheader">
+                    {item}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
+
             <TableBody>
               {filteredAssessments.length > 0 ? (
-                filteredAssessments.map((assessment) => (
-                  <React.Fragment key={assessment._id}>
-                    <TableRow className="text-xs md:text-sm">
-                      <TableCell
-                        className="cursor-pointer hover:text-blue-600 flex items-center gap-2"
-                        onClick={() => toggleAssessmentExpand(assessment._id)}
-                      >
-                        {expandedAssessmentId === assessment._id ? (
-                          <ChevronDown className="h-4 w-4 text-gray-500" />
-                        ) : (
-                          <ChevronRight className="h-4 w-4 text-gray-500" />
-                        )}
-                        <span
-                          className={
-                            expandedAssessmentId === assessment._id
-                              ? "font-medium"
-                              : ""
-                          }
-                        >
-                          {assessment.title}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {assessment?.course?.courseTitle || "N/A"}
-                      </TableCell>
-                      <TableCell>
-                        {formatDueDate(
-                          assessment?.dueDate?.date,
-                          assessment?.dueDate?.time
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
-                            assessment.isSubmitted
-                          )}`}
-                        >
-                          {getStatusLabel(assessment.isSubmitted)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="capitalize">
-                          {assessment.type?.replace("-", " ") || "N/A"}
-                        </span>
-                      </TableCell>
-                    </TableRow>
+                filteredAssessments.map((assessment) => {
+                  const isExpanded =
+                    expandedAssessmentId === assessment._id;
 
-                    {expandedAssessmentId === assessment._id && (
-                      <TableRow className="bg-gray-50 border">
-                        <TableCell colSpan={5} className="p-4">
-                          <div className="space-y-4">
-                            <div>
-                              <h4 className="text-sm font-medium mb-2">
-                                Description
-                              </h4>
-                              <p className="text-sm text-gray-600">
-                                {assessment.description ||
-                                  "No description provided."}
-                              </p>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  return (
+                    <React.Fragment key={assessment._id}>
+                      <TableRow role="row" className="text-xs md:text-sm">
+                        <TableCell role="cell">
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={isExpanded}
+                            aria-controls={`assessment-${assessment._id}`}
+                            aria-label={`Toggle details for ${assessment.title}`}
+                            onClick={() =>
+                              toggleAssessmentExpand(assessment._id)
+                            }
+                            onKeyDown={(e) =>
+                              handleKeyToggle(e, assessment._id)
+                            }
+                            className="cursor-pointer hover:text-blue-600 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+                          >
+                            {isExpanded ? (
+                              <ChevronDown
+                                className="h-4 w-4 text-gray-500"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <ChevronRight
+                                className="h-4 w-4 text-gray-500"
+                                aria-hidden="true"
+                              />
+                            )}
+                            <span className={isExpanded ? "font-medium" : ""}>
+                              {assessment.title}
+                            </span>
+                          </div>
+                        </TableCell>
+
+                        <TableCell role="cell">
+                          {assessment?.course?.courseTitle || "N/A"}
+                        </TableCell>
+
+                        <TableCell role="cell">
+                          {formatDueDate(
+                            assessment?.dueDate?.date,
+                            assessment?.dueDate?.time
+                          )}
+                        </TableCell>
+
+                        <TableCell role="cell">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
+                              assessment.isSubmitted
+                            )}`}
+                            aria-label={`Status: ${getStatusLabel(
+                              assessment.isSubmitted
+                            )}`}
+                          >
+                            {getStatusLabel(assessment.isSubmitted)}
+                          </span>
+                        </TableCell>
+
+                        <TableCell role="cell">
+                          <span className="capitalize">
+                            {assessment.type?.replace("-", " ") || "N/A"}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+
+                      {isExpanded && (
+                        <TableRow
+                          id={`assessment-${assessment._id}`}
+                          role="row"
+                          className="bg-gray-50 border"
+                        >
+                          <TableCell colSpan={5} role="cell" className="p-4">
+                            <div className="space-y-4">
                               <div>
                                 <h4 className="text-sm font-medium mb-2">
-                                  Course
+                                  Description
                                 </h4>
-                                <p className="text-sm text-gray-600 flex items-center gap-2">
-                                  <FileText className="h-4 w-4 text-gray-500" />
-                                  {assessment?.course?.courseTitle || "N/A"}
+                                <p className="text-sm text-gray-600">
+                                  {assessment.description ||
+                                    "No description provided."}
                                 </p>
                               </div>
-                              <div>
-                                <h4 className="text-sm font-medium mb-2">
-                                  Due Date
-                                </h4>
-                                <div className="flex flex-col space-y-1">
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="text-sm font-medium mb-2">
+                                    Course
+                                  </h4>
                                   <p className="text-sm text-gray-600 flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-gray-500" />
+                                    <FileText aria-hidden="true" />
+                                    {assessment?.course?.courseTitle || "N/A"}
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <h4 className="text-sm font-medium mb-2">
+                                    Due Date
+                                  </h4>
+                                  <p className="text-sm text-gray-600 flex items-center gap-2">
+                                    <Calendar aria-hidden="true" />
                                     {assessment?.dueDate?.date &&
                                     !isNaN(
                                       new Date(
@@ -213,41 +272,50 @@ const Assessment = () => {
                                       : "Invalid date"}
                                   </p>
                                   <p className="text-sm text-gray-600 flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-gray-500" />
+                                    <Clock aria-hidden="true" />
                                     {assessment?.dueDate?.time || "N/A"}
                                   </p>
                                 </div>
                               </div>
-                            </div>
-                             <Link
-                              to={
-                                assessment.source === "assessment"
-                                  ? `/student/assessment/submission/${assessment._id}`
-                                  : assessment.source === "discussion"
-                                  ? `/student/discussions/${assessment._id}`
-                                  : "#"
-                              }
-                              className="pt-2"
-                            >
-                              <Button
-                                className="bg-green-500 hover:bg-green-600 text-white"
-                                size="sm"
+
+                              <Link
+                                to={
+                                  assessment.source === "assessment"
+                                    ? `/student/assessment/submission/${assessment._id}`
+                                    : assessment.source === "discussion"
+                                    ? `/student/discussions/${assessment._id}`
+                                    : "#"
+                                }
                               >
-                                <Upload className="h-4 w-4 mr-2" />
-                                {assessment.isSubmitted
-                                  ? "See Results"
-                                  : "Submit Assessment"}
-                              </Button>
-                            </Link>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                ))
+                                <Button
+                                  size="sm"
+                                  className="bg-green-500 hover:bg-green-600 text-white"
+                                  aria-label={
+                                    assessment.isSubmitted
+                                      ? "View assessment results"
+                                      : "Submit assessment"
+                                  }
+                                >
+                                  <Upload aria-hidden="true" className="mr-2" />
+                                  {assessment.isSubmitted
+                                    ? "See Results"
+                                    : "Submit Assessment"}
+                                </Button>
+                              </Link>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  );
+                })
               ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8">
+                <TableRow role="row">
+                  <TableCell
+                    colSpan={5}
+                    role="cell"
+                    className="text-center py-8"
+                  >
                     {search
                       ? "No assessments found matching your search."
                       : "No assessments available."}

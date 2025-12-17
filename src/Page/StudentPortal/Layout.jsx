@@ -10,10 +10,9 @@ import {
   Coffee,
   Menu,
   MessageCircleDashed,
-  MessagesSquare,
   MessagesSquareIcon,
-  NotepadText,
   Search,
+  Loader,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { TopNavbarDropDown } from "../../CustomComponent/TopNavDropDown";
@@ -69,7 +68,7 @@ const sideBarTabs = [
   {
     id: 5,
     name: "Spill the Tea",
-    icon: <Coffee />,
+    icon: <Coffee aria-hidden="true" />,
     path: "/student/social",
   },
   {
@@ -89,14 +88,14 @@ const sideBarTabs = [
   {
     id: 8,
     name: "Messages",
-    icon: <MessageCircleDashed />,
+    icon: <MessageCircleDashed aria-hidden="true" />,
     path: "/student/messages",
     allowedAsPreview: false,
   },
   {
     id: 9,
     name: "AI Assistant",
-    icon: <Bot />,
+    icon: <Bot aria-hidden="true" />,
     path: "/student/ai",
     allowedAsPreview: false,
   },
@@ -113,6 +112,7 @@ export default function Layout() {
   const [loading, setLoading] = React.useState(false);
   const [openDropdown, setOpenDropdown] = React.useState(false);
   const navigate = useNavigate();
+
   const handleSearch = async () => {
     if (!searchQuery.trim() || loading) return;
 
@@ -136,27 +136,29 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       {/* Top header */}
-      <header className="sticky top-0 z-10 bg-white">
-        <div className="h-8 bg-green-600 flex justify-end items-center px-5">
+      <header className="sticky top-0 z-10 bg-white" role="banner">
+        <div className="h-8 bg-green-600 flex justify-end items-center px-5" aria-label="Utility Links">
           {user && user.role === "teacherAsStudent" ? (
             <div className="flex items-center justify-between space-x-4 w-full">
+              {/* Added descriptive text for screen readers */}
               <div>
-                <p className="text-white text-sm">
+                <p className="text-white text-sm" role="status">
                   {`Viewing as Student - ${user.firstName} ${user.lastName}`}
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="xs"
-                className="px-3 text-xs border border-gray-300  "
+                className="px-3 text-xs border border-gray-300"
                 onClick={async () => {
                   await axiosInstance.post("auth/previewSignOut").then(() => {
                     checkAuth();
                     navigate("/teacher");
                   });
                 }}
+                aria-label="Switch back to Teacher view"
               >
                 Switch to Teacher
               </Button>
@@ -173,29 +175,34 @@ export default function Layout() {
             size="icon"
             className="md:hidden"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            // Explicitly describe the action for screen readers
+            aria-controls="student-sidebar"
+            aria-expanded={isSidebarOpen}
+            aria-label="Toggle student navigation sidebar"
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6" aria-hidden="true" />
             <span className="sr-only">Toggle Sidebar</span>
           </Button>
 
           {/* Logos */}
-          <Link className="block md:hidden" to="/student">
+          <Link className="block md:hidden" to="/student" aria-label="Go to Student Dashboard Home">
             <img
               src={acewallshort}
-              alt="Mobile Logo"
+              alt="Acewall Scholars Mobile Logo"
               className="w-8 h-auto rounded-full"
             />
           </Link>
-          <Link className="hidden md:block" to="/student">
+          <Link className="hidden md:block" to="/student" aria-label="Go to Student Dashboard Home">
             <img
               src={acewallscholarslogo}
-              alt="Desktop Logo"
+              alt="Acewall Scholars Desktop Logo"
               className="w-40 h-auto"
             />
           </Link>
 
           {/* Navigation links */}
-          <div className="flex gap-6 items-center">
+          {/* Added navigation role for semantic structure */}
+          <nav className="hidden md:flex gap-6 items-center" aria-label="Main Student Navigation">
             <MoreCoursesDropdown />
             <Link
               to="/student/support"
@@ -209,7 +216,7 @@ export default function Layout() {
             >
               CONTACT US
             </Link>
-          </div>
+          </nav>
 
           {/* Search bar (desktop only) */}
           <div className="relative w-64 hidden md:flex flex-col">
@@ -226,21 +233,27 @@ export default function Layout() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     placeholder="Search courses and lessons"
-                    className="w-full "
+                    className="w-full"
+                    id="course-search-input" // Added ID for explicit label/aria-label
+                    aria-label="Search courses and lessons"
+                    aria-autocomplete="list"
+                    aria-controls="search-results-list"
                   />
                   <button
                     onClick={handleSearch}
                     className="bg-green-500 hover:bg-green-600 text-white rounded-full p-2"
+                    aria-label="Perform course search"
                   >
-                    <Search className="w-5 h-5" />
+                    <Search className="w-5 h-5" aria-hidden="true" />
                   </button>
                 </div>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="bg-white border mt-2 max-h-60 overflow-y-auto z-50 w-64">
+              <DropdownMenuContent className="bg-white border mt-2 max-h-60 overflow-y-auto z-50 w-64" id="search-results-list">
                 {loading ? (
                   <DropdownMenuItem disabled>
-                    <span className="text-sm text-gray-700">Searching...</span>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    <span className="text-sm text-gray-700" role="status">Searching...</span>
                   </DropdownMenuItem>
                 ) : dropdownCourses.length > 0 ? (
                   dropdownCourses.map((enrollment) => (
@@ -255,6 +268,7 @@ export default function Layout() {
                         to={`/student/mycourses/${enrollment._id}`}
                         className="w-full text-sm text-gray-800 hover:bg-gray-100 px-2 py-1 block"
                         onClick={() => setOpenDropdown(false)}
+                        aria-label={`Go to course: ${enrollment.course.courseTitle || "Untitled Course"}`}
                       >
                         {enrollment.course.courseTitle || "Untitled Course"}
                       </Link>
@@ -262,7 +276,7 @@ export default function Layout() {
                   ))
                 ) : (
                   <DropdownMenuItem disabled>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500" role="status">
                       No results found
                     </span>
                   </DropdownMenuItem>
@@ -276,95 +290,116 @@ export default function Layout() {
       {/* Sidebar + Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
+        {/* Added role="complementary" or role="navigation" and id for aria-controls */}
         <aside
+          id="student-sidebar"
           className={`bg-white ${
-            isSidebarOpen ? "block" : "hidden"
-          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block`}
+            isSidebarOpen ? "fixed inset-0 z-20 md:static" : "hidden"
+          } w-screen md:w-64 flex-shrink-0 overflow-y-auto md:block border-r`}
+          role="navigation"
+          aria-label="Student primary sidebar menu"
         >
+          {/* Close button for mobile sidebar (hidden in original, added for accessibility on mobile) */}
+          {isSidebarOpen && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-4 md:hidden"
+                onClick={() => setIsSidebarOpen(false)}
+                aria-label="Close sidebar menu"
+              >
+                <X className="h-6 w-6" aria-hidden="true" />
+              </Button>
+          )}
+
           <div className="p-4">
             {/* User Info */}
-            <div className="flex items-center space-x-3 pb-4">
-              <Link to="/student/account" className="block">
+            <div className="flex items-center space-x-3 pb-4 border-b">
+              <Link to="/student/account" className="block" aria-label="Go to My Account settings">
                 <div className="h-12 w-12 rounded-full overflow-hidden">
                   <img
                     src={UpdatedUser?.profileImg?.url || avatar}
-                    alt={UpdatedUser?.firstName || "username "}
+                    alt={`${UpdatedUser?.firstName || "Student"} profile picture`} // Descriptive alt text
                     className="h-full w-full object-cover rounded-full"
                   />
                 </div>
               </Link>
               <div>
-                <p className="font-medium">
+                <p className="font-medium" id="user-name">
                   {UpdatedUser?.firstName || "username "}
                 </p>
                 <p
-                  className="text-sm text-gray-600 w-full max-w-[150px]  break-words"
+                  className="text-sm text-gray-600 w-full max-w-[150px] break-words"
                   title={UpdatedUser?.email || "email"}
+                  aria-labelledby="user-name"
                 >
                   {UpdatedUser?.email || "email"}
                 </p>{" "}
               </div>
             </div>
 
-            {/* Mobile search */}
-            <div className="flex md:hidden items-center space-x-4 mb-5">
-              <Input type="text" placeholder="Search" className="flex-grow" />
-              <div className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer">
-                <Search className="rounded-full" />
-              </div>
+            {/* Mobile search (Updated to be more accessible, though functionality is limited in the snippet) */}
+            <div className="flex md:hidden items-center space-x-4 mb-5 pt-4">
+              <Input 
+                type="text" 
+                placeholder="Search" 
+                className="flex-grow" 
+                aria-label="Search student modules (mobile)"
+                id="mobile-search-input" 
+              />
+              <button 
+                onClick={() => { /* Mobile search logic here */ }}
+                className="bg-green-200 hover:bg-green-300 rounded-full p-2 cursor-pointer"
+                aria-label="Perform mobile search"
+              >
+                <Search className="rounded-full" aria-hidden="true" />
+              </button>
             </div>
 
-            {/* Sidebar navigation */}
-            <nav className="space-y-2">
+            {/* Sidebar navigation links */}
+            <nav className="space-y-2 pt-4" aria-label="Student feature links">
               {sideBarTabs.map((tab) => {
-                return user.role === "teacherAsStudent" ? (
-                  <div
+                const isPreviewDisabled = user.role === "teacherAsStudent" && tab.allowedAsPreview === false;
+                const linkClassName = `flex items-center space-x-3 rounded-lg px-3 py-2 transition-colors ${
+                  location === tab.path 
+                    ? "bg-green-500" 
+                    : isPreviewDisabled ? "text-gray-400 cursor-not-allowed" : "text-black hover:bg-gray-100"
+                }`;
+                const textClassName = `${
+                  location === tab.path
+                    ? "text-white font-medium"
+                    : "text-green-600 font-medium"
+                }`;
+
+                // Using a conditional rendering approach based on accessibility and logic
+                return (
+                  <div 
                     key={tab.id}
-                    className={`${
-                      tab.allowedAsPreview === false
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }`}
+                    // Apply visual styling for disabled state when in preview mode
+                    className={isPreviewDisabled ? "pointer-events-none opacity-50" : ""}
                   >
-                    <Link
-                      to={tab.path}
-                      onClick={() => setIsSidebarOpen(false)}
-                      className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                        location === tab.path ? "bg-green-500" : "text-black"
-                      }`}
-                    >
-                      <p>{tab.icon}</p>
-                      <span
-                        className={`${
-                          location === tab.path
-                            ? "text-white"
-                            : "text-green-600"
-                        }`}
+                    {/* If disabled, render a span or div instead of a clickable link for semantics */}
+                    {isPreviewDisabled ? (
+                      <div className={linkClassName} role="link" aria-disabled="true" title={`Unavailable in preview mode: ${tab.name}`}>
+                        <p aria-hidden="true">{tab.icon}</p>
+                        <span className={textClassName}>
+                          {tab.name}
+                          <span className="sr-only"> (Disabled in preview mode)</span>
+                        </span>
+                      </div>
+                    ) : (
+                      <Link
+                        to={tab.path}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className={linkClassName}
+                        aria-current={location === tab.path ? "page" : undefined}
                       >
-                        {tab.name}
-                      </span>
-                    </Link>
-                  </div>
-                ) : (
-                  <div key={tab.id}>
-                    <Link
-                      to={tab.path}
-                      onClick={() => setIsSidebarOpen(false)}
-                      className={`flex items-center space-x-3 rounded-lg px-3 py-2 ${
-                        location === tab.path ? "bg-green-500" : "text-black"
-                      }`}
-                    >
-                      <p>{tab.icon}</p>
-                      <span
-                        className={`${
-                          location === tab.path
-                            ? "text-white"
-                            : "text-green-600"
-                        }`}
-                      >
-                        {tab.name}
-                      </span>
-                    </Link>
+                        <p aria-hidden="true">{tab.icon}</p>
+                        <span className={textClassName}>
+                          {tab.name}
+                        </span>
+                      </Link>
+                    )}
                   </div>
                 );
               })}
@@ -372,10 +407,11 @@ export default function Layout() {
 
             {/* Promo image */}
             <div className="flex flex-col items-center justify-between mt-10 w-full">
-              <img src={acewallshort} alt="Acewall" className="w-1/2" />
+              <img src={acewallshort} alt="Acewall logo promoting tutoring services" className="w-1/2" />
               <Link
                 to="https://www.acewallscholars.org/contact-Us"
-                className="text-center font-semibold text-sm mt-4 text-acewall-main"
+                className="text-center font-semibold text-sm mt-4 text-acewall-main hover:underline"
+                aria-label="Need tutoring? Contact us for more information"
               >
                 Need Tutoring? Contact us
               </Link>
@@ -384,12 +420,13 @@ export default function Layout() {
         </aside>
 
         {/* Main Outlet */}
-        <main className="flex-1 p-2 md:p-4">
+        {/* Added role="main" for semantic main content area */}
+        <main className="flex-1 p-2 md:p-4 overflow-y-auto" role="main">
           <Outlet />
         </main>
       </div>
 
-      {/* Footer */}
+      {/* Footer is assumed to be accessible internally */}
       <Footer />
     </div>
   );
