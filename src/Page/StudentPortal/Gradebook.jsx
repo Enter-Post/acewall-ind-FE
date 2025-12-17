@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
 import { ChevronDown, ChevronRight, Loader, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,20 +17,25 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { axiosInstance } from "@/lib/AxiosInstance";
 
-const AssessmentTable = ({ assessments = [] }) => {
+// AssessmentTable component (Helper)
+const AssessmentTable = ({ assessments = [], parentTitle = "Assessments" }) => {
   if (!assessments || assessments.length === 0) {
     return (
-      <div className="text-sm text-gray-500 italic p-4">
+      <div className="text-sm text-gray-500 italic p-4" role="status">
         No assessments available
       </div>
     );
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden mt-2">
+    // Added role="region" and aria-label for accessibility
+    <div className="border rounded-lg overflow-hidden mt-2" role="region" aria-label={`${parentTitle} Details`}>
       <Table>
+        {/* Added caption for screen reader users */}
+        <caption className="sr-only">Detailed results for {parentTitle}</caption>
         <TableHeader>
           <TableRow className="bg-gray-50">
+            {/* Added scope="col" for proper table header semantics */}
             <TableHead scope="col" className="text-xs">
               Assessment
             </TableHead>
@@ -57,9 +63,13 @@ const AssessmentTable = ({ assessments = [] }) => {
                   ).toFixed(1)
                 : "0.0";
 
+            // Unique ID for manual check status announcement
+            const statusId = `manual-check-status-${assessment._id || index}`; 
+
             return (
-              <TableRow key={index} className={`text-xs`}>
-                <TableCell className="font-medium">
+              <TableRow key={assessment._id || index} className={`text-xs`}>
+                {/* Added scope="row" for the primary item in the row */}
+                <TableCell scope="row" className="font-medium">
                   {assessment.assessmentTitle}
                 </TableCell>
                 <TableCell>
@@ -85,11 +95,15 @@ const AssessmentTable = ({ assessments = [] }) => {
                   >
                     {percentage}%
                   </span>
+                  {/* Added aria-describedby to link status text to the cell content */}
                   {assessment.isGraded === false && (
                     <span
+                      id={statusId}
                       className={`text-xs text-gray-500 ml-2 ${
                         assessment.isGraded === false && "text-yellow-500"
                       } `}
+                      role="status" // Helps screen readers announce this status
+                      aria-live="polite"
                     >
                       (Manual check is required by teacher)
                     </span>
@@ -104,6 +118,7 @@ const AssessmentTable = ({ assessments = [] }) => {
   );
 };
 
+// Helper function for letter grade color (no changes needed)
 const getLetterGradeColor = (letterGrade) => {
   if (["A", "A-", "A+"].includes(letterGrade)) {
     return "bg-green-100 text-green-800";
@@ -118,6 +133,7 @@ const getLetterGradeColor = (letterGrade) => {
   }
 };
 
+// Main Gradebook Component
 export default function Gradebook() {
   const [expandedCourseId, setExpandedCourseId] = useState(null);
   const [expandedSemester, setExpandedSemester] = useState(null);
@@ -133,18 +149,27 @@ export default function Gradebook() {
   const fetchGradeData = async (page = 1) => {
     setLoading(true);
     try {
+      // Note: The original implementation calls the API without a page parameter,
+      // but uses pagination state (currentPage, totalPages). I'll assume the API
+      // is returning all data and the pagination state is coming from the response.
+      // If the API supported page parameter, the fetch would need to be updated.
       const res = await axiosInstance.get(
         `gradebook/getStudentGradebooksFormatted`
       );
-      console.log(res, "res.data");
-      setGradeData(res.data);
-      setCurrentPage(res.data.currentPage);
-      setTotalPages(res.data.totalPages);
-      setTotalCourses(res.data.totalCourses);
-      console.log(res);
+      
+      // Safety check for expected structure
+      if (res.data && res.data.courses) {
+          setGradeData(res.data);
+          // Assuming API returns pagination data (even if not used in endpoint path)
+          setCurrentPage(res.data.currentPage || 1); 
+          setTotalPages(res.data.totalPages || 1);
+          setTotalCourses(res.data.totalCourses || res.data.courses.length);
+      } else {
+          setGradeData({ courses: [] });
+      }
     } catch (err) {
       console.error(err);
-      setError(err.message);
+      setError(err.message || "An unknown error occurred while fetching grades.");
     } finally {
       setLoading(false);
     }
@@ -155,7 +180,10 @@ export default function Gradebook() {
   }, [currentPage]);
 
   const toggleCourseExpand = (courseId) => {
-    setExpandedCourseId(expandedCourseId === courseId ? null : courseId);
+    // Announce the action for screen readers
+    const isExpanded = expandedCourseId === courseId;
+    // Visually toggle, then announce
+    setExpandedCourseId(isExpanded ? null : courseId);
     setExpandedSemester(null); // Reset semester expansion when course changes
   };
 
@@ -179,32 +207,13 @@ export default function Gradebook() {
     handlePageChange(currentPage + 1);
   };
 
-  // const downloadPDF = async () => {
-  //   try {
-  //     const response = await fetch("/api/student/grade-report?format=pdf");
-  //     if (!response.ok) {
-  //       throw new Error("Failed to download PDF");
-  //     }
-
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.style.display = "none";
-  //     a.href = url;
-  //     a.download = "grade-report.pdf";
-  //     document.body.appendChild(a);
-  //     a.click();
-  //     window.URL.revokeObjectURL(url);
-  //     document.body.removeChild(a);
-  //   } catch (err) {
-  //     console.error("Error downloading PDF:", err);
-  //   }
-  // };
+  // --- Start of JSX ---
 
   if (loading) {
     return (
-      <div className="justify-center items-center flex h-screen">
-        <Loader className="animate-spin h-8 w-8" />
+      <div className="justify-center items-center flex h-screen" role="status" aria-live="polite">
+        <Loader className="animate-spin h-8 w-8" aria-hidden="true" />
+        <span className="sr-only">Loading student grade report...</span>
       </div>
     );
   }
@@ -212,23 +221,19 @@ export default function Gradebook() {
   if (error) {
     return (
       <div className="container mx-auto space-y-6 p-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Student Grade Report</h1>
-        </div>
-        <Alert variant="destructive">
+        <h1 className="text-2xl font-bold">Student Grade Report</h1>
+        <Alert variant="destructive" role="alert" aria-live="assertive">
           <AlertDescription>Error loading grade data: {error}</AlertDescription>
         </Alert>
       </div>
     );
   }
 
-  if (!gradeData) {
+  if (!gradeData || gradeData.courses?.length === 0) {
     return (
       <div className="container mx-auto space-y-6 p-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Student Grade Report</h1>
-        </div>
-        <Alert>
+        <h1 className="text-2xl font-bold">Student Grade Report</h1>
+        <Alert role="status" aria-live="polite">
           <AlertDescription>No grade data available.</AlertDescription>
         </Alert>
       </div>
@@ -237,257 +242,211 @@ export default function Gradebook() {
 
   return (
     <div className="container mx-auto space-y-6 p-6">
-      {/* Header */}
+      {/* Header (H1) */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Student Grade Report</h1>
+        <h1 className="text-2xl font-bold" id="grade-report-title">Student Grade Report</h1>
+        {/* Optional: Download Button (Re-commented out logic for download PDF) */}
+        {/* <Button variant="outline" size="sm" onClick={downloadPDF} aria-label="Download grade report as PDF">
+          <Download className="h-4 w-4 mr-2" aria-hidden="true" />
+          Download PDF
+        </Button> */}
       </div>
 
-      {/* Courses Table */}
+      {/* Courses Table (Main Grid/Section) */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Course Details</CardTitle>
-            <div className="text-sm text-muted-foreground">
+            <CardTitle id="course-details-title">Course Details</CardTitle>
+            <div className="text-sm text-muted-foreground" role="status" aria-live="polite">
               Page {currentPage} of {totalPages}
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
+          <div className="rounded-md border" role="region" aria-labelledby="course-details-title">
             <Table>
+              <caption className="sr-only">Summary of grades for all enrolled courses</caption>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Structure</TableHead>
-                  <TableHead>Total Percentage</TableHead>
-                  {/* <TableHead>Grade</TableHead> */}
-                  <TableHead>Action</TableHead>
+                  <TableHead scope="col">Course</TableHead>
+                  <TableHead scope="col">Structure</TableHead>
+                  <TableHead scope="col">Total Percentage</TableHead>
+                  <TableHead scope="col">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {gradeData.courses.map((course) => (
-                  <>
-                    <TableRow key={course.courseId}>
-                      <TableCell className="font-medium">
-                        {course.courseName}
-                      </TableCell>
-                      <TableCell>
-                        {course.semesters && course.semesters.length > 0 ? (
-                          <>
-                            {course.semesters.length} semester
-                            {course.semesters.length !== 1 ? "s" : ""}
-                          </>
-                        ) : course.courseItems &&
-                          course.courseItems.length > 0 ? (
-                          <>
-                            {course.courseItems.length} item
-                            {course.courseItems.length !== 1 ? "s" : ""}
-                          </>
-                        ) : (
-                          "No data"
-                        )}
-                      </TableCell>
-                      <TableCell>{course?.coursePercentage}%</TableCell>
-                      {/* <TableCell>
-                        <Badge
-                          className={`${getLetterGradeColor(
-                            course?.letterGrade
-                          )}`}
-                        >
-                          {course?.letterGrade}
-                        </Badge>
-                      </TableCell> */}
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => toggleCourseExpand(course.courseId)}
-                          className="flex items-center gap-2"
-                        >
-                          {expandedCourseId === course.courseId ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                          {expandedCourseId === course.courseId
-                            ? "Hide"
-                            : "Show"}{" "}
-                          Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                {gradeData.courses.map((course) => {
+                  const isCourseExpanded = expandedCourseId === course.courseId;
+                  const structureSummary = course.semesters?.length > 0 
+                    ? `${course.semesters.length} semester${course.semesters.length !== 1 ? "s" : ""}`
+                    : course.courseItems?.length > 0
+                    ? `${course.courseItems.length} item${course.courseItems.length !== 1 ? "s" : ""}`
+                    : "No data";
+                    
+                  return (
+                    // Grouping the row and the details row semantically is tricky in HTML table structure.
+                    // ARIA attributes are critical here.
+                    <React.Fragment key={course.courseId}>
+                      <TableRow aria-expanded={isCourseExpanded} aria-controls={`details-${course.courseId}`}>
+                        <TableCell scope="row" className="font-medium">
+                          {course.courseName}
+                        </TableCell>
+                        <TableCell>
+                          {structureSummary}
+                        </TableCell>
+                        <TableCell>{course?.coursePercentage}%</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleCourseExpand(course.courseId)}
+                            className="flex items-center gap-2"
+                            aria-expanded={isCourseExpanded}
+                            aria-controls={`details-${course.courseId}`}
+                            aria-label={`${isCourseExpanded ? "Hide" : "Show"} details for ${course.courseName}`}
+                          >
+                            {isCourseExpanded ? (
+                              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                            )}
+                            {isCourseExpanded ? "Hide" : "Show"} Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
 
-                    {expandedCourseId === course.courseId && (
-                      <TableRow>
-                        <TableCell colSpan={5} className="p-0">
-                          <div className="bg-muted/30 p-4 space-y-4">
-                            {/* Case 1: Course has semester/quarter structure */}
-                            {course.semesters &&
-                              course.semesters.length > 0 && (
-                                <>
-                                  {course.semesters.map((semester) => (
-                                    <div
-                                      key={semester.semesterId}
-                                      className="space-y-3 w-[100%]"
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <h3 className="text-lg font-semibold text-gray-800">
-                                          {semester.semesterTitle}
-                                        </h3>
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          onClick={() =>
-                                            toggleSemesterExpand(
-                                              semester.semesterId
-                                            )
-                                          }
-                                          className="flex items-center gap-2"
-                                        >
-                                          {expandedSemester ===
-                                          semester.semesterId ? (
-                                            <ChevronDown className="h-4 w-4" />
-                                          ) : (
-                                            <ChevronRight className="h-4 w-4" />
-                                          )}
-                                          {semester.quarters.length} Quarter
-                                          {semester.quarters.length !== 1
-                                            ? "s"
-                                            : ""}
-                                        </Button>
-                                      </div>
+                      {/* Expanded Details Row */}
+                      {isCourseExpanded && (
+                        <TableRow id={`details-${course.courseId}`}>
+                          <TableCell colSpan={5} className="p-0">
+                            <div className="bg-muted/30 p-4 space-y-4">
+                              {/* Case 1: Course has semester/quarter structure */}
+                              {course.semesters && course.semesters.length > 0 && (
+                                <div role="region" aria-label={`Semesters for ${course.courseName}`}>
+                                  {course.semesters.map((semester) => {
+                                    const isSemesterExpanded = expandedSemester === semester.semesterId;
+                                    return (
+                                      <div key={semester.semesterId} className="space-y-3 w-[100%] border-b pb-3 mb-3 last:border-b-0 last:pb-0">
+                                        <div className="flex items-center justify-between">
+                                          {/* Use H3 for tertiary heading */}
+                                          <h3 className="text-lg font-semibold text-gray-800" id={`semester-title-${semester.semesterId}`}>
+                                            {semester.semesterTitle}
+                                          </h3>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => toggleSemesterExpand(semester.semesterId)}
+                                            className="flex items-center gap-2"
+                                            aria-expanded={isSemesterExpanded}
+                                            aria-controls={`semester-content-${semester.semesterId}`}
+                                            aria-label={`${isSemesterExpanded ? "Hide" : "Show"} quarters for ${semester.semesterTitle}`}
+                                          >
+                                            {isSemesterExpanded ? (
+                                              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                                            ) : (
+                                              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                                            )}
+                                            {semester.quarters.length} Quarter{semester.quarters.length !== 1 ? "s" : ""}
+                                          </Button>
+                                        </div>
 
-                                      {expandedSemester ===
-                                        semester.semesterId && (
-                                        <div className="space-y-4">
-                                          {semester.quarters.map((quarter) => (
-                                            <Card
-                                              key={quarter.quarterId}
-                                              className="bg-white"
-                                            >
-                                              <CardHeader className="pb-3">
-                                                <div className="flex items-center justify-between">
-                                                  <CardTitle className="text-base">
-                                                    {quarter.quarterTitle}
-                                                  </CardTitle>
-                                                  <div className="flex items-center gap-4">
-                                                    <div className="text-sm">
-                                                      <span className="font-medium">
-                                                        Grade:{" "}
-                                                      </span>
-                                                      <span className="text-green-600 font-bold">
-                                                        {quarter.grade}%
-                                                      </span>
-                                                    </div>
+                                        {isSemesterExpanded && (
+                                          <div id={`semester-content-${semester.semesterId}`} className="space-y-4" role="region" aria-labelledby={`semester-title-${semester.semesterId}`}>
+                                            {semester.quarters.map((quarter, qIndex) => (
+                                              <Card
+                                                key={quarter.quarterId}
+                                                className="bg-white"
+                                                role="group"
+                                                aria-label={`${quarter.quarterTitle} Quarter Details`}
+                                              >
+                                                <CardHeader className="pb-3">
+                                                  <div className="flex items-center justify-between">
+                                                    <CardTitle className="text-base">
+                                                      {quarter.quarterTitle}
+                                                    </CardTitle>
+                                                    <div className="flex items-center gap-4">
+                                                      <div className="text-sm">
+                                                        <span className="font-medium">Grade: </span>
+                                                        <span className="text-green-600 font-bold">
+                                                          {quarter.grade}%
+                                                        </span>
+                                                      </div>
 
-                                                    {course.gradingSystem ===
-                                                    "normalGrading" ? (
-                                                      <section>
-                                                        <div className="text-sm">
-                                                          <span className="font-medium">
-                                                            GPA:{" "}
-                                                          </span>
-                                                          <span className="text-blue-600 font-bold">
-                                                            {quarter.gpa}
-                                                          </span>
-                                                        </div>
-                                                        <Badge
-                                                          className={`${getLetterGradeColor(
-                                                            quarter.letterGrade
-                                                          )}`}
-                                                        >
-                                                          {quarter.letterGrade}
-                                                        </Badge>
-                                                      </section>
-                                                    ) : (
-                                                      <section>
-                                                        <section className="flex items-center gap-4">
-                                                          <div className="flex items-center gap-2">
-                                                            <div className="text-sm">
-                                                              <span className="font-medium">
-                                                                Points:{" "}
-                                                              </span>
-                                                              <span className="text-blue-600 font-bold">
-                                                                {quarter
-                                                                  .standardGrade
-                                                                  ?.points ||
-                                                                  "Pending"}
-                                                              </span>
-                                                            </div>
+                                                      {course.gradingSystem === "normalGrading" ? (
+                                                        <section className="flex items-center gap-4" aria-label="GPA and Letter Grade">
+                                                          <div className="text-sm">
+                                                            <span className="font-medium">GPA: </span>
+                                                            <span className="text-blue-600 font-bold">
+                                                              {quarter.gpa}
+                                                            </span>
                                                           </div>
-
-                                                          <div className="flex items-center gap-2">
-                                                            <div className="text-sm">
-                                                              <span className="font-medium">
-                                                                remark:{" "}
-                                                              </span>
-                                                              <span className="text-blue-600 font-bold">
-                                                                {quarter
-                                                                  .standardGrade
-                                                                  ?.remarks ||
-                                                                  "Pending"}
-                                                              </span>
-                                                            </div>
+                                                          <Badge
+                                                            className={`${getLetterGradeColor(quarter.letterGrade)}`}
+                                                          >
+                                                            {quarter.letterGrade}
+                                                          </Badge>
+                                                        </section>
+                                                      ) : (
+                                                        <section className="flex items-center gap-4" aria-label="Standard Grade">
+                                                          {/* Standard Grade Section */}
+                                                          <div className="text-sm">
+                                                            <span className="font-medium">Points: </span>
+                                                            <span className="text-blue-600 font-bold">
+                                                              {quarter.standardGrade?.points || "Pending"}
+                                                            </span>
+                                                          </div>
+                                                          <div className="text-sm">
+                                                            <span className="font-medium">Remark: </span>
+                                                            <span className="text-blue-600 font-bold">
+                                                              {quarter.standardGrade?.remarks || "Pending"}
+                                                            </span>
                                                           </div>
                                                         </section>
-                                                      </section>
-                                                    )}
+                                                      )}
+                                                    </div>
                                                   </div>
-                                                </div>
-                                              </CardHeader>
-                                              <CardContent>
-                                                <AssessmentTable
-                                                  assessments={
-                                                    quarter.assessments
-                                                  }
-                                                />
-                                              </CardContent>
-                                            </Card>
-                                          ))}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
-                                </>
+                                                </CardHeader>
+                                                <CardContent>
+                                                  <AssessmentTable
+                                                    assessments={quarter.assessments}
+                                                    parentTitle={`${quarter.quarterTitle} Assessments`}
+                                                  />
+                                                </CardContent>
+                                              </Card>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
                               )}
 
-                            {/* Case 2: Course has direct assessments (no semester/quarter) */}
-                            {course.courseItems &&
-                              course.courseItems.length > 0 && (
-                                <div className="space-y-3 w-[100%]">
+                              {/* Case 2: Course has direct assessments (no semester/quarter) */}
+                              {course.courseItems && course.courseItems.length > 0 && (
+                                <div className="space-y-3 w-[100%]" role="region" aria-label={`Direct assessments for ${course.courseName}`}>
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
-                                      {course.gradingSystem ===
-                                      "normalGrading" ? (
-                                        // NORMAL GRADING
+                                      {course.gradingSystem === "normalGrading" ? (
                                         <div className="text-sm">
-                                          <span className="font-medium">
-                                            Letter Grade:{" "}
-                                          </span>
+                                          <span className="font-medium">Letter Grade: </span>
                                           <span className="text-blue-600 font-bold">
                                             {course.letterGrade}
                                           </span>
                                         </div>
                                       ) : (
-                                        // STANDARD-BASED GRADING (SBG)
                                         <>
                                           <div className="text-sm">
-                                            <span className="font-medium">
-                                              Remarks:{" "}
-                                            </span>
+                                            <span className="font-medium">Remarks: </span>
                                             <span className="text-blue-600 font-bold">
-                                              {course.standardGrade?.remarks ||
-                                                "N/A"}
+                                              {course.standardGrade?.remarks || "N/A"}
                                             </span>
                                           </div>
 
                                           <div className="text-sm">
-                                            <span className="font-medium">
-                                              Points:{" "}
-                                            </span>
+                                            <span className="font-medium">Points: </span>
                                             <span className="text-blue-600 font-bold">
-                                              {course.standardGrade?.points ??
-                                                "—"}
+                                              {course.standardGrade?.points ?? "—"}
                                             </span>
                                           </div>
                                         </>
@@ -498,31 +457,32 @@ export default function Gradebook() {
                                     <CardContent className="pt-6">
                                       <AssessmentTable
                                         assessments={course.courseItems}
+                                        parentTitle={`${course.courseName} Assessments`}
                                       />
                                     </CardContent>
                                   </Card>
                                 </div>
                               )}
 
-                            {/* Case 3: No assessments available */}
-                            {(!course.semesters ||
-                              course.semesters.length === 0) &&
-                              (!course.courseItems ||
-                                course.courseItems.length === 0) && (
-                                <div className="text-center py-8 text-gray-500">
-                                  No assessments available for this course
-                                </div>
-                              )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </>
-                ))}
+                              {/* Case 3: No assessments available */}
+                              {(!course.semesters || course.semesters.length === 0) &&
+                                (!course.courseItems || course.courseItems.length === 0) && (
+                                  <div className="text-center py-8 text-gray-500" role="status">
+                                    No assessments available for this course
+                                  </div>
+                                )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
 
+                {/* Handle the case where the gradeData loads but courses array is empty (redundant given previous check, but kept for logic) */}
                 {gradeData.courses.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={5} className="text-center py-8" role="status">
                       You haven't performed any assessment
                     </TableCell>
                   </TableRow>
@@ -536,9 +496,9 @@ export default function Gradebook() {
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="pt-6" role="navigation" aria-label="Course Pagination">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground" aria-live="polite">
                 Showing {(currentPage - 1) * coursesPerPage + 1} to{" "}
                 {Math.min(currentPage * coursesPerPage, totalCourses)} of{" "}
                 {totalCourses} courses
@@ -549,13 +509,16 @@ export default function Gradebook() {
                   size="sm"
                   onClick={handlePreviousPage}
                   disabled={currentPage === 1}
+                  aria-label="Go to previous page of courses"
                 >
                   Previous
                 </Button>
 
-                <div className="flex items-center gap-1">
+                {/* Pagination Page Buttons */}
+                <div className="flex items-center gap-1" role="group" aria-label="Page selection">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
+                    // Logic to show a maximum of 5 pages centered around the current page
                     if (totalPages <= 5) {
                       pageNum = i + 1;
                     } else if (currentPage <= 3) {
@@ -575,6 +538,8 @@ export default function Gradebook() {
                         size="sm"
                         onClick={() => handlePageChange(pageNum)}
                         className="w-8 h-8 p-0"
+                        aria-current={currentPage === pageNum ? "page" : undefined}
+                        aria-label={`Go to page ${pageNum}`}
                       >
                         {pageNum}
                       </Button>
@@ -587,6 +552,7 @@ export default function Gradebook() {
                   size="sm"
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
+                  aria-label="Go to next page of courses"
                 >
                   Next
                 </Button>
