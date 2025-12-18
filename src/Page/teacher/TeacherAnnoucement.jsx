@@ -22,10 +22,8 @@ export default function TeacherAnnouncement() {
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [announcementToDelete, setAnnouncementToDelete] = useState(null);
-  const [announcements, setAnnouncements] = useState([]);
 
-
-  // Function to fetch announcements
+  // Fetch announcements
   const fetchAnnouncements = async () => {
     setLoading(true);
     try {
@@ -45,16 +43,17 @@ export default function TeacherAnnouncement() {
 
       setCurrentAnnouncements(formatted);
     } catch (error) {
-      console.error("Error fetching teacher announcements:", error.response?.data || error.message);
+      console.error(
+        "Error fetching teacher announcements:",
+        error.response?.data || error.message
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (user?._id) {
-      fetchAnnouncements();
-    }
+    if (user?._id) fetchAnnouncements();
   }, [user?._id]);
 
   const handleDeleteAnnouncement = (announcementId) => {
@@ -77,32 +76,40 @@ export default function TeacherAnnouncement() {
     }
   };
 
-  // This function is called after new announcement creation
   const handleAnnouncementCreated = () => {
-    fetchAnnouncements();       // Refresh announcements list
-    setShowNewDialog(false);    // Close the create dialog
-    // If you want to navigate to a specific announcement page, add router push here.
+    fetchAnnouncements();
+    setShowNewDialog(false);
   };
 
   return (
-    <div className="mx-auto p-3 md:p-0">
-      <div className="flex flex-col mb-2">
-        <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
+    <main className="mx-auto p-3 md:p-0" role="main" aria-labelledby="announcements-heading">
+      <section className="flex flex-col mb-2">
+        <h1
+          id="announcements-heading"
+          className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg"
+        >
           Announcements
-        </p>
+        </h1>
+
         <div className="flex justify-end">
           <Button
-            className="bg-green-500 hover:bg-green-600 mb-5"
+            className="bg-green-500 hover:bg-green-600 mb-5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-400"
             onClick={() => setShowNewDialog(true)}
+            aria-label="Add new announcement"
           >
             + Add New
           </Button>
         </div>
-      </div>
+      </section>
 
       {loading ? (
-        <div className="flex justify-center items-center py-10">
-          <Loader className="animate-spin " />
+        <div className="flex justify-center items-center py-10" role="status" aria-live="polite">
+          <Loader className="animate-spin" aria-hidden="true" />
+          <span className="sr-only">Loading announcements...</span>
+        </div>
+      ) : currentAnnouncements.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-10">
+          <p className="text-gray-500 text-lg">No announcements found</p>
         </div>
       ) : (
         <AnnouncementList
@@ -112,29 +119,38 @@ export default function TeacherAnnouncement() {
         />
       )}
 
-
+      {/* Add/Edit Announcement Dialog */}
       <AnnouncementDialog
         open={showNewDialog}
         onOpenChange={setShowNewDialog}
-        onCreated={handleAnnouncementCreated} // <-- pass callback here
+        onCreated={handleAnnouncementCreated}
       />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <Dialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        aria-labelledby="delete-announcement-title"
+        role="alertdialog"
+        aria-modal="true"
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Announcement</DialogTitle>
+            <DialogTitle id="delete-announcement-title">Delete Announcement</DialogTitle>
           </DialogHeader>
           <p>
-            Are you sure you want to delete this announcement? This action
-            cannot be undone.
+            Are you sure you want to delete this announcement? This action cannot be undone.
           </p>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              className="focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400"
+            >
               Cancel
             </Button>
             <Button
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-400"
               onClick={confirmDeleteAnnouncement}
             >
               Delete
@@ -142,6 +158,6 @@ export default function TeacherAnnouncement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </main>
   );
 }

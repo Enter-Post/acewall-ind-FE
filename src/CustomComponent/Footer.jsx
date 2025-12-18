@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import TermsModal from "@/CustomComponent/Termsandcondition";
-import PrivacyPolicy from "./PrivacePolicy";
-import { Facebook, Twitter, Instagram, Youtube, Mail, ArrowUp } from "lucide-react";
+import { Facebook, Instagram, Youtube, Mail, ArrowUp } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { axiosInstance } from "@/lib/AxiosInstance";
@@ -14,18 +12,16 @@ export default function Footer() {
   const navigate = useNavigate();
   const { user, setSelectedSubcategoryId } = useContext(GlobalContext);
 
-  const isGuest = !user;
   const isTeacher = user?.role === "teacher";
   const isStudent = user?.role === "student";
 
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [subcategories, setSubcategories] = useState([]); // will hold objects
+  const [subcategories, setSubcategories] = useState([]);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Show "Scroll to Top" button after scrolling down
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -34,14 +30,12 @@ export default function Footer() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fetch top 5 subcategories for footer navigation
   useEffect(() => {
     axiosInstance
       .get("/subcategory/get")
       .then((response) => {
         const subs = response.data?.subcategories || [];
-        const topFive = subs.slice(0, 5);
-        setSubcategories(topFive);
+        setSubcategories(subs.slice(0, 5));
       })
       .catch((err) => {
         console.error("Failed to fetch subcategories:", err);
@@ -55,7 +49,6 @@ export default function Footer() {
       setSuccess("");
       return;
     }
-
     setLoading(true);
     setError("");
     setSuccess("");
@@ -85,22 +78,48 @@ export default function Footer() {
   ];
 
   const socialLinks = [
-    { Icon: FaXTwitter, url: "https://twitter.com/AcewallScholars", label: "Twitter" },
-    { Icon: Facebook, url: "https://www.facebook.com/acewallscholars", label: "Facebook" },
-    { Icon: Instagram, url: "https://www.instagram.com/acewallscholarsonline/", label: "Instagram" },
-    { Icon: Youtube, url: "https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ", label: "YouTube" },
-    { Icon: Mail, url: "mailto:contact@acewallscholars.org", label: "Email" },
+    {
+      Icon: FaXTwitter,
+      url: "https://twitter.com/AcewallScholars",
+      label: "Follow us on X (formerly Twitter)",
+    },
+    {
+      Icon: Facebook,
+      url: "https://www.facebook.com/acewallscholars",
+      label: "Follow us on Facebook",
+    },
+    {
+      Icon: Instagram,
+      url: "https://www.instagram.com/acewallscholarsonline/",
+      label: "Follow us on Instagram",
+    },
+    {
+      Icon: Youtube,
+      url: "https://youtube.com/channel/UCR7GG6Dvnuf6ckhTo3wqSIQ",
+      label: "Visit our YouTube Channel",
+    },
+    {
+      Icon: Mail,
+      url: "mailto:contact@acewallscholars.org",
+      label: "Send us an Email",
+    },
   ];
 
   return (
     <>
       <footer className="bg-black text-white mt-10" role="contentinfo">
         <div className="container mx-auto px-4 py-12">
-          <div className={`grid grid-cols-1 md:grid-cols-${isStudent ? 4 : 3} gap-8`}>
-
+          <div
+            className={`grid grid-cols-1 md:grid-cols-${
+              isStudent ? 4 : 3
+            } gap-8`}
+          >
             {/* Column 1: Address */}
-            <section aria-labelledby="footer-about-title">
-              <h3 id="footer-about-title" className="font-semibold text-white mb-4">
+            <section aria-labelledby="footer-contact-title">
+              <h3
+                id="footer-contact-title"
+                className="font-semibold text-white mb-4 text-lg"
+              >
                 Acewall Scholars
               </h3>
               <address className="not-italic space-y-2 text-sm text-gray-300">
@@ -109,7 +128,10 @@ export default function Footer() {
                 <p>Powhatan, VA 23139</p>
                 <p>
                   Email:{" "}
-                  <a href="mailto:contact@acewallscholars.org" className="text-green-500 hover:underline">
+                  <a
+                    href="mailto:contact@acewallscholars.org"
+                    className="text-green-400 font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-green-600"
+                  >
                     contact@acewallscholars.org
                   </a>
                 </p>
@@ -117,60 +139,87 @@ export default function Footer() {
             </section>
 
             {/* Column 2: Useful Links */}
-            <nav aria-label="Useful Links">
-              <h3 className="font-semibold text-white mb-4">Useful Links</h3>
+            <nav aria-labelledby="footer-links-title">
+              <h3
+                id="footer-links-title"
+                className="font-semibold text-white mb-4 text-lg"
+              >
+                Useful Links
+              </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 {usefulLinks.map((link, idx) => (
                   <li key={idx}>
-                    <Link to={link.url} className="flex items-center hover:text-white">
-                      <span className="text-green-500 mr-2">›</span>
+                    <Link
+                      to={link.url}
+                      className="flex items-center hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 rounded p-1 transition-colors"
+                    >
+                      <span className="text-green-500 mr-2" aria-hidden="true">
+                        ›
+                      </span>
                       <span>{link.name}</span>
                     </Link>
                   </li>
                 ))}
-
                 {isTeacher && (
                   <li>
-                    <Link to="/teacher" className="flex items-center hover:text-white">
-                      <span className="text-green-500 mr-2">›</span> Teacher Dashboard
+                    <Link
+                      to="/teacher"
+                      className="flex items-center hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 rounded p-1"
+                    >
+                      <span className="text-green-500 mr-2" aria-hidden="true">
+                        ›
+                      </span>{" "}
+                      Teacher Dashboard
                     </Link>
                   </li>
                 )}
                 {isStudent && (
                   <li>
-                    <Link to="/student" className="flex items-center hover:text-white">
-                      <span className="text-green-500 mr-2">›</span> Student Dashboard
+                    <Link
+                      to="/student"
+                      className="flex items-center hover:text-white focus:outline-none focus:ring-2 focus:ring-green-600 rounded p-1"
+                    >
+                      <span className="text-green-500 mr-2" aria-hidden="true">
+                        ›
+                      </span>{" "}
+                      Student Dashboard
                     </Link>
                   </li>
                 )}
-
-                {/* <li className="flex items-center cursor-pointer">
-                  <span className="text-green-500 mr-2">›</span> <TermsModal />
-                </li>
-                <li className="flex items-center cursor-pointer">
-                  <span className="text-green-500 mr-2">›</span> <PrivacyPolicy />
-                </li> */}
               </ul>
             </nav>
 
             {/* Column 3: Categories (Students Only) */}
             {isStudent && (
-              <nav aria-label="Popular Categories">
-                <h3 className="font-semibold text-white mb-4">Categories</h3>
+              <nav aria-labelledby="footer-categories-title">
+                <h3
+                  id="footer-categories-title"
+                  className="font-semibold text-white mb-4 text-lg"
+                >
+                  Categories
+                </h3>
                 <ul className="space-y-2 text-sm text-gray-300">
                   {subcategories.length > 0 ? (
                     subcategories.map((sub, idx) => (
                       <li key={idx}>
                         <button
                           onClick={() => handleSubcategoryClick(sub)}
-                          className="flex items-center hover:text-white text-left w-full"
+                          className="flex items-center hover:text-white text-left w-full focus:outline-none focus:ring-2 focus:ring-green-600 rounded p-1"
                         >
-                          <span className="text-green-500 mr-2">›</span> {sub.title}
+                          <span
+                            className="text-green-500 mr-2"
+                            aria-hidden="true"
+                          >
+                            ›
+                          </span>{" "}
+                          {sub.title}
                         </button>
                       </li>
                     ))
                   ) : (
-                    <li className="text-sm text-gray-500">No subcategories found.</li>
+                    <li className="text-sm text-gray-500">
+                      No subcategories found.
+                    </li>
                   )}
                 </ul>
               </nav>
@@ -178,7 +227,10 @@ export default function Footer() {
 
             {/* Column 4: Newsletter */}
             <section aria-labelledby="newsletter-heading">
-              <h3 id="newsletter-heading" className="font-semibold text-white mb-4">
+              <h3
+                id="newsletter-heading"
+                className="font-semibold text-white mb-4 text-lg"
+              >
                 Join Our Newsletter
               </h3>
               <p className="text-sm text-gray-300 mb-4">
@@ -189,78 +241,111 @@ export default function Footer() {
                   e.preventDefault();
                   handleSubscribe();
                 }}
-                className="flex"
-                aria-live="polite"
+                noValidate
               >
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="rounded-l-md rounded-r-none border-gray-700 bg-black text-white focus:ring-0 focus:border-gray-600"
-                  aria-label="Email address"
-                  required
-                />
-                <Button
-                  type="submit"
-                  className="rounded-l-none bg-green-500 hover:bg-green-600 text-white"
-                  disabled={loading}
-                  aria-disabled={loading}
-                >
-                  {loading ? "Subscribing..." : "Subscribe"}
-                </Button>
-              </form>
-              {error && <p role="alert" className="text-sm text-red-500 mt-2">{error}</p>}
-              {success && <p role="alert" className="text-sm text-green-500 mt-2">{success}</p>}
-            </section>
+                <div className="flex flex-col space-y-2">
+                  {/* The label is visually hidden but read by screen readers */}
+                  <label htmlFor="newsletter-email" className="sr-only">
+                    Email address
+                  </label>
 
+                  <div className="flex group">
+                    <Input
+                      id="newsletter-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      /* - border-2 border-green-600: High contrast (9.7:1) against black.
+         - focus-visible:ring-offset-black: Ensures the ring is separated from the background.
+      */
+                      className="rounded-l-md rounded-r-none border-2 border-green-600 bg-black text-white placeholder:text-gray-400 focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black outline-none h-10"
+                      required
+                      aria-required="true"
+                    />
+                    <Button
+                      type="submit"
+                      /* - bg-green-600: High contrast against black footer.
+         - hover:bg-green-500: Maintains contrast while providing visual feedback.
+      */
+                      className="rounded-l-none rounded-r-md border-2 border-green-600 bg-green-600 hover:bg-green-500 hover:border-green-500 text-black font-bold h-10 focus-visible:ring-2 focus-visible:ring-green-400 focus-visible:ring-offset-2 focus-visible:ring-offset-black outline-none transition-colors"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <span className="animate-pulse">...</span>
+                      ) : (
+                        "Subscribe"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                {/* Live region for feedback */}
+                <div aria-live="polite" className="mt-2 min-h-[1.25rem]">
+                  {error && (
+                    <p
+                      role="alert"
+                      className="text-sm text-red-400 font-medium"
+                    >
+                      {error}
+                    </p>
+                  )}
+                  {success && (
+                    <p
+                      role="alert"
+                      className="text-sm text-green-400 font-medium"
+                    >
+                      {success}
+                    </p>
+                  )}
+                </div>
+              </form>
+            </section>
           </div>
         </div>
 
         {/* Bottom Footer */}
-        <div className="bg-[#0c0c0c] py-4">
+        <div className="bg-[#0c0c0c] py-6 border-t border-gray-900">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-gray-400 text-center md:text-left">
-                © Copyright{" "}
+                © {new Date().getFullYear()}{" "}
                 <a
                   href="https://www.acewallscholars.org/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-green-500 font-bold hover:underline"
+                  className="text-green-500 font-bold hover:underline focus:outline-none focus:ring-2 focus:ring-green-600"
                 >
                   Acewall Scholars
                 </a>{" "}
-                All Rights Reserved
+                - All Rights Reserved
               </p>
-              <div className="flex space-x-2 mt-4 md:mt-0" aria-label="Social media links">
+              <div className="flex space-x-3" aria-label="Social media links">
                 {socialLinks.map(({ Icon, url, label }, idx) => (
                   <a
                     key={idx}
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
+                    className="bg-green-600 hover:bg-green-700 text-white p-2.5 rounded-full transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-white"
                     aria-label={label}
                   >
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-5 w-5" />
                   </a>
                 ))}
               </div>
             </div>
           </div>
         </div>
-
       </footer>
 
       {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300"
-          aria-label="Scroll to top"
+          className="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+          aria-label="Scroll to top of the page"
         >
-          <ArrowUp className="h-4 w-4" />
+          <ArrowUp className="h-5 w-5" />
         </button>
       )}
     </>

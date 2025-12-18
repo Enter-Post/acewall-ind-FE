@@ -33,13 +33,13 @@ import { toast } from "sonner";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import CategoryDropdown from "@/CustomComponent/Assessment/Assessment-category-dropdown";
 import StrictDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
-import { Pen } from "lucide-react";
+import { Pen, Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  title: z.string().min(1, "Title must be at least 3 characters").max(120),
+  title: z.string().min(3, "Title must be at least 3 characters").max(120),
   description: z
     .string()
-    .min(1, "Description must be at least 10 characters")
+    .min(10, "Description must be at least 10 characters")
     .max(1000),
   category: z.string().min(1, "Please select a category"),
   dueDate: z.object({
@@ -56,18 +56,14 @@ const formSchema = z.object({
 });
 
 export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
-  const navigate = useNavigate();
-  const { type, courseId, id } = useParams();
-  const [searchParams] = useSearchParams();
-
+  const { type, id } = useParams();
   const [open, setOpen] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  console.log(assessment, "assessment");
-
   useEffect(() => {
+    if (!open) return;
     const fetchQuarterDate = async () => {
       try {
         const res = await axiosInstance.get(
@@ -76,30 +72,28 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
         setStartDate(new Date(res.data.startDate));
         setEndDate(new Date(res.data.endDate));
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching dates:", err);
       }
     };
     fetchQuarterDate();
-  }, []);
+  }, [open, assessment.quarter]);
 
   const minDate = startDate < endDate ? startDate : endDate;
   const maxDate = endDate > startDate ? endDate : startDate;
 
   const combineDateTime = (dateStr, timeStr) => {
     if (!dateStr || !timeStr) return null;
-
     const combinedStr = `${dateStr.split("T")[0]}T${timeStr}`;
     const dateTime = new Date(combinedStr);
-
     return isNaN(dateTime.getTime()) ? null : dateTime;
   };
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: assessment.title,
-      description: assessment.description,
-      category: assessment.category._id || "",
+      title: assessment.title || "",
+      description: assessment.description || "",
+      category: assessment.category?._id || "",
       dueDate: {
         dateTime: combineDateTime(
           assessment.dueDate?.date,
@@ -110,12 +104,10 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
   });
 
   const onSubmit = async (data) => {
-    console.log(data, "data");
-
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    const toastId = toast.loading("Creating assessment...");
+    const toastId = toast.loading("Updating assessment...");
 
     try {
       const formData = new FormData();
@@ -128,9 +120,7 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
       if (dueDate >= minDate && dueDate <= maxDate) {
         formData.append("dueDate", dueDate.toISOString());
       } else {
-        toast.error("Due date must be within the allowed range", {
-          id: toastId,
-        });
+        toast.error("Due date must be within the quarter range", { id: toastId });
         setIsSubmitting(false);
         return;
       }
@@ -140,17 +130,11 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
         formData
       );
 
-      toast.success(res.data.message, { id: toastId });
+      toast.success(res.data.message || "Updated successfully", { id: toastId });
       fetchAssessment();
       setOpen(false);
     } catch (err) {
-      console.log(err);
-      toast.error(
-        err?.response?.data?.message || "Failed to create assessment",
-        {
-          id: toastId,
-        }
-      );
+      toast.error(err?.response?.data?.message || "Failed to update", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
@@ -159,26 +143,35 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Pen size={16} />
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-8 w-8 text-blue-600 hover:text-blue-700" 
+          aria-label="Edit Assessment"
+        >
+          <Pen size={16} />
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-xl">
+      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Assessment</DialogTitle>
+          <DialogTitle>Edit Assessment</DialogTitle>
           <DialogDescription>
-            Fill in the form to create a new assessment.
+            Update the assessment details and ensure the due date falls within the quarter.
           </DialogDescription>
         </DialogHeader>
 
+        
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assessment Title</FormLabel>
+                  <FormLabel htmlFor="edit-assessment-title">Title</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter Assessment Title" />
+                    <Input id="edit-assessment-title" {...field} placeholder="Enter Assessment Title" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,11 +183,13 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel htmlFor="edit-assessment-desc">Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Enter assessment description"
+                    <Textarea 
+                      id="edit-assessment-desc"
+                      {...field} 
+                      placeholder="Describe what students need to do..." 
+                      className="min-h-[120px] resize-none"
                     />
                   </FormControl>
                   <FormMessage />
@@ -207,10 +202,10 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
               name="category"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Assessment Category</FormLabel>
                   <FormControl>
                     <CategoryDropdown
-                      assessmentId={assessment.id}
+                      assessmentId={assessment._id}
                       courseId={assessment.course}
                       value={field.value}
                       onValueChange={field.onChange}
@@ -222,21 +217,39 @@ export default function EditAssessmentDialog({ assessment, fetchAssessment }) {
               )}
             />
 
-            <div>
-              <Label>Due Date</Label>
+            <div className="space-y-2">
+              <Label id="due-date-label">Due Date and Time</Label>
               <StrictDatePicker
                 name="dueDate"
                 minDate={minDate}
                 maxDate={maxDate}
+                aria-labelledby="due-date-label"
               />
-              <FormMessage>
-                {form.formState.errors?.dueDate?.message}
-              </FormMessage>
+              {form.formState.errors?.dueDate?.dateTime && (
+                <p className="text-sm font-medium text-destructive">
+                  {form.formState.errors.dueDate.dateTime.message}
+                </p>
+              )}
             </div>
 
-            <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit Assessment"}
+            <DialogFooter className="sticky bottom-0 bg-white pt-2">
+              <Button 
+                type="button" 
+                variant="ghost" 
+                onClick={() => setOpen(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="min-w-[140px]">
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
             </DialogFooter>
           </form>

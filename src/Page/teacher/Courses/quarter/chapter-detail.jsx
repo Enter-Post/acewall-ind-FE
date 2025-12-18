@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
   BookOpen,
-  ArrowLeft,
   Plus,
   FileText,
   Youtube,
@@ -18,23 +17,17 @@ import {
   Link,
   useParams,
   useSearchParams,
-  useNavigate,
 } from "react-router-dom";
-import LessonModal from "@/CustomComponent/CreateCourse/LessonModal";
 import EditLessonModal from "@/CustomComponent/CreateCourse/EditLesson";
 import { DeleteModal } from "@/CustomComponent/CreateCourse/DeleteModal";
-// import { AssessmentDialog } from "./assessment-dialog";
 import EditChapterDialog from "@/CustomComponent/CreateCourse/EditChapter";
 import AddMoreFile from "@/CustomComponent/CreateCourse/addMoreFile";
-import { ChapterCard } from "./chapter-card";
-import { AssessmentDialog } from "../Models/AssessmentFields";
 import BackButton from "@/CustomComponent/BackButton";
 import ChapterOptionDropdown from "@/CustomComponent/CreateCourse/ChapterOptionDropdown";
 
 const TeacherChapterDetail = () => {
   const { chapterId } = useParams();
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const courseId = searchParams.get("courseId");
   const quarterStart = searchParams.get("quarterStart");
@@ -52,10 +45,11 @@ const TeacherChapterDetail = () => {
     );
   };
 
-  const truncateText = (text, limit = 100) => {
-    if (text.length <= limit) return text;
+  const truncateText = (text, limit = 150) => {
+    if (!text || text.length <= limit) return text;
     return text.slice(0, limit) + "...";
   };
+
   const fetchChapterDetail = async () => {
     try {
       const response = await axiosInstance.get(
@@ -118,11 +112,9 @@ const TeacherChapterDetail = () => {
   if (!chapter) {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <Loader className="animate-spin mx-auto mb-4" />
-            <p className="text-gray-600">Loading chapter details...</p>
-          </div>
+        <div className="max-w-6xl mx-auto text-center py-20">
+          <Loader className="animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading chapter details...</p>
         </div>
       </div>
     );
@@ -130,25 +122,35 @@ const TeacherChapterDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto space-y-1">
+      <div className="max-w-6xl mx-auto space-y-4">
         <BackButton />
+        
+        {/* Chapter Info Header */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <section className="flex justify-between">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
-              {/* Icon */}
+          <section className="flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex items-start gap-4">
               <div className="shrink-0">
                 <BookOpen className="h-8 w-8 text-blue-600" />
               </div>
-
-              {/* Text */}
               <div className="flex-1">
                 <h1 className="text-2xl font-bold text-gray-900">{chapter.title}</h1>
-                <p className="text-gray-600">{chapter.description}</p>
+                <div className="text-gray-600 mt-1">
+                  <p className={expandedDescIds.includes(chapter._id) ? "" : "line-clamp-2"}>
+                    {chapter.description}
+                  </p>
+                  {chapter.description?.length > 150 && (
+                    <button 
+                      onClick={() => toggleDescription(chapter._id)}
+                      className="text-blue-600 font-medium text-sm hover:underline mt-1"
+                    >
+                      {expandedDescIds.includes(chapter._id) ? "Read Less" : "Read More"}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
-
-            <div className="flex justify-end gap-4">
+            <div className="flex gap-3 h-fit">
               <EditChapterDialog
                 chapterId={chapter._id}
                 title={chapter.title}
@@ -171,61 +173,52 @@ const TeacherChapterDetail = () => {
         </div>
 
         {/* Chapter Assessments */}
-        {chapter.chapter_assessments &&
-          chapter.chapter_assessments.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5 text-orange-600" />
-                  Chapter Assessments
-                  <Badge variant="secondary">
-                    {chapter.chapter_assessments.length}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {chapter.chapter_assessments.map((assessment) => (
-                    <div
-                      key={assessment._id}
-                      className="border rounded-lg hover:shadow-sm transition-shadow"
-                    >
-                      <div className="flex flex-col items-start justify-between mb-2 gap-5 p-4">
-                        <section className="flex justify-between w-full">
-                          <Badge variant="outline" className="mb-2">
-                            {assessment.category.name}
-                          </Badge>
-                          <DeleteModal
-                            deleteFunc={() =>
-                              handleDeleteAssessment(assessment._id)
-                            }
-                          />
-                        </section>
-                        <Link
-                          to={`/teacher/courses/assessment/${assessment._id}`}
-                          className="w-full hover:bg-gray-200 p-4 rounded-lg transform transition-transform duration-300"
-                        >
-                          <h4 className="font-semibold text-gray-900">
-                            {assessment.title}
-                          </h4>
-                          {assessment.description && (
-                            <p className="text-sm text-gray-600 mt-1">
-                              {assessment.description}
-                            </p>
-                          )}
-                        </Link>
-                      </div>
+        {chapter.chapter_assessments?.length > 0 && (
+          <Card className="shadow-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <GraduationCap className="h-5 w-5 text-orange-600" />
+                Chapter Assessments
+                <Badge variant="secondary">{chapter.chapter_assessments.length}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {chapter.chapter_assessments.map((assessment) => (
+                  <div key={assessment._id} className="border rounded-lg p-4 bg-white hover:shadow-sm transition-shadow">
+                    <div className="flex justify-between items-center mb-2">
+                      <Badge variant="outline">{assessment.category?.name}</Badge>
+                      <DeleteModal deleteFunc={() => handleDeleteAssessment(assessment._id)} />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                    <Link to={`/teacher/courses/assessment/${assessment._id}`} className="block group">
+                      <h4 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                        {assessment.title}
+                      </h4>
+                    </Link>
+                    <div className="text-sm text-gray-600 mt-2">
+                       <p className={expandedDescIds.includes(assessment._id) ? "" : "line-clamp-2"}>
+                        {assessment.description}
+                      </p>
+                      {assessment.description?.length > 100 && (
+                        <button 
+                          onClick={() => toggleDescription(assessment._id)}
+                          className="text-blue-600 font-medium text-xs hover:underline mt-1"
+                        >
+                          {expandedDescIds.includes(assessment._id) ? "Read Less" : "Read More"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Lessons */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        {/* Lessons List */}
+        <Card className="shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <BookOpen className="h-5 w-5 text-blue-600" />
               Lessons
               <Badge variant="secondary">{lessons.length}</Badge>
@@ -233,255 +226,124 @@ const TeacherChapterDetail = () => {
           </CardHeader>
           <CardContent>
             {lessons.length === 0 ? (
-              <div className="text-center py-8 flex flex-col justify-center item-center ">
+              <div className="text-center py-10">
                 <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No lessons yet
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Create your first lesson to start building your chapter
-                  content.
-                </p>
+                <h3 className="text-lg font-semibold text-gray-900">No lessons yet</h3>
+                <p className="text-gray-500">Create a lesson to start building your chapter.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {lessons.map((lesson, index) => (
-                  <Card
-                    key={lesson._id}
-                    className="border-l-4 border-l-blue-400"
-                  >
+                  <Card key={lesson._id} className="border-l-4 border-l-blue-500 bg-white">
                     <CardHeader className="pb-3">
-                      <div className="flex gap-3 flex-wrap items-start justify-between">
-                        <section className="flex items-center gap-2">
-                          <Badge
-                            variant="secondary"
-                            className="bg-blue-100 text-blue-800"
-                          >
-                            Lesson {index + 1}
-                          </Badge>
-                          <h4 className="font-semibold text-gray-900">
-                            {lesson.title}
-                          </h4>
-                        </section>
-                        <section className="flex items-center flex-wrap gap-1">
-                          <EditLessonModal
-                            lesson={lesson}
-                            fetchChapterDetail={fetchChapterDetail}
-                          />
+                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                        <div className="flex items-center gap-3">
+                          <Badge className="bg-blue-100 text-blue-800 border-none">Lesson {index + 1}</Badge>
+                          <h4 className="font-bold text-gray-900">{lesson.title}</h4>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <EditLessonModal lesson={lesson} fetchChapterDetail={fetchChapterDetail} />
                           <ChapterOptionDropdown
                             type="lesson"
                             typeId={lesson._id}
                             fetchChapterDetail={fetchChapterDetail}
-                            quarterId={chapter.quarter?._id}
-                            semesterId={chapter.semester?._id}
-                            quarterStart={quarterStart}
-                            quarterEnd={quarterEnd}
                             courseId={courseId}
-                            semesterbased={semesterbased}
                           />
-
-                          <DeleteModal
-                            deleteFunc={() => handleDeleteLesson(lesson._id)}
-                          />
-                          {/* <Link
-                            to={`/teacher/assessments/create/lesson/${lesson._id}/${courseId}/${quarterStart}/${quarterEnd}?semester=${chapter.semester?._id}&quarter=${chapter.quarter?._id}`}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-green-600 bg-transparent"
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Assessment
-                            </Button>
-                          </Link>
-                          <Link
-                            to={`/teacher/courses/${courseId}/posts/lesson/${lesson._id}`}
-                          >
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-green-600 bg-transparent"
-                            >
-                              <Plus className="h-4 w-4 mr-1" />
-                              Pages
-                            </Button>
-                          </Link> */}
-                        </section>
+                          <DeleteModal deleteFunc={() => handleDeleteLesson(lesson._id)} />
+                        </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-5">
+                      {/* Lesson Description with Read More */}
                       {lesson.description && (
-                        <p
-                          className="text-sm text-gray-600"
-                          dangerouslySetInnerHTML={{
-                            __html: lesson.description,
-                          }}
-                        />
+                        <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded-md">
+                          <div 
+                            className={`overflow-hidden transition-all duration-300 ${expandedDescIds.includes(lesson._id) ? "" : "max-h-20"}`}
+                            dangerouslySetInnerHTML={{ __html: lesson.description }}
+                          />
+                          {lesson.description.length > 200 && (
+                            <button 
+                              onClick={() => toggleDescription(lesson._id)}
+                              className="text-blue-600 font-medium text-xs hover:underline mt-2 block"
+                            >
+                              {expandedDescIds.includes(lesson._id) ? "Show Less ↑" : "Read Full Description ↓"}
+                            </button>
+                          )}
+                        </div>
                       )}
 
-                      <div>
-                        <section className="flex items-center justify-between">
-                          <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                            Files
-                          </h5>
-                          <AddMoreFile
-                            lessonId={lesson._id}
-                            fetchChapterDetail={fetchChapterDetail}
-                          />
-                        </section>
-
-                        <div className="flex flex-col gap-2">
+                      {/* Files Section */}
+                      <div className="border-t pt-4">
+                        <div className="flex justify-between items-center mb-3">
+                          <h5 className="text-sm font-bold text-gray-800">Files</h5>
+                          <AddMoreFile lessonId={lesson._id} fetchChapterDetail={fetchChapterDetail} />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {lesson.pdfFiles.length === 0 ? (
-                            <p className="text-sm text-gray-500">no files</p>
+                            <p className="text-xs text-gray-500 italic">No files attached</p>
                           ) : (
-                            lesson?.pdfFiles?.map(
-                              (pdf, i) =>
-                                pdf?.url &&
-                                pdf?.filename && (
-                                  <section
-                                    key={i}
-                                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0"
-                                  >
-                                    <div className="flex items-center gap-2">
-                                      <a
-                                        href={pdf.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-md text-sm hover:bg-blue-100 transition-colors"
-                                      >
-                                        <FileText className="h-4 w-4" />
-                                        {pdf.filename}
-                                      </a>
-
-                                      {/* Date formatted in MM/DD/YYYY hh:mm AM/PM */}
-                                      {pdf.uploadedAt && (
-                                        <span className="text-xs text-gray-500">
-                                          {new Date(
-                                            pdf.uploadedAt
-                                          ).toLocaleString("en-US", {
-                                            month: "2-digit",
-                                            day: "2-digit",
-                                            year: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            hour12: true,
-                                          })}
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    <DeleteModal
-                                      what="File"
-                                      deleteFunc={() =>
-                                        handleDeleteFile(pdf._id, lesson._id)
-                                      }
-                                    />
-                                  </section>
-                                )
-                            )
+                            lesson.pdfFiles.map((pdf, i) => (
+                              <div key={i} className="flex items-center justify-between p-2 rounded-md border bg-gray-50 group">
+                                <a href={pdf.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-blue-700 hover:underline truncate mr-2">
+                                  <FileText className="h-4 w-4 shrink-0" />
+                                  <span className="truncate">{pdf.filename}</span>
+                                </a>
+                                <DeleteModal what="File" deleteFunc={() => handleDeleteFile(pdf._id, lesson._id)} />
+                              </div>
+                            ))
                           )}
                         </div>
                       </div>
 
-                      {/* Resources */}
-                      <div>
-                        <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                          Resources
-                        </h5>
+                      {/* Resources Section */}
+                      <div className="border-t pt-4">
+                        <h5 className="text-sm font-bold text-gray-800 mb-3">Resources</h5>
                         <div className="flex flex-wrap gap-2">
                           {lesson.youtubeLinks && (
-                            <a
-                              href={lesson.youtubeLinks}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-sm hover:bg-red-100 transition-colors"
-                            >
-                              <Youtube className="h-4 w-4" />
-                              YouTube Video
+                            <a href={lesson.youtubeLinks} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-700 rounded-md text-xs font-medium hover:bg-red-100 transition-colors border border-red-100">
+                              <Youtube className="h-4 w-4" /> YouTube Video
                             </a>
                           )}
-
                           {lesson.otherLink && (
-                            <a
-                              href={lesson.otherLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-md text-sm hover:bg-purple-100 transition-colors"
-                            >
-                              <Link2 className="h-4 w-4" />
-                              External Link
+                            <a href={lesson.otherLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 text-purple-700 rounded-md text-xs font-medium hover:bg-purple-100 transition-colors border border-purple-100">
+                              <Link2 className="h-4 w-4" /> External Link
                             </a>
                           )}
                         </div>
                       </div>
 
                       {/* Lesson Assessments */}
-                      {lesson.lesson_assessments &&
-                        lesson.lesson_assessments.length > 0 && (
-                          <div>
-                            <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                              Lesson Assessments ({lesson.lesson_assessments.length})
-                            </h5>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              {lesson.lesson_assessments.map((assessment) => {
-                                const isExpanded = expandedDescIds.includes(assessment._id);
-                                const description = assessment.description || "";
-
-                                return (
-                                  <div
-                                    key={assessment._id}
-                                    className="border rounded-lg hover:shadow-sm transition-shadow"
-                                  >
-                                    <div className="flex flex-col items-start justify-between mb-2 gap-5 p-4">
-                                      <section className="flex justify-between w-full">
-                                        <Badge variant="outline" className="mb-2">
-                                          {assessment.category.name}
-                                        </Badge>
-                                        <DeleteModal
-                                          what="Assessment"
-                                          deleteFunc={() =>
-                                            handleDeleteAssessment(assessment._id)
-                                          }
-                                        />
-                                      </section>
-
-                                      <Link
-                                        to={`/teacher/courses/assessment/${assessment._id}`}
-                                        className="w-full hover:bg-gray-200 p-4 rounded-lg transform transition-transform duration-300"
-                                      >
-                                        <h4 className="font-semibold text-gray-900">
-                                          {assessment.title}
-                                        </h4>
-
-                                        {description && (
-                                          <p className="text-sm text-gray-600 mt-1">
-                                            {isExpanded
-                                              ? description
-                                              : truncateText(description, 120)}
-
-                                            {description.length > 120 && (
-                                              <button
-                                                type="button"
-                                                onClick={(e) => {
-                                                  e.preventDefault(); // prevent Link navigation
-                                                  toggleDescription(assessment._id);
-                                                }}
-                                                className="ml-2 text-blue-600 hover:underline"
-                                              >
-                                                {isExpanded ? "Read less" : "Read more"}
-                                              </button>
-                                            )}
-                                          </p>
-                                        )}
-                                      </Link>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                      {lesson.lesson_assessments?.length > 0 && (
+                        <div className="border-t pt-4">
+                          <h5 className="text-sm font-bold text-gray-800 mb-3">Lesson Assessments ({lesson.lesson_assessments.length})</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {lesson.lesson_assessments.map((assessment) => (
+                              <div key={assessment._id} className="p-3 border rounded-md bg-white hover:border-blue-300 transition-colors">
+                                <div className="flex justify-between items-start mb-2">
+                                  <Badge variant="secondary" className="text-[10px]">{assessment.category?.name}</Badge>
+                                  <DeleteModal what="Assessment" deleteFunc={() => handleDeleteAssessment(assessment._id)} />
+                                </div>
+                                <Link to={`/teacher/courses/assessment/${assessment._id}`} className="font-semibold text-sm hover:text-blue-600 block mb-1">
+                                  {assessment.title}
+                                </Link>
+                                <div className="text-xs text-gray-500">
+                                  <p className={expandedDescIds.includes(assessment._id) ? "" : "line-clamp-2"}>
+                                    {assessment.description}
+                                  </p>
+                                  {assessment.description?.length > 80 && (
+                                    <button 
+                                      onClick={() => toggleDescription(assessment._id)}
+                                      className="text-blue-600 font-medium hover:underline mt-1"
+                                    >
+                                      {expandedDescIds.includes(assessment._id) ? "Less" : "More"}
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        )}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}

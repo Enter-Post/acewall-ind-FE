@@ -9,7 +9,7 @@ export function AssessmentCard({ assessments, title, badgeColor, onDelete }) {
   console.log(assessments, "assessments");
 
   return (
-    <Card className="mt-4">
+    <Card className="mt-4 bg-green-400">
       <CardHeader className="py-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <Badge variant="outline" className={badgeColor}>

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -19,13 +21,15 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { GlobalContext } from "@/Context/GlobalProvider";
+import { toast } from "sonner";
+
 
 // ✅ Zod Schema for validation
 const AnnouncementSchema = z.object({
@@ -51,6 +55,8 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
   const [titleCharCount, setTitleCharCount] = useState(0);
   const [messageCharCount, setMessageCharCount] = useState(0);
 
+  const titleRef = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -70,10 +76,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
     const getCourses = async () => {
       setLoading(true);
       try {
-        const response = await axiosInstance.get(
-          "/course/getVerifiedCourses"
-        );
-        console.log(response, "response");
+        const response = await axiosInstance.get("/course/getVerifiedCourses");
         setAllCourses(response.data.courses || []);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -84,6 +87,14 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
     };
     getCourses();
   }, []);
+
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        titleRef.current?.focus();
+      }, 100);
+    }
+  }, [open]);
 
   const onSubmit = async (data) => {
     if (!user?._id) return;
@@ -99,7 +110,7 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
         payload
       );
 
-      alert("✅ Announcement created and email sent to enrolled students.");
+      toast.success("Announcement created and emails sent to students.");
 
       if (onCreated) onCreated(res.data.announcement);
 
@@ -109,38 +120,56 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
       setMessageCharCount(0);
     } catch (err) {
       console.error("Error creating announcement:", err);
-      alert("❌ Failed to create announcement. Please try again.");
+      toast.error("Failed to create announcement. Please try again.");
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        aria-labelledby="create-announcement-title"
+        aria-describedby="create-announcement-desc"
+      >
         <DialogHeader>
-          <DialogTitle>Create New Announcement</DialogTitle>
-          <DialogDescription>
+          <DialogTitle id="create-announcement-title">
+            Create New Announcement
+          </DialogTitle>
+          <DialogDescription id="create-announcement-desc">
             Create a new announcement for your students.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 py-4">
+
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid gap-4 py-4"
+        >
           {/* Title */}
           <div>
             <Label htmlFor="title">Announcement Title</Label>
             <Input
               id="title"
+              ref={titleRef}
               maxLength={100}
               {...register("title")}
+              aria-invalid={errors.title ? "true" : "false"}
+              aria-describedby={errors.title ? "title-error" : "title-help"}
               onChange={(e) => {
                 setTitleCharCount(e.target.value.length);
                 setValue("title", e.target.value, { shouldValidate: true });
               }}
               placeholder="Enter title"
+              className="focus-visible:outline focus-visible:outline-green-500"
             />
-            <div className="text-sm text-gray-500 text-right mt-1">
+            <div
+              id="title-help"
+              className="text-sm text-gray-500 text-right mt-1"
+            >
               {titleCharCount}/100 characters
             </div>
             {errors.title && (
-              <p className="text-sm text-red-500">{errors.title.message}</p>
+              <p id="title-error" className="text-sm text-red-500">
+                {errors.title.message}
+              </p>
             )}
           </div>
 
@@ -152,8 +181,13 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
                 setValue("courseId", value, { shouldValidate: true })
               }
               disabled={loading}
+              aria-invalid={errors.courseId ? "true" : "false"}
+              aria-describedby={errors.courseId ? "course-error" : undefined}
             >
-              <SelectTrigger>
+              <SelectTrigger
+                id="course"
+                className="focus-visible:outline focus-visible:outline-green-500"
+              >
                 <SelectValue placeholder="Select a course" />
               </SelectTrigger>
               <SelectContent>
@@ -171,7 +205,9 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
               </SelectContent>
             </Select>
             {errors.courseId && (
-              <p className="text-sm text-red-500">{errors.courseId.message}</p>
+              <p id="course-error" className="text-sm text-red-500">
+                {errors.courseId.message}
+              </p>
             )}
           </div>
 
@@ -182,22 +218,30 @@ export default function AnnouncementDialog({ open, onOpenChange, onCreated }) {
               id="message"
               maxLength={500}
               {...register("message")}
+              aria-invalid={errors.message ? "true" : "false"}
+              aria-describedby={errors.message ? "message-error" : "message-help"}
               onChange={(e) => {
                 setMessageCharCount(e.target.value.length);
                 setValue("message", e.target.value, { shouldValidate: true });
               }}
               placeholder="Enter message"
+              className="focus-visible:outline  focus-visible:outline-green-500"
             />
-            <div className="text-sm text-gray-500 text-right mt-1">
+            <div
+              id="message-help"
+              className="text-sm text-gray-500 text-right mt-1"
+            >
               {messageCharCount}/500 characters
             </div>
             {errors.message && (
-              <p className="text-sm text-red-500">{errors.message.message}</p>
+              <p id="message-error" className="text-sm text-red-500">
+                {errors.message.message}
+              </p>
             )}
           </div>
 
           {/* Footer Buttons */}
-          <DialogFooter>
+          <DialogFooter className="flex justify-end gap-2">
             <Button
               type="button"
               variant="outline"
