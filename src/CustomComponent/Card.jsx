@@ -463,66 +463,7 @@ function CoursesCard({ course, link }) {
 }
 
 // 6. StudentCard
-const StudentCard = ({ student, onViewProfile }) => {
-  // Safe full name
-  const fullName =
-    `${student.firstName} ${student.lastName || ""}`.trim() || "Student";
 
-  return (
-    <Card
-      className="overflow-hidden rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 bg-white focus-within:ring-2 focus-within:ring-green-500"
-      role="article"
-      aria-label={`Student Profile Card for ${fullName}`}
-    >
-      <CardContent className="px-6 py-2 flex flex-col items-center gap-3">
-        {/* Avatar */}
-        <div className="relative">
-          <Avatar className="w-24 h-24 ring-3 ring-gray-500 shadow-sm">
-            <AvatarImage
-              src={student.profileImg?.url || avatar}
-              alt={`${fullName}'s profile picture`}
-              className="rounded-full object-cover"
-            />
-            <AvatarFallback className="bg-gray-200 text-gray-600 text-xl font-semibold flex items-center justify-center">
-              {student.firstName[0] || "S"}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-
-        {/* Name and Email */}
-        <div className="text-center">
-          <h3 className="text-xl font-bold text-gray-800">{fullName}</h3>
-          <p className="text-sm text-gray-500">{student.email}</p>
-        </div>
-
-        {/* Joined date */}
-        <div
-          className="w-full grid grid-cols-2 gap-y-2 gap-x-4 text-sm mt-2"
-          role="group"
-          aria-label="Student details"
-        >
-          <span className="text-gray-500">Joined</span>
-          <time
-            dateTime={new Date(student.createdAt).toISOString()}
-            className="text-right text-gray-700 font-medium"
-          >
-            {new Date(student.createdAt).toLocaleDateString()}
-          </time>
-        </div>
-
-        {/* Action Button */}
-        <Button
-          type="button"
-          className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          aria-label={`View full profile for ${fullName}`}
-          onClick={() => onViewProfile && onViewProfile(student)}
-        >
-          View Profile
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
 
 // 7. TransactionCard (Table structure)
 const TransactionCard = ({ title, data }) => (
@@ -861,7 +802,6 @@ export {
   Assignment,
   AnnouncementCard,
   CoursesCard,
-  StudentCard,
   TransactionCard,
   EarningStateCard,
   LandingPageCard,

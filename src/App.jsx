@@ -100,6 +100,9 @@ import SocialProfilePage from "./Page/StudentPortal/SocialProfilePage";
 import ManageSBLScale from "./Page/teacher/Courses/Sbl/CreateNewSBLScale";
 import SBLScaleForm from "./Page/teacher/Courses/Sbl/ManageSbl";
 import AiChatbot from "./Page/StudentPortal/AiChatbot";
+import AllStdCourses from "./Page/teacher/AllStdCourses";
+import CourseStudents from "./Page/teacher/CourseStudents";
+import AllannouncmentCourses from "./Page/teacher/AllannouncmentCourses";
 
 function App() {
   const {
@@ -316,8 +319,12 @@ function App() {
               <Route path="detail" element={<EarningDetail />} />
               <Route path="withdraw" element={<WithdrawRequestForm />} />
             </Route>
-            <Route path="Announcements" element={<TeacherAnnoucement />} />
+            <Route path="announcements/:courseId" element={<TeacherAnnoucement />} />
+            <Route path="AnnouncementsCourses" element={<AllannouncmentCourses />} />
+
+            <Route path="coursesstd" element={<AllStdCourses />} />
             <Route path="allStudent" element={<AllStudent />} />
+            <Route path="course/:courseId" element={<CourseStudents />} />
             <Route path="studentProfile/:id" element={<StudentProfile />} />
             <Route
               path="courseGrades/:studentId/:courseId"
