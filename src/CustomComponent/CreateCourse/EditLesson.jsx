@@ -17,16 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Pen } from "lucide-react";
+import { Pen, Loader2 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 
 import JoditEditor from "jodit-react";
 
-// Zod schema
 const lessonSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
-  description: z.string().min(5, "Description is too short").max(5000),
   youtubeLinks: z
     .string()
     .trim()
@@ -68,18 +66,22 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
     resolver: zodResolver(lessonSchema),
     defaultValues: {
       title: lesson.title || "",
-      description: lesson.description || "",
       youtubeLinks: lesson.youtubeLinks || "",
       otherLink: lesson.otherLink || "",
     },
   });
 
   const onSubmit = async (data) => {
-    setLoading(true);
+    // Basic validation for Jodit content since it's outside of React Hook Form state
+    if (description.replace(/<[^>]*>/g, "").length < 5) {
+      toast.error("Description must be at least 5 characters");
+      return;
+    }
 
+    setLoading(true);
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("description", description); // Use editor state
+    formData.append("description", description);
     formData.append("youtubeLinks", data.youtubeLinks || "");
     formData.append("otherLink", data.otherLink || "");
 
@@ -88,9 +90,8 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
         `lesson/edit/${lesson._id}`,
         formData
       );
-      toast.success(res.data.message);
+      toast.success(res.data.message || "Lesson updated successfully");
       fetchChapterDetail();
-      reset();
       setOpen(false);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
@@ -103,70 +104,99 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          size="sm"
-          className="flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 ml-auto"
+          variant="ghost"
+          size="icon"
+          className="bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg h-10 w-10"
+          aria-label={`Edit lesson: ${lesson.title}`}
         >
-          <Pen size={16} />
+          <Pen size={18} aria-hidden="true" />
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[600px] h-[80dvh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle>Edit Lesson</DialogTitle>
           <DialogDescription>
-            Fill in the lesson details. Upload only PDF files, max 5MB total.
+            Modify lesson details below. Ensure all video links are valid URLs.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Title */}
-          <div>
-            <Label htmlFor="title">Lesson Title</Label>
-            <Input id="title" {...register("title")} />
-            {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title.message}</p>
-            )}
-          </div>
-
-          {/* Description (Jodit) */}
-          <div>
-            <Label htmlFor="description">Lesson Description</Label>
-            <JoditEditor
-              ref={editor}
-              value={description}
-              onBlur={(newContent) => setDescription(newContent)}
+        <form 
+          onSubmit={handleSubmit(onSubmit)} 
+          className="flex-1 overflow-y-auto px-1 py-4 space-y-6"
+        >
+          {/* Lesson Title */}
+          <div className="space-y-2">
+            <Label htmlFor="lesson-title">Lesson Title</Label>
+            <Input
+              id="lesson-title"
+              placeholder="e.g. Introduction to Biology"
+              {...register("title")}
+              aria-invalid={errors.title ? "true" : "false"}
+              aria-describedby={errors.title ? "title-error" : undefined}
             />
-            {errors.description && (
-              <p className="text-red-500 text-sm">
-                {errors.description.message}
+            {errors.title && (
+              <p id="title-error" className="text-red-500 text-xs font-medium">
+                {errors.title.message}
               </p>
             )}
           </div>
 
-          {/* YouTube Link */}
-          <div>
-            <Label htmlFor="youtubeLinks">YouTube Link</Label>
-            <Input id="youtubeLinks" {...register("youtubeLinks")} />
-            {errors.youtubeLinks && (
-              <p className="text-red-500 text-sm">
-                {errors.youtubeLinks.message}
-              </p>
-            )}
+          {/* Description (Jodit Editor) */}
+          <div className="space-y-2">
+            <Label htmlFor="lesson-description">Lesson Description</Label>
+            <div id="lesson-description" className="border rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-ring">
+              <JoditEditor
+                ref={editor}
+                value={description}
+                config={{
+                   readonly: false,
+                   placeholder: "Start typing lesson content...",
+                   height: 300
+                }}
+                onBlur={(newContent) => setDescription(newContent)}
+              />
+            </div>
           </div>
 
-          {/* Other Link */}
-          <div>
-            <Label htmlFor="otherLink">Other Link</Label>
-            <Input id="otherLink" {...register("otherLink")} />
-            {errors.otherLink && (
-              <p className="text-red-500 text-sm">
-                {errors.otherLink.message}
-              </p>
-            )}
+          {/* Links Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* YouTube Link */}
+            <div className="space-y-2">
+              <Label htmlFor="youtube-link">YouTube Link (Optional)</Label>
+              <Input
+                id="youtube-link"
+                placeholder="https://youtube.com/watch?v=..."
+                {...register("youtubeLinks")}
+                aria-invalid={errors.youtubeLinks ? "true" : "false"}
+                aria-describedby={errors.youtubeLinks ? "youtube-error" : undefined}
+              />
+              {errors.youtubeLinks && (
+                <p id="youtube-error" className="text-red-500 text-xs font-medium">
+                  {errors.youtubeLinks.message}
+                </p>
+              )}
+            </div>
+
+            {/* Other Link */}
+            <div className="space-y-2">
+              <Label htmlFor="other-link">Reference Link (Optional)</Label>
+              <Input
+                id="other-link"
+                placeholder="https://example.com"
+                {...register("otherLink")}
+                aria-invalid={errors.otherLink ? "true" : "false"}
+                aria-describedby={errors.otherLink ? "other-link-error" : undefined}
+              />
+              {errors.otherLink && (
+                <p id="other-link-error" className="text-red-500 text-xs font-medium">
+                  {errors.otherLink.message}
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Buttons */}
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 bg-background pt-4 border-t">
             <Button
               type="button"
               variant="outline"
@@ -178,8 +208,15 @@ const EditLessonModal = ({ lesson, fetchChapterDetail }) => {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Lesson"}
+            <Button type="submit" disabled={loading} className="min-w-[120px]">
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </Button>
           </DialogFooter>
         </form>

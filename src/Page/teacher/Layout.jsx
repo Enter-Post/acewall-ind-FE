@@ -62,7 +62,7 @@ const sideBarTabs = [
     id: 5,
     name: "Announcements",
     icon: <Megaphone02Icon />,
-    path: "/teacher/announcements",
+    path: "/teacher/AnnouncementsCourses",
   },
   {
     id: 12,
@@ -79,7 +79,7 @@ const sideBarTabs = [
     id: 13,
     name: "Students",
     icon: <GraduationCap />,
-    path: "/teacher/allStudent",
+    path: "/teacher/coursesstd",
   },
   {
     id: 14,
@@ -102,7 +102,6 @@ export default function TeacherLayout() {
     useContext(GlobalContext);
   const location = useLocation().pathname;
 
-  console.log(user, "user");
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dropdownCourses, setDropdownCourses] = React.useState([]);

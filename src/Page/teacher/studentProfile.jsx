@@ -9,22 +9,27 @@ import avatar from "@/assets/avatar.png";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import BackButton from "@/CustomComponent/BackButton";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function StudentProfile() {
   const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
+  const headingRef = useRef(null);
 
   const student = state?.student;
 
-  // ✅ Fixed conversation logic
+  // Focus heading on mount for screen readers
+  useEffect(() => {
+    if (headingRef.current) headingRef.current.focus();
+  }, []);
+
   const handleConversation = async () => {
     try {
       await axiosInstance.post("conversation/create", {
         memberId: student._id,
       });
-      navigate("/teacher/messages"); // ✅ fixed typo
+      navigate("/teacher/messages");
     } catch (err) {
       console.error("Failed to create conversation:", err);
     }
@@ -32,29 +37,35 @@ export default function StudentProfile() {
 
   if (!student) {
     return (
-      <div className="text-center mt-10">
+      <main className="text-center mt-10" role="alert">
         <p className="text-red-500">Student data not found.</p>
-        <button
-          className="mt-4 text-blue-500 underline"
+        <Button
+          variant="link"
+          className="mt-4 underline text-blue-500"
           onClick={() => navigate(-1)}
         >
           Go back
-        </button>
-      </div>
+        </Button>
+      </main>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-white rounded-xl shadow-md">
+    <main
+      className="max-w-5xl mx-auto px-4 sm:px-6 py-8 bg-white rounded-xl shadow-md"
+      aria-labelledby="student-profile-heading"
+    >
       <BackButton className="mb-10" />
 
       {/* Profile Section */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
-        <Avatar className="w-24 h-24 rounded-full overflow-hidden ring-3 ring-gray-500 shadow-sm">
+      <section className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-10">
+        <Avatar
+          className="w-24 h-24 rounded-full overflow-hidden ring-3 ring-gray-500 shadow-sm"
+          aria-label={`${student.firstName} ${student.lastName}'s profile picture`}
+        >
           <AvatarImage
             src={student?.profileImg?.url || avatar}
-            alt={student?.firstName}
-            className="w-full h-full object-cover"
+            alt={`${student?.firstName} ${student?.lastName}'s profile`}
           />
           <AvatarFallback className="w-full h-full bg-gray-200 text-gray-600 text-xl font-semibold flex items-center justify-center rounded-full">
             {student?.firstName?.[0]}
@@ -62,19 +73,15 @@ export default function StudentProfile() {
         </Avatar>
 
         <div className="flex flex-col justify-center text-center md:text-left">
-          <div className="flex flex-wrap justify-center md:justify-start items-center gap-x-2 gap-y-1">
-            <p className="text-2xl font-bold text-gray-800">
-              {student?.firstName}
-            </p>
-            {student?.middleName && (
-              <p className="text-2xl font-bold text-gray-800">
-                {student.middleName}
-              </p>
-            )}
-            <p className="text-2xl font-bold text-gray-800">
-              {student?.lastName}
-            </p>
-          </div>
+          <h1
+            id="student-profile-heading"
+            ref={headingRef}
+            tabIndex={-1}
+            className="text-2xl font-bold text-gray-800 flex flex-wrap justify-center md:justify-start gap-x-2 gap-y-1"
+          >
+            {student?.firstName} {student?.middleName && student.middleName}{" "}
+            {student?.lastName}
+          </h1>
 
           <div className="mt-3 space-y-1 text-sm text-gray-600">
             <div className="flex items-center justify-center md:justify-start gap-2">
@@ -83,42 +90,53 @@ export default function StudentProfile() {
             </div>
             <div className="flex items-center justify-center md:justify-start gap-2">
               <Calendar className="w-4 h-4 text-gray-500" />
-              <span>
+              <time dateTime={new Date(student?.createdAt).toISOString()}>
                 Joined: {new Date(student?.createdAt).toLocaleDateString()}
-              </span>
+              </time>
             </div>
           </div>
 
-          {/* ✅ Message Student Button */}
           <div className="flex items-center justify-center md:justify-start gap-2 mt-4">
-            <Button className="bg-green-500" onClick={handleConversation}>
+            <Button
+              className="bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-600"
+              onClick={handleConversation}
+            >
               Message
             </Button>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Stats Cards */}
-      <div className="flex items-center justify-center mb-10">
+      <section
+        className="flex items-center justify-center mb-10"
+        aria-label="Student statistics"
+      >
         <StudentProfileStatCard
           className="max-w-xs"
           icon={<School />}
           title="Enrolled Courses"
           value={student?.courses?.length || 0}
         />
-      </div>
+      </section>
 
       {/* Course List */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 col-span-full mb-4">
+      <section
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+        aria-labelledby="enrolled-courses-heading"
+      >
+        <h2
+          id="enrolled-courses-heading"
+          className="text-2xl font-semibold text-gray-900 col-span-full mb-4"
+        >
           View Grade Book of Enrolled Courses
         </h2>
 
-        {student?.courses?.map((course, index) => (
+        {student?.courses?.map((course) => (
           <Link
             to={`/teacher/courseGrades/${id}/${course._id}`}
-            key={index}
-            className="group relative rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
+            key={course._id}
+            className="group relative rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             <div className="transform group-hover:scale-105 transition-transform duration-300">
               <StudentProfileCourseCard course={course} />
@@ -131,7 +149,7 @@ export default function StudentProfile() {
             </div>
           </Link>
         ))}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

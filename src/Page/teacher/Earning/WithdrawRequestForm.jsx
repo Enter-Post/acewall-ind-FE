@@ -1,119 +1,153 @@
+"use client";
 import { useState } from "react";
 import { axiosInstance } from "../../../lib/AxiosInstance";
 import BackButton from "@/CustomComponent/BackButton";
+import { Loader2 } from "lucide-react"; // Optional: for a better loading spinner
 
 export default function WithdrawRequestForm() {
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState("stripe"); // default to stripe
-  const [stripeAccountId, setStripeAccountId] = useState(""); // NEW
+  const [method, setMethod] = useState("stripe");
+  const [stripeAccountId, setStripeAccountId] = useState("");
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState("idle"); // 'idle' | 'success' | 'error'
   const [loading, setLoading] = useState(false);
 
   const handleWithdraw = async () => {
     if (!amount || parseFloat(amount) <= 0) {
       setMessage("Enter a valid amount.");
+      setStatus("error");
       return;
     }
 
     if (method === "stripe" && !stripeAccountId.trim()) {
       setMessage("Please enter your Stripe Account ID.");
+      setStatus("error");
       return;
     }
 
     setLoading(true);
     setMessage("");
+    setStatus("idle");
 
     try {
       const res = await axiosInstance.post("/teacher/withdraw", {
         amount: parseFloat(amount),
         method,
-        stripeAccountId: method === "stripe" ? stripeAccountId.trim() : undefined, // Only send if using Stripe
+        stripeAccountId: method === "stripe" ? stripeAccountId.trim() : undefined,
       });
 
       setMessage(res.data.message);
+      setStatus("success");
       setAmount("");
-      setStripeAccountId(""); // clear after success
+      setStripeAccountId("");
     } catch (error) {
       setMessage(error.response?.data?.message || "Failed to request withdrawal");
+      setStatus("error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-  <>
-  <BackButton className="mt-2  mb-6 " />
-    <div className="max-w-lg mx-auto p-8 bg-white shadow-xl rounded-lg space-y-6">
+    <main className="container mx-auto p-3 md:p-0">
+      <nav aria-label="Back navigation">
+        <BackButton className="mt-2 mb-6" />
+      </nav>
 
-      {/* Heading Section */}
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Request Your Withdrawal</h2>
-        <p className="text-sm text-gray-600">
-          Enter the amount you'd like to withdraw. Make sure to provide your correct Stripe Account ID.
-        </p>
-      </div>
+      <div className="max-w-lg mx-auto p-8 bg-white shadow-xl rounded-lg space-y-6 border border-gray-100">
+        {/* Heading Section */}
+        <header className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Request Your Withdrawal</h1>
+          <p className="text-sm text-gray-600">
+            Enter the amount you'd like to withdraw. Make sure to provide your correct Stripe Account ID.
+          </p>
+        </header>
 
-      {/* Withdrawal Form */}
-      <div className="space-y-4">
-        {/* Amount Input */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Amount ($)</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full border rounded-md p-3 text-gray-900 focus:ring-2 focus:ring-green-500"
-            placeholder="Enter amount"
-          />
-        </div>
+        
 
-        {/* Method Selection */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-          <select
-            value={method}
-            onChange={(e) => setMethod(e.target.value)}
-            className="w-full border rounded-md p-3 text-gray-900 focus:ring-2 focus:ring-green-500"
-          >
-            <option value="stripe">Stripe</option>
-            {/* Add more options as necessary */}
-          </select>
-        </div>
-
-        {/* Stripe Account ID (only visible when Stripe is selected) */}
-        {method === "stripe" && (
+        {/* Withdrawal Form */}
+        <div className="space-y-5">
+          {/* Amount Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Stripe Account ID</label>
+            <label htmlFor="withdraw-amount" className="block text-sm font-bold text-gray-700 mb-2">
+              Amount ($)
+            </label>
             <input
-              type="text"
-              value={stripeAccountId}
-              onChange={(e) => setStripeAccountId(e.target.value)}
-              className="w-full border rounded-md p-3 text-gray-900 focus:ring-2 focus:ring-green-500"
-              placeholder="Enter your Stripe account ID (e.g., acct_123ABC456XYZ)"
+              id="withdraw-amount"
+              type="number"
+              min="0"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-3 text-gray-900 focus:ring-2 focus:ring-green-600 focus:border-transparent outline-none transition-all"
+              placeholder="e.g. 50.00"
+              aria-required="true"
             />
           </div>
-        )}
 
-        {/* Message */}
-        {message && (
-          <p className={`text-sm mt-2 ${message.includes("failed") ? "text-red-600" : "text-blue-600"}`}>
-            {message}
-          </p>
-        )}
+          {/* Method Selection */}
+          <div>
+            <label htmlFor="payment-method" className="block text-sm font-bold text-gray-700 mb-2">
+              Payment Method
+            </label>
+            <select
+              id="payment-method"
+              value={method}
+              onChange={(e) => setMethod(e.target.value)}
+              className="w-full border border-gray-300 rounded-md p-3 text-gray-900 focus:ring-2 focus:ring-green-600 focus:border-transparent outline-none transition-all bg-white"
+            >
+              <option value="stripe">Stripe</option>
+            </select>
+          </div>
 
-        {/* Submit Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleWithdraw}
-            disabled={loading}
-            className="w-full px-4 py-3 bg-gradient-to-r from-green-500 to-green-400 text-white font-semibold rounded-lg hover:from-green-400 hover:to-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          {/* Stripe Account ID */}
+          {method === "stripe" && (
+            <div className="animate-in fade-in duration-300">
+              <label htmlFor="stripe-id" className="block text-sm font-bold text-gray-700 mb-2">
+                Stripe Account ID
+              </label>
+              <input
+                id="stripe-id"
+                type="text"
+                value={stripeAccountId}
+                onChange={(e) => setStripeAccountId(e.target.value)}
+                className="w-full border border-gray-300 rounded-md p-3 text-gray-900 focus:ring-2 focus:ring-green-600 focus:border-transparent outline-none transition-all"
+                placeholder="acct_xxxxxxxxxxxx"
+                aria-required="true"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                Find this in your Stripe Dashboard under Settings &gt; Account details.
+              </p>
+            </div>
+          )}
+
+          {/* Status Message - ARIA LIVE REGION */}
+          <div 
+            aria-live="polite" 
+            className="min-h-[1.25rem]"
           >
-            {loading ? "Submitting..." : "Submit Withdrawal Request"}
-          </button>
+            {message && (
+              <p className={`text-sm font-medium p-3 rounded-md ${
+                status === "error" ? "bg-red-50 text-red-700 border border-red-200" : "bg-green-50 text-green-700 border border-green-200"
+              }`}>
+                {message}
+              </p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="mt-6">
+            <button
+              onClick={handleWithdraw}
+              disabled={loading}
+              className="w-full px-4 py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-md"
+            >
+              {loading && <Loader2 className="h-5 w-5 animate-spin" />}
+              {loading ? "Processing..." : "Submit Withdrawal Request"}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-
-  </>
+    </main>
   );
 }

@@ -28,8 +28,6 @@ import SelectSemAndQuar from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
 import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
 
-// Define the form schema with Zod
-
 const documentSchema = z.object({
   file: z.any().refine((file) => file instanceof File, {
     message: "Document file is required",
@@ -93,65 +91,8 @@ const courseFormSchema = z.object({
     .refine((val) => Number(val) <= 9999, {
       message: "Price must not exceed 4 digits",
     }),
-  // courseType: z
-  //   .string()
-  //   .refine((val) => val === "credit" || val === "non-credit", {
-  //     message: "Please select course type",
-  //   }),
-  // documents: z.object({
-  //   governmentId: z.any(),
-  //   resume: z.any(),
-  //   certificate: z.any(),
-  //   transcript: z.any(),
-  // }),
+
 });
-// .superRefine((data, ctx) => {
-//   if (data.courseType === "credit") {
-//     if (!(data.documents.governmentId instanceof File)) {
-//       ctx.addIssue({
-//         path: ["documents", "governmentId"],
-//         code: z.ZodIssueCode.custom,
-//         message: "Government ID is required",
-//       });
-//     }
-//     if (!(data.documents.resume instanceof File)) {
-//       ctx.addIssue({
-//         path: ["documents", "resume"],
-//         code: z.ZodIssueCode.custom,
-//         message: "Resume is required",
-//       });
-//     }
-//     if (!(data.documents.certificate instanceof File)) {
-//       ctx.addIssue({
-//         path: ["documents", "certificate"],
-//         code: z.ZodIssueCode.custom,
-//         message: "Certificate is required",
-//       });
-//     }
-//     if (!(data.documents.transcript instanceof File)) {
-//       ctx.addIssue({
-//         path: ["documents", "transcript"],
-//         code: z.ZodIssueCode.custom,
-//         message: "Transcript is required",
-//       });
-//     }
-//   } else if (data.courseType === "non-credit") {
-//     if (!(data.documents.resume instanceof File)) {
-//       ctx.addIssue({
-//         path: ["documents", "resume"],
-//         code: z.ZodIssueCode.custom,
-//         message: "Resume is required",
-//       });
-//     }
-//     if (!(data.documents.certificate instanceof File)) {
-//       ctx.addIssue({
-//         path: ["documents", "certificate"],
-//         code: z.ZodIssueCode.custom,
-//         message: "Certificate is required",
-//       });
-//     }
-//   }
-// });
 
 export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -161,13 +102,6 @@ export default function CoursesBasis() {
   const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
   const [selectedCategory, setSelectedCategory] = useState("");
-  // const [selectedCourseType, setSelectedCourseType] = useState("");
-  // const [courseDocument, setCourseDocument] = useState({
-  //   governmentId: null,
-  //   resume: null,
-  //   certificate: null,
-  //   transcript: null,
-  // });
 
   useEffect(() => {
     axiosInstance
@@ -216,7 +150,6 @@ export default function CoursesBasis() {
 
   console.log(errors, "errors");
 
-  // Set up field arrays for teaching points and requirements,
   const {
     fields: teachingPointsFields,
     append: appendTeachingPoint,
@@ -372,428 +305,390 @@ export default function CoursesBasis() {
     console.log(errors);
   };
 
-  return (
-    <div>
-      <p className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg">
-        Create Course
-      </p>
-      <FormProvider
-        {...{
-          register,
-          handleSubmit,
-          control,
-          setValue,
-          reset,
-          formState: { errors, isSubmitting },
-          watch,
-        }}
+return (
+  <div role="main" aria-labelledby="create-course-heading">
+    <h1
+      id="create-course-heading"
+      className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg"
+    >
+      Create Course
+    </h1>
+
+    <p id="form-instructions" className="sr-only">
+      All fields marked with an asterisk are required.
+    </p>
+
+    <FormProvider
+      {...{
+        register,
+        handleSubmit,
+        control,
+        setValue,
+        reset,
+        formState: { errors, isSubmitting },
+        watch,
+      }}
+    >
+      <form
+        onSubmit={handleSubmit(onSubmit, onError)}
+        className="space-y-8"
+        noValidate
+        aria-describedby="form-instructions"
       >
-        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-8">
-          <section>
-            <div className="space-y-6">
-              <div>
-                <Label htmlFor="thumbnail" className="block mb-2">
-                  Thumbnail *
-                </Label>
-                <div
-                  className={` p-1 w-full max-w-md ${
-                    errors.thumbnail ? "border-red-500" : "border-gray-300"
-                  }`}
-                ></div>
-                {errors?.thumbnail && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.thumbnail.message}
-                  </p>
-                )}
+        <section>
+          <div className="space-y-6">
+            {/* Thumbnail */}
+            <div>
+              <Label htmlFor="thumbnailInput" className="block mb-2">
+                Thumbnail *
+              </Label>
 
-                <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
-                  {thumbnailPreview ? (
-                    <div className="relative">
-                      <img
-                        src={thumbnailPreview || "/placeholder.svg"}
-                        alt="Course thumbnail"
-                        className="w-full h-[300px] object-cover rounded"
-                      />
-                      <div className="absolute bottom-2 right-2 flex space-x-2">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          className="bg-white hover:bg-gray-100 text-red-500"
-                          onClick={() => {
-                            setThumbnailPreview(null);
-                            setValue("thumbnail", null); // Reset form value
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
-                  ) : loading ? (
-                    <section className="flex justify-center items-center h-[300px]">
-                      <Loader size={48} className="animate-spin" />
-                    </section>
-                  ) : (
-                    <div className="flex items-center justify-center h-[300px]">
-                      <input
-                        type="file"
-                        accept="image/jpeg, image/png"
-                        className="hidden"
-                        id="thumbnailInput"
-                        onChange={handleThumbnailChange}
-                      />
-                      <label htmlFor="thumbnailInput">
-                        <div className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer">
-                          <Upload size={16} />
-                          Upload Thumbnail
-                        </div>
-                      </label>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="courseTitle" className="block mb-2">
-                    Course Title *
-                  </Label>
-                  <Input
-                    id="courseTitle"
-                    maxLength={50}
-                    className={`bg-gray-50 ${
-                      errors.courseTitle ? "border border-red-500" : ""
-                    }`}
-                    {...register("courseTitle")}
-                  />
-                  {errors.courseTitle && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.courseTitle.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="price" className="block mb-2">
-                    Course Price (USD)
-                  </Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="9999"
-                    placeholder="Enter course price"
-                    className={`bg-gray-50 ${
-                      errors.price ? "border border-red-500" : ""
-                    }`}
-                    onInput={(e) => {
-                      const value = parseFloat(e.currentTarget.value);
-                      if (value > 9999) {
-                        e.currentTarget.value = "9999";
-                      }
-                    }}
-                    {...register("price")}
-                  />
-
-                  {errors.price && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.price.message}
-                    </p>
-                  )}
-                </div>
-
-                {/* Category */}
-                <CategorySelect
-                  register={register}
-                  errors={errors}
-                  onCategoryChange={(value) => setSelectedCategory(value)}
-                />
-
-                <SubCategorySelect
-                  register={register}
-                  errors={errors}
-                  selectedCategory={selectedCategory}
-                />
-              </div>
-              <section className="flex gap-6 justify-between">
-                <div>
-                  <Label htmlFor="language" className="block mb-2">
-                    Is this a semester-based course *
-                  </Label>
-                  <Select
-                    onValueChange={(value) => {
-                      setValue("semesterbased", value === "true", {
-                        shouldValidate: true,
-                      });
-                    }}
-                    value={
-                      watchedSemesterbased !== undefined
-                        ? watchedSemesterbased
-                          ? "true"
-                          : "false"
-                        : undefined
-                    }
-                    className="max-w-xs"
-                  >
-                    <SelectTrigger className="bg-gray-50">
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Yes</SelectItem>
-                      <SelectItem value="false">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.semesterbased && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.semesterbased.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-[50%]">
-                  <Label htmlFor="language" className="block mb-2">
-                    Language *
-                  </Label>
-                  <Select
-                    onValueChange={(value) => {
-                      setValue("language", value, { shouldValidate: true });
-                    }}
-                    value={watchedLanguage}
-                    className="max-w-xs"
-                  >
-                    <SelectTrigger className="bg-gray-50">
-                      <SelectValue
-                        placeholder="Select language"
-                        defaultValues={"english"}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="english">English</SelectItem>
-                      <SelectItem value="spanish">Spanish</SelectItem>
-                      <SelectItem value="french">French</SelectItem>
-                      <SelectItem value="german">German</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.language && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.language.message}
-                    </p>
-                  )}
-                </div>
-              </section>
-
-              <div className="">
-                <Label htmlFor="courseDescription" className="block mb-2">
-                  Course Description *
-                </Label>
-                <Textarea
-                  id="courseDescription"
-                  className={`min-h-[100px] bg-gray-50  ${
-                    errors.courseDescription ? "border border-red-500" : ""
-                  }`}
-                  maxLength={4000}
-                  {...register("courseDescription")}
-                />
-                {errors.courseDescription && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.courseDescription.message}
-                  </p>
-                )}
-                <p className="text-xs text-gray-500 mt-1">
-                  {`Characters left: ${
-                    4000 - (watch("courseDescription")?.length || 0)
-                  }`}
+              {errors?.thumbnail && (
+                <p
+                  role="alert"
+                  className="text-xs text-red-500 mt-1"
+                  id="thumbnail-error"
+                >
+                  {errors.thumbnail.message}
                 </p>
+              )}
+
+              <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
+                {thumbnailPreview ? (
+                  <div className="relative">
+                    <img
+                      src={thumbnailPreview || "/placeholder.svg"}
+                      alt="Selected course thumbnail preview"
+                      className="w-full h-[300px] object-cover rounded"
+                    />
+                    <div className="absolute bottom-2 right-2 flex space-x-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        className="bg-white hover:bg-gray-100 text-red-500"
+                        aria-label="Remove thumbnail"
+                        onClick={() => {
+                          setThumbnailPreview(null);
+                          setValue("thumbnail", null);
+                        }}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ) : loading ? (
+                  <section
+                    className="flex justify-center items-center h-[300px]"
+                    aria-live="polite"
+                    aria-busy="true"
+                  >
+                    <Loader size={48} className="animate-spin" />
+                  </section>
+                ) : (
+                  <div className="flex items-center justify-center h-[300px]">
+                    <input
+                      type="file"
+                      accept="image/jpeg, image/png"
+                      id="thumbnailInput"
+                      className="sr-only"
+                      aria-invalid={!!errors.thumbnail}
+                      aria-describedby={
+                        errors.thumbnail ? "thumbnail-error" : undefined
+                      }
+                      onChange={handleThumbnailChange}
+                    />
+                    <label
+                      htmlFor="thumbnailInput"
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Upload course thumbnail"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          document
+                            .getElementById("thumbnailInput")
+                            ?.click();
+                        }
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer"
+                    >
+                      <Upload size={16} />
+                      Upload Thumbnail
+                    </label>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="mt-10 mb-6">
-              <h2 className="text-xl font-semibold">Make The Course</h2>
-            </div>
-            <section className="my-4">
-              <h3 className="text-lg font-medium mb-4">
-                What you will teach in this course *
-                <span className="text-gray-500 text-xs"></span>
-              </h3>
-              {teachingPointsFields.map((field, index) => (
-                <TeachingPointInput
-                  key={field.id}
-                  field={field}
-                  index={index}
-                  teachingPointsFields={teachingPointsFields}
-                  remove={removeTeachingPoint}
-                  error={errors.teachingPoints?.[index]?.value}
-                  control={control}
-                  register={register}
-                />
-              ))}
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  disabled={teachingPointsFields.length >= 10}
-                  onClick={() => appendTeachingPoint({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                    teachingPointsFields.length >= 10
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
-                  + Add Teaching Point
-                </button>
-              </div>
-            </section>
-
-            <section>
-              <h3 className="text-lg font-medium mb-4">
-                Course Requirements *
-                <span className="text-gray-500 text-xs"></span>
-              </h3>
-              {requirementsFields.map((field, index) => (
-                <RequirementInput
-                  key={field.id}
-                  field={field}
-                  index={index}
-                  requirementsFields={requirementsFields}
-                  remove={removeRequirement}
-                  error={errors.requirements?.[index]?.value}
-                  register={register}
-                />
-              ))}
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => appendRequirement({ value: "" })}
-                  className={`mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 ${
-                    requirementsFields.length >= 10
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                  disabled={requirementsFields.length >= 10}
-                >
-                  + Add Requirement
-                </button>
-              </div>
-            </section>
-            {/* 
-            <section>
+            {/* Course Title & Price */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <Label>Select Course Type *</Label>
-                <div className="flex gap-6 mt-2">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      value="credit"
-                      {...register("courseType")}
-                      className="accent-blue-500"
-                      onChange={(e) => {
-                        setSelectedCourseType(e.target.value);
-                        setCourseDocument({
-                          governmentId: null,
-                          resume: null,
-                          certificate: null,
-                          transcript: null,
-                        });
-                      }}
-                    />
-                    Credit
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      value="non-credit"
-                      {...register("courseType")}
-                      className="accent-blue-500"
-                      onChange={(e) => {
-                        setSelectedCourseType(e.target.value);
-                        setCourseDocument({
-                          governmentId: null,
-                          resume: null,
-                          certificate: null,
-                          transcript: null,
-                        });
-                      }}
-                    />
-                    Non-Credit
-                  </label>
-                </div>
-                {errors.courseType && (
-                  <p className="text-xs text-red-500 mt-1">
-                    {errors.courseType.message && "Please select a course type"}
+                <Label htmlFor="courseTitle" className="block mb-2">
+                  Course Title *
+                </Label>
+                <Input
+                  id="courseTitle"
+                  maxLength={50}
+                  aria-invalid={!!errors.courseTitle}
+                  aria-describedby={
+                    errors.courseTitle ? "courseTitle-error" : undefined
+                  }
+                  className={`bg-gray-50 ${
+                    errors.courseTitle ? "border border-red-500" : ""
+                  }`}
+                  {...register("courseTitle")}
+                />
+                {errors.courseTitle && (
+                  <p
+                    id="courseTitle-error"
+                    role="alert"
+                    className="text-xs text-red-500 mt-1"
+                  >
+                    {errors.courseTitle.message}
                   </p>
                 )}
               </div>
 
               <div>
-                {selectedCourseType === "credit" ? (
-                  <>
-                    <DocumentUpload
-                      label="Government ID *"
-                      name="documents.governmentId.file"
-                      register={register}
-                      setValue={setValue}
-                      error={errors?.documents?.governmentId?.file}
-                    />
-                    <DocumentUpload
-                      label="Resume *"
-                      name="documents.resume.file"
-                      register={register}
-                      setValue={setValue}
-                      error={errors?.documents?.resume?.file}
-                    />
-                    <DocumentUpload
-                      label="Certificate *"
-                      name="documents.certificate.file"
-                      register={register}
-                      setValue={setValue}
-                      error={errors?.documents?.certificate?.file}
-                    />
-                    <DocumentUpload
-                      label="Transcript *"
-                      name="documents.transcript.file"
-                      register={register}
-                      setValue={setValue}
-                      error={errors?.documents?.transcript?.file}
-                    />
-                  </>
-                ) : selectedCourseType === "non-credit" ? (
-                  <>
-                    <DocumentUpload
-                      label="Resume *"
-                      name="documents.resume.file"
-                      register={register}
-                      setValue={setValue}
-                      error={errors?.documents?.resume?.file}
-                    />
-                    <DocumentUpload
-                      label="Certificate *"
-                      name="documents.certificate.file"
-                      register={register}
-                      setValue={setValue}
-                      error={errors?.documents?.certificate?.file}
-                    />
-                  </>
-                ) : null}
-
-                {errors.documents && (
-                  <p className="text-xs text-red-500 mt-1">
-                    please upload all required documents
+                <Label htmlFor="price" className="block mb-2">
+                  Course Price (USD)
+                </Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="9999"
+                  placeholder="Enter course price"
+                  aria-invalid={!!errors.price}
+                  aria-describedby={
+                    errors.price ? "price-error" : undefined
+                  }
+                  className={`bg-gray-50 ${
+                    errors.price ? "border border-red-500" : ""
+                  }`}
+                  onInput={(e) => {
+                    const value = parseFloat(e.currentTarget.value);
+                    if (value > 9999) e.currentTarget.value = "9999";
+                  }}
+                  {...register("price")}
+                />
+                {errors.price && (
+                  <p
+                    id="price-error"
+                    role="alert"
+                    className="text-xs text-red-500 mt-1"
+                  >
+                    {errors.price.message}
                   </p>
                 )}
               </div>
-            </section> */}
-          </section>
-          <div className="flex justify-end mt-25">
-            <Button
-              type="submit"
-              className="bg-green-500 hover:bg-green-600 disabled:opacity-50 "
-              disabled={loading}
-            >
-              {loading ? "Creating..." : "Create Course"}
-            </Button>
+
+              <CategorySelect
+                register={register}
+                errors={errors}
+                onCategoryChange={(value) => setSelectedCategory(value)}
+              />
+
+              <SubCategorySelect
+                register={register}
+                errors={errors}
+                selectedCategory={selectedCategory}
+              />
+            </div>
+
+            {/* Semester & Language */}
+            <section className="flex gap-6 justify-between">
+              <div>
+                <Label className="block mb-2">
+                  Is this a semester-based course *
+                </Label>
+                <Select
+                  aria-required="true"
+                  aria-invalid={!!errors.semesterbased}
+                  onValueChange={(value) =>
+                    setValue("semesterbased", value === "true", {
+                      shouldValidate: true,
+                    })
+                  }
+                  value={
+                    watchedSemesterbased !== undefined
+                      ? watchedSemesterbased
+                        ? "true"
+                        : "false"
+                      : undefined
+                  }
+                >
+                  <SelectTrigger className="bg-gray-50">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Yes</SelectItem>
+                    <SelectItem value="false">No</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.semesterbased && (
+                  <p role="alert" className="text-xs text-red-500 mt-1">
+                    {errors.semesterbased.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-[50%]">
+                <Label className="block mb-2">Language *</Label>
+                <Select
+                  aria-required="true"
+                  aria-invalid={!!errors.language}
+                  onValueChange={(value) =>
+                    setValue("language", value, { shouldValidate: true })
+                  }
+                  value={watchedLanguage}
+                >
+                  <SelectTrigger className="bg-gray-50">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="spanish">Spanish</SelectItem>
+                    <SelectItem value="french">French</SelectItem>
+                    <SelectItem value="german">German</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.language && (
+                  <p role="alert" className="text-xs text-red-500 mt-1">
+                    {errors.language.message}
+                  </p>
+                )}
+              </div>
+            </section>
+
+            {/* Description */}
+            <div>
+              <Label htmlFor="courseDescription" className="block mb-2">
+                Course Description *
+              </Label>
+              <Textarea
+                id="courseDescription"
+                maxLength={4000}
+                aria-invalid={!!errors.courseDescription}
+                aria-describedby={
+                  errors.courseDescription
+                    ? "courseDescription-error"
+                    : "courseDescription-count"
+                }
+                className={`min-h-[100px] bg-gray-50 ${
+                  errors.courseDescription ? "border border-red-500" : ""
+                }`}
+                {...register("courseDescription")}
+              />
+              {errors.courseDescription && (
+                <p
+                  id="courseDescription-error"
+                  role="alert"
+                  className="text-xs text-red-500 mt-1"
+                >
+                  {errors.courseDescription.message}
+                </p>
+              )}
+              <p
+                id="courseDescription-count"
+                className="text-xs text-gray-500 mt-1"
+                aria-live="polite"
+              >
+                Characters left:{" "}
+                {4000 - (watch("courseDescription")?.length || 0)}
+              </p>
+            </div>
           </div>
-        </form>
-      </FormProvider>
-    </div>
-  );
+
+          {/* Teaching Points */}
+          <section
+            className="my-6"
+            aria-labelledby="teaching-points-heading"
+          >
+            <h3
+              id="teaching-points-heading"
+              className="text-lg font-medium mb-4"
+            >
+              What you will teach in this course *
+            </h3>
+
+            {teachingPointsFields.map((field, index) => (
+              <TeachingPointInput
+                key={field.id}
+                field={field}
+                index={index}
+                teachingPointsFields={teachingPointsFields}
+                remove={removeTeachingPoint}
+                error={errors.teachingPoints?.[index]?.value}
+                control={control}
+                register={register}
+              />
+            ))}
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                aria-label="Add another teaching point"
+                disabled={teachingPointsFields.length >= 10}
+                onClick={() => appendTeachingPoint({ value: "" })}
+                className="mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50"
+              >
+                + Add Teaching Point
+              </button>
+            </div>
+          </section>
+
+          {/* Requirements */}
+          <section aria-labelledby="requirements-heading">
+            <h3
+              id="requirements-heading"
+              className="text-lg font-medium mb-4"
+            >
+              Course Requirements *
+            </h3>
+
+            {requirementsFields.map((field, index) => (
+              <RequirementInput
+                key={field.id}
+                field={field}
+                index={index}
+                requirementsFields={requirementsFields}
+                remove={removeRequirement}
+                error={errors.requirements?.[index]?.value}
+                register={register}
+              />
+            ))}
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                aria-label="Add another course requirement"
+                onClick={() => appendRequirement({ value: "" })}
+                disabled={requirementsFields.length >= 10}
+                className="mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50"
+              >
+                + Add Requirement
+              </button>
+            </div>
+          </section>
+        </section>
+
+        {/* Submit */}
+        <div className="flex justify-end mt-10">
+          <Button
+            type="submit"
+            aria-busy={loading}
+            aria-disabled={loading}
+            disabled={loading}
+            className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
+          >
+            {loading ? "Creating..." : "Create Course"}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
+  </div>
+);
+
 }

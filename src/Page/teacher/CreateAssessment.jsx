@@ -1077,14 +1077,7 @@ export default function CreateAssessmentPage() {
             </div>
           )}
 
-          {/* {assessmentType === "file" && fields.length > 0 && (
-            <div className="text-center text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-              <p>Only one file upload question is allowed per assessment.</p>
-              <p>
-                You can upload multiple files (1-5) within this single question.
-              </p>
-            </div>
-          )} */}
+         
 
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Assessment"}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Loader, Pen, Trash2 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { Button } from "@/components/ui/button";
@@ -13,17 +13,11 @@ const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
 const maxSize = 5 * 1024 * 1024;
 const MAX_DOCS = 4;
 
-const badgeClass = (status) => ({
-  verified: "bg-green-100 text-green-800",
-  not_verified: "bg-red-100 text-red-800",
-  pending: "bg-yellow-100 text-yellow-800",
-}[status]);
-
 const Account = () => {
   const [user, setUser] = useState({});
   const [profileImg, setProfileImg] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null); // Ref for keyboard triggering of file input
 
   const fetchUser = () => {
     axiosInstance
@@ -61,109 +55,136 @@ const Account = () => {
     }
   };
 
-
   const displayField = (label, value) => (
-    <div className="space-y-1">
-      <p className="text-sm font-medium text-gray-500">{label}</p>
+    <div className="space-y-1" role="group" aria-labelledby={`label-${label.replace(/\s+/g, '-').toLowerCase()}`}>
+      <p id={`label-${label.replace(/\s+/g, '-').toLowerCase()}`} className="text-sm font-medium text-gray-500">
+        {label}
+      </p>
       <p className="text-base text-gray-900 dark:text-white">{value || "—"}</p>
     </div>
   );
 
-  const docCount = user?.documents?.length || 0;
-  const isUploadDisabled = docCount >= MAX_DOCS;
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      fileInputRef.current?.click();
+    }
+  };
 
   return (
-    <div className="w-full mx-auto p-4 sm:p-6 space-y-8">
+    <main className="w-full mx-auto p-4 sm:p-6 space-y-8" aria-label="Account Settings">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-foreground">Account Information</h2>
         {user?.role === "teacher" && user?.isVarified !== undefined && (
           <span
-            className={`text-sm px-3 py-1 rounded-full ${user.isVarified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-              }`}
+            role="status"
+            className={`text-sm px-3 py-1 rounded-full font-semibold ${
+              user.isVarified ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+            }`}
           >
             {user.isVarified ? "Verified" : "Not Verified"}
           </span>
         )}
       </div>
 
-      {/* Profile Image */}
-      <section className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800">Profile Image</h3>
-        <div className="relative w-32 h-32 border border-gray-300 rounded-full overflow-hidden">
+      {/* Profile Image Section */}
+      <section className="space-y-4" aria-labelledby="profile-image-heading">
+        <h3 id="profile-image-heading" className="text-lg font-semibold text-gray-800">Profile Image</h3>
+        <div className="relative w-32 h-32">
           <img
             src={profileImg ? URL.createObjectURL(profileImg) : user?.profileImg?.url ?? avatar}
-            alt="Profile"
-            className="w-full h-full object-cover rounded-full shadow-sm"
+            alt={user?.firstName ? `${user.firstName}'s profile picture` : "Profile picture"}
+            className="w-full h-full object-cover rounded-full shadow-sm border border-gray-300"
           />
-          <label className="absolute bottom-5 right-4  bg-white border rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100">
-            <Pen className="w-4 h-4 text-gray-600" />
+          <label 
+            htmlFor="profile-upload"
+            className="absolute bottom-5 right-4 bg-white border rounded-full p-1.5 shadow-md cursor-pointer hover:bg-gray-100 focus-within:ring-2 focus-within:ring-green-500 transition-all"
+            onKeyDown={handleKeyDown}
+            tabIndex={0}
+            role="button"
+            aria-label="Change profile picture"
+          >
+            <Pen className="w-4 h-4 text-gray-600" aria-hidden="true" />
             <input
+              id="profile-upload"
+              ref={fileInputRef}
               type="file"
-              className="hidden"
+              className="sr-only" // Hidden visually but available to screen readers/focus
               accept={allowedTypes.join(",")}
               onChange={(e) => setProfileImg(e.target.files[0])}
             />
           </label>
         </div>
+        
         {profileImg && (
           <div className="flex gap-2">
-            <Button onClick={handleImg} className="bg-green-500 text-white hover:bg-green-600">
-              {loading ? <Loader className="animate-spin w-4 h-4 mr-2" /> : "Save Changes"}
+            <Button 
+              onClick={handleImg} 
+              className="bg-green-500 text-white hover:bg-green-600 focus:ring-2 focus:ring-offset-2 focus:ring-green-600"
+              aria-live="polite"
+            >
+              {loading ? <Loader className="animate-spin w-4 h-4 mr-2" aria-hidden="true" /> : "Save Changes"}
             </Button>
           </div>
         )}
       </section>
 
-      {/* Edit Buttons */}
-      <section className="flex gap-2 justify-end">
+      {/* Action Buttons */}
+      <nav className="flex gap-2 justify-end" aria-label="Account actions">
         <Link to={`/${user.role}/account/editGeneralInfo`}>
-          <Button className="bg-green-500 text-white hover:bg-green-600">Edit Info</Button>
+          <Button className="bg-green-500 text-white hover:bg-green-600 focus:ring-2 focus:ring-green-600">
+            Edit Info <span className="sr-only">for personal details</span>
+          </Button>
         </Link>
         <Link to={`/${user.role}/account/editCredentials`}>
-          <Button className="bg-green-500 text-white hover:bg-green-600">Edit Credentials</Button>
+          <Button className="bg-green-500 text-white hover:bg-green-600 focus:ring-2 focus:ring-green-600">
+            Edit Credentials <span className="sr-only">for login details</span>
+          </Button>
         </Link>
-      </section>
+      </nav>
 
-      {/* Info Sections */}
-      <section className="space-y-6">
-        <h3 className="text-lg font-semibold">Personal Information</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {displayField("First Name", user?.firstName)}
-          {displayField("Middle Name", user?.middleName)}
-          {displayField("Last Name", user?.lastName)}
-        </div>
-      </section>
+      {/* Information Grid Sections */}
+      <div className="space-y-10">
+        <section aria-labelledby="personal-info-heading">
+          <h3 id="personal-info-heading" className="text-lg font-semibold mb-4 border-b pb-2">Personal Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {displayField("First Name", user?.firstName)}
+            {displayField("Middle Name", user?.middleName)}
+            {displayField("Last Name", user?.lastName)}
+          </div>
+        </section>
 
-      <section className="space-y-6">
-        <h3 className="text-lg font-semibold">Identity Information</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {displayField("Preferred Pronouns", user?.pronoun)}
-          {displayField("Gender Identity", user?.gender)}
-        </div>
-      </section>
+        <section aria-labelledby="identity-info-heading">
+          <h3 id="identity-info-heading" className="text-lg font-semibold mb-4 border-b pb-2">Identity Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {displayField("Preferred Pronouns", user?.pronoun)}
+            {displayField("Gender Identity", user?.gender)}
+          </div>
+        </section>
 
-      <section className="space-y-6">
-        <h3 className="text-lg font-semibold">Contact Information</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {displayField("Email Address", user?.email)}
-          {displayField("Phone Number", user?.phone)}
-        </div>
-      </section>
+        <section aria-labelledby="contact-info-heading">
+          <h3 id="contact-info-heading" className="text-lg font-semibold mb-4 border-b pb-2">Contact Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {displayField("Email Address", user?.email)}
+            {displayField("Phone Number", user?.phone)}
+          </div>
+        </section>
 
-      <section className="space-y-6">
-        <h3 className="text-lg font-semibold">Address Information</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {displayField("Home Address", user?.homeAddress)}
-          {displayField("Mailing Address", user?.mailingAddress)}
-        </div>
-      </section>
+        <section aria-labelledby="address-info-heading">
+          <h3 id="address-info-heading" className="text-lg font-semibold mb-4 border-b pb-2">Address Information</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {displayField("Home Address", user?.homeAddress)}
+            {displayField("Mailing Address", user?.mailingAddress)}
+          </div>
+        </section>
+      </div>
 
-      {/* Teacher Documents */}
+      {/* Teacher Documents Section */}
       {user?.role === "teacher" && (
-        <TeacherDocuments user={user} setUser={setUser}  />
+        <section aria-label="Professional Documents">
+          <TeacherDocuments user={user} setUser={setUser} />
+        </section>
       )}
-
-    </div>
+    </main>
   );
 };
 

@@ -6,7 +6,7 @@ import Deshboard from "./Page/StudentPortal/Deshboard";
 import Mycourses from "./Page/StudentPortal/Courses/MyCourses";
 import Assignment from "./Page/StudentPortal/Assessment/Assignment";
 import Login from "./Page/Login";
-import Announcement from "./Page/StudentPortal/Announcement";
+import Announcement from "./Page/StudentPortal/StudentCourseAnnouncements";
 import Account from "./Page/StudentPortal/Account";
 import Gradebook from "./Page/StudentPortal/Gradebook";
 import SignupPage from "./Page/signup";
@@ -100,6 +100,14 @@ import SocialProfilePage from "./Page/StudentPortal/SocialProfilePage";
 import ManageSBLScale from "./Page/teacher/Courses/Sbl/CreateNewSBLScale";
 import SBLScaleForm from "./Page/teacher/Courses/Sbl/ManageSbl";
 import AiChatbot from "./Page/StudentPortal/AiChatbot";
+import AllStdCourses from "./Page/teacher/AllStdCourses";
+import CourseStudents from "./Page/teacher/CourseStudents";
+import AllannouncmentCourses from "./Page/teacher/AllannouncmentCourses";
+import CourseAssessmentList from "./Page/teacher/CourseAssessmentList";
+import AllannouncementCoursesStd from "./Page/StudentPortal/AllannouncmentCoursesStd";
+import StudentCourseAnnouncements from "./Page/StudentPortal/StudentCourseAnnouncements";
+import StdCourseAssignment from "./Page/StudentPortal/Assessment/StdCourseAssignment";
+import Assessment from "./Page/StudentPortal/Assessment/Assignment";
 
 function App() {
   const {
@@ -245,7 +253,9 @@ function App() {
             </Route>
 
             <Route path="assessment">
-              <Route index element={<Assignment />} />
+              <Route index element={<StdCourseAssignment />} />
+              <Route path="bycourse/:id" element={<Assessment />} />
+
               <Route
                 path="submission/:id"
                 element={<AssessmentSubmissionPage />}
@@ -253,7 +263,14 @@ function App() {
             </Route>
             <Route path="gradebook" element={<Gradebook />} />
             <Route path="stdPages" element={<StdPagesView />} />
-            <Route path="announcements" element={<Announcement />} />
+            <Route
+              path="AnnouncementsCoursesStd"
+              element={<AllannouncementCoursesStd />}
+            />
+            <Route
+              path="announcements/:courseId"
+              element={<StudentCourseAnnouncements />}
+            />
             <Route path="ai" element={<AiChatbot />} />
 
             <Route path="account">
@@ -300,6 +317,7 @@ function App() {
             </Route>
             <Route path="assessments">
               <Route index element={<TeacherrAssessment />} />
+              <Route path="bycourse/:id" element={<CourseAssessmentList />} />
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
               <Route
@@ -316,8 +334,18 @@ function App() {
               <Route path="detail" element={<EarningDetail />} />
               <Route path="withdraw" element={<WithdrawRequestForm />} />
             </Route>
-            <Route path="Announcements" element={<TeacherAnnoucement />} />
+            <Route
+              path="announcements/:courseId"
+              element={<TeacherAnnoucement />}
+            />
+            <Route
+              path="AnnouncementsCourses"
+              element={<AllannouncmentCourses />}
+            />
+
+            <Route path="coursesstd" element={<AllStdCourses />} />
             <Route path="allStudent" element={<AllStudent />} />
+            <Route path="course/:courseId" element={<CourseStudents />} />
             <Route path="studentProfile/:id" element={<StudentProfile />} />
             <Route
               path="courseGrades/:studentId/:courseId"

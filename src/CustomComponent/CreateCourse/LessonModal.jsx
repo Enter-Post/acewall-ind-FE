@@ -21,7 +21,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
 import JoditEditor from "jodit-react";
 
-// Zod schema
+// Zod schema remains exactly as provided
 const pdfFileSchema = z
   .instanceof(File)
   .refine((file) => file.type === "application/pdf", {
@@ -56,7 +56,7 @@ const lessonSchema = z.object({
     }),
   pdfFiles: z
     .array(pdfFileSchema)
-    .optional()  // Make pdfFiles optional
+    .optional()
     .refine(
       (files) =>
         !files || files.reduce((acc, file) => acc + (file?.size || 0), 0) <=
@@ -74,9 +74,6 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
   const [loading, setLoading] = useState(false);
 
   const MAX_TITLE_LENGTH = 100;
-  const MAX_DESCRIPTION_LENGTH = 250000;
-
-  console.log(chapterID, "chapter Id");
 
   const [titleValue, setTitleValue] = useState("");
   const [descValue, setDescValue] = useState("");
@@ -111,22 +108,18 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
 
   const handleFileChange = (id, file) => {
     if (!file) return;
-
     if (file.type !== "application/pdf") {
       toast.error("Only PDF files are allowed");
       return;
     }
-
     const updated = pdfInputs.map((input) =>
       input.id === id ? { ...input, file } : input
     );
-
     const newSize = calculateTotalSize(updated.map((i) => i.file));
     if (newSize > 5 * 1024 * 1024) {
       toast.error("Total file size exceeds 5MB");
       return;
     }
-
     setPdfInputs(updated);
     setTotalSize(newSize);
     setValue("pdfFiles", updated.map((i) => i.file).filter(Boolean), {
@@ -140,7 +133,6 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
       toast.error("Cannot add more files. 5MB limit reached.");
       return;
     }
-
     setPdfInputs((prev) => [...prev, { id: Date.now(), file: null }]);
   };
 
@@ -156,7 +148,6 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
 
   const onSubmit = async (data) => {
     setLoading(true);
-
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("description", data.description);
@@ -175,15 +166,9 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
       const res = await axiosInstance.post("/lesson/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       toast.success(res.data.message);
       fetchQuarterDetail();
-      reset();
-      setPdfInputs([{ id: Date.now(), file: null }]);
-      setTotalSize(0);
-      setTitleValue("");
-      setDescValue("");
-      setOpen(false);
+      handleClose();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Something went wrong");
     } finally {
@@ -191,15 +176,27 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
     }
   };
 
+  const handleClose = () => {
+    reset();
+    setPdfInputs([{ id: Date.now(), file: null }]);
+    setTitleValue("");
+    setDescValue("");
+    setTotalSize(0);
+    setOpen(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className="flex item-center gap-2 border-blue-200 text-sm text-blue-700 ml-auto w-full bg-white p-2 cursor-pointer">
-          <Plus className="h-4 w-4" size={16} />
+        <button 
+          className="flex items-center gap-2 border border-blue-200 text-sm text-blue-700 ml-auto w-full bg-white p-2 cursor-pointer hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-500 outline-none rounded-md transition-colors"
+          aria-label="Add a new lesson to this chapter"
+        >
+          <Plus className="h-4 w-4" aria-hidden="true" />
           Add Lesson
-        </div>
+        </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[90%] h-[80dvh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[90%] h-[80dvh] overflow-y-auto" id="lesson-modal-content">
         <DialogHeader>
           <DialogTitle>Add Lesson</DialogTitle>
           <DialogDescription>
@@ -208,13 +205,16 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Lesson Title */}
           <div>
-            <Label htmlFor="title">Lesson Title</Label>
+            <Label htmlFor="lesson-title">Lesson Title</Label>
             <Input
-              id="title"
+              id="lesson-title"
               {...register("title")}
               value={titleValue}
               maxLength={MAX_TITLE_LENGTH}
+              aria-invalid={errors.title ? "true" : "false"}
+              aria-describedby={errors.title ? "title-error" : "title-count"}
               onChange={(e) => {
                 if (e.target.value.length <= MAX_TITLE_LENGTH) {
                   setTitleValue(e.target.value);
@@ -222,67 +222,91 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
                 }
               }}
             />
-            <div className="text-sm text-muted-foreground text-right">
-              {titleValue.length}/{MAX_TITLE_LENGTH}
+            <div id="title-count" className="text-sm text-muted-foreground text-right" aria-live="polite">
+              {titleValue.length}/{MAX_TITLE_LENGTH} characters
             </div>
             {errors.title && (
-              <p className="text-red-500 text-sm">{errors.title.message}</p>
+              <p id="title-error" className="text-red-500 text-sm" role="alert">{errors.title.message}</p>
             )}
           </div>
 
-          <div className="w-[80%] flex justify-center item-center gap-2 flex-col">
-            <Label htmlFor="description">Lesson Description</Label>
-            <JoditEditor
-              config={editorConfig}
-              value={descValue}
-              onChange={(newContent) => {
-                setDescValue(newContent);
-                setValue("description", newContent);
-              }}
-            />
+          {/* Lesson Description */}
+          <div className="w-full flex flex-col gap-2">
+            <Label htmlFor="description-editor">Lesson Description</Label>
+            <div id="description-editor" className="focus-within:ring-2 focus-within:ring-blue-500 rounded-md">
+                <JoditEditor
+                  config={editorConfig}
+                  value={descValue}
+                  onChange={(newContent) => {
+                    setDescValue(newContent);
+                    setValue("description", newContent);
+                  }}
+                />
+            </div>
             {errors.description && (
-              <p className="text-red-500 text-sm">{errors.desciption}</p>
+              <p className="text-red-500 text-sm" role="alert">{errors.description.message}</p>
             )}
           </div>
 
+          {/* YouTube Links */}
           <div>
             <Label htmlFor="youtubeLinks">YouTube Link</Label>
-            <Input id="youtubeLinks" {...register("youtubeLinks")} />
+            <Input 
+              id="youtubeLinks" 
+              {...register("youtubeLinks")} 
+              placeholder="https://youtube.com/..."
+              aria-invalid={errors.youtubeLinks ? "true" : "false"}
+              aria-describedby={errors.youtubeLinks ? "youtube-error" : undefined}
+            />
             {errors.youtubeLinks && (
-              <p className="text-red-500 text-sm">
+              <p id="youtube-error" className="text-red-500 text-sm" role="alert">
                 {errors.youtubeLinks.message}
               </p>
             )}
           </div>
 
+          {/* Other Links */}
           <div>
-            <Label htmlFor="otherLink">Other Link</Label>
-            <Input id="otherLink" {...register("otherLink")} />
+            <Label htmlFor="otherLink">Other Link (Website)</Label>
+            <Input 
+              id="otherLink" 
+              {...register("otherLink")} 
+              placeholder="https://example.com"
+              aria-invalid={errors.otherLink ? "true" : "false"}
+              aria-describedby={errors.otherLink ? "otherlink-error" : undefined}
+            />
             {errors.otherLink && (
-              <p className="text-red-500 text-sm">{errors.otherLink.message}</p>
+              <p id="otherlink-error" className="text-red-500 text-sm" role="alert">{errors.otherLink.message}</p>
             )}
           </div>
 
-          <div>
-            <Label>Lesson PDF Files <span className="text-xs text-muted-foreground">(optional)</span></Label>
-            {pdfInputs.map((input) => (
+          {/* PDF Files Section */}
+          <fieldset className="space-y-2 border-t pt-4">
+            <legend className="text-sm font-semibold mb-2">Lesson PDF Files <span className="text-xs text-muted-foreground font-normal">(optional)</span></legend>
+            {pdfInputs.map((input, index) => (
               <div key={input.id} className="flex items-center gap-2 mt-2">
-                <Input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) =>
-                    handleFileChange(input.id, e.target.files?.[0])
-                  }
-                />
+                <div className="flex-1">
+                    <Label htmlFor={`file-${input.id}`} className="sr-only">Upload PDF file {index + 1}</Label>
+                    <Input
+                      id={`file-${input.id}`}
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) =>
+                        handleFileChange(input.id, e.target.files?.[0])
+                      }
+                      aria-label={`Select PDF file ${index + 1}`}
+                    />
+                </div>
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => handleRemoveField(input.id)}
                   disabled={pdfInputs.length === 1}
-                  className="text-red-500"
+                  className="text-red-500 hover:bg-red-50 focus:ring-2 focus:ring-red-500"
+                  aria-label={`Remove file ${index + 1}`}
                 >
-                  <Trash className="h-4 w-4" />
+                  <Trash className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
             ))}
@@ -291,40 +315,38 @@ const LessonModal = ({ type, chapterID, fetchQuarterDetail }) => {
               type="button"
               variant="outline"
               size="sm"
-              className="mt-2"
+              className="mt-2 focus:ring-2 focus:ring-blue-500"
               onClick={handleAddField}
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
               Add Another File
             </Button>
 
-            <p className="text-gray-600 text-sm mt-1">
+            <p className="text-gray-600 text-sm mt-1" role="status">
               Total size: {(totalSize / 1024 / 1024).toFixed(2)} MB / 5 MB
             </p>
 
             {errors.pdfFiles && (
-              <p className="text-red-500 text-sm mt-2">
+              <p className="text-red-500 text-sm mt-2" role="alert">
                 {errors.pdfFiles.message}
               </p>
             )}
-          </div>
+          </fieldset>
 
-          <DialogFooter>
+          {/* Actions */}
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                reset();
-                setPdfInputs([{ id: Date.now(), file: null }]);
-                setTitleValue("");
-                setDescValue("");
-                setTotalSize(0);
-                setOpen(false);
-              }}
+              onClick={handleClose}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="bg-blue-700 hover:bg-blue-800 focus:ring-2 focus:ring-blue-500"
+            >
               {loading ? "Saving..." : "Save Lesson"}
             </Button>
           </DialogFooter>

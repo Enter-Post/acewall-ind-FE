@@ -12,8 +12,12 @@ const BackButton = ({ label = "Back", className = "" }) => {
       variant="outline"
       onClick={() => navigate(-1)}
       className={`flex items-center gap-2 ${className}`}
+      // 1. Explicit ARIA label for clarity, using the passed label
+      aria-label={`${label} to previous page`}
+      // 2. Keyboard support is inherently provided by the <Button> element.
     >
-      <ArrowLeft size={16} />
+      {/* 3. Icon is decorative, hide from screen readers */}
+      <ArrowLeft size={16} aria-hidden="true" />
       {label}
     </Button>
   );

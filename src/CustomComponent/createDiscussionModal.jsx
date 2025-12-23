@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { FormProvider, useForm } from "react-hook-form";
 import { axiosInstance } from "@/lib/AxiosInstance";
-import { File, Image, Loader } from "lucide-react";
+import { File, Image, Loader, X } from "lucide-react";
 import { toast } from "sonner";
 import StrictDatePicker from "./Assessment/DueDatePicker";
 import { useSearchParams } from "react-router-dom";
@@ -30,6 +30,8 @@ export function CreateDiscussionDialog({
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  
+  const fileInputRef = useRef(null);
 
   const [searchParams] = useSearchParams();
 
@@ -56,6 +58,8 @@ export function CreateDiscussionDialog({
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
     const allowedTypes = [
       "image/png",
       "image/jpeg",
@@ -80,6 +84,8 @@ export function CreateDiscussionDialog({
     }
 
     setFiles((prev) => [...prev, file]);
+    // Reset input so the same file can be selected again if removed
+    e.target.value = "";
   };
 
   const removeFile = (fileToRemove) => {
@@ -108,7 +114,6 @@ export function CreateDiscussionDialog({
       try {
         const response = await axiosInstance.get("/course/getVerifiedCourses");
         setCourses(response.data.courses || []);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching courses:", error);
         setCourses([]);
@@ -154,95 +159,112 @@ export function CreateDiscussionDialog({
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
-        console.log(res);
         setRefresh(false);
         form.reset();
+        setFiles([]);
         setOpen(false);
+        toast.success("Discussion created successfully");
       })
       .catch((err) => {
         setRefresh(false);
         console.log(err);
+        toast.error("Failed to create discussion");
       });
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-green-500 hover:bg-green-600">
+        <Button 
+          className="bg-green-500 hover:bg-green-600 focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+          aria-haspopup="dialog"
+        >
           Create Discussion
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl">
+      <DialogContent 
+        className="sm:max-w-3xl md:max-w-2xl lg:max-w-4xl xl:max-w-5xl"
+        aria-describedby="discussion-form-description"
+      >
         <DialogHeader>
-          <DialogTitle>Create New Discussion</DialogTitle>
+          <DialogTitle id="discussion-dialog-title">Create New Discussion</DialogTitle>
+          <p id="discussion-form-description" className="sr-only">
+            Fill out the form below to create a new discussion topic for your students.
+          </p>
         </DialogHeader>
 
         <FormProvider {...form}>
           <form
             onSubmit={form.handleSubmit(handleFormSubmit)}
             className="space-y-4"
+            noValidate
           >
             {/* Topic Field */}
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="topic">Topic</Label>
               <Input
                 id="topic"
                 {...form.register("topic", { required: "Topic is required" })}
-                className="w-full" // Ensure input takes full width
+                className="w-full focus:ring-2 focus:ring-green-500"
+                aria-invalid={form.formState.errors.topic ? "true" : "false"}
+                aria-describedby={form.formState.errors.topic ? "topic-error" : undefined}
               />
               {form.formState.errors.topic && (
-                <p className="text-xs text-red-500">
+                <p id="topic-error" role="alert" className="text-xs text-red-500">
                   {form.formState.errors.topic.message}
                 </p>
               )}
             </div>
 
             {/* Description Field */}
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"
                 rows={4}
-                maxLength={2000} // Set the maxLength to 2000
+                maxLength={2000}
                 {...form.register("description", {
                   required: "Description is required",
                 })}
-                className="w-full" // Ensure textarea takes full width
+                className="w-full focus:ring-2 focus:ring-green-500"
+                aria-invalid={form.formState.errors.description ? "true" : "false"}
+                aria-describedby="description-char-count description-error"
               />
-              {form.formState.errors.description && (
-                <p className="text-xs text-red-500">
-                  {form.formState.errors.description.message}
+              <div className="flex justify-between items-center mt-1">
+                {form.formState.errors.description ? (
+                  <p id="description-error" role="alert" className="text-xs text-red-500">
+                    {form.formState.errors.description.message}
+                  </p>
+                ) : <span />}
+                <p id="description-char-count" className="text-xs text-gray-500" aria-live="polite">
+                  {`Characters left: ${2000 - (form.watch("description")?.length || 0)}`}
                 </p>
-              )}
-              <p className="text-xs text-gray-500 mt-1">
-                {`Characters left: ${
-                  2000 - (form.watch("description")?.length || 0)
-                }`}
-              </p>
+              </div>
             </div>
 
             {/* Points, Category, and Due Date */}
-            <section className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
+            <section className="flex flex-col md:flex-row gap-4" aria-label="Discussion Settings">
+              <div className="flex-1 space-y-2">
                 <Label htmlFor="totalPoints">Total Points</Label>
                 <Input
-                  type={"number"}
+                  type="number"
                   id="totalPoints"
                   {...form.register("totalPoints", {
                     required: "Total Points is required",
                     validate: (value) =>
                       value >= 0 || "Total Points must be greater than 0",
                   })}
-                  className="w-full" // Ensure input takes full width
+                  className="w-full focus:ring-2 focus:ring-green-500"
+                  aria-invalid={form.formState.errors.totalPoints ? "true" : "false"}
                 />
                 {form.formState.errors.totalPoints && (
-                  <p className="text-xs text-red-500">
+                  <p role="alert" className="text-xs text-red-500">
                     {form.formState.errors.totalPoints.message}
                   </p>
                 )}
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 space-y-2">
                 <Label htmlFor="category">Category</Label>
                 <CategoryDropdown
                   courseId={courseId}
@@ -251,57 +273,71 @@ export function CreateDiscussionDialog({
                     form.setValue("category", val, { shouldValidate: true })
                   }
                   error={form.formState.errors.category}
-                  className="w-full" // Ensure dropdown takes full width
+                  className="w-full"
                 />
                 {form.formState.errors.category && (
-                  <p className="text-xs text-red-500">
+                  <p role="alert" className="text-xs text-red-500">
                     {form.formState.errors.category.message}
                   </p>
                 )}
               </div>
 
-              <div className="flex-1">
-                <Label className="font-semibold mb-2">Due Date</Label>
-                {quarter !== "undefined" ? (
+              <div className="flex-1 space-y-2">
+                <Label id="due-date-label" className="font-semibold">Due Date</Label>
+                <div aria-labelledby="due-date-label">
                   <StrictDatePicker
                     name="dueDate"
                     minDate={minDate}
                     maxDate={maxDate}
                   />
-                ) : (
-                  <StrictDatePicker name="dueDate" />
-                )}
+                </div>
               </div>
             </section>
 
             {/* File Upload */}
-            <div>
-              <Label htmlFor="file">
-                Attach File (Only PNG, JPEG, JPG, and PDF files are allowed.)
+            <div className="space-y-2">
+              <Label htmlFor="file-upload">
+                Attach File <span className="text-xs font-normal text-gray-500">(PNG, JPEG, JPG, PDF up to 2MB)</span>
               </Label>
-              <Input
-                type="file"
-                id="file"
-                onChange={handleFileChange}
-                className="w-full" // Ensure input takes full width
-              />
-              <div className="flex flex-col gap-2 mt-3">
+              <div className="relative">
+                <Input
+                  type="file"
+                  id="file-upload"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  className="w-full focus:ring-2 focus:ring-green-500"
+                  accept=".png,.jpg,.jpeg,.pdf"
+                  aria-describedby="file-upload-instructions"
+                />
+                <p id="file-upload-instructions" className="sr-only">
+                  Max 5 files. Each file must be under 2MB.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2 mt-3" role="list" aria-label="Uploaded files">
                 {files.map((file, index) => (
                   <div
                     key={index}
-                    className="border p-3 rounded-lg border-gray-300 flex items-center gap-2"
+                    role="listitem"
+                    className="border p-3 rounded-lg border-gray-300 flex items-center justify-between bg-gray-50"
                   >
-                    {file.type === "application/pdf" ? (
-                      <File className="text-green-500" />
-                    ) : (
-                      <Image className="text-green-500" />
-                    )}
-                    <p className="text-sm">{file.name}</p>
+                    <div className="flex items-center gap-2">
+                      {file.type === "application/pdf" ? (
+                        <File className="text-green-500 w-4 h-4" aria-hidden="true" />
+                      ) : (
+                        <Image className="text-green-500 w-4 h-4" aria-hidden="true" />
+                      )}
+                      <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                    </div>
                     <Button
                       type="button"
+                      variant="ghost"
+                      size="sm"
                       onClick={() => removeFile(file)}
-                      className="text-xs text-red-500"
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      aria-label={`Remove ${file.name}`}
                     >
+                      <X className="w-4 h-4 mr-1" />
                       Remove
                     </Button>
                   </div>
@@ -314,10 +350,14 @@ export function CreateDiscussionDialog({
               <Button
                 type="submit"
                 disabled={refresh}
-                className="w-full bg-green-500 hover:bg-green-600"
+                className="w-full bg-green-500 hover:bg-green-600 py-6 text-lg focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+                aria-live="assertive"
               >
                 {refresh ? (
-                  <Loader className="animate-spin" />
+                  <>
+                    <Loader className="animate-spin mr-2" aria-hidden="true" />
+                    Creating...
+                  </>
                 ) : (
                   "Create Discussion"
                 )}
