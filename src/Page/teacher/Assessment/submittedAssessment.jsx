@@ -25,6 +25,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useParams } from "react-router-dom";
 import avatar from "@/assets/avatar.png";
 import { toast } from "sonner";
+import BackButton from "@/CustomComponent/BackButton";
 
 const AssessmentReview = () => {
   const { id } = useParams();
@@ -107,6 +108,7 @@ const AssessmentReview = () => {
 
   return (
     <div className="container mx-auto px-4 py-6">
+      <BackButton/>
       <Card className="w-full">
         {/* Header */}
         <CardHeader>

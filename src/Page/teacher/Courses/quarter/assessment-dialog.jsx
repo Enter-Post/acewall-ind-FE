@@ -1,10 +1,5 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+"use client";
+
 import {
   Accordion,
   AccordionContent,
@@ -17,11 +12,15 @@ import {
   ArrowLeft,
   FileText,
   Loader,
+  Bell, // Added for the immediate reminder icon
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import EditAssessmentDialog from "@/CustomComponent/CreateCourse/EditAssessment";
+import AssessmentReminderDialog from "./ReminderDialog";
+
+
 
 function QuestionDisplay({ question, index }) {
   return (
@@ -64,6 +63,7 @@ function QuestionDisplay({ question, index }) {
         </div>
       )}
 
+      {/* Logic for MCQ, QA, True/False remains same... */}
       {question.type === "mcq" && (
         <ul className="list-none ml-0 text-sm text-gray-700 space-y-2" role="list">
           {question.options?.map((opt, i) => {
@@ -80,9 +80,7 @@ function QuestionDisplay({ question, index }) {
                 <span className="mr-2">{String.fromCharCode(65 + i)}.</span>
                 {opt}
                 {isCorrect && (
-                  <Badge className="ml-2 bg-green-600 text-white" aria-label="Correct Answer">
-                    Correct Answer
-                  </Badge>
+                  <Badge className="ml-2 bg-green-600 text-white">Correct Answer</Badge>
                 )}
               </li>
             );
@@ -91,7 +89,7 @@ function QuestionDisplay({ question, index }) {
       )}
 
       {(question.type === "qa" || question.type === "truefalse") && (
-        <div className="text-sm text-gray-800 bg-green-100 p-3 rounded border border-green-200 mt-2" role="status">
+        <div className="text-sm text-gray-800 bg-green-100 p-3 rounded border border-green-200 mt-2">
           <span className="font-bold text-green-900">Correct Answer:</span>{" "}
           <span className="capitalize">{question.type === "truefalse" ? (question.correctAnswer === "true" ? "True" : "False") : question.correctAnswer}</span>
         </div>
@@ -105,6 +103,25 @@ export function AssessmentPage() {
   const navigate = useNavigate();
   const [assessment, setAssessment] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // ✅ States for the "Instant Reminder" push button
+  const [loadingReminder, setLoadingReminder] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
+
+  // ✅ Logic for sending an immediate reminder email
+  const handleInstantReminder = async () => {
+    if (!assessment?._id) return;
+    try {
+      setLoadingReminder(true);
+      const res = await axiosInstance.post(`/assessment/${assessment._id}/send-reminder`);
+      setStatusMessage({ type: "success", text: res.data.message || "Reminders sent!" });
+      setTimeout(() => setStatusMessage(null), 4000);
+    } catch (err) {
+      setStatusMessage({ type: "error", text: err?.response?.data?.message || "Failed to send." });
+    } finally {
+      setLoadingReminder(false);
+    }
+  };
 
   const fetchAssessment = async () => {
     try {
@@ -121,117 +138,89 @@ export function AssessmentPage() {
     fetchAssessment();
   }, [assessmentid]);
 
-  const questionsByType =
-    assessment?.questions?.reduce((groups, question) => {
-      const type = question.type;
-      if (!groups[type]) groups[type] = [];
-      groups[type].push(question);
-      return groups;
-    }, {}) || {};
+  const questionsByType = assessment?.questions?.reduce((groups, question) => {
+    const type = question.type;
+    if (!groups[type]) groups[type] = [];
+    groups[type].push(question);
+    return groups;
+  }, {}) || {};
 
-  if (loading) {
-    return (
-      <main className="flex justify-center items-center py-20" aria-busy="true" aria-live="polite">
-        <Loader className="animate-spin h-10 w-10 text-green-600" />
-        <span className="sr-only">Loading assessment details...</span>
-      </main>
-    );
-  }
-
-  if (!assessment) return <main className="p-10 text-center">Assessment not found.</main>;
+  if (loading) return <Loader className="animate-spin h-10 w-10 text-green-600 mx-auto mt-20" />;
+  if (!assessment) return <main className="p-10 text-center text-gray-500">Assessment not found.</main>;
 
   return (
-    <main className="max-w-5xl mx-auto p-6" id="main-content">
-      <nav aria-label="Breadcrumb">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 mb-6 focus:ring-2 focus:ring-green-500"
-          aria-label="Go back to previous page"
-        >
-          <ArrowLeft size={16} aria-hidden="true" />
-          Back
-        </Button>
-      </nav>
+    <main className="max-w-5xl mx-auto p-6">
+      {/* Toast feedback for reminder status */}
+      {statusMessage && (
+        <div className={`fixed top-5 right-5 p-4 rounded-lg shadow-xl z-50 border ${
+          statusMessage.type === "error" ? "bg-red-50 text-red-700 border-red-200" : "bg-green-50 text-green-700 border-green-200"
+        }`}>
+          {statusMessage.text}
+        </div>
+      )}
+
+      <nav><Button variant="outline" size="sm" onClick={() => navigate(-1)} className="mb-6"><ArrowLeft size={16} className="mr-2"/>Back</Button></nav>
 
       <header className="mb-6 border-b pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <section>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-3xl font-bold text-gray-900">{assessment?.title}</h1>
-            <Badge variant="secondary" className="px-3 py-1 text-sm font-semibold">
-              {assessment?.category?.name}
-            </Badge>
+            <Badge variant="secondary">{assessment?.category?.name}</Badge>
           </div>
-          <time className="text-sm text-gray-600 mt-2 block" dateTime={assessment?.dueDate.date}>
-            <strong>Due Date:</strong> {new Date(assessment?.dueDate.date).toLocaleDateString(undefined, { dateStyle: 'full' })}
+          <time className="text-sm text-gray-500 mt-2 block">
+            <strong>Due Date:</strong> {new Date(assessment?.dueDate?.date).toLocaleDateString(undefined, { dateStyle: 'full' })}
           </time>
         </section>
         
-        <section aria-label="Assessment Actions">
-          <EditAssessmentDialog
-            assessment={assessment}
-            fetchAssessment={fetchAssessment}
-          />
+        {/* ✅ Integrated Action Section */}
+        <section className="flex items-center gap-3">
+          <EditAssessmentDialog assessment={assessment} fetchAssessment={fetchAssessment} />
+
+          {/* 1. The Instant Push Button */}
+          <Button
+            variant="outline"
+            className="border-blue-200 text-blue-700 hover:bg-blue-50"
+            disabled={loadingReminder}
+            onClick={handleInstantReminder}
+          >
+            {loadingReminder ? <Loader className="animate-spin h-4 w-4" /> : <Bell className="h-4 w-4 mr-2" />}
+            Remind Now
+          </Button>
+
+          {/* 2. The Scheduled Reminder Dialog (Your Component) */}
+          <AssessmentReminderDialog assessmentId={assessment?._id} />
         </section>
       </header>
 
+      {/* Description and Questions Sections continue below... */}
       {assessment?.description && (
-        <section className="bg-blue-50 p-5 rounded-lg mb-8 border-l-4 border-blue-500" aria-labelledby="description-heading">
-          <h2 id="description-heading" className="font-bold text-blue-900 mb-2">Description</h2>
+        <section className="bg-blue-50 p-5 rounded-lg mb-8 border-l-4 border-blue-500">
+          <h2 className="font-bold text-blue-900 mb-1">Instructions</h2>
           <p className="text-blue-800 leading-relaxed">{assessment.description}</p>
         </section>
       )}
 
-      <section aria-labelledby="questions-heading">
-        <h2 id="questions-heading" className="text-xl font-bold text-gray-800 mb-4">Assessment Questions</h2>
-        {assessment.questions.length === 0 ? (
-          <p className="text-gray-500 italic p-4 bg-gray-50 rounded border">No questions have been added to this assessment yet.</p>
-        ) : (
-          <Accordion type="multiple" className="w-full space-y-3">
-            {["mcq", "qa", "truefalse", "file"].map((type) => {
-              const group = questionsByType[type];
-              if (!group || group.length === 0) return null;
-
-              const typeLabels = {
-                mcq: "Multiple Choice",
-                qa: "Short Answer",
-                truefalse: "True/False",
-                file: "File Upload/Instruction"
-              };
-
-              return (
-                <AccordionItem 
-                  key={type} 
-                  value={type} 
-                  className="border rounded-lg bg-white shadow-sm overflow-hidden"
-                >
-                  <AccordionTrigger className="px-4 hover:bg-gray-50 focus:ring-2 focus:ring-inset focus:ring-green-500 outline-none">
-                    <div className="flex items-center gap-3">
-                      <Badge className="bg-gray-700 text-white hover:bg-gray-800 uppercase text-[10px] tracking-wider px-2">
-                        {typeLabels[type]}
-                      </Badge>
-                      <span className="text-sm font-semibold text-gray-700">
-                        {group.length} {group.length === 1 ? 'Question' : 'Questions'}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-4 pb-4 pt-2">
-                    <div className="space-y-6">
-                      {group.map((question, idx) => (
-                        <QuestionDisplay
-                          key={question._id || idx}
-                          question={question}
-                          index={idx}
-                        />
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        )}
+      <section>
+        <h2 className="text-xl font-bold text-gray-800 mb-4 tracking-tight">Questions Breakdown</h2>
+        <Accordion type="multiple" className="w-full space-y-3">
+          {["mcq", "qa", "truefalse", "file"].map((type) => {
+            const group = questionsByType[type];
+            if (!group || group.length === 0) return null;
+            return (
+              <AccordionItem key={type} value={type} className="border rounded-lg bg-white shadow-sm overflow-hidden">
+                <AccordionTrigger className="px-4 hover:bg-gray-50">
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-gray-700 text-white uppercase text-[10px]">{type}</Badge>
+                    <span className="text-sm font-semibold">{group.length} items</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4 pt-2">
+                  {group.map((q, idx) => <QuestionDisplay key={q._id || idx} question={q} index={idx} />)}
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
       </section>
     </main>
   );
