@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -20,132 +20,203 @@ import {
   Calendar,
   Clock,
   Loader,
+  GraduationCap,
+  Layers,
+  ArrowLeft,
+  Search,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { format } from "date-fns";
-import { Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import AssessmentFilters from "@/CustomComponent/Student/AssessmentFilters";
 
-const tableHead = ["Assessment Name", "Course", "Due Date", "Status", "Type"];
+// Custom Toast Component & Sonner
+import MotivationToast from "@/CustomComponent/Toast/MotivationToast";
+import { toast } from "sonner";
+import BackButton from "@/CustomComponent/BackButton";
+
+const tableHead = [
+  "Assessment Name",
+  "Course",
+  "Location",
+  "Due Date",
+  "Status",
+];
 
 const Assessment = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [assessments, setAssessments] = useState([]);
   const [expandedAssessmentId, setExpandedAssessmentId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [filters, setFilters] = useState({
+    category: "all",
+    type: "all",
+    status: "all",
+  });
+
+  const [categories, setCategories] = useState([]);
+  const [types, setTypes] = useState([]);
+
   useEffect(() => {
     const fetchAssessment = async () => {
       setLoading(true);
-      await axiosInstance
-        .get("assessment/getAllassessmentforStudent")
-        .then((res) => {
-          setAssessments(res.data);
-          setLoading(false);
-        })
-        .catch(() => {
-          setError("Failed to fetch assessments");
-          setLoading(false);
+      try {
+        const res = await axiosInstance.get(
+          "assessment/getAllassessmentforStudent"
+        );
+
+        // 1. Filter by Course ID if provided in URL
+        let data = id ? res.data.filter((a) => a.course?._id === id) : res.data;
+
+        setAssessments(data);
+
+        // 2. Extract unique categories for filter dropdown
+        const uniqueCategories = [];
+        data.forEach((a) => {
+          if (
+            a.category?._id &&
+            !uniqueCategories.some((c) => c._id === a.category._id)
+          ) {
+            uniqueCategories.push(a.category);
+          }
         });
+        setCategories(uniqueCategories);
+
+        // 3. Extract unique types
+        setTypes([...new Set(data.map((a) => a.type))]);
+
+        // 4. 🔥 Motivation Toast Logic
+        const pending = data.filter((a) => !a.isSubmitted);
+        if (pending.length > 0) {
+          const nearestDueDate = pending
+            .filter((a) => a?.dueDate?.date)
+            .map((a) => new Date(a.dueDate.date))
+            .sort((a, b) => a - b)[0];
+
+          toast.custom(
+            (t) => (
+              <MotivationToast
+                pendingCount={pending.length}
+                nearestDueDate={nearestDueDate}
+                onClose={() => toast.dismiss(t.id)}
+              />
+            ),
+            { position: "top-right", duration: 5000 }
+          );
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch assessments");
+        setLoading(false);
+      }
     };
 
     fetchAssessment();
-  }, []);
+  }, [id]);
 
   const formatDueDate = (date, time) => {
+    if (!date) return "No Deadline";
     try {
       const dateObj = new Date(date);
-      if (isNaN(dateObj.getTime())) throw new Error("Invalid date");
-      return `${format(dateObj, "MMM dd, yyyy")} at ${time || "N/A"}`;
+      return `${format(dateObj, "MMM dd, yyyy")} ${time ? `at ${time}` : ""}`;
     } catch {
       return "Invalid date";
     }
   };
 
-  const filteredAssessments = Array.isArray(assessments)
-    ? assessments.filter((assessment) =>
-        assessment?.title?.toLowerCase().includes(search.toLowerCase())
-      )
-    : [];
-
-  const toggleAssessmentExpand = (assessmentId) => {
-    setExpandedAssessmentId(
-      expandedAssessmentId === assessmentId ? null : assessmentId
-    );
-  };
-
-  const handleKeyToggle = (e, id) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggleAssessmentExpand(id);
+  // ✅ Helper for Semester/Chapter Display
+  const getLocationInfo = (item) => {
+    if (item.course?.semesterbased) {
+      return (
+        <div className="flex flex-col text-[11px] text-blue-600 font-medium">
+          <span className="flex items-center gap-1">
+            <GraduationCap size={12} /> {item.semester?.name || "Sem"}
+          </span>
+          <span className="text-gray-400 pl-4">{item.quarter?.name}</span>
+        </div>
+      );
     }
+    return (
+      <div className="flex flex-col text-[11px] text-orange-600 font-medium">
+        <span className="flex items-center gap-1">
+          <Layers size={12} /> {item.chapter?.title || "Ch"}
+        </span>
+        <span className="text-gray-400 pl-4 truncate max-w-[100px]">
+          {item.lesson?.title}
+        </span>
+      </div>
+    );
   };
 
-  const getStatusLabel = (isSubmitted) =>
-    isSubmitted ? "Submitted" : "Pending";
+  // ✅ Search + Filter Logic
+  const filteredAssessments = useMemo(() => {
+    return assessments.filter((a) => {
+      const matchesSearch = a.title
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
+      const matchesCategory =
+        filters.category === "all" || a.category?.name === filters.category;
+      const matchesType = filters.type === "all" || a.type === filters.type;
+      const matchesStatus =
+        filters.status === "all" ||
+        (filters.status === "submitted" && a.isSubmitted) ||
+        (filters.status === "pending" && !a.isSubmitted);
 
-  const getStatusClass = (isSubmitted) =>
-    isSubmitted
-      ? "bg-green-100 text-green-800"
-      : "bg-yellow-100 text-yellow-800";
+      return matchesSearch && matchesCategory && matchesType && matchesStatus;
+    });
+  }, [assessments, search, filters]);
 
-  if (loading) {
+  if (loading)
     return (
-      <div
-        className="flex items-center justify-center w-full h-screen"
-        role="status"
-        aria-live="polite"
-      >
-        <Loader className="animate-spin" aria-hidden="true" />
-        <span className="sr-only">Loading assessments</span>
+      <div className="flex items-center justify-center w-full h-screen">
+        <Loader className="animate-spin text-acewall-main" size={40} />
       </div>
     );
-  }
-
-  if (error) {
-    return (
-      <div
-        className="text-red-500 p-8"
-        role="alert"
-        aria-live="assertive"
-      >
-        {error}
-      </div>
-    );
-  }
 
   return (
-    <div aria-labelledby="assessment-heading">
-      <p
-        id="assessment-heading"
-        className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg"
-      >
-        Assessment
-      </p>
+    <div className="w-full   ">
+      {/* Header */}
+      <BackButton className="my-4" />
+      <h1 className="text-xl py-4 pl-6 font-semibold bg-acewall-main text-white rounded-lg shadow-md flex-1 mb-4">
+        {id ? "Course Assessment Details" : "All My Assessments"}
+      </h1>
 
-      {/* Search */}
-      <div className="flex items-center py-4">
-        <Input
-          aria-label="Search assessments by title"
-          placeholder="Search by title"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+      {/* Filters Bar */}
+      <div className="flex flex-col md:flex-row gap-4 items-center mb-6 bg-white p-4 rounded-xl border shadow-sm">
+        <div className="relative w-full md:max-w-sm">
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <Input
+            placeholder="Search by title..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 h-11"
+          />
+        </div>
+
+        <AssessmentFilters
+          filters={filters}
+          setFilters={setFilters}
+          categories={categories}
+          types={types}
         />
       </div>
 
-      {/* Table */}
-      <div
-        className="rounded-md border"
-        role="region"
-        aria-label="Student assessments list"
-      >
-        <ScrollArea className="h-[calc(100vh-250px)]">
-          <Table role="table">
-            <TableHeader>
-              <TableRow role="row">
+      {/* Table Container */}
+      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+        <ScrollArea className="h-[calc(100vh-280px)]">
+          <Table>
+            <TableHeader className="bg-gray-50/50">
+              <TableRow>
                 {tableHead.map((item, idx) => (
-                  <TableHead key={idx} role="columnheader">
+                  <TableHead
+                    key={idx}
+                    className="font-bold text-gray-700 uppercase text-[11px] tracking-wider"
+                  >
                     {item}
                   </TableHead>
                 ))}
@@ -154,154 +225,114 @@ const Assessment = () => {
 
             <TableBody>
               {filteredAssessments.length > 0 ? (
-                filteredAssessments.map((assessment) => {
-                  const isExpanded =
-                    expandedAssessmentId === assessment._id;
-
+                filteredAssessments.map((item) => {
+                  const isExpanded = expandedAssessmentId === item._id;
                   return (
-                    <React.Fragment key={assessment._id}>
-                      <TableRow role="row" className="text-xs md:text-sm">
-                        <TableCell role="cell">
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            aria-expanded={isExpanded}
-                            aria-controls={`assessment-${assessment._id}`}
-                            aria-label={`Toggle details for ${assessment.title}`}
-                            onClick={() =>
-                              toggleAssessmentExpand(assessment._id)
-                            }
-                            onKeyDown={(e) =>
-                              handleKeyToggle(e, assessment._id)
-                            }
-                            className="cursor-pointer hover:text-blue-600 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                          >
+                    <React.Fragment key={item._id}>
+                      <TableRow
+                        className={`group cursor-pointer transition-colors ${
+                          isExpanded ? "bg-blue-50/30" : "hover:bg-gray-50"
+                        }`}
+                        onClick={() =>
+                          setExpandedAssessmentId(isExpanded ? null : item._id)
+                        }
+                      >
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
                             {isExpanded ? (
                               <ChevronDown
-                                className="h-4 w-4 text-gray-500"
-                                aria-hidden="true"
+                                size={16}
+                                className="text-acewall-main"
                               />
                             ) : (
                               <ChevronRight
-                                className="h-4 w-4 text-gray-500"
-                                aria-hidden="true"
+                                size={16}
+                                className="text-gray-400"
                               />
                             )}
-                            <span className={isExpanded ? "font-medium" : ""}>
-                              {assessment.title}
+                            <span
+                              className={
+                                item.isSubmitted
+                                  ? "text-gray-400 line-through"
+                                  : "text-gray-900"
+                              }
+                            >
+                              {item.title}
                             </span>
                           </div>
                         </TableCell>
 
-                        <TableCell role="cell">
-                          {assessment?.course?.courseTitle || "N/A"}
+                        <TableCell className="text-xs font-semibold text-gray-600">
+                          {item.course?.courseTitle}
                         </TableCell>
 
-                        <TableCell role="cell">
+                        <TableCell>{getLocationInfo(item)}</TableCell>
+
+                        <TableCell className="text-xs">
                           {formatDueDate(
-                            assessment?.dueDate?.date,
-                            assessment?.dueDate?.time
+                            item.dueDate?.date,
+                            item.dueDate?.time
                           )}
                         </TableCell>
 
-                        <TableCell role="cell">
+                        <TableCell>
                           <span
-                            className={`px-2 py-1 rounded-full text-xs ${getStatusClass(
-                              assessment.isSubmitted
-                            )}`}
-                            aria-label={`Status: ${getStatusLabel(
-                              assessment.isSubmitted
-                            )}`}
+                            className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
+                              item.isSubmitted
+                                ? "bg-green-100 text-green-700"
+                                : "bg-amber-100 text-amber-700"
+                            }`}
                           >
-                            {getStatusLabel(assessment.isSubmitted)}
-                          </span>
-                        </TableCell>
-
-                        <TableCell role="cell">
-                          <span className="capitalize">
-                            {assessment.type?.replace("-", " ") || "N/A"}
+                            {item.isSubmitted ? "Submitted" : "Pending"}
                           </span>
                         </TableCell>
                       </TableRow>
 
+                      {/* Expanded Section */}
                       {isExpanded && (
-                        <TableRow
-                          id={`assessment-${assessment._id}`}
-                          role="row"
-                          className="bg-gray-50 border"
-                        >
-                          <TableCell colSpan={5} role="cell" className="p-4">
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="text-sm font-medium mb-2">
-                                  Description
+                        <TableRow className="bg-gray-50/50">
+                          <TableCell colSpan={5} className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                              <div className="space-y-2">
+                                <h4 className="text-xs font-bold text-gray-400 uppercase flex items-center gap-2">
+                                  <FileText size={14} /> Description
                                 </h4>
-                                <p className="text-sm text-gray-600">
-                                  {assessment.description ||
-                                    "No description provided."}
+                                <p className="text-sm text-gray-600 leading-relaxed italic">
+                                  {item.description ||
+                                    "No specific instructions provided."}
                                 </p>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                  <h4 className="text-sm font-medium mb-2">
-                                    Course
-                                  </h4>
-                                  <p className="text-sm text-gray-600 flex items-center gap-2">
-                                    <FileText aria-hidden="true" />
-                                    {assessment?.course?.courseTitle || "N/A"}
+                              <div className="flex justify-end items-center gap-4">
+                                <div className="text-right hidden sm:block">
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase">
+                                    Task Source
+                                  </p>
+                                  <p className="text-sm font-semibold capitalize text-acewall-main">
+                                    {item.source}
                                   </p>
                                 </div>
-
-                                <div>
-                                  <h4 className="text-sm font-medium mb-2">
-                                    Due Date
-                                  </h4>
-                                  <p className="text-sm text-gray-600 flex items-center gap-2">
-                                    <Calendar aria-hidden="true" />
-                                    {assessment?.dueDate?.date &&
-                                    !isNaN(
-                                      new Date(
-                                        assessment.dueDate.date
-                                      ).getTime()
-                                    )
-                                      ? format(
-                                          new Date(assessment.dueDate.date),
-                                          "MMMM dd, yyyy"
-                                        )
-                                      : "Invalid date"}
-                                  </p>
-                                  <p className="text-sm text-gray-600 flex items-center gap-2">
-                                    <Clock aria-hidden="true" />
-                                    {assessment?.dueDate?.time || "N/A"}
-                                  </p>
-                                </div>
-                              </div>
-
-                              <Link
-                                to={
-                                  assessment.source === "assessment"
-                                    ? `/student/assessment/submission/${assessment._id}`
-                                    : assessment.source === "discussion"
-                                    ? `/student/discussions/${assessment._id}`
-                                    : "#"
-                                }
-                              >
-                                <Button
-                                  size="sm"
-                                  className="bg-green-500 hover:bg-green-600 text-white"
-                                  aria-label={
-                                    assessment.isSubmitted
-                                      ? "View assessment results"
-                                      : "Submit assessment"
+                                <Link
+                                  to={
+                                    item.source === "assessment"
+                                      ? `/student/assessment/submission/${item._id}`
+                                      : `/student/discussions/${item._id}`
                                   }
                                 >
-                                  <Upload aria-hidden="true" className="mr-2" />
-                                  {assessment.isSubmitted
-                                    ? "See Results"
-                                    : "Submit Assessment"}
-                                </Button>
-                              </Link>
+                                  <Button
+                                    className={`${
+                                      item.isSubmitted
+                                        ? "bg-gray-800"
+                                        : "bg-green-600 hover:bg-green-700"
+                                    } shadow-lg h-10 px-6`}
+                                  >
+                                    <Upload size={16} className="mr-2" />
+                                    {item.isSubmitted
+                                      ? "View Result"
+                                      : "Submit Task"}
+                                  </Button>
+                                </Link>
+                              </div>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -310,15 +341,12 @@ const Assessment = () => {
                   );
                 })
               ) : (
-                <TableRow role="row">
+                <TableRow>
                   <TableCell
                     colSpan={5}
-                    role="cell"
-                    className="text-center py-8"
+                    className="text-center py-20 text-gray-400"
                   >
-                    {search
-                      ? "No assessments found matching your search."
-                      : "No assessments available."}
+                    No assessments match your current filters.
                   </TableCell>
                 </TableRow>
               )}
