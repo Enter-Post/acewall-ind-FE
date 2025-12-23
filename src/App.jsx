@@ -6,7 +6,7 @@ import Deshboard from "./Page/StudentPortal/Deshboard";
 import Mycourses from "./Page/StudentPortal/Courses/MyCourses";
 import Assignment from "./Page/StudentPortal/Assessment/Assignment";
 import Login from "./Page/Login";
-import Announcement from "./Page/StudentPortal/Announcement";
+import Announcement from "./Page/StudentPortal/StudentCourseAnnouncements";
 import Account from "./Page/StudentPortal/Account";
 import Gradebook from "./Page/StudentPortal/Gradebook";
 import SignupPage from "./Page/signup";
@@ -104,6 +104,8 @@ import AllStdCourses from "./Page/teacher/AllStdCourses";
 import CourseStudents from "./Page/teacher/CourseStudents";
 import AllannouncmentCourses from "./Page/teacher/AllannouncmentCourses";
 import CourseAssessmentList from "./Page/teacher/CourseAssessmentList";
+import AllannouncementCoursesStd from "./Page/StudentPortal/AllannouncmentCoursesStd";
+import StudentCourseAnnouncements from "./Page/StudentPortal/StudentCourseAnnouncements";
 
 function App() {
   const {
@@ -256,8 +258,9 @@ function App() {
               />
             </Route>
             <Route path="gradebook" element={<Gradebook />} />
-            <Route path="stdPages" element={<StdPagesView />} />
-            <Route path="announcements" element={<Announcement />} />
+            <Route path="stdPages" element={<StdPagesView />} />    
+            <Route path="AnnouncementsCoursesStd" element={<AllannouncementCoursesStd />} />
+            <Route path="announcements/:courseId" element={<StudentCourseAnnouncements />} />
             <Route path="ai" element={<AiChatbot />} />
 
             <Route path="account">
