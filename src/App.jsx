@@ -103,6 +103,7 @@ import AiChatbot from "./Page/StudentPortal/AiChatbot";
 import AllStdCourses from "./Page/teacher/AllStdCourses";
 import CourseStudents from "./Page/teacher/CourseStudents";
 import AllannouncmentCourses from "./Page/teacher/AllannouncmentCourses";
+import CourseAssessmentList from "./Page/teacher/CourseAssessmentList";
 
 function App() {
   const {
@@ -303,6 +304,7 @@ function App() {
             </Route>
             <Route path="assessments">
               <Route index element={<TeacherrAssessment />} />
+              <Route path="bycourse/:id" element={<CourseAssessmentList />} />
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
               <Route path=":id" element={<AssessmentReview />} />
               <Route

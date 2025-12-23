@@ -102,7 +102,6 @@ export default function TeacherLayout() {
     useContext(GlobalContext);
   const location = useLocation().pathname;
 
-  console.log(user, "user");
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [dropdownCourses, setDropdownCourses] = React.useState([]);
