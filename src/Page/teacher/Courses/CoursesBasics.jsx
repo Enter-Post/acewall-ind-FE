@@ -23,10 +23,7 @@ import { toast } from "sonner";
 import SubCategorySelect from "@/CustomComponent/CreateCourse/SubCategorySelect";
 import TeachingPointInput from "@/CustomComponent/CreateCourse/TeachingPoints";
 import RequirementInput from "@/CustomComponent/CreateCourse/Requirment";
-import DateRangePicker from "@/CustomComponent/CreateCourse/DateRangePicker";
-import SelectSemAndQuar from "@/CustomComponent/CreateCourse/SelectSemester";
-import SelectSemester from "@/CustomComponent/CreateCourse/SelectSemester";
-import SelectQuarter from "@/CustomComponent/CreateCourse/SelectQuarter";
+import AiContentModal from "@/CustomComponent/teacher/teacher/AiContentModal";
 
 const documentSchema = z.object({
   file: z.any().refine((file) => file instanceof File, {
@@ -64,25 +61,21 @@ const courseFormSchema = z.object({
       z.object({
         value: z
           .string()
-          .min(5, { message: "Teaching point must be at least 5 characters" })
-          .max(120, {
-            message: "Teaching point must be less than 120 characters",
-          }),
+          .min(5, "Min 5 characters.")
+          .max(120, "Max 120 characters."),
       })
     )
-    .min(1, { message: "Add at least one teaching point" }),
+    .min(1, { message: "Add at least one teaching point." }),
   requirements: z
     .array(
       z.object({
         value: z
           .string()
-          .min(5, { message: "Requirement must be at least 5 characters" })
-          .max(120, {
-            message: "Requirement must be less than 120 characters",
-          }),
+          .min(5, "Min 5 characters.")
+          .max(120, "Max 120 characters."),
       })
     )
-    .min(1, { message: "Add at least one requirement" }),
+    .min(1, { message: "Add at least one requirement." }),
   price: z
     .string()
     .refine((val) => val !== "" && !isNaN(Number(val)) && Number(val) >= 0, {
@@ -91,14 +84,16 @@ const courseFormSchema = z.object({
     .refine((val) => Number(val) <= 9999, {
       message: "Price must not exceed 4 digits",
     }),
-
 });
 
 export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const [aiResponse, setAiResponse] = useState({
+    content: "",
+    usedfor: "",
+  });
   const { user } = useContext(GlobalContext);
   const { course, setCourse } = useContext(CourseContext);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -147,6 +142,8 @@ export default function CoursesBasis() {
   });
   const watchedLanguage = watch("language");
   const watchedSemesterbased = watch("semesterbased");
+  const watchRequirement = watch("requirements");
+  const watchteacherpoints = watch("teachingPoints");
 
   console.log(errors, "errors");
 
@@ -305,390 +302,395 @@ export default function CoursesBasis() {
     console.log(errors);
   };
 
-return (
-  <div role="main" aria-labelledby="create-course-heading">
-    <h1
-      id="create-course-heading"
-      className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg"
-    >
-      Create Course
-    </h1>
-
-    <p id="form-instructions" className="sr-only">
-      All fields marked with an asterisk are required.
-    </p>
-
-    <FormProvider
-      {...{
-        register,
-        handleSubmit,
-        control,
-        setValue,
-        reset,
-        formState: { errors, isSubmitting },
-        watch,
-      }}
-    >
-      <form
-        onSubmit={handleSubmit(onSubmit, onError)}
-        className="space-y-8"
-        noValidate
-        aria-describedby="form-instructions"
+  return (
+    <div role="main" aria-labelledby="create-course-heading">
+      <h1
+        id="create-course-heading"
+        className="text-xl py-4 mb-8 pl-6 font-semibold bg-acewall-main text-white rounded-lg"
       >
-        <section>
-          <div className="space-y-6">
-            {/* Thumbnail */}
-            <div>
-              <Label htmlFor="thumbnailInput" className="block mb-2">
-                Thumbnail *
-              </Label>
+        Create Course
+      </h1>
 
-              {errors?.thumbnail && (
-                <p
-                  role="alert"
-                  className="text-xs text-red-500 mt-1"
-                  id="thumbnail-error"
-                >
-                  {errors.thumbnail.message}
-                </p>
-              )}
+      <p id="form-instructions" className="sr-only">
+        All fields marked with an asterisk are required.
+      </p>
 
-              <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
-                {thumbnailPreview ? (
-                  <div className="relative">
-                    <img
-                      src={thumbnailPreview || "/placeholder.svg"}
-                      alt="Selected course thumbnail preview"
-                      className="w-full h-[300px] object-cover rounded"
-                    />
-                    <div className="absolute bottom-2 right-2 flex space-x-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="bg-white hover:bg-gray-100 text-red-500"
-                        aria-label="Remove thumbnail"
-                        onClick={() => {
-                          setThumbnailPreview(null);
-                          setValue("thumbnail", null);
-                        }}
-                      >
-                        Remove
-                      </Button>
+      <FormProvider
+        {...{
+          register,
+          handleSubmit,
+          control,
+          setValue,
+          reset,
+          formState: { errors, isSubmitting },
+          watch,
+        }}
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit, onError)}
+          className="space-y-8"
+          noValidate
+          aria-describedby="form-instructions"
+        >
+          <section>
+            <div className="space-y-6">
+              {/* Thumbnail */}
+              <div>
+                <Label htmlFor="thumbnailInput" className="block mb-2">
+                  Thumbnail *
+                </Label>
+
+                {errors?.thumbnail && (
+                  <p
+                    role="alert"
+                    className="text-xs text-red-500 mt-1"
+                    id="thumbnail-error"
+                  >
+                    {errors.thumbnail.message}
+                  </p>
+                )}
+
+                <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
+                  {thumbnailPreview ? (
+                    <div className="relative">
+                      <img
+                        src={thumbnailPreview || "/placeholder.svg"}
+                        alt="Selected course thumbnail preview"
+                        className="w-full h-[300px] object-cover rounded"
+                      />
+                      <div className="absolute bottom-2 right-2 flex space-x-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          className="bg-white hover:bg-gray-100 text-red-500"
+                          aria-label="Remove thumbnail"
+                          onClick={() => {
+                            setThumbnailPreview(null);
+                            setValue("thumbnail", null);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ) : loading ? (
-                  <section
-                    className="flex justify-center items-center h-[300px]"
-                    aria-live="polite"
-                    aria-busy="true"
-                  >
-                    <Loader size={48} className="animate-spin" />
-                  </section>
-                ) : (
-                  <div className="flex items-center justify-center h-[300px]">
-                    <input
-                      type="file"
-                      accept="image/jpeg, image/png"
-                      id="thumbnailInput"
-                      className="sr-only"
-                      aria-invalid={!!errors.thumbnail}
-                      aria-describedby={
-                        errors.thumbnail ? "thumbnail-error" : undefined
-                      }
-                      onChange={handleThumbnailChange}
-                    />
-                    <label
-                      htmlFor="thumbnailInput"
-                      role="button"
-                      tabIndex={0}
-                      aria-label="Upload course thumbnail"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          document
-                            .getElementById("thumbnailInput")
-                            ?.click();
-                        }
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer"
+                  ) : loading ? (
+                    <section
+                      className="flex justify-center items-center h-[300px]"
+                      aria-live="polite"
+                      aria-busy="true"
                     >
-                      <Upload size={16} />
-                      Upload Thumbnail
-                    </label>
-                  </div>
-                )}
+                      <Loader size={48} className="animate-spin" />
+                    </section>
+                  ) : (
+                    <div className="flex items-center justify-center h-[300px]">
+                      <input
+                        type="file"
+                        accept="image/jpeg, image/png"
+                        id="thumbnailInput"
+                        className="sr-only"
+                        aria-invalid={!!errors.thumbnail}
+                        aria-describedby={
+                          errors.thumbnail ? "thumbnail-error" : undefined
+                        }
+                        onChange={handleThumbnailChange}
+                      />
+                      <label
+                        htmlFor="thumbnailInput"
+                        role="button"
+                        tabIndex={0}
+                        aria-label="Upload course thumbnail"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            document.getElementById("thumbnailInput")?.click();
+                          }
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer"
+                      >
+                        <Upload size={16} />
+                        Upload Thumbnail
+                      </label>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Course Title & Price */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="courseTitle" className="block mb-2">
-                  Course Title *
-                </Label>
-                <Input
-                  id="courseTitle"
-                  maxLength={50}
-                  aria-invalid={!!errors.courseTitle}
-                  aria-describedby={
-                    errors.courseTitle ? "courseTitle-error" : undefined
-                  }
-                  className={`bg-gray-50 ${
-                    errors.courseTitle ? "border border-red-500" : ""
-                  }`}
-                  {...register("courseTitle")}
+              {/* Course Title & Price */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="courseTitle" className="block mb-2">
+                    Course Title *
+                  </Label>
+                  <Input
+                    id="courseTitle"
+                    maxLength={50}
+                    aria-invalid={!!errors.courseTitle}
+                    aria-describedby={
+                      errors.courseTitle ? "courseTitle-error" : undefined
+                    }
+                    className={`bg-gray-50 ${
+                      errors.courseTitle ? "border border-red-500" : ""
+                    }`}
+                    {...register("courseTitle")}
+                  />
+                  {errors.courseTitle && (
+                    <p
+                      id="courseTitle-error"
+                      role="alert"
+                      className="text-xs text-red-500 mt-1"
+                    >
+                      {errors.courseTitle.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <Label htmlFor="price" className="block mb-2">
+                    Course Price (USD)
+                  </Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="9999"
+                    placeholder="Enter course price"
+                    aria-invalid={!!errors.price}
+                    aria-describedby={errors.price ? "price-error" : undefined}
+                    className={`bg-gray-50 ${
+                      errors.price ? "border border-red-500" : ""
+                    }`}
+                    onInput={(e) => {
+                      const value = parseFloat(e.currentTarget.value);
+                      if (value > 9999) e.currentTarget.value = "9999";
+                    }}
+                    {...register("price")}
+                  />
+                  {errors.price && (
+                    <p
+                      id="price-error"
+                      role="alert"
+                      className="text-xs text-red-500 mt-1"
+                    >
+                      {errors.price.message}
+                    </p>
+                  )}
+                </div>
+
+                <CategorySelect
+                  register={register}
+                  errors={errors}
+                  onCategoryChange={(value) => setSelectedCategory(value)}
                 />
-                {errors.courseTitle && (
+
+                <SubCategorySelect
+                  register={register}
+                  errors={errors}
+                  selectedCategory={selectedCategory}
+                />
+              </div>
+
+              {/* Semester & Language */}
+              <section className="flex gap-6 justify-between">
+                <div>
+                  <Label className="block mb-2">
+                    Is this a semester-based course *
+                  </Label>
+                  <Select
+                    aria-required="true"
+                    aria-invalid={!!errors.semesterbased}
+                    onValueChange={(value) =>
+                      setValue("semesterbased", value === "true", {
+                        shouldValidate: true,
+                      })
+                    }
+                    value={
+                      watchedSemesterbased !== undefined
+                        ? watchedSemesterbased
+                          ? "true"
+                          : "false"
+                        : undefined
+                    }
+                  >
+                    <SelectTrigger className="bg-gray-50">
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Yes</SelectItem>
+                      <SelectItem value="false">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.semesterbased && (
+                    <p role="alert" className="text-xs text-red-500 mt-1">
+                      {errors.semesterbased.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-[50%]">
+                  <Label className="block mb-2">Language *</Label>
+                  <Select
+                    aria-required="true"
+                    aria-invalid={!!errors.language}
+                    onValueChange={(value) =>
+                      setValue("language", value, { shouldValidate: true })
+                    }
+                    value={watchedLanguage}
+                  >
+                    <SelectTrigger className="bg-gray-50">
+                      <SelectValue placeholder="Select language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="english">English</SelectItem>
+                      <SelectItem value="spanish">Spanish</SelectItem>
+                      <SelectItem value="french">French</SelectItem>
+                      <SelectItem value="german">German</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.language && (
+                    <p role="alert" className="text-xs text-red-500 mt-1">
+                      {errors.language.message}
+                    </p>
+                  )}
+                </div>
+              </section>
+
+              {/* Description */}
+              <div>
+                <Label htmlFor="courseDescription" className="block mb-2">
+                  Course Description *
+                </Label>
+                <Textarea
+                  id="courseDescription"
+                  maxLength={4000}
+                  aria-invalid={!!errors.courseDescription}
+                  aria-describedby={
+                    errors.courseDescription
+                      ? "courseDescription-error"
+                      : "courseDescription-count"
+                  }
+                  className={`min-h-[100px] bg-gray-50 ${
+                    errors.courseDescription ? "border border-red-500" : ""
+                  }`}
+                  {...register("courseDescription")}
+                />
+                {errors.courseDescription && (
                   <p
-                    id="courseTitle-error"
+                    id="courseDescription-error"
                     role="alert"
                     className="text-xs text-red-500 mt-1"
                   >
-                    {errors.courseTitle.message}
+                    {errors.courseDescription.message}
                   </p>
                 )}
-              </div>
-
-              <div>
-                <Label htmlFor="price" className="block mb-2">
-                  Course Price (USD)
-                </Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="9999"
-                  placeholder="Enter course price"
-                  aria-invalid={!!errors.price}
-                  aria-describedby={
-                    errors.price ? "price-error" : undefined
-                  }
-                  className={`bg-gray-50 ${
-                    errors.price ? "border border-red-500" : ""
-                  }`}
-                  onInput={(e) => {
-                    const value = parseFloat(e.currentTarget.value);
-                    if (value > 9999) e.currentTarget.value = "9999";
-                  }}
-                  {...register("price")}
-                />
-                {errors.price && (
-                  <p
-                    id="price-error"
-                    role="alert"
-                    className="text-xs text-red-500 mt-1"
-                  >
-                    {errors.price.message}
-                  </p>
-                )}
-              </div>
-
-              <CategorySelect
-                register={register}
-                errors={errors}
-                onCategoryChange={(value) => setSelectedCategory(value)}
-              />
-
-              <SubCategorySelect
-                register={register}
-                errors={errors}
-                selectedCategory={selectedCategory}
-              />
-            </div>
-
-            {/* Semester & Language */}
-            <section className="flex gap-6 justify-between">
-              <div>
-                <Label className="block mb-2">
-                  Is this a semester-based course *
-                </Label>
-                <Select
-                  aria-required="true"
-                  aria-invalid={!!errors.semesterbased}
-                  onValueChange={(value) =>
-                    setValue("semesterbased", value === "true", {
-                      shouldValidate: true,
-                    })
-                  }
-                  value={
-                    watchedSemesterbased !== undefined
-                      ? watchedSemesterbased
-                        ? "true"
-                        : "false"
-                      : undefined
-                  }
-                >
-                  <SelectTrigger className="bg-gray-50">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="true">Yes</SelectItem>
-                    <SelectItem value="false">No</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.semesterbased && (
-                  <p role="alert" className="text-xs text-red-500 mt-1">
-                    {errors.semesterbased.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="w-[50%]">
-                <Label className="block mb-2">Language *</Label>
-                <Select
-                  aria-required="true"
-                  aria-invalid={!!errors.language}
-                  onValueChange={(value) =>
-                    setValue("language", value, { shouldValidate: true })
-                  }
-                  value={watchedLanguage}
-                >
-                  <SelectTrigger className="bg-gray-50">
-                    <SelectValue placeholder="Select language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="spanish">Spanish</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
-                    <SelectItem value="german">German</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.language && (
-                  <p role="alert" className="text-xs text-red-500 mt-1">
-                    {errors.language.message}
-                  </p>
-                )}
-              </div>
-            </section>
-
-            {/* Description */}
-            <div>
-              <Label htmlFor="courseDescription" className="block mb-2">
-                Course Description *
-              </Label>
-              <Textarea
-                id="courseDescription"
-                maxLength={4000}
-                aria-invalid={!!errors.courseDescription}
-                aria-describedby={
-                  errors.courseDescription
-                    ? "courseDescription-error"
-                    : "courseDescription-count"
-                }
-                className={`min-h-[100px] bg-gray-50 ${
-                  errors.courseDescription ? "border border-red-500" : ""
-                }`}
-                {...register("courseDescription")}
-              />
-              {errors.courseDescription && (
                 <p
-                  id="courseDescription-error"
-                  role="alert"
-                  className="text-xs text-red-500 mt-1"
+                  id="courseDescription-count"
+                  className="text-xs text-gray-500 mt-1"
+                  aria-live="polite"
                 >
-                  {errors.courseDescription.message}
+                  Characters left:{" "}
+                  {4000 - (watch("courseDescription")?.length || 0)}
                 </p>
-              )}
-              <p
-                id="courseDescription-count"
-                className="text-xs text-gray-500 mt-1"
-                aria-live="polite"
-              >
-                Characters left:{" "}
-                {4000 - (watch("courseDescription")?.length || 0)}
-              </p>
+              </div>
             </div>
-          </div>
 
-          {/* Teaching Points */}
-          <section
-            className="my-6"
-            aria-labelledby="teaching-points-heading"
-          >
-            <h3
-              id="teaching-points-heading"
-              className="text-lg font-medium mb-4"
-            >
-              What you will teach in this course *
-            </h3>
+            {/* Teaching Points */}
+            {/* Teaching Points */}
+            <section className="mt-10">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium mb-3">
+                  What you will teach *
+                </h2>
+                <div className="m-3">
+                  <AiContentModal
+                    aiResponse={aiResponse}
+                    setAiResponse={setAiResponse}
+                    usedfor="teachingPoints"
+                    appendTeachingPoint={appendTeachingPoint}
+                    removeTeachingPoint={removeTeachingPoint}
+                    prevPoints={watchteacherpoints}
+                  />
+                </div>
+              </div>
 
-            {teachingPointsFields.map((field, index) => (
-              <TeachingPointInput
-                key={field.id}
-                field={field}
-                index={index}
-                teachingPointsFields={teachingPointsFields}
-                remove={removeTeachingPoint}
-                error={errors.teachingPoints?.[index]?.value}
-                control={control}
-                register={register}
-              />
-            ))}
+              {teachingPointsFields.map((field, index) => (
+                <TeachingPointInput
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  teachingPointsFields={teachingPointsFields}
+                  remove={removeTeachingPoint}
+                  error={errors.teachingPoints?.[index]?.value}
+                  control={control}
+                  register={register}
+                />
+              ))}
 
-            <div className="flex justify-end">
-              <button
+              <Button
                 type="button"
-                aria-label="Add another teaching point"
+                className="mt-3"
                 disabled={teachingPointsFields.length >= 10}
                 onClick={() => appendTeachingPoint({ value: "" })}
-                className="mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50"
               >
                 + Add Teaching Point
-              </button>
-            </div>
-          </section>
+              </Button>
+            </section>
 
-          {/* Requirements */}
-          <section aria-labelledby="requirements-heading">
-            <h3
-              id="requirements-heading"
-              className="text-lg font-medium mb-4"
-            >
-              Course Requirements *
-            </h3>
+            {/* Requirements */}
+            <section className="mt-10">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium mb-3">
+                  Course Requirements *
+                </h2>
+                <div className="">
+                  <AiContentModal
+                    aiResponse={aiResponse}
+                    setAiResponse={setAiResponse}
+                    usedfor="requirements"
+                    appendRequirement={appendRequirement}
+                    removeRequirement={removeRequirement}
+                    prevPoints={watchRequirement}
+                  />
+                </div>
+              </div>
 
-            {requirementsFields.map((field, index) => (
-              <RequirementInput
-                key={field.id}
-                field={field}
-                index={index}
-                requirementsFields={requirementsFields}
-                remove={removeRequirement}
-                error={errors.requirements?.[index]?.value}
-                register={register}
-              />
-            ))}
+              {requirementsFields.map((field, index) => (
+                <RequirementInput
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  requirementsFields={requirementsFields}
+                  remove={removeRequirement}
+                  error={errors.requirements?.[index]?.value}
+                  register={register}
+                />
+              ))}
 
-            <div className="flex justify-end">
-              <button
+              <Button
                 type="button"
-                aria-label="Add another course requirement"
-                onClick={() => appendRequirement({ value: "" })}
+                className="mt-3"
                 disabled={requirementsFields.length >= 10}
-                className="mt-2 text-blue-500 text-sm border border-gray-300 px-4 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50"
+                onClick={() => appendRequirement({ value: "" })}
               >
                 + Add Requirement
-              </button>
-            </div>
+              </Button>
+            </section>
           </section>
-        </section>
 
-        {/* Submit */}
-        <div className="flex justify-end mt-10">
-          <Button
-            type="submit"
-            aria-busy={loading}
-            aria-disabled={loading}
-            disabled={loading}
-            className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
-          >
-            {loading ? "Creating..." : "Create Course"}
-          </Button>
-        </div>
-      </form>
-    </FormProvider>
-  </div>
-);
-
+          {/* Submit */}
+          <div className="flex justify-end mt-10">
+            <Button
+              type="submit"
+              aria-busy={loading}
+              aria-disabled={loading}
+              disabled={loading}
+              className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
+            >
+              {loading ? "Creating..." : "Create Course"}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
+    </div>
+  );
 }

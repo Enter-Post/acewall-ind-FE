@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { CourseContext } from "@/Context/CoursesProvider";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { toast } from "sonner";
+import AiContentModal from "../teacher/teacher/AiContentModal";
 
 // Zod Schema with length limits
 const chapterSchema = z.object({
@@ -40,6 +41,7 @@ export default function ChapterCreationModal({
   const [isOpen, setIsOpen] = useState(false);
   const { course, setCourse } = useContext(CourseContext);
   const [isLoading, setIsLoading] = useState(false); // Add this state
+  const [aiResponse, setAiResponse] = useState("");
 
   const {
     register,
@@ -47,7 +49,7 @@ export default function ChapterCreationModal({
     watch,
     reset,
     formState: { errors },
-
+    setValue,
   } = useForm({
     resolver: zodResolver(chapterSchema),
     defaultValues: {
@@ -110,6 +112,15 @@ export default function ChapterCreationModal({
               {errors.title && (
                 <p className="text-red-500 text-xs">{errors.title.message}</p>
               )}
+              <div className="flex justify-between items-center w-full">
+                <p className="text-gray-500">{titleValue.length}/100</p>
+                <AiContentModal
+                  aiResponse={aiResponse}
+                  setAiResponse={setAiResponse}
+                  usedfor="title"
+                  setValue={setValue}
+                />
+              </div>
             </div>
           </div>
 
@@ -127,6 +138,16 @@ export default function ChapterCreationModal({
                   {errors.description.message}
                 </p>
               )}
+               <div className="flex justify-between items-center w-full">
+                <p className="text-gray-500">{descriptionValue.length}/500</p>
+
+                <AiContentModal
+                  aiResponse={aiResponse}
+                  setAiResponse={setAiResponse}
+                  usedfor="description"
+                  setValue={setValue}
+                />
+              </div>
             </div>
           </div>
 
