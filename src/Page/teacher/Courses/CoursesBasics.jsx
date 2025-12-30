@@ -561,7 +561,7 @@ export default function CoursesBasis() {
                   <Label htmlFor="courseDescription">
                     Course Description *
                   </Label>
-                  <AiModal
+                  <AiContentModal
                     command={watchedDescription}
                     aiResponse={aiResponse}
                     setAiResponse={setAiResponse}
