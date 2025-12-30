@@ -144,7 +144,7 @@ export default function CoursesBasis() {
   const watchedSemesterbased = watch("semesterbased");
   const watchRequirement = watch("requirements");
   const watchteacherpoints = watch("teachingPoints");
-
+  const watchedDescription = watch("courseDescription");
   console.log(errors, "errors");
 
   const {
@@ -556,41 +556,35 @@ export default function CoursesBasis() {
               </section>
 
               {/* Description */}
-              <div>
-                <Label htmlFor="courseDescription" className="block mb-2">
-                  Course Description *
-                </Label>
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-3">
+                  <Label htmlFor="courseDescription">
+                    Course Description *
+                  </Label>
+                  <AiModal
+                    command={watchedDescription}
+                    aiResponse={aiResponse}
+                    setAiResponse={setAiResponse}
+                    usedfor="courseDescription"
+                    setValue={setValue}
+                  />
+                </div>
                 <Textarea
                   id="courseDescription"
-                  maxLength={4000}
-                  aria-invalid={!!errors.courseDescription}
-                  aria-describedby={
-                    errors.courseDescription
-                      ? "courseDescription-error"
-                      : "courseDescription-count"
-                  }
-                  className={`min-h-[100px] bg-gray-50 ${
-                    errors.courseDescription ? "border border-red-500" : ""
+                  aria-required="true"
+                  className={`bg-gray-50 min-h-[100px] ${
+                    errors.courseDescription ? "border-red-500" : ""
                   }`}
+                  maxLength={4000}
                   {...register("courseDescription")}
                 />
+                <div className="m-3"></div>
+
                 {errors.courseDescription && (
-                  <p
-                    id="courseDescription-error"
-                    role="alert"
-                    className="text-xs text-red-500 mt-1"
-                  >
+                  <p className="text-xs text-red-600" role="alert">
                     {errors.courseDescription.message}
                   </p>
                 )}
-                <p
-                  id="courseDescription-count"
-                  className="text-xs text-gray-500 mt-1"
-                  aria-live="polite"
-                >
-                  Characters left:{" "}
-                  {4000 - (watch("courseDescription")?.length || 0)}
-                </p>
               </div>
             </div>
 
