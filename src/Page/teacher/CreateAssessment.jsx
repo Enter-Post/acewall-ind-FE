@@ -41,6 +41,7 @@ import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import CategoryDropdown from "@/CustomComponent/Assessment/Assessment-category-dropdown";
 import StrictDatePicker from "@/CustomComponent/Assessment/DueDatePicker";
+import AiContentModal from "@/CustomComponent/teacher/teacher/AiContentModal";
 
 // Define the form schema with Zod
 const optionSchema = z.string().min(1, { message: "Option cannot be empty" });
@@ -56,6 +57,9 @@ const mcqQuestionSchema = baseQuestionSchema.extend({
   question: z
     .string()
     .min(1, { message: "Question must be at least 1 characters" }),
+  concept: z
+    .string()
+    .min(1, { message: "Concept must be at least 1 characters" }),
   options: z
     .array(optionSchema)
     .min(2, { message: "At least 2 options are required" })
@@ -71,6 +75,9 @@ const trueFalseQuestionSchema = baseQuestionSchema.extend({
   question: z
     .string()
     .min(1, { message: "Question must be at least 1 characters" }),
+  concept: z
+    .string()
+    .min(1, { message: "Concept must be at least 1 characters" }),
   correctAnswer: z.enum(["true", "false"], {
     required_error: "Please select the correct answer",
   }),
@@ -82,6 +89,9 @@ const qaQuestionSchema = baseQuestionSchema.extend({
   question: z
     .string()
     .min(5, { message: "Question must be at least 5 characters" }),
+  concept: z
+    .string()
+    .min(1, { message: "Concept must be at least 1 characters" }),
   points: z.number().min(1).max(999),
 });
 
@@ -116,6 +126,9 @@ const fileQuestionSchema = baseQuestionSchema.extend({
         message: "Total file size must be less than 5MB",
       }
     ),
+  concept: z
+    .string()
+    .min(1, { message: "Concept must be at least 1 characters" }),
   points: z.number().min(1).max(999),
 });
 
@@ -143,11 +156,11 @@ const dueDateSchema = z.object({
 
 // Updated form schema - now only question-based since files are handled as questions
 const formSchema = z.object({
-  title: z
+  assessmentTitle: z
     .string()
     .min(1, { message: "Title must be at least 1 characters" })
     .max(120, { message: "Title cannot exceed 120 characters" }),
-  description: z
+  assessmentDescription: z
     .string()
     .min(1, { message: "Description must be at least 1 characters" })
     .max(1000, { message: "Description cannot exceed 1000 characters" }),
@@ -177,6 +190,7 @@ export default function CreateAssessmentPage() {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [assessmentType, setAssessmentType] = useState("question");
+  const [aiResponse, setAiResponse] = useState("");
   const { type, courseId, id } = useParams();
   const [searchParams] = useSearchParams();
   const TITLE_LIMIT = 120;
@@ -193,11 +207,6 @@ export default function CreateAssessmentPage() {
 
   const semester = searchParams.get("semester");
   const quarter = searchParams.get("quarter");
-  const semesterbased = searchParams.get("semesterbased");
-
-  console.log(typeof semester, "semester");
-  console.log(typeof quarter, "quarter");
-  console.log(semesterbased, "semesterbased");
 
   const fetchQuarterDate = async () => {
     await axiosInstance
@@ -215,19 +224,25 @@ export default function CreateAssessmentPage() {
     fetchQuarterDate();
   }, []);
 
+  const today = new Date();
   const parsedStartDate = new Date(startDate);
   const parsedEndDate = new Date(endDate);
-  const minDate =
-    parsedStartDate < parsedEndDate ? parsedStartDate : parsedEndDate;
-  const maxDate =
-    parsedEndDate > parsedStartDate ? parsedEndDate : parsedStartDate;
+
+  // minDate becomes the later of "today" or "quarter start"
+  const minDate = parsedStartDate > today ? parsedStartDate : today;
+  const maxDate = parsedEndDate;
+
+  // Optional: prevent user error if quarter data is incorrect
+  if (isNaN(parsedStartDate) || isNaN(parsedEndDate)) {
+    console.warn("Invalid start or end date for the quarter.");
+  }
 
   // Initialize the form with react-hook-form and zod resolver
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      assessmentTitle: "",
+      assessmentDescription: "",
       category: "",
       assessmentType: "question",
       questions: [],
@@ -386,6 +401,8 @@ export default function CreateAssessmentPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
+    console.log(data, "submitted data");
+   
     if (isSubmitting) return;
 
     setIsSubmitting(true);
@@ -393,35 +410,38 @@ export default function CreateAssessmentPage() {
 
     try {
       const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("description", data.description);
+      formData.append("title", data.assessmentTitle);
+      formData.append("description", data.assessmentDescription);
       formData.append("category", data.category);
       formData.append("assessmentType", data.assessmentType);
       formData.append(type, id);
 
+      // ✅ Validate and apply due date
       const dueDate = new Date(data.dueDate.dateTime);
 
-      if (semesterbased === "true") {
-        if (dueDate >= minDate && dueDate <= maxDate) {
-          formData.append("dueDate", dueDate.toISOString());
-        } else {
-          toast.error(
-            "Due date must be within the Semester/Quarter start and end date.",
-            {
-              id: toastId,
-            }
-          );
-          setIsSubmitting(false);
-          return;
-        }
-      } else {
-        formData.append("dueDate", dueDate.toISOString());
+      if (isNaN(dueDate)) {
+        toast.error("Please select a valid due date.", { id: toastId });
+        setIsSubmitting(false);
+        return;
       }
 
-      // Process questions - handle both regular questions and file questions
+      // ✅ Enforce due date within quarter range
+      if (dueDate < minDate || dueDate > maxDate) {
+        toast.error(
+          `Due date must be between ${minDate.toLocaleDateString()} and ${maxDate.toLocaleDateString()} (Quarter duration).`,
+          { id: toastId }
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      formData.append("dueDate", dueDate.toISOString());
+
+      // ========================
+      // Process questions
+      // ========================
       const processedQuestions = data.questions.map((question, index) => {
         if (question.type === "file") {
-          // For file questions, we'll send files separately and reference them
           return {
             type: "file",
             question: question.question || `File Upload Question ${index + 1}`,
@@ -434,6 +454,7 @@ export default function CreateAssessmentPage() {
 
       formData.append("questions", JSON.stringify(processedQuestions));
 
+      // Attach files if any
       data.questions.forEach((question, questionIndex) => {
         if (question.type === "file" && question.files) {
           question.files.forEach((file, fileIndex) => {
@@ -445,13 +466,15 @@ export default function CreateAssessmentPage() {
         }
       });
 
-      if (semester !== "undefined") {
-        formData.append("semester", semester);
-      }
-      if (quarter !== "undefined") {
-        formData.append("quarter", quarter);
+      if (semester) formData.append("semester", semester);
+      if (quarter) formData.append("quarter", quarter);
+
+      // Debug log
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
       }
 
+      // Submit the form
       const res = await axiosInstance.post(
         "assessment/createAssessment/updated",
         formData,
@@ -463,12 +486,10 @@ export default function CreateAssessmentPage() {
       toast.success(res.data.message, { id: toastId });
       navigate(-1);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error(
         err?.response?.data?.message || "Failed to create assessment",
-        {
-          id: toastId,
-        }
+        { id: toastId }
       );
     } finally {
       setIsSubmitting(false);
@@ -487,55 +508,104 @@ export default function CreateAssessmentPage() {
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md"
+        >
+          Skip to main content
+        </a>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">Create New Assessment</h2>
+      <h2 id="main-content" className="text-2xl font-bold mb-4">
+        Create New Assessment
+      </h2>
       <p className="text-gray-600 mb-6">
         Create a new Assessment for students.
       </p>
+
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+        id="form-announcements"
+      >
+        {/* This will be used for screen reader announcements */}
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Assessment Type Selection */}
           <div className="space-y-4">
             <Label className="text-lg font-semibold">Assessment Type</Label>
-            <div className="grid grid-cols-2 gap-4 mt-3">
-              <Card
-                className={`cursor-pointer transition-all ${
+            <div
+              className="grid grid-cols-2 gap-4 mt-3"
+              role="radiogroup"
+              aria-labelledby="assessment-type-label"
+            >
+              <div
+                role="radio"
+                aria-checked={assessmentType === "question"}
+                tabIndex={0}
+                className={`cursor-pointer transition-all rounded-lg ${
                   assessmentType === "question"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
+                    ? "border-2 border-blue-500 bg-blue-50"
+                    : "border-2 border-gray-200 hover:border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
                 onClick={() => handleAssessmentTypeChange("question")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleAssessmentTypeChange("question");
+                  }
+                }}
               >
                 <CardContent className="p-4 text-center">
-                  <HelpCircle className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                  <HelpCircle
+                    className="h-8 w-8 mx-auto mb-2 text-blue-600"
+                    aria-hidden="true"
+                  />
                   <h3 className="font-medium">Question-Based</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-700 mt-1">
                     Create custom questions (MCQ, True/False, Q&A)
                   </p>
                 </CardContent>
-              </Card>
+              </div>
 
-              <Card
-                className={`cursor-pointer transition-all ${
+              <div
+                role="radio"
+                aria-checked={assessmentType === "file"}
+                tabIndex={0}
+                className={`cursor-pointer transition-all rounded-lg ${
                   assessmentType === "file"
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
+                    ? "border-2 border-blue-500 bg-blue-50"
+                    : "border-2 border-gray-200 hover:border-gray-300"
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
                 onClick={() => handleAssessmentTypeChange("file")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleAssessmentTypeChange("file");
+                  }
+                }}
               >
                 <CardContent className="p-4 text-center">
                   <div className="flex justify-center gap-2 mb-2">
-                    <FileText className="h-6 w-6 text-blue-600" />
-                    <ImageIcon className="h-6 w-6 text-blue-600" />
+                    <FileText
+                      className="h-6 w-6 text-blue-600"
+                      aria-hidden="true"
+                    />
+                    <ImageIcon
+                      className="h-6 w-6 text-blue-600"
+                      aria-hidden="true"
+                    />
                   </div>
                   <h3 className="font-medium">File-Based</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="text-sm text-gray-700 mt-1">
                     Upload PDF files or images (1-5 files, max 5MB total)
                   </p>
                 </CardContent>
-              </Card>
+              </div>
             </div>
           </div>
 
@@ -544,10 +614,19 @@ export default function CreateAssessmentPage() {
             {/* Title Field */}
             <FormField
               control={form.control}
-              name="title"
+              name="assessmentTitle"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Assessment Title</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Assessment Title</FormLabel>
+
+                    <AiContentModal
+                      aiResponse={aiResponse}
+                      setAiResponse={setAiResponse}
+                      usedfor="assessmentTitle"
+                      setValue={form.setValue}
+                    />
+                  </div>
                   <FormControl>
                     <Input
                       {...field}
@@ -571,10 +650,19 @@ export default function CreateAssessmentPage() {
             {/* Description Field */}
             <FormField
               control={form.control}
-              name="description"
+              name="assessmentDescription"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <div className="flex justify-between items-center">
+                    <FormLabel>Description</FormLabel>
+                    <AiContentModal
+                      aiResponse={aiResponse}
+                      setAiResponse={setAiResponse}
+                      usedfor="assessmentDescription"
+                      setValue={form.setValue}
+                    />
+                  </div>
+
                   <FormControl>
                     <Textarea
                       {...field}
@@ -617,16 +705,17 @@ export default function CreateAssessmentPage() {
 
           <div>
             <h3 className="text-lg font-semibold mb-2">Due Date</h3>
-            {semesterbased === "true" ? (
-              <StrictDatePicker
-                name="dueDate"
-                minDate={minDate}
-                maxDate={maxDate}
-              />
-            ) : (
-              <StrictDatePicker name="dueDate" />
-            )}
+            <StrictDatePicker
+              name="dueDate"
+              minDate={minDate}
+              maxDate={maxDate}
+            />
           </div>
+          {form.formState.errors.dueDate && (
+            <p className="text-red-500 text-sm">
+              {form.formState.errors.dueDate.dateTime.message}
+            </p>
+          )}
 
           {/* Questions Section */}
           {fields.length > 0 && (
@@ -651,8 +740,9 @@ export default function CreateAssessmentPage() {
                           onClick={() => moveQuestion(questionIndex, "up")}
                           disabled={questionIndex === 0}
                           className="h-8 w-8 p-0"
+                          aria-label={`Move question ${questionIndex + 1} up`}
                         >
-                          <ChevronUp size={16} />
+                          <ChevronUp size={16} aria-hidden="true" />
                         </Button>
                         <Button
                           type="button"
@@ -661,8 +751,9 @@ export default function CreateAssessmentPage() {
                           onClick={() => moveQuestion(questionIndex, "down")}
                           disabled={questionIndex === fields.length - 1}
                           className="h-8 w-8 p-0"
+                          aria-label={`Move question ${questionIndex + 1} down`}
                         >
-                          <ChevronDown size={16} />
+                          <ChevronDown size={16} aria-hidden="true" />
                         </Button>
                         <Button
                           type="button"
@@ -675,8 +766,9 @@ export default function CreateAssessmentPage() {
                               fields.length <= 1)
                           }
                           className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                          aria-label={`Delete question ${questionIndex + 1}`}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={16} aria-hidden="true" />
                         </Button>
                       </div>
                     </div>
@@ -745,6 +837,20 @@ export default function CreateAssessmentPage() {
                       )}
                     />
 
+                    <FormField
+                      control={form.control}
+                      name={`questions.${questionIndex}.concept`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Concept</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} type="text" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     {/* File Upload Section */}
                     {form.watch(`questions.${questionIndex}.type`) ===
                       "file" && (
@@ -771,36 +877,56 @@ export default function CreateAssessmentPage() {
                           name={`questions.${questionIndex}.files`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Upload Files</FormLabel>
+                              <FormLabel
+                                id={`file-upload-label-${questionIndex}`}
+                              >
+                                Upload Files (PDF or Images, max 5MB total)
+                              </FormLabel>
                               <FormControl>
                                 <div className="space-y-4">
                                   <div className="flex items-center justify-center w-full">
-                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <label
+                                      htmlFor={`file-input-${questionIndex}`}
+                                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500"
+                                      aria-labelledby={`file-upload-label-${questionIndex}`}
+                                    >
                                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <Upload className="w-8 h-8 mb-4 text-gray-500" />
-                                        <p className="mb-2 text-sm text-gray-500">
+                                        <Upload
+                                          className="w-8 h-8 mb-4 text-gray-500"
+                                          aria-hidden="true"
+                                        />
+                                        <p className="mb-2 text-sm text-gray-700">
                                           <span className="font-semibold">
                                             Click to upload
                                           </span>
                                         </p>
-                                        <p className="text-xs text-gray-500">
-                                          PDF or Images (5MB)
+                                        <p className="text-xs text-gray-600">
+                                          PDF or Images (5MB max)
                                         </p>
                                       </div>
                                       <input
+                                        id={`file-input-${questionIndex}`}
                                         type="file"
                                         multiple
                                         accept=".pdf,image/*"
-                                        className="hidden"
+                                        className="sr-only"
                                         onChange={(e) =>
                                           handleFileChange(
                                             questionIndex,
                                             e.target.files
                                           )
                                         }
+                                        aria-describedby={`file-help-${questionIndex}`}
                                       />
                                     </label>
                                   </div>
+                                  <p
+                                    id={`file-help-${questionIndex}`}
+                                    className="text-xs text-gray-600 sr-only"
+                                  >
+                                    Upload up to 5 PDF or image files. Total
+                                    size must be less than 5 megabytes.
+                                  </p>
 
                                   {/* Display selected files */}
                                   {field.value && field.value.length > 0 && (
@@ -838,9 +964,16 @@ export default function CreateAssessmentPage() {
                                                 fileIndex
                                               )
                                             }
+                                            aria-label={`Remove file ${file.name}`}
                                             className="text-red-500 hover:text-red-700"
                                           >
-                                            <Trash2 size={16} />
+                                            <Trash2
+                                              size={16}
+                                              aria-hidden="true"
+                                            />
+                                            <span className="sr-only">
+                                              Remove
+                                            </span>
                                           </Button>
                                         </div>
                                       ))}
@@ -873,7 +1006,18 @@ export default function CreateAssessmentPage() {
                         name={`questions.${questionIndex}.question`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Question</FormLabel>
+                            <div className="flex item-center justify-between">
+                              <FormLabel>Question</FormLabel>
+                              <AiContentModal
+                                aiResponse={aiResponse}
+                                setAiResponse={setAiResponse}
+                                usedfor={`questions.${questionIndex}.question`}
+                                questionType={form.watch(
+                                  `questions.${questionIndex}.type`
+                                )}
+                                setValue={form.setValue}
+                              />
+                            </div>
                             <FormControl>
                               <div className="border rounded-md">
                                 <JoditEditor
@@ -897,39 +1041,45 @@ export default function CreateAssessmentPage() {
                         name={`questions.${questionIndex}.correctAnswer`}
                         render={({ field }) => (
                           <FormItem className="space-y-3">
-                            <FormLabel>Correct Answer</FormLabel>
-                            <FormControl>
-                              <RadioGroup
-                                onValueChange={field.onChange}
-                                value={field.value}
-                                className="flex space-x-4"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="true"
-                                    id={`true-${question.id}`}
-                                  />
-                                  <Label
-                                    htmlFor={`true-${question.id}`}
-                                    className="font-normal"
-                                  >
-                                    True
-                                  </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <RadioGroupItem
-                                    value="false"
-                                    id={`false-${question.id}`}
-                                  />
-                                  <Label
-                                    htmlFor={`false-${question.id}`}
-                                    className="font-normal"
-                                  >
-                                    False
-                                  </Label>
-                                </div>
-                              </RadioGroup>
-                            </FormControl>
+                            <fieldset>
+                              <legend className="text-sm font-medium mb-3">
+                                Correct Answer
+                              </legend>
+                              <FormControl>
+                                <RadioGroup
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                  className="flex space-x-4"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="true"
+                                      id={`true-${question.id}`}
+                                      aria-describedby={`true-desc-${question.id}`}
+                                    />
+                                    <Label
+                                      htmlFor={`true-${question.id}`}
+                                      className="font-normal cursor-pointer"
+                                    >
+                                      True
+                                    </Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem
+                                      value="false"
+                                      id={`false-${question.id}`}
+                                      aria-describedby={`false-desc-${question.id}`}
+                                    />
+                                    <Label
+                                      htmlFor={`false-${question.id}`}
+                                      className="font-normal cursor-pointer"
+                                    >
+                                      False
+                                    </Label>
+                                  </div>
+                                </RadioGroup>
+                              </FormControl>
+                            </fieldset>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -1077,7 +1227,14 @@ export default function CreateAssessmentPage() {
             </div>
           )}
 
-         
+          {/* {assessmentType === "file" && fields.length > 0 && (
+            <div className="text-center text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+              <p>Only one file upload question is allowed per assessment.</p>
+              <p>
+                You can upload multiple files (1-5) within this single question.
+              </p>
+            </div>
+          )} */}
 
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Submit Assessment"}

@@ -19,6 +19,7 @@ import {
   Archive,
   CheckCircle,
   AlertTriangle,
+  BarChart3,
 } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 import CommentSection from "@/CustomComponent/Student/CommentSection";
@@ -37,7 +38,7 @@ export default function TeacherCourseDetails() {
   const { checkAuth } = useContext(GlobalContext);
   const navigate = useNavigate();
   const { setQuarters } = useContext(CourseContext);
-  
+
   const [Prevthumbnail, setPrevThumbnail] = useState(null);
   const [newthumbnail, setNewThumbnail] = useState(null);
   const [loadingThumbnail, setLoadingThumbnail] = useState(false);
@@ -73,7 +74,9 @@ export default function TeacherCourseDetails() {
         gradingSystem: res.data.gradingSystem,
       }));
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to toggle grading system");
+      toast.error(
+        error.response?.data?.message || "Failed to toggle grading system"
+      );
     }
   };
 
@@ -89,7 +92,8 @@ export default function TeacherCourseDetails() {
 
   const handleDeleteAssessment = (assessmentID) => {
     setLoading(true);
-    axiosInstance.delete(`/assessment/delete/${assessmentID}`)
+    axiosInstance
+      .delete(`/assessment/delete/${assessmentID}`)
       .then((res) => {
         setLoading(false);
         toast.success(res.data.message);
@@ -132,7 +136,8 @@ export default function TeacherCourseDetails() {
   const confirmChange = async () => {
     setLoadingThumbnail(true);
     try {
-      const res = await axiosInstance.put(`course/thumbnail/${id}`, 
+      const res = await axiosInstance.put(
+        `course/thumbnail/${id}`,
         { thumbnail: newthumbnail },
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -149,7 +154,11 @@ export default function TeacherCourseDetails() {
 
   if (!course)
     return (
-      <div className="flex justify-center items-center h-screen w-full" role="alert" aria-busy="true">
+      <div
+        className="flex justify-center items-center h-screen w-full"
+        role="alert"
+        aria-busy="true"
+      >
         <Loader className="animate-spin w-8 h-8" aria-hidden="true" />
         <span className="sr-only">Loading course details...</span>
       </div>
@@ -160,7 +169,9 @@ export default function TeacherCourseDetails() {
       {/* Header Section */}
       <header className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Course Management</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Course Management
+          </h1>
           <div className="flex flex-wrap items-center gap-2">
             <VerificationBadge
               status={course.isVerified}
@@ -168,11 +179,14 @@ export default function TeacherCourseDetails() {
               fetchCourseDetail={fetchCourseDetail}
             />
             {course.isAppliedReverified?.status && (
-              <div 
+              <div
                 className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-xs font-semibold"
                 role="status"
               >
-                <CheckCircle className="w-4 h-4 text-blue-600" aria-hidden="true" />
+                <CheckCircle
+                  className="w-4 h-4 text-blue-600"
+                  aria-hidden="true"
+                />
                 <span>Reverification request pending admin review.</span>
               </div>
             )}
@@ -182,13 +196,16 @@ export default function TeacherCourseDetails() {
 
       {/* Archive Warning */}
       {(!course.published || course.isVerified === "rejected") && (
-        <section 
-          className="bg-red-50 border-l-4 border-red-600 rounded-r-lg p-4 mb-6" 
+        <section
+          className="bg-red-50 border-l-4 border-red-600 rounded-r-lg p-4 mb-6"
           role="alert"
           aria-labelledby="archive-warning-title"
         >
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-red-600" aria-hidden="true" />
+            <AlertTriangle
+              className="w-5 h-5 text-red-600"
+              aria-hidden="true"
+            />
             <p id="archive-warning-title" className="text-red-800 font-bold">
               Archived: This course is not visible to students.
             </p>
@@ -200,11 +217,18 @@ export default function TeacherCourseDetails() {
         {/* Main Course Info Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column - Thumbnail */}
-          <section className="lg:col-span-4" aria-label="Course Thumbnail Management">
+          <section
+            className="lg:col-span-4"
+            aria-label="Course Thumbnail Management"
+          >
             <Card className="overflow-hidden shadow-sm">
               <CardContent className="p-0">
                 <img
-                  src={Prevthumbnail || course.thumbnail?.url || "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"}
+                  src={
+                    Prevthumbnail ||
+                    course.thumbnail?.url ||
+                    "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80"
+                  }
                   alt={`Current thumbnail for ${course.courseTitle}`}
                   className="w-full h-48 object-cover"
                 />
@@ -218,13 +242,20 @@ export default function TeacherCourseDetails() {
                         disabled={loadingThumbnail}
                         aria-label="Confirm new thumbnail"
                       >
-                        {loadingThumbnail ? <Loader className="animate-spin w-4 h-4" /> : "Confirm"}
+                        {loadingThumbnail ? (
+                          <Loader className="animate-spin w-4 h-4" />
+                        ) : (
+                          "Confirm"
+                        )}
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         className="flex-1"
-                        onClick={() => { setPrevThumbnail(null); setNewThumbnail(null); }}
+                        onClick={() => {
+                          setPrevThumbnail(null);
+                          setNewThumbnail(null);
+                        }}
                       >
                         Cancel
                       </Button>
@@ -241,13 +272,18 @@ export default function TeacherCourseDetails() {
                       <label
                         htmlFor="thumbnail-upload"
                         tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && document.getElementById('thumbnail-upload').click()}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" &&
+                          document.getElementById("thumbnail-upload").click()
+                        }
                         className="flex items-center justify-center gap-2 w-full px-4 py-2 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors focus:ring-2 focus:ring-green-600 outline-none"
                         role="button"
                         aria-label="Upload new course thumbnail"
                       >
                         <Pen className="h-4 w-4" aria-hidden="true" />
-                        <span className="text-sm font-medium">Edit Thumbnail</span>
+                        <span className="text-sm font-medium">
+                          Edit Thumbnail
+                        </span>
                       </label>
                     </div>
                   )}
@@ -261,11 +297,17 @@ export default function TeacherCourseDetails() {
             <Card className="shadow-sm h-full">
               <CardContent className="p-6">
                 <div className="flex justify-between text-xs text-muted-foreground mb-4">
-                  <time className="flex items-center gap-1" dateTime={course.createdAt}>
+                  <time
+                    className="flex items-center gap-1"
+                    dateTime={course.createdAt}
+                  >
                     <Calendar className="w-3 h-3" aria-hidden="true" />
                     Created: {formatDate(course.createdAt)}
                   </time>
-                  <time className="flex items-center gap-1" dateTime={course.updatedAt}>
+                  <time
+                    className="flex items-center gap-1"
+                    dateTime={course.updatedAt}
+                  >
                     <Calendar className="w-3 h-3" aria-hidden="true" />
                     Updated: {formatDate(course.updatedAt)}
                   </time>
@@ -280,8 +322,14 @@ export default function TeacherCourseDetails() {
                   </p>
 
                   {course.price && (
-                    <div className="flex items-center gap-2 mt-3" aria-label={`Price: ${course.price}`}>
-                      <DollarSign className="w-5 h-5 text-green-700" aria-hidden="true" />
+                    <div
+                      className="flex items-center gap-2 mt-3"
+                      aria-label={`Price: ${course.price}`}
+                    >
+                      <DollarSign
+                        className="w-5 h-5 text-green-700"
+                        aria-hidden="true"
+                      />
                       <span className="text-xl font-bold text-green-700">
                         {course.price}
                       </span>
@@ -303,7 +351,10 @@ export default function TeacherCourseDetails() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <nav className="flex flex-wrap gap-3" aria-label="Management navigation">
+              <nav
+                className="flex flex-wrap gap-3"
+                aria-label="Management navigation"
+              >
                 <AssessmentCategoryDialog courseId={id} />
                 <Button
                   variant="outline"
@@ -319,8 +370,18 @@ export default function TeacherCourseDetails() {
                     Semesters & Quarters
                   </Button>
                 )}
-                <Button variant="outline" onClick={() => navigate(`/teacher/courses/gpa/${id}`)}>GPA</Button>
-                <Button variant="outline" onClick={() => navigate(`/teacher/courses/Sbl/${id}`)}>Standard GradeScale</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/teacher/courses/gpa/${id}`)}
+                >
+                  GPA
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/teacher/courses/Sbl/${id}`)}
+                >
+                  Standard GradeScale
+                </Button>
               </nav>
             </CardContent>
           </Card>
@@ -337,15 +398,26 @@ export default function TeacherCourseDetails() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="flex items-center gap-2" onClick={handlePreview}>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={handlePreview}
+                >
                   <Eye className="w-4 h-4" aria-hidden="true" />
                   Student View
                 </Button>
-                <Button variant="outline" className="flex items-center gap-2" onClick={() => navigate(`/teacher/gradebook/${id}`)}>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={() => navigate(`/teacher/gradebook/${id}`)}
+                >
                   <BookOpen className="w-4 h-4" aria-hidden="true" />
                   Gradebook
                 </Button>
-                <Button className="flex items-center gap-2 bg-slate-700 hover:bg-slate-800" onClick={() => navigate(`/teacher/courses/edit/${id}`)}>
+                <Button
+                  className="flex items-center gap-2 bg-slate-700 hover:bg-slate-800"
+                  onClick={() => navigate(`/teacher/courses/edit/${id}`)}
+                >
                   <Pen className="w-4 h-4" aria-hidden="true" />
                   Edit Info
                 </Button>
@@ -353,8 +425,29 @@ export default function TeacherCourseDetails() {
                   className="bg-purple-700 hover:bg-purple-800 text-white"
                   onClick={handleToggleGrading}
                 >
-                  <ChartBarStacked className="w-4 h-4 mr-2" aria-hidden="true" />
-                  {course.gradingSystem === "normalGrading" ? "Use Standard Grading" : "Use Normal Grading"}
+                  <ChartBarStacked
+                    className="w-4 h-4 mr-2"
+                    aria-hidden="true"
+                  />
+                  {course.gradingSystem === "normalGrading"
+                    ? "Use Standard Grading"
+                    : "Use Normal Grading"}
+                </Button>
+                <Button
+                  variant="outline"
+                  className=" text-white"
+                  onClick={() => {
+                    console.log("COURSE ID:", id);
+                    navigate(`/teacher/courses/course-stats/${id}`);
+                  }}
+                >
+                  <BarChart3
+                    className="w-4 h-4 mr-2"
+                    aria-hidden="true"
+                  />
+                  {course.gradingSystem === "normalGrading"
+                    ? "Use Standard Grading"
+                    : "Use Normal Grading"}
                 </Button>
               </div>
             </CardContent>
@@ -362,21 +455,36 @@ export default function TeacherCourseDetails() {
         </section>
 
         {/* Stats Grid */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4" aria-label="Course Statistics">
+        <section
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+          aria-label="Course Statistics"
+        >
           <StatCard
-            icon={<ChartBarStacked className="h-5 w-5 text-purple-600" aria-hidden="true" />}
+            icon={
+              <ChartBarStacked
+                className="h-5 w-5 text-purple-600"
+                aria-hidden="true"
+              />
+            }
             value={course.category?.title?.toUpperCase() || "N/A"}
             label="Category"
             bgColor="bg-purple-50"
           />
           <StatCard
-            icon={<LibraryBig className="h-5 w-5 text-green-600" aria-hidden="true" />}
+            icon={
+              <LibraryBig
+                className="h-5 w-5 text-green-600"
+                aria-hidden="true"
+              />
+            }
             value={course.semester?.length || 0}
             label="Semesters"
             bgColor="bg-green-50"
           />
           <StatCard
-            icon={<Users className="h-5 w-5 text-orange-600" aria-hidden="true" />}
+            icon={
+              <Users className="h-5 w-5 text-orange-600" aria-hidden="true" />
+            }
             value={course.enrollments?.length || 0}
             label="Enrolled Students"
             bgColor="bg-orange-50"
@@ -387,7 +495,10 @@ export default function TeacherCourseDetails() {
         <section aria-labelledby="curriculum-title">
           <Card className="shadow-sm">
             <CardHeader>
-              <CardTitle id="curriculum-title" className="text-xl flex items-center gap-2">
+              <CardTitle
+                id="curriculum-title"
+                className="text-xl flex items-center gap-2"
+              >
                 <LibraryBig className="w-6 h-6" aria-hidden="true" />
                 {semesterbased ? "Course Semesters" : "Course Chapters"}
               </CardTitle>
@@ -401,13 +512,21 @@ export default function TeacherCourseDetails() {
                       to={`/teacher/courses/${id}/semester/${semester._id}`}
                       className="block border-2 border-transparent rounded-lg hover:border-green-600 focus:ring-2 focus:ring-green-600 outline-none transition-all"
                       role="listitem"
-                      aria-label={`Go to Semester ${index + 1}: ${semester.title}`}
+                      aria-label={`Go to Semester ${index + 1}: ${
+                        semester.title
+                      }`}
                     >
                       <div className="border border-gray-200 p-4 rounded-lg bg-white">
-                        <h3 className="font-bold text-lg text-gray-900">Semester {index + 1}: {semester.title}</h3>
+                        <h3 className="font-bold text-lg text-gray-900">
+                          Semester {index + 1}: {semester.title}
+                        </h3>
                         <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
                           <Calendar className="w-3 h-3" aria-hidden="true" />
-                          {format(new Date(semester.startDate), "MMM do, yyyy")} - {format(new Date(semester.endDate), "MMM do, yyyy")}
+                          {format(
+                            new Date(semester.startDate),
+                            "MMM do, yyyy"
+                          )}{" "}
+                          - {format(new Date(semester.endDate), "MMM do, yyyy")}
                         </p>
                       </div>
                     </Link>
@@ -419,7 +538,9 @@ export default function TeacherCourseDetails() {
                   className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-green-600 outline-none"
                   aria-label="View Course Chapters"
                 >
-                  <h3 className="font-bold text-lg text-gray-900 underline">Manage All Chapters</h3>
+                  <h3 className="font-bold text-lg text-gray-900 underline">
+                    Manage All Chapters
+                  </h3>
                 </Link>
               )}
             </CardContent>
@@ -427,18 +548,21 @@ export default function TeacherCourseDetails() {
         </section>
 
         {/* Final Assessment Cards */}
-        {Array.isArray(course.CourseAssessments) && course.CourseAssessments.length > 0 && (
-          <section aria-label="Final Course Assessments">
-             <h2 className="text-xl font-bold mb-4">Course Final Assessments</h2>
-             {course.CourseAssessments.map((assessment) => (
-               <FinalCourseAssessmentCard
-                 key={assessment._id}
-                 assessment={assessment}
-                 handleDeleteAssessment={handleDeleteAssessment}
-               />
-             ))}
-          </section>
-        )}
+        {Array.isArray(course.CourseAssessments) &&
+          course.CourseAssessments.length > 0 && (
+            <section aria-label="Final Course Assessments">
+              <h2 className="text-xl font-bold mb-4">
+                Course Final Assessments
+              </h2>
+              {course.CourseAssessments.map((assessment) => (
+                <FinalCourseAssessmentCard
+                  key={assessment._id}
+                  assessment={assessment}
+                  handleDeleteAssessment={handleDeleteAssessment}
+                />
+              ))}
+            </section>
+          )}
 
         <RatingSection courseId={id} />
         <CommentSection id={id} />
@@ -457,10 +581,16 @@ export default function TeacherCourseDetails() {
 
 function StatCard({ icon, value, label, bgColor }) {
   return (
-    <Card className={`border-0 shadow-sm ${bgColor} focus-within:ring-2 focus-within:ring-green-600 outline-none`} tabIndex={0} role="group">
+    <Card
+      className={`border-0 shadow-sm ${bgColor} focus-within:ring-2 focus-within:ring-green-600 outline-none`}
+      tabIndex={0}
+      role="group"
+    >
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-white shadow-sm" aria-hidden="true">{icon}</div>
+          <div className="p-2 rounded-lg bg-white shadow-sm" aria-hidden="true">
+            {icon}
+          </div>
           <div>
             <div className="font-bold text-xl text-gray-900">{value}</div>
             <div className="text-sm text-gray-700 font-medium">{label}</div>
@@ -475,34 +605,61 @@ function VerificationBadge({ status, course, fetchCourseDetail }) {
   if (!status) return null;
 
   const config = {
-    pending: { color: "bg-amber-50 text-amber-900 border-amber-300", message: "Pending admin review", iconColor: "text-amber-600" },
-    approved: { color: "bg-green-50 text-green-900 border-green-300", message: "Verified and approved", iconColor: "text-green-700" },
-    rejected: { color: "bg-red-50 text-red-900 border-red-300", message: "Verification rejected", iconColor: "text-red-700" },
+    pending: {
+      color: "bg-amber-50 text-amber-900 border-amber-300",
+      message: "Pending admin review",
+      iconColor: "text-amber-600",
+    },
+    approved: {
+      color: "bg-green-50 text-green-900 border-green-300",
+      message: "Verified and approved",
+      iconColor: "text-green-700",
+    },
+    rejected: {
+      color: "bg-red-50 text-red-900 border-red-300",
+      message: "Verification rejected",
+      iconColor: "text-red-700",
+    },
   };
 
   const { color, message, iconColor } = config[status] || config.pending;
 
   return (
     <div className="flex items-center gap-4 flex-wrap" role="status">
-      <div className={`flex items-center gap-4 p-3 rounded-lg border shadow-sm bg-white`}>
-        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border ${color}`}>
+      <div
+        className={`flex items-center gap-4 p-3 rounded-lg border shadow-sm bg-white`}
+      >
+        <div
+          className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border ${color}`}
+        >
           <CheckCircle className={`w-4 h-4 ${iconColor}`} aria-hidden="true" />
           <span>{status.toUpperCase()}</span>
         </div>
         <div className="flex flex-col">
           <span className="text-sm font-bold text-gray-900">{message}</span>
           {status === "rejected" && course.remarks && (
-            <span className="text-xs text-red-700 font-bold mt-1">Reason: {course.remarks}</span>
+            <span className="text-xs text-red-700 font-bold mt-1">
+              Reason: {course.remarks}
+            </span>
           )}
         </div>
       </div>
       {status === "rejected" && !course.isAppliedReverified?.status && (
-        <ApplyReverificationDialog courseID={course._id} fetchCourseDetail={fetchCourseDetail} />
+        <ApplyReverificationDialog
+          courseID={course._id}
+          fetchCourseDetail={fetchCourseDetail}
+        />
       )}
     </div>
   );
 }
 
 function formatDate(dateString) {
-  return dateString ? new Date(dateString).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "N/A";
+  return dateString
+    ? new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "N/A";
 }

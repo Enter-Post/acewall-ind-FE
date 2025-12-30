@@ -90,7 +90,7 @@ export default function CoursesBasis() {
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-const [aiResponse, setAiResponse] = useState({
+  const [aiResponse, setAiResponse] = useState({
     content: "",
     usedfor: "",
   });
@@ -595,87 +595,86 @@ const [aiResponse, setAiResponse] = useState({
             </div>
 
             {/* Teaching Points */}
-          {/* Teaching Points */}
-          <section className="mt-10">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium mb-3">
-                What you will teach *
-              </h2>
-              <div className="m-3">
-                <AiContentModal
-                  aiResponse={aiResponse}
-                  setAiResponse={setAiResponse}
-                  usedfor="teachingPoints"
-                  appendTeachingPoint={appendTeachingPoint}
-                  removeTeachingPoint={removeTeachingPoint}
-                  prevPoints={watchteacherpoints}
-                />
+            {/* Teaching Points */}
+            <section className="mt-10">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium mb-3">
+                  What you will teach *
+                </h2>
+                <div className="m-3">
+                  <AiContentModal
+                    aiResponse={aiResponse}
+                    setAiResponse={setAiResponse}
+                    usedfor="teachingPoints"
+                    appendTeachingPoint={appendTeachingPoint}
+                    removeTeachingPoint={removeTeachingPoint}
+                    prevPoints={watchteacherpoints}
+                  />
+                </div>
               </div>
-            </div>
 
-            {teachingPointsFields.map((field, index) => (
-              <TeachingPointInput
-                key={field.id}
-                field={field}
-                index={index}
-                teachingPointsFields={teachingPointsFields}
-                remove={removeTeachingPoint}
-                error={errors.teachingPoints?.[index]?.value}
-                control={control}
-                register={register}
-              />
-            ))}
-
-            <Button
-              type="button"
-              className="mt-3"
-              disabled={teachingPointsFields.length >= 10}
-              onClick={() => appendTeachingPoint({ value: "" })}
-            >
-              + Add Teaching Point
-            </Button>
-          </section>
-
-          {/* Requirements */}
-          <section className="mt-10">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium mb-3">
-                Course Requirements *
-              </h2>
-              <div className="">
-                <AiContentModal
-                  aiResponse={aiResponse}
-                  setAiResponse={setAiResponse}
-                  usedfor="requirements"
-                  appendRequirement={appendRequirement}
-                  removeRequirement={removeRequirement}
-                  prevPoints={watchRequirement}
+              {teachingPointsFields.map((field, index) => (
+                <TeachingPointInput
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  teachingPointsFields={teachingPointsFields}
+                  remove={removeTeachingPoint}
+                  error={errors.teachingPoints?.[index]?.value}
+                  control={control}
+                  register={register}
                 />
+              ))}
+
+              <Button
+                type="button"
+                className="mt-3"
+                disabled={teachingPointsFields.length >= 10}
+                onClick={() => appendTeachingPoint({ value: "" })}
+              >
+                + Add Teaching Point
+              </Button>
+            </section>
+
+            {/* Requirements */}
+            <section className="mt-10">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-medium mb-3">
+                  Course Requirements *
+                </h2>
+                <div className="">
+                  <AiContentModal
+                    aiResponse={aiResponse}
+                    setAiResponse={setAiResponse}
+                    usedfor="requirements"
+                    appendRequirement={appendRequirement}
+                    removeRequirement={removeRequirement}
+                    prevPoints={watchRequirement}
+                  />
+                </div>
               </div>
-            </div>
 
-            {requirementsFields.map((field, index) => (
-              <RequirementInput
-                key={field.id}
-                field={field}
-                index={index}
-                requirementsFields={requirementsFields}
-                remove={removeRequirement}
-                error={errors.requirements?.[index]?.value}
-                register={register}
-              />
-            ))}
+              {requirementsFields.map((field, index) => (
+                <RequirementInput
+                  key={field.id}
+                  field={field}
+                  index={index}
+                  requirementsFields={requirementsFields}
+                  remove={removeRequirement}
+                  error={errors.requirements?.[index]?.value}
+                  register={register}
+                />
+              ))}
 
-            <Button
-              type="button"
-              className="mt-3"
-              disabled={requirementsFields.length >= 10}
-              onClick={() => appendRequirement({ value: "" })}
-            >
-              + Add Requirement
-            </Button>
-          </section>
-
+              <Button
+                type="button"
+                className="mt-3"
+                disabled={requirementsFields.length >= 10}
+                onClick={() => appendRequirement({ value: "" })}
+              >
+                + Add Requirement
+              </Button>
+            </section>
           </section>
 
           {/* Submit */}

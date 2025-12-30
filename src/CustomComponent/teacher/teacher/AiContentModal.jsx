@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Sparkles, X, Loader2, Check, RotateCcw } from "lucide-react";
+import { Sparkles, X, Loader2, Check, RotateCcw, Pencil } from "lucide-react";
 import { axiosInstance } from "@/lib/AxiosInstance";
 
 export default function AiContentModal({
@@ -31,6 +31,7 @@ export default function AiContentModal({
   const [generatedContent, setGeneratedContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [QuestionDifficulty, setQuestionDifficulty] = useState("medium");
 
   const renderGeneratedContent = (content) => {
     if (!content) return null;
@@ -81,7 +82,11 @@ export default function AiContentModal({
     try {
       const response = await axiosInstance.post(
         "aichat/generateContentForTeacher",
-        { command: prompt, usedfor: finalUsedfor }
+        {
+          command: prompt,
+          usedfor: finalUsedfor,
+          difficulty: QuestionDifficulty,
+        }
       );
 
       setGeneratedContent(response.data.content);
@@ -113,19 +118,56 @@ export default function AiContentModal({
     return [...updatedexistingPoints, ...newPoints];
   };
 
-  const parseMCQOptionsFromAI = (content) => {
-    if (!content) return [];
+  const parseMCQFromAI = (content) => {
+    if (!content) return null;
 
-    return content
+    const lines = content
       .split("\n")
-      .map((line) => line.trim())
-      .filter(
-        (line) =>
-          line.startsWith("-") || line.startsWith("•") || line.startsWith("*")
-      )
-      .map((line) => line.replace(/^[-•*]\s*/, ""))
-      .filter(Boolean)
-      .slice(0, 4); // optional limit
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    const question = lines[0];
+
+    const options = lines
+      .filter((line) => /^[A-D]\./.test(line))
+      .map((line) => line.replace(/^[A-D]\.\s*/, ""));
+
+    const answerLine = lines.find((line) =>
+      line.toLowerCase().startsWith("answer:")
+    );
+
+    const correctAnswer = answerLine
+      ? answerLine.replace(/answer:\s*/i, "").trim()
+      : null;
+
+    return {
+      question,
+      options,
+      correctAnswer,
+    };
+  };
+
+  const parseTrueFalseFromAI = (content) => {
+    if (!content) return null;
+
+    const lines = content
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+
+    // First line is the question
+    const question = lines[0];
+
+    // Find the correct answer (True or False)
+    const correctAnswer = lines.find((line) => /^true$|^false$/i.test(line));
+
+    return {
+      question,
+      correctAnswer: correctAnswer
+        ? correctAnswer.charAt(0).toUpperCase() +
+          correctAnswer.slice(1).toLowerCase()
+        : null,
+    };
   };
 
   const insertPointsFromAI = (content) => {
@@ -149,12 +191,30 @@ export default function AiContentModal({
   };
 
   const handleAccept = () => {
+    const splitedUsedfor = usedfor.split(".");
+
     if (usedfor === "teachingPoints") {
       insertPointsFromAI(generatedContent);
     } else if (usedfor === "requirements") {
       insertPointsFromAI(generatedContent);
     } else if (usedfor === "lessonDescription") {
       handleEditorChange(generatedContent);
+    } else if (questionType === "mcq") {
+      const parsedMCQ = parseMCQFromAI(generatedContent);
+      console.log(parsedMCQ, "parsedMCQ");
+      setValue(usedfor, parsedMCQ.question);
+      setValue(`questions.${splitedUsedfor[1]}.options`, parsedMCQ.options);
+      setValue(
+        `questions.${splitedUsedfor[1]}.correctAnswer`,
+        parsedMCQ.correctAnswer
+      );
+    } else if (questionType === "truefalse") {
+      const parsedTF = parseTrueFalseFromAI(generatedContent);
+      setValue(usedfor, parsedTF.question);
+      setValue(
+        `questions.${splitedUsedfor[1]}.correctAnswer`,
+        parsedTF.correctAnswer.toLowerCase()
+      );
     } else {
       setValue(usedfor, generatedContent);
     }
@@ -179,6 +239,21 @@ export default function AiContentModal({
     if (!open) {
       resetState();
     }
+  };
+
+  const difficultyStyles = {
+    easy: {
+      border: "border-gray-200",
+      bg: "bg-green-400",
+    },
+    medium: {
+      border: "border-gray-200",
+      bg: "bg-orange-400",
+    },
+    hard: {
+      border: "border-gray-200",
+      bg: "bg-red-400",
+    },
   };
 
   return (
@@ -214,6 +289,31 @@ export default function AiContentModal({
                     <p className="text-sm text-gray-500">
                       Suggestions will appear here.
                     </p>
+                    {(questionType === "mcq" ||
+                      questionType === "truefalse" ||
+                      questionType === "qa") && (
+                      <div className="flex justify-center gap-4 text-sm text-gray-500">
+                        {["easy", "medium", "hard"].map((difficulty, id) => {
+                          const styles = difficultyStyles[difficulty];
+
+                          return (
+                            <div
+                              key={id}
+                              onClick={() => setQuestionDifficulty(difficulty)}
+                              className={`px-2 rounded-lg cursor-pointer border ${
+                                styles.border
+                              } ${
+                                QuestionDifficulty === difficulty
+                                  ? `${styles.bg} text-white font-medium`
+                                  : ""
+                              }`}
+                            >
+                              {difficulty}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
 
                     <Input
                       placeholder="Describe what you want to create..."
@@ -248,18 +348,27 @@ export default function AiContentModal({
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    onClick={handleReject}
+                    onClick={handleGenerate}
                     className="flex-1"
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     Regenerate
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={handleReject}
+                    className="flex-1"
+                  >
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Edit
                   </Button>
                   <Button
                     onClick={handleAccept}
                     className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500"
                   >
                     <Check className="w-4 h-4 mr-2" />
-                    Insert
+                    Go with it
                   </Button>
                 </div>
               </div>

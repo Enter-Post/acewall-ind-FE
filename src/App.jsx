@@ -108,6 +108,7 @@ import AllannouncementCoursesStd from "./Page/StudentPortal/AllannouncmentCourse
 import StudentCourseAnnouncements from "./Page/StudentPortal/StudentCourseAnnouncements";
 import StdCourseAssignment from "./Page/StudentPortal/Assessment/StdCourseAssignment";
 import Assessment from "./Page/StudentPortal/Assessment/Assignment";
+import EnrollmentStats from "./CustomComponent/teacher/EnrollmentStats";
 
 function App() {
   const {
@@ -402,6 +403,7 @@ function App() {
                 element={<TeacherChapterDetail />}
               />
               <Route path="edit/:courseId" element={<EditCourse />} />
+                <Route path="course-stats/:id" element={<EnrollmentStats />} />
               <Route
                 path="assessment/:assessmentid"
                 element={<AssessmentPage />}
