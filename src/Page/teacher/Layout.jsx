@@ -68,12 +68,12 @@ const sideBarTabs = [
     id: 12,
     name: "Messages",
     icon: <MessageCircleDashed />,
-    path: "/teacher/messages",
+    path: "/teacher/conversation/courses",
   },
   {
     name: "Discussion Rooms",
     icon: <MessagesSquareIcon />,
-    path: "/teacher/discussions?type=all",
+    path: "/teacher/discussions/allCourses",
   },
   {
     id: 13,

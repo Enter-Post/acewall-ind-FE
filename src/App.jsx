@@ -109,6 +109,8 @@ import StudentCourseAnnouncements from "./Page/StudentPortal/StudentCourseAnnoun
 import StdCourseAssignment from "./Page/StudentPortal/Assessment/StdCourseAssignment";
 import Assessment from "./Page/StudentPortal/Assessment/Assignment";
 import EnrollmentStats from "./CustomComponent/teacher/EnrollmentStats";
+import AllCoursesFilterPage from "./Page/allCoursesPage";
+import StudentsList from "./Page/teacher/StudentList";
 
 function App() {
   const {
@@ -288,7 +290,17 @@ function App() {
               <Route path=":id" element={<ChatWindow />} />
             </Route>
             <Route path="discussions">
-              <Route index element={<StudentDiscussion />} />
+              <Route
+                path="allCourses"
+                element={
+                  <AllCoursesFilterPage
+                    pagefor="Discussions"
+                    link="/student/discussions/course/"
+                  />
+                }
+              />
+
+              <Route path="course/:courseId" element={<StudentDiscussion />} />
               <Route path=":id" element={<StudentDiscussionChat />} />
             </Route>
             <Route path="social" element={<SocialMain />} />
@@ -353,6 +365,19 @@ function App() {
               element={<StudentCourseGrades />}
             />
 
+            <Route path="conversation">
+              <Route
+                path="courses"
+                element={
+                  <AllCoursesFilterPage
+                    pagefor="Students"
+                    link="/teacher/conversation/students/"
+                  />
+                }
+              />
+              <Route path="students/:courseId" element={<StudentsList />} />
+            </Route>
+
             <Route path="messages">
               <Route index element={<Messages />} />
               <Route path=":id" element={<ChatWindow />} />
@@ -363,7 +388,16 @@ function App() {
             />
 
             <Route path="discussions">
-              <Route index element={<TeacherDiscussion />} />
+              <Route
+                path="allCourses"
+                element={
+                  <AllCoursesFilterPage
+                    pagefor="Discussions"
+                    link="/teacher/discussions/course/"
+                  />
+                }
+              />
+              <Route path="course/:courseId" element={<TeacherDiscussion />} />
               <Route path=":id" element={<TeacherDiscussionChat />} />
             </Route>
 
@@ -403,7 +437,7 @@ function App() {
                 element={<TeacherChapterDetail />}
               />
               <Route path="edit/:courseId" element={<EditCourse />} />
-                <Route path="course-stats/:id" element={<EnrollmentStats />} />
+              <Route path="course-stats/:id" element={<EnrollmentStats />} />
               <Route
                 path="assessment/:assessmentid"
                 element={<AssessmentPage />}

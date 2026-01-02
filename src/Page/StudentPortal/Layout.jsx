@@ -82,7 +82,7 @@ const sideBarTabs = [
     id: 7,
     name: "Discussion Rooms",
     icon: <MessagesSquareIcon />,
-    path: "/student/discussions",
+    path: "/student/discussions/allCourses",
     allowedAsPreview: true,
   },
   {
