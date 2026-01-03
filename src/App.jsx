@@ -111,6 +111,7 @@ import Assessment from "./Page/StudentPortal/Assessment/Assignment";
 import EnrollmentStats from "./CustomComponent/teacher/EnrollmentStats";
 import AllCoursesFilterPage from "./Page/allCoursesPage";
 import StudentsList from "./Page/teacher/StudentList";
+import AssessmentAnalytics from "./Page/teacher/Assessment/AssessmentAnalytics";
 
 function App() {
   const {
@@ -332,6 +333,8 @@ function App() {
               <Route index element={<TeacherrAssessment />} />
               <Route path="bycourse/:id" element={<CourseAssessmentList />} />
               <Route path="allsubmissions/:id" element={<AllSubmission />} />
+              <Route path="analytics/:id" element={<AssessmentAnalytics />} />
+
               <Route path=":id" element={<AssessmentReview />} />
               <Route
                 path="create/:type/:id/:courseId"
