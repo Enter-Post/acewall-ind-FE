@@ -109,6 +109,8 @@ export default function TeacherCourseDetails() {
     try {
       const res = await axiosInstance.get(`course/details/${id}`);
       setCourse(res.data.course);
+      console.log(res);
+      
       setQuarters(res.data.course.quarter);
       setSemesterBased(res.data.course.semesterbased === true);
     } catch (err) {
