@@ -166,22 +166,23 @@ export default function CoursesBasis() {
   });
 
   const handleThumbnailChange = (e) => {
+    console.log(e, "e");
     const file = e.target.files[0];
     if (!file) return;
 
     const allowedTypes = ["image/jpeg", "image/png"];
+
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Only JPEG and PNG images are allowed.");
+      toast.error("Only JPG/PNG images are allowed.");
       return;
     }
 
-    const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSizeInBytes) {
-      toast.error("Image size must be less than 5MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File must be less than 5MB.");
       return;
     }
 
-    setValue("thumbnail", file);
+    setValue("thumbnail", file, { shouldValidate: true });
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -334,86 +335,84 @@ export default function CoursesBasis() {
         >
           <section>
             <div className="space-y-6">
-              {/* Thumbnail */}
-              <div>
-                <Label htmlFor="thumbnailInput" className="block mb-2">
-                  Thumbnail *
-                </Label>
+              <section className="space-y-6 border-b pb-6">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="thumbnail" className="font-medium">
+                    Thumbnail *
+                  </Label>
+                </div>
 
-                {errors?.thumbnail && (
-                  <p
-                    role="alert"
-                    className="text-xs text-red-500 mt-1"
-                    id="thumbnail-error"
-                  >
-                    {errors.thumbnail.message}
-                  </p>
-                )}
-
-                <div className="border-2 border-dashed border-gray-300 rounded-md p-1 w-full max-w-md">
+                <div className="border-2 border-dashed border-gray-300 rounded-md p-2 max-w-md">
                   {thumbnailPreview ? (
                     <div className="relative">
                       <img
-                        src={thumbnailPreview || "/placeholder.svg"}
-                        alt="Selected course thumbnail preview"
+                        src={thumbnailPreview}
+                        alt="Uploaded course thumbnail preview"
                         className="w-full h-[300px] object-cover rounded"
                       />
-                      <div className="absolute bottom-2 right-2 flex space-x-2">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          className="bg-white hover:bg-gray-100 text-red-500"
-                          aria-label="Remove thumbnail"
-                          onClick={() => {
-                            setThumbnailPreview(null);
-                            setValue("thumbnail", null);
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </div>
+
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        aria-label="Remove uploaded thumbnail"
+                        className="absolute bottom-2 right-2"
+                        onClick={() => {
+                          setThumbnailPreview(null);
+                          setValue("thumbnail", null);
+                        }}
+                      >
+                        Remove
+                      </Button>
                     </div>
-                  ) : loading ? (
-                    <section
-                      className="flex justify-center items-center h-[300px]"
-                      aria-live="polite"
-                      aria-busy="true"
-                    >
-                      <Loader size={48} className="animate-spin" />
-                    </section>
                   ) : (
                     <div className="flex items-center justify-center h-[300px]">
                       <input
                         type="file"
-                        accept="image/jpeg, image/png"
                         id="thumbnailInput"
-                        className="sr-only"
-                        aria-invalid={!!errors.thumbnail}
-                        aria-describedby={
-                          errors.thumbnail ? "thumbnail-error" : undefined
-                        }
+                        accept="image/*"
                         onChange={handleThumbnailChange}
+                        className="hidden"
+                        aria-describedby="thumbnailHelp"
                       />
+
                       <label
                         htmlFor="thumbnailInput"
                         role="button"
                         tabIndex={0}
                         aria-label="Upload course thumbnail"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            document.getElementById("thumbnailInput")?.click();
-                          }
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-all cursor-pointer"
+                        className="flex items-center gap-2 px-4 py-1 text-xs text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        <Upload size={16} />
+                        <Upload
+                          size={"18"}
+                          className="text-xs text-gray-600"
+                          aria-hidden="true"
+                        />
                         Upload Thumbnail
                       </label>
+                      <div className="ml-4 border-l pl-4 text-xs text-gray-500 flex items-center gap-2">
+                        <AiContentModal
+                          aiResponse={aiResponse}
+                          setAiResponse={setAiResponse}
+                          usedfor="thumbnail"
+                          handleThumbnailChange={handleThumbnailChange}
+                        />
+                        generate with AI
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
+
+                {errors.thumbnail && (
+                  <p
+                    className="text-xs text-red-600"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    {errors.thumbnail.message}
+                  </p>
+                )}
+              </section>
 
               {/* Course Title & Price */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
