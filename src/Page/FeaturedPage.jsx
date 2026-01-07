@@ -1,212 +1,182 @@
-import React from "react";
-import bannerLogo from "../assets/featuredpage2.png";
-import teacherpic from "../assets/TeacherPic.png";
-import { Link } from "react-router-dom";
-import { StackedCard } from "./StackedCard";
-import FeaturedContantCard from "@/CustomComponent/FeaturedContantCard";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom"; 
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Navigation,
+  Pagination,
+  Autoplay,
+  EffectCoverflow,
+} from "swiper/modules";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/effect-coverflow";
+import { axiosInstance } from "@/lib/AxiosInstance";
 
 const FeaturedPage = () => {
-  const cardsData = [
-    {
-      id: "card1",
-      heading: "For Schools & Institutions",
-      text: "Streamline education and improve outcomes with a complete online learning solution. Our platform helps schools move seamlessly to the cloud, making education more accessible, efficient, and scalable—without heavy infrastructure or setup.",
-      bulletPoints: [
-        "Specialty LMS catered to each school",
-        "Efficient, User Friendly, and Cost Effective",
-        "Dedicated Support Team",
-        "Income Opportunities  for schools and teachers just through signing-up",
-        "switch and save up to 30% off current LMS ",
-        "Worldwide access for students and teachers",
-        "100% cloud-based – no heavy setup required",
-        "Manage courses, teachers, and students all in one place",
-        "Centralized grading, announcements, and communication",
-        "Secure and reliable platform for every institution",
-        "Quick onboarding and easy adoption for schools",
-        "Improve overall academic performance and engagement",
-        "Automated notifications and reminders",
-        "Scalable solution for institutions of any size",
-      ],
-    },
-    {
-      id: "card2",
-      heading: "For Teachers",
-      text: "Simplify teaching and focus on what matters most—your students. Our LMS gives teachers the tools to create engaging courses, track performance, and personalize learning experiences with ease.",
-      bulletPoints: [
-        "Create and manage courses effortlessly",
-        "Dedicated Support Team",
-        "Income Opportunities  for schools and teachers just through signing-up",
-        "Assign and grade homework, projects, and exams",
-        "Chat with students individually or as a group",
-        "Access and manage detailed gradebooks",
-        "Customize your profile and teaching style",
-        "Track student performance with analytics",
-        "Upload video lectures and course materials",
-        "Send announcements and reminders instantly",
-        "Save time with streamlined teaching workflows",
-      ],
-    },
-    {
-      id: "card3",
-      heading: "For Students K-12 / College Level",
-      text: "Learn anywhere, anytime—with everything you need at your fingertips. Students can enjoy a smooth learning experience, connect with teachers, and stay on top of assignments—all from one simple platform.",
-      bulletPoints: [
-        "Enroll in courses and complete assignments easily",
-        "Dedicated Support Team",
-        "Access video lectures, notes, and documents anytime",
-        "Communicate directly with teachers through built-in messaging",
-        "View grades and progress in real time",
-        "24/7 support to help whenever you’re stuck",
-        "Access a variety of learning resources in one place",
-        "Learn at your own pace with flexible schedules",
-        "Stay updated with notifications and announcements",
-        "Connect and collaborate with peers worldwide",
-      ],
-    },
-  ];
+  const { subcategoryId } = useParams();
+  const [subcategories, setSubcategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getSubcategories = async () => {
+      setLoading(true);
+      try {
+        const res = await axiosInstance.get(`/subcategory/get`);
+        if (res.data.success) {
+          setSubcategories(res.data.subcategories || []);
+        }
+      } catch (err) {
+        console.error("API Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getSubcategories();
+  }, [subcategoryId]);
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="bg-[#eafdf2]">
-        <div className="container mx-auto">
-          <div className="flex flex-col py-12 px-4 sm:px-6 lg:px-12 lg:flex-row items-center justify-between gap-10">
-            {/* Left Content */}
-            <div className="lg:w-1/2 text-center lg:text-left space-y-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-green-800 leading-tight">
-                Best online platform for education.
-              </h1>
-              <p className="text-base sm:text-lg text-gray-700 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Since 2006,{" "}
-                <span className="font-semibold text-green-800">
-                  Acewall Scholars
-                </span>{" "}
-                has helped students master math, science,  english, and reading comprehension.  Our Learning Management Platform now empowers schools, teachers, and students. We’re making learning seamless, teaching effortless, and school management smarter—anytime, anywhere.
-              </p>
+    /* Unique wrapper class added: featured-page-wrapper */
+    <div className="featured-page-wrapper relative min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center py-12 overflow-hidden">
+      
+      {/* Login Button - Top Right */}
+      <div className="absolute top-6 right-6 z-50">
+        <Link to="/login">
+          <button className="border border-green-600 text-green-600 bg-white font-semibold py-2 px-6 rounded-md shadow-md hover:bg-green-50 transition text-sm sm:text-base">
+            Login
+          </button>
+        </Link>
+      </div>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <button
-                  onClick={() => {
-                    const contactSection = document.getElementById("contact");
-                    if (contactSection) {
-                      contactSection.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                  className="bg-green-600 text-white font-semibold py-3 px-6 sm:px-8 rounded-md shadow-md hover:bg-green-700 transition text-sm sm:text-base"
-                >
-                  Get Started Today
-                </button>
+      {/* Header */}
+      <div className="text-center mb-10 px-4">
+        <h2 className="text-green-600 font-bold tracking-widest uppercase text-xs mb-2">
+          Explore
+        </h2>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 py-4 ">
+          Featured <span className="text-green-600">Topics</span>
+        </h1>
+        <h4 className="text-xl md:text-xl font-extrabold text-slate-900 max-w-2xl mx-auto">
+          Explore the vast category of courses we offer to help you reach
+          the height you want.
+          <br />
+          <br />
+          <span className="text-green-600">We believe sky is the limit</span>
+        </h4>
+      </div>
 
-                <Link to="/login">
-                  <button className="border border-green-600 text-green-600 bg-white font-semibold py-3 px-6 sm:px-8 rounded-md shadow-md hover:bg-green-50 transition text-sm sm:text-base">
-                    Login
-                  </button>
+      {/* Carousel Container */}
+      <div className="w-full max-w-5xl px-4">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600"></div>
+          </div>
+        ) : subcategories.length > 0 ? (
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
+            effect={"coverflow"}
+            grabCursor={true}
+            centeredSlides={true}
+            slidesPerView={"auto"}
+            loop={subcategories.length > 3}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            coverflowEffect={{
+              rotate: 35,
+              stretch: -20,
+              depth: 150,
+              modifier: 1,
+              slideShadows: true,
+            }}
+            navigation={true}
+            pagination={{ clickable: true }}
+            className="featured-swiper pb-16 !overflow-visible"
+          >
+            {subcategories.map((sub) => (
+              <SwiperSlide key={sub._id} className="w-[200px] sm:w-[220px]">
+                {/* Link wrapper added to navigate to specific subcategory courses */}
+                <Link to={`/courses/${sub._id}`} className="block">
+                  <div className="bg-white rounded-[1.5rem] overflow-hidden shadow-xl border border-slate-100 transition-all duration-300 group flex flex-col min-h-[350px] hover:shadow-2xl hover:-translate-y-2">
+                    
+                    {/* Image Section */}
+                    <div className="relative h-96 w-full p-3 bg-white">
+                      {sub.image?.url ? (
+                        <img
+                          src={sub.image.url}
+                          alt={sub.title}
+                          className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                          No Image
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Title Section */}
+                    <div className="p-4 flex-grow flex flex-col items-center justify-center text-center bg-white border-t border-slate-50">
+                      <h3 className="text-lg font-bold text-slate-800 group-hover:text-green-600 transition-colors leading-tight line-clamp-2">
+                        {sub.title}
+                      </h3>
+                      <div className="w-6 h-0.5 bg-green-500 mt-3 rounded-full transition-all duration-300 group-hover:w-12"></div>
+                    </div>
+
+                  </div>
                 </Link>
-              </div>
-            </div>
-
-            {/* Right Illustration */}
-            <div className="lg:w-1/2 flex justify-center lg:justify-end">
-              <img
-                src={bannerLogo}
-                alt="Educational Platform Banner"
-                className="w-full h-full sm:w-full sm:h-full lg:w-full lg:h-full object-cover "
-              />
-            </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : (
+          <div className="text-center text-slate-400 py-20">
+            No items found.
           </div>
+        )}
+      </div>
 
-          {/* Bottom Row */}
-          <div className="relative mt-16 mb-32 sm:mb-40">
-            {/* Card Wrapper */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-20 sm:gap-6 px-4 sm:px-0">
+      {/* SCOPED CSS: Targeting only featured-page-wrapper */}
+      <style jsx global>{`
+        /* Hide scrollbars specifically for this page and this swiper */
+        .featured-page-wrapper .featured-swiper::-webkit-scrollbar {
+          display: none;
+        }
 
-              {/* Card 1 */}
-              <div
-                id="schools"
-                onClick={() =>
-                  document.getElementById("card1")?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="relative bg-blue-900 text-white text-center rounded-lg p-6 pb-28 sm:pb-24 shadow-lg cursor-pointer hover:bg-blue-800 transition"
-              >
-                <h3 className="text-lg sm:text-2xl font-bold mb-12 sm:mb-20">
-                  Schools/Institutions
-                </h3>
-                <img
-                  src="https://imgs.search.brave.com/CADB44w2NE-4yBTcKGt32WI63tXzFpozkZ_HJXPYN4E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG5p/Lmljb25zY291dC5j/b20vaWxsdXN0cmF0/aW9uL3ByZW1pdW0v/dGh1bWIvc2Nob29s/LWJ1aWxkaW5nLWls/bHVzdHJhdGlvbi1k/b3dubG9hZC1pbi1z/dmctcG5nLWdpZi1m/aWxlLWZvcm1hdHMt/LXVuaXZlcnNpdHkt/cGFjay1lZHVjYXRp/b24taWxsdXN0cmF0/aW9ucy04NzQ2NjUw/LnBuZw"
-                  alt="Schools"
-                  className="absolute left-1/2 transform -translate-x-1/2 top-20 sm:top-20 w-50 sm:w-38 lg:w-55 object-contain"
-                />
-              </div>
+        .featured-page-wrapper .featured-swiper {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+          width: 100%;
+          padding-top: 10px;
+          padding-bottom: 40px;
+        }
 
-              {/* Card 2 */}
-              <div
-                id="teachers"
-                onClick={() =>
-                  document.getElementById("card2")?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="relative bg-blue-900 text-white text-center rounded-lg p-6 pb-28 sm:pb-24 shadow-lg cursor-pointer hover:bg-blue-800 transition"
-              >
-                <h3 className="text-lg sm:text-2xl font-bold mb-12 sm:mb-20">
-                  Teachers
-                </h3>
-                <img
-                  src={teacherpic}
-                  alt="Teachers"
-                  className="absolute left-1/2 transform -translate-x-1/2 top-20 sm:top-20 w-50 sm:w-38 lg:w-55 object-contain"
-                />
-              </div>
+        /* Nav Buttons Scoped */
+        .featured-page-wrapper .swiper-button-next,
+        .featured-page-wrapper .swiper-button-prev {
+          color: #16a34a !important;
+          background: #ebebeb !important;
+          width: 35px !important;
+          height: 35px !important;
+          border-radius: 50% !important;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+        }
 
-              {/* Card 3 */}
-              <div
-                id="students"
-                onClick={() =>
-                  document.getElementById("card3")?.scrollIntoView({ behavior: "smooth" })
-                }
-                className="relative bg-blue-900 text-white text-center rounded-lg p-6 pb-28 sm:pb-24 shadow-lg cursor-pointer hover:bg-blue-800 transition"
-              >
-                <h3 className="text-lg sm:text-2xl font-bold mb-12 sm:mb-20">
-                  Students K-12 / College Level
-                </h3>
-                <img
-                  src="https://imgs.search.brave.com/a-KUWna3VD1pkg_ROq62sv2ReqUI0muRKlvD_RFjd1c/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5nYXJ0cy5jb20v/ZmlsZXMvNy9Hcm91/cC1Db2xsZWdlLVN0/dWRlbnQtUE5HLUZy/ZWUtRG93bmxvYWQu/cG5n"
-                  alt="Students"
-                  className="absolute left-1/2 transform -translate-x-1/2 top-20 sm:top-20 w-50 sm:w-38 lg:w-55 object-contain"
-                />
-              </div>
-            </div>
+        .featured-page-wrapper .swiper-button-next:after,
+        .featured-page-wrapper .swiper-button-prev:after {
+          font-size: 14px !important;
+        }
 
-            {/* Bottom section (placeholder or content?) */}
-            <div className="bg-[#156082] py-12 sm:py-20 mt-6 px-4 sm:px-10">
-              {/* Content goes here */}
-            </div>
-          </div>
+        /* Pagination Scoped */
+        .featured-page-wrapper .swiper-pagination-bullet {
+          width: 6px !important;
+          height: 6px !important;
+        }
 
-
-        </div>
-      </section>
-
-      {/* Featured Cards Section */}
-      <section>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-12">
-          <div className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto px-4">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[4vw] font-bold mb-4">
-              Who We Serve
-            </h1>
-            <p className="text-sm sm:text-base md:text-lg font-semibold leading-relaxed">
-              Empowering schools, teachers, and students with one powerful
-              platform that makes learning seamless, teaching effortless, and
-              school management smarter—anytime, anywhere.
-            </p>
-          </div>
-        </div>
-
-        <StackedCard cardsData={cardsData} />
-      </section>
-      <section id="contact">
-        <FeaturedContantCard />
-      </section>
-
+        .featured-page-wrapper .swiper-pagination-bullet-active {
+          background: #16a34a !important;
+          width: 18px !important;
+          border-radius: 4px !important;
+        }
+      `}</style>
     </div>
   );
 };

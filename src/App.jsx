@@ -112,6 +112,8 @@ import EnrollmentStats from "./CustomComponent/teacher/EnrollmentStats";
 import AllCoursesFilterPage from "./Page/allCoursesPage";
 import StudentsList from "./Page/teacher/StudentList";
 import AssessmentAnalytics from "./Page/teacher/Assessment/AssessmentAnalytics";
+import AllCoursesSub from "./Page/AllCoursesSub";
+import AllCoursesDetailSub from "./Page/allCourseDetailSub";
 
 function App() {
   const {
@@ -175,7 +177,10 @@ function App() {
       <Routes>
         {/* Public-only accessible pages */}
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} />
+          <Route index element={<FeaturedPage />} /> {/* This makes / public */}
+          <Route path="courses/:subcategoryId" element={<AllCoursesSub />} />
+          <Route path="course/detail/:id" element={<AllCoursesDetailSub />} />
+          <Route path="home" element={<LandingPage />} />{" "}
           <Route path="about" element={<About />} />
           <Route path="terms" element={<TermsPage />} />
           <Route path="privacyPolicy" element={<PrivacyPolicyPage />} />
