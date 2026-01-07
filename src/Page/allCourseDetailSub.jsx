@@ -103,7 +103,7 @@ const AllCoursesDetailSub = () => {
     return <div className="p-6 text-red-500" role="alert">Course not found.</div>;
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen p-3 md:p-20" role="main" aria-labelledby="course-main-title">
+    <div className="flex flex-col lg:flex-row  p-3 " role="main" aria-labelledby="course-main-title">
       <div className="grid lg:grid-cols-3 w-full gap-2 ">
         {/* Left Column (Main Content) */}
         <div className="lg:col-span-2 w-full">

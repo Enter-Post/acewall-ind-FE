@@ -56,7 +56,7 @@ const FeaturedPage = () => {
           Explore
         </h2>
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 py-4 ">
-          Featured <span className="text-green-600">Sub Topics</span>
+          Featured <span className="text-green-600">Topics</span>
         </h1>
         <h4 className="text-xl md:text-xl font-extrabold text-slate-900 max-w-2xl mx-auto">
           Explore the vast category of courses we offer to help you reach
