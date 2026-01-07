@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +9,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Lock, Loader2 } from "lucide-react"; // Added Loader2
 import { axiosInstance } from "@/lib/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { GlobalContext } from "@/Context/GlobalProvider";
 
 export default function PurchaseConfirmationModal({
   courseID,
@@ -22,6 +23,12 @@ export default function PurchaseConfirmationModal({
 }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  
+  // Get both user AND Authloading from your GlobalContext
+  const { user, Authloading } = useContext(GlobalContext);
+
+  // Derive authentication status
+  const isAuthenticated = !!user; 
 
   const handleConfirm = async () => {
     setOpen(false);
@@ -32,7 +39,6 @@ export default function PurchaseConfirmationModal({
         toast.success(res.data.message || "Enrolled successfully!");
         navigate("/student/mycourses");
       } catch (err) {
-        console.log(err);
         toast.error(err?.response?.data?.error || "Enrollment failed");
       }
     } else {
@@ -48,46 +54,78 @@ export default function PurchaseConfirmationModal({
           toast.error("Stripe session failed.");
         }
       } catch (err) {
-        console.log(err);
         toast.error("Payment initiation failed.");
       }
     }
   };
 
+  const handleAction = (e) => {
+    if (Authloading) return; // Do nothing if still checking auth
+    
+    if (!isAuthenticated) {
+      e.preventDefault();
+      toast.info("Please login to purchase this course");
+      navigate("/login");
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={isAuthenticated ? setOpen : undefined}>
       <DialogTrigger asChild>
         <Button
-          className="w-full text-white text-sm py-2 bg-green-600 hover:bg-green-700 rounded-xl transition-colors duration-300"
-          variant="default" disabled={isEnrolled}
+          className={`w-full text-white text-sm py-2 rounded-xl transition-all duration-300 ${
+            Authloading 
+              ? "bg-slate-400 cursor-not-allowed" 
+              : !isAuthenticated 
+                ? "bg-slate-800 hover:bg-slate-900" 
+                : "bg-green-600 hover:bg-green-700"
+          }`}
+          variant="default" 
+          disabled={isEnrolled || Authloading}
+          onClick={handleAction}
         >
-          {isEnrolled ? "Enrolled" : "buy now"}
+          {/* 1. Show Loading State */}
+          {Authloading ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" /> Checking...
+            </span>
+          ) : isEnrolled ? (
+            "Enrolled"
+          ) : !isAuthenticated ? (
+            <span className="flex items-center gap-2">
+              <Lock className="h-4 w-4" /> Login to Purchase
+            </span>
+          ) : (
+            "Buy Now"
+          )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-green-600">
-            <CheckCircle2 className="h-5 w-5" />
-            {coursePrice === 0 ? "Enroll for Free" : "Confirm Purchase"}
-          </DialogTitle>
-          <DialogDescription>
-            {coursePrice === 0
-              ? "Click below to enroll in this free course immediately."
-              : `You'll be redirected to Stripe's secure payment page to complete your purchase.`}
-
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          {!isEnrolled && (
-            <Button variant="default" onClick={handleConfirm}>
-              {coursePrice === 0 ? "buy now" : `Pay $${coursePrice}`}
+      
+      {isAuthenticated && !Authloading && (
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-green-600">
+              <CheckCircle2 className="h-5 w-5" />
+              {coursePrice === 0 ? "Enroll for Free" : "Confirm Purchase"}
+            </DialogTitle>
+            <DialogDescription>
+              {coursePrice === 0
+                ? "Click below to enroll in this free course immediately."
+                : `You'll be redirected to Stripe's secure payment page to complete your purchase.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
             </Button>
-          )}
-        </DialogFooter>
-      </DialogContent>
+            {!isEnrolled && (
+              <Button variant="default" onClick={handleConfirm}>
+                {coursePrice === 0 ? "Enroll Now" : `Pay $${coursePrice}`}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      )}
     </Dialog>
   );
 }
