@@ -47,6 +47,10 @@ export default function TeacherCourseDetails() {
   const [semesterbased, setSemesterBased] = useState();
   const [enrollmentsId, setEnrollmentsId] = useState(null);
 
+
+
+
+
   const findEnrollment = async () => {
     try {
       const res = await axiosInstance.post(`enrollment/enrollmentforTeacher`, {
@@ -110,7 +114,7 @@ export default function TeacherCourseDetails() {
       const res = await axiosInstance.get(`course/details/${id}`);
       setCourse(res.data.course);
       console.log(res);
-      
+
       setQuarters(res.data.course.quarter);
       setSemesterBased(res.data.course.semesterbased === true);
     } catch (err) {
@@ -443,14 +447,12 @@ export default function TeacherCourseDetails() {
                     navigate(`/teacher/courses/course-stats/${id}`);
                   }}
                 >
-                  <BarChart3
-                    className="w-4 h-4 mr-2"
-                    aria-hidden="true"
-                  />
+                  <BarChart3 className="w-4 h-4 mr-2" aria-hidden="true" />
                   {course.gradingSystem === "normalGrading"
                     ? "Use Standard Grading"
                     : "Use Normal Grading"}
                 </Button>
+               
               </div>
             </CardContent>
           </Card>

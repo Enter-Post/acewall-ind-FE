@@ -114,6 +114,7 @@ import StudentsList from "./Page/teacher/StudentList";
 import AssessmentAnalytics from "./Page/teacher/Assessment/AssessmentAnalytics";
 import AllCoursesSub from "./Page/AllCoursesSub";
 import AllCoursesDetailSub from "./Page/allCourseDetailSub";
+import CourseImportPage from "./Page/teacher/Courses/CourseImportPage";
 
 function App() {
   const {
@@ -411,6 +412,8 @@ function App() {
 
             <Route path="courses">
               <Route index element={<TeacherCourses />} />
+              <Route path="import" element={<CourseImportPage />} />
+
               <Route path="unverifiedCourse" element={<UnverifiedCourses />} />
 
               <Route index element={<TeacherDiscussion />} />
