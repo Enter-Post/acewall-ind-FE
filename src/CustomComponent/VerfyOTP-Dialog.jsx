@@ -32,7 +32,7 @@ const VerifyOTPDialog = ({
   const [cooldown, setCooldown] = useState(0);
   const [otpExpiresAt, setOtpExpiresAt] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
-  const { user } = useContext(GlobalContext);
+  const { user, UpdatedUser, checkAuth } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   // Reset OTP on dialog open
@@ -114,7 +114,7 @@ const VerifyOTPDialog = ({
         : "auth/updateEmail";
 
     const payload = {
-      email: user.email,
+      email: UpdatedUser.email,
       otp: enteredOtp,
     };
 
@@ -122,9 +122,8 @@ const VerifyOTPDialog = ({
       const res = await axiosInstance.put(endpoint, payload);
       toast.success(res.data.message);
       setOpen(false);
-      navigate(
-        type === "password" ? `/${user.role}/account` : "/student/account"
-      );
+      navigate(`/${user.role}/account`);
+      checkAuth();
     } catch (err) {
       console.log(err);
       toast.error(err?.response?.data?.message || "Something went wrong.");
